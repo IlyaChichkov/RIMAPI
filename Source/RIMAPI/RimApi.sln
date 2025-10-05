@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RIMAPI", "RimApi.csproj", "{D434D43C-F5C0-4A57-9F00-27A98F445223}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D434D43C-F5C0-4A57-9F00-27A98F445223}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D434D43C-F5C0-4A57-9F00-27A98F445223}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D434D43C-F5C0-4A57-9F00-27A98F445223}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D434D43C-F5C0-4A57-9F00-27A98F445223}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {524A021E-9F4E-4247-8736-107127DAB165}
+	EndGlobalSection
+EndGlobal
