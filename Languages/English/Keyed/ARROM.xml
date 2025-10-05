@@ -1,0 +1,4 @@
+<LanguageData>
+  <RIMAPI.ServerPortLabel>REST server port (restart required):</RIMAPI.ServerPortLabel>
+  <RIMAPI.RefreshIntervalLabel>Refresh interval (ticks):</RIMAPI.RefreshIntervalLabel>
+</LanguageData>
