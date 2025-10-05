@@ -1,0 +1,16 @@
+{
+  "dotnet.defaultSolution": "RimApi.sln",
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/.vs": true
+  },
+  "search.exclude": {
+    "**/bin": true,
+    "**/obj": true
+  },
+  "omnisharp.enableRoslynAnalyzers": true,
+  "omnisharp.enableEditorConfigSupport": true,
+  "csharp.suppressDotnetRestoreNotification": true,
+  "dotnet.preferCSharpExtension": true
+}

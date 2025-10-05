@@ -1,0 +1,65 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build and Deploy",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/Source/RIMAPI/RimApi.csproj",
+        "--configuration", "Release",
+        "--verbosity", "normal",
+        "/p:CopyLocalLockFileAssemblies=true"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "clean-build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "clean",
+        "${workspaceFolder}/Source/RIMAPI/RimApi.csproj"
+      ],
+      "group": "build"
+    },
+        {
+            "label": "Launch RimWorld",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "start",
+                "\"D:\\Games\\RimAnomaly\\RimWorld\\RimWorldWin64.exe\""
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": false,
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "Build, Deploy and Launch",
+            "dependsOrder": "sequence",
+            "dependsOn": ["Build and Deploy", "Launch RimWorld"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "clear": true
+            }
+        }
+  ]
+}

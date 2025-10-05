@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+        "name": "🚀 Build, Deploy & Launch",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": "Build, Deploy and Launch",
+        "program": "dotnet",
+        "args": [],
+        "cwd": "${workspaceFolder}",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    },
+    {
+      "name": "🔨 Build & Deploy Only",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build and Deploy",
+      "program": "dotnet",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    }
+  ]
+}
