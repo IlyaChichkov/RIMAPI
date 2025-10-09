@@ -153,7 +153,7 @@ namespace RIMAPI
                 // Handle POST requests
                 if (ctx.Request.HttpMethod == "POST")
                 {
-                    json = ProcessPostRequest(ctx, path);
+                    json = MainThreadDispatcher.Invoke(() => ProcessPostRequest(ctx, path));
                     // Send response (existing code remains the same)
                     data = Encoding.UTF8.GetBytes(json);
                     ctx.Response.ContentType = "application/json";
@@ -165,7 +165,7 @@ namespace RIMAPI
                 }
 
                 // Process the request
-                json = ProcessRequest(ctx, path);
+                json = MainThreadDispatcher.Invoke(() => ProcessRequest(ctx, path));
 
                 // Send response
                 data = Encoding.UTF8.GetBytes(json);
@@ -217,9 +217,17 @@ namespace RIMAPI
                 {
                     return _cacheColonists;
                 }
-                if (path == "map/tiles")
+                if (path == "map/info")
                 {
-                    return _apiHandler.GetAllMapTiles();
+                    return _apiHandler.GetMapInfo();
+                }
+                if (path == "map/plants")
+                {
+                    return _apiHandler.GetMapPlants();
+                }
+                if (path == "map/terrain/hard")
+                {
+                    return _apiHandler.GetHardTerrainTiles();
                 }
                 if (path == "ping")
                 {
@@ -228,6 +236,39 @@ namespace RIMAPI
                 if (path == "mods")
                 {
                     return _apiHandler.ModsList();
+                }
+
+                // NEW GET ENDPOINTS - Add these
+                if (path == "items/spawnable")
+                {
+                    return _apiHandler.GetSpawnableItems();
+                }
+
+                // NEW RESOURCE MANAGEMENT ENDPOINTS
+                if (path == "items/forbidden")
+                {
+                    return _apiHandler.GetForbiddenItems();
+                }
+                if (path == "resources/summary")
+                {
+                    return _apiHandler.GetResourceSummary();
+                }
+
+                if (path == "camera")
+                {
+                    return _apiHandler.GetCameraInfo();
+                }
+                if (path == "camera/zoom")
+                {
+                    return _apiHandler.GetCameraZoom();
+                }
+                if (path == "power")
+                {
+                    return _apiHandler.GetPowerProduction();
+                }
+                if (path == "buildings")
+                {
+                    return _apiHandler.GetColonyBuildings();
                 }
 
                 if (path.StartsWith("map/tiles/"))
@@ -260,17 +301,55 @@ namespace RIMAPI
         {
             try
             {
-                // Read request body
                 string requestBody;
                 using (var reader = new System.IO.StreamReader(ctx.Request.InputStream, ctx.Request.ContentEncoding))
                 {
                     requestBody = reader.ReadToEnd();
                 }
 
-                // Route POST requests
                 if (path == "zones/create")
                 {
                     return _apiHandler.CreateZone(requestBody);
+                }
+                if (path == "camera/move")
+                {
+                    return _apiHandler.MoveCamera(requestBody);
+                }
+                //if (path == "camera/follow/pawn")
+                //{
+                //    return _apiHandler.CameraFollowPawn(requestBody);
+                //}
+                if (path == "camera/zoom")
+                {
+                    return _apiHandler.SetCameraZoom(requestBody);
+                }
+                if (path == "item/set-forbidden")
+                {
+                    return _apiHandler.SetItemForbidden(requestBody);
+                }
+                if (path == "items/set-multiple-forbidden")
+                {
+                    return _apiHandler.SetMultipleItemsForbidden(requestBody);
+                }
+                if (path == "pawn/spawn")
+                {
+                    return _apiHandler.SpawnPawn(requestBody);
+                }
+                if (path == "item/spawn")
+                {
+                    return _apiHandler.SpawnItem(requestBody);
+                }
+                if (path == "event/trigger")
+                {
+                    return _apiHandler.TriggerEvent(requestBody);
+                }
+                if (path == "zones/create")
+                {
+                    return _apiHandler.CreateStorageZone(requestBody); // Updated to use storage version
+                }
+                if (path == "zones/create/basic")
+                {
+                    return _apiHandler.CreateBasicStorageZone(requestBody); // Simpler version
                 }
 
                 ctx.Response.StatusCode = 404;

@@ -21,6 +21,8 @@ namespace RIMAPI
         public override void GameComponentTick()
         {
             base.GameComponentTick();
+
+            MainThreadDispatcher.PumpOnce();
             tickCounter++;
             if (tickCounter >= RIMAPI_Mod.Settings.refreshIntervalTicks)
             {
