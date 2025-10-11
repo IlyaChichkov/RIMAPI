@@ -8,13 +8,13 @@ namespace RIMAPI
     public class RIMAPI_GameComponent : GameComponent
     {
         private int tickCounter;
-        private ApiServer _apiServer;
-        private bool _serverInitialized;
+        private static ApiServer _apiServer;
+        private static bool _serverInitialized;
         private IGameDataService _gameDataService;
+        private static readonly object _serverLock = new object();
 
         public RIMAPI_GameComponent(Game game) : base()
         {
-            // Initialize services
             _gameDataService = new GameDataService();
         }
 
@@ -22,22 +22,28 @@ namespace RIMAPI
         {
             base.FinalizeInit();
 
-            try
+            lock (_serverLock)
             {
-                // Initialize API server with injected dependencies
-                _apiServer = new ApiServer(
-                    RIMAPI_Mod.Settings.serverPort,
-                    _gameDataService
-                );
-                _apiServer.Start();
-                _serverInitialized = true;
+                if (_serverInitialized)
+                {
+                    Log.Message("RIMAPI: Server already initialized, skipping...");
+                    return;
+                }
 
-                Log.Message($"RIMAPI: REST API Server started on port {RIMAPI_Mod.Settings.serverPort}");
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"RIMAPI: Failed to start API server - {ex.Message}");
-                _serverInitialized = false;
+                try
+                {
+                    _apiServer?.Dispose();
+                    _apiServer = new ApiServer(RIMAPI_Mod.Settings.serverPort, _gameDataService);
+                    _apiServer.Start();
+                    _serverInitialized = true;
+
+                    Log.Message($"RIMAPI: REST API Server started on port {RIMAPI_Mod.Settings.serverPort}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"RIMAPI: Failed to start API server - {ex.Message}");
+                    _serverInitialized = false;
+                }
             }
         }
 
@@ -45,10 +51,13 @@ namespace RIMAPI
         {
             base.GameComponentTick();
 
-            if (!_serverInitialized) return;
+            if (!_serverInitialized || _apiServer == null) return;
 
-            // Process queued HTTP requests every tick (even when paused)
+            // Process queued HTTP requests every tick
             _apiServer.ProcessQueuedRequests();
+
+            // Process any queued SSE broadcasts
+            _apiServer.ProcessBroadcastQueue();
 
             // Update game data service with current tick
             _gameDataService.UpdateGameTick(Find.TickManager.TicksGame);
@@ -65,16 +74,37 @@ namespace RIMAPI
         {
             base.GameComponentOnGUI();
 
-            if (!_serverInitialized) return;
+            if (!_serverInitialized || _apiServer == null) return;
 
             // Process additional requests during GUI for better responsiveness
             _apiServer.ProcessQueuedRequests();
+
+            // Also process broadcasts during GUI
+            _apiServer.ProcessBroadcastQueue();
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            // Save server state if needed in future
+        }
+
+        public static bool IsServerRunning()
+        {
+            return _serverInitialized && _apiServer != null;
+        }
+
+        public static void Shutdown()
+        {
+            lock (_serverLock)
+            {
+                if (_serverInitialized)
+                {
+                    Log.Message("RIMAPI: Shutting down API server...");
+                    _apiServer?.Dispose();
+                    _apiServer = null;
+                    _serverInitialized = false;
+                }
+            }
         }
     }
 }
