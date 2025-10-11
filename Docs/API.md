@@ -245,3 +245,51 @@ eventSource.onerror = function(event) {
 - `gameState` - Initial complete game state
 - `gameUpdate` - Periodic game state updates
 - `heartbeat` - Connection keep-alive (every 30 seconds)
+
+
+## Extension System
+
+RIMAPI supports extensions from other mods. Extension endpoints are available under:
+
+```
+/api/v1/{extension-id}/{endpoint}
+```
+
+### Example Extension Endpoints:
+
+**Jobs Mod:**
+```
+GET /api/v1/jobs/active      # Get active jobs
+GET /api/v1/jobs/queue       # Get job queue
+GET /api/v1/jobs/types       # Get available job types
+```
+
+**Magic Mod:**
+```
+GET /api/v1/magic/spells     # Get available spells
+GET /api/v1/magic/active     # Get active spell effects
+```
+
+### Creating Extensions:
+
+1. **Implement IRimApiExtension**:
+```csharp
+public class MyModExtension : IRimApiExtension
+{
+    public string ExtensionId => "mymod";
+    public string ExtensionName => "My Mod";
+    public string Version => "1.0.0";
+
+    public void RegisterEndpoints(IExtensionRouter router)
+    {
+        router.Get("data", HandleGetData);
+        router.Post("action", HandlePostAction);
+    }
+}
+```
+
+2. **Automatic Discovery**: RIMAPI will automatically find and load your extension
+3. **Manual Registration**: If automatic discovery fails, register manually:
+```csharp
+Find.ApiServer().RegisterExtension(new MyModExtension());
+```
