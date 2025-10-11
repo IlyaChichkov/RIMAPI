@@ -2,6 +2,8 @@ using System.Net;
 using System.Threading.Tasks;
 using RimworldRestApi.Models;
 using RimworldRestApi.Core;
+using Verse;
+using RimWorld;
 
 namespace RimworldRestApi.Controllers
 {
@@ -9,15 +11,27 @@ namespace RimworldRestApi.Controllers
     {
         public async Task GetVersion(HttpListenerContext context)
         {
-            var versionInfo = new VersionDto
-            {
-                Version = "1.0.0",
-                RimWorldVersion = "1.5.4104",
-                ModVersion = "1.0.0",
-                ApiVersion = "v1"
-            };
+            Log.Message("RIMAPI: VersionController.GetVersion called");
 
-            await ResponseBuilder.Success(context.Response, versionInfo);
+            try
+            {
+                var versionInfo = new VersionDto
+                {
+                    Version = "1.0.0",
+                    RimWorldVersion = VersionControl.CurrentVersionString,
+                    ModVersion = "1.0.0",
+                    ApiVersion = "v1"
+                };
+
+                Log.Message($"RIMAPI: Returning version info: {versionInfo.ModVersion}");
+                await ResponseBuilder.Success(context.Response, versionInfo);
+            }
+            catch (System.Exception ex)
+            {
+                Log.Error($"RIMAPI: Error in VersionController: {ex}");
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, "Internal server error");
+            }
         }
     }
 }

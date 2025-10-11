@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using RimworldRestApi.Services;
-using RimworldRestApi.WebSockets;
 using RimworldRestApi.Controllers;
 using Verse;
 
@@ -13,11 +12,12 @@ namespace RimworldRestApi.Core
     {
         private readonly HttpListener _listener;
         private readonly Router _router;
-        private readonly WebSocketManager _webSocketManager;
+        private readonly SseService _sseService;
         private readonly Queue<HttpListenerContext> _requestQueue;
         private readonly object _queueLock = new object();
         private bool _isRunning;
         private readonly IGameDataService _gameDataService;
+        private bool _disposed = false;
 
         public int Port { get; private set; }
         public string BaseUrl => $"http://localhost:{Port}/";
@@ -30,27 +30,53 @@ namespace RimworldRestApi.Core
             _listener.Prefixes.Add(BaseUrl);
             _router = new Router();
             _requestQueue = new Queue<HttpListenerContext>();
-            _webSocketManager = new WebSocketManager(_gameDataService);
+            _sseService = new SseService(_gameDataService);
 
             RegisterRoutes();
         }
 
+
         private void RegisterRoutes()
         {
-            // Version endpoint
-            _router.AddRoute("GET", "/api/v1/version", context =>
-                new VersionController().GetVersion(context));
+            try
+            {
+                // Clear any existing routes
+                // Version endpoint - simple static route
+                _router.AddRoute("GET", "/api/v1/version", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/version");
+                    await new VersionController().GetVersion(context);
+                });
 
-            // Game state endpoints
-            _router.AddRoute("GET", "/api/v1/game/state", context =>
-                new GameController(_gameDataService).GetGameState(context));
+                // Game state endpoints
+                _router.AddRoute("GET", "/api/v1/game/state", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/game/state");
+                    await new GameController(_gameDataService).GetGameState(context);
+                });
 
-            _router.AddRoute("GET", "/api/v1/game/info", context =>
-                new GameController(_gameDataService).GetGameInfo(context));
+                // Server-Sent Events endpoint for real-time updates
+                _router.AddRoute("GET", "/api/v1/events", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/events");
+                    await _sseService.HandleSSEConnection(context);
+                });
 
-            // WebSocket upgrade endpoint
-            _router.AddRoute("GET", "/api/v1/events/stream", context =>
-                _webSocketManager.HandleWebSocketRequest(context));
+                // Note: WebSocket broadcasting is disabled due to Mono limitations
+                // Use SSE instead for real-time updates
+                // _router.AddRoute("GET", "/api/v1/events/stream", async context =>
+                // {
+                //     Log.Message("RIMAPI: Handling /api/v1/events/stream");
+                //     await _webSocketManager.HandleWebSocketRequest(context);
+                // });
+
+                Log.Message("RIMAPI: Routes registered successfully");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error registering routes: {ex}");
+                throw;
+            }
         }
 
         // ... (rest of the class remains same as Phase 1)
@@ -152,17 +178,49 @@ namespace RimworldRestApi.Core
         {
             // Refresh game data cache and notify WebSocket clients
             _gameDataService.RefreshCache();
-            _webSocketManager.BroadcastGameUpdate();
+            _sseService.BroadcastGameUpdate();
+        }
+
+        public void ProcessBroadcastQueue()
+        {
+            _sseService?.ProcessBroadcastQueue();
         }
 
         public void Dispose()
         {
+            if (_disposed) return;
+
             _isRunning = false;
+            _disposed = true;
+
             try
             {
-                _listener?.Stop();
+                Log.Message("RIMAPI: Disposing API server...");
+
+                // Stop listening first
+                if (_listener?.IsListening == true)
+                {
+                    _listener.Stop();
+                }
+
                 _listener?.Close();
-                _webSocketManager?.Dispose();
+                _sseService?.Dispose();
+
+                // Clear request queue
+                lock (_queueLock)
+                {
+                    while (_requestQueue.Count > 0)
+                    {
+                        var context = _requestQueue.Dequeue();
+                        try
+                        {
+                            context.Response?.Close();
+                        }
+                        catch { }
+                    }
+                }
+
+                Log.Message("RIMAPI: API server disposed successfully");
             }
             catch (Exception ex)
             {

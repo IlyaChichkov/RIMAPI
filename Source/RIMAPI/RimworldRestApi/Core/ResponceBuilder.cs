@@ -17,6 +17,7 @@ namespace RimworldRestApi.Core
         public static async Task Error(HttpListenerResponse response,
             HttpStatusCode statusCode, string message)
         {
+            Log.Warning($"RIMAPI: API Error {statusCode}: {message}");
             await WriteResponse(response, statusCode, new { error = message });
         }
 
@@ -27,6 +28,9 @@ namespace RimworldRestApi.Core
             {
                 response.StatusCode = (int)statusCode;
                 response.ContentType = "application/json";
+                response.Headers.Add("Access-Control-Allow-Origin", "*");
+                response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
+                response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Accept, ETag, If-None-Match");
 
                 var json = JsonConvert.SerializeObject(data);
 
@@ -35,11 +39,20 @@ namespace RimworldRestApi.Core
 
                 await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 response.Close();
+
+                Log.Message($"RIMAPI: Response sent - Status: {statusCode}, Length: {buffer.Length}");
             }
             catch (Exception ex)
             {
-                Log.Error($"Error writing response: {ex.Message}");
-                response.Abort();
+                Log.Error($"RIMAPI: Error writing response: {ex.Message}");
+                try
+                {
+                    response.Abort();
+                }
+                catch
+                {
+                    // Ignore abort errors
+                }
             }
         }
     }
