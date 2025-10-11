@@ -11,7 +11,7 @@ namespace RimworldRestApi.Core
     public class SseService : IDisposable
     {
         private readonly IGameDataService _gameDataService;
-        private readonly List<HttpListenerResponse> _connectedClients;
+        private readonly List<SseClient> _connectedClients;
         private readonly object _clientsLock = new object();
         private bool _disposed = false;
         private int _lastBroadcastTick;
@@ -21,10 +21,11 @@ namespace RimworldRestApi.Core
         public SseService(IGameDataService gameDataService)
         {
             _gameDataService = gameDataService;
-            _connectedClients = new List<HttpListenerResponse>();
+            _connectedClients = new List<SseClient>();
             _broadcastQueue = new Queue<Action>();
             _lastBroadcastTick = Find.TickManager?.TicksGame ?? 0;
         }
+
         public async Task HandleSSEConnection(HttpListenerContext context)
         {
             if (_disposed)
@@ -35,6 +36,7 @@ namespace RimworldRestApi.Core
             }
 
             var response = context.Response;
+            var client = new SseClient(response);
 
             try
             {
@@ -45,18 +47,17 @@ namespace RimworldRestApi.Core
                 response.Headers.Add("Connection", "keep-alive");
                 response.Headers.Add("Access-Control-Allow-Origin", "*");
                 response.Headers.Add("Access-Control-Allow-Methods", "GET");
-                response.Headers.Add("Access-Control-Expose-Headers", "*");
 
                 // Add client to connected list
                 lock (_clientsLock)
                 {
-                    _connectedClients.Add(response);
+                    _connectedClients.Add(client);
                 }
 
                 Log.Message($"RIMAPI: SSE connection established. Total clients: {_connectedClients.Count}");
 
                 // Send initial connection message
-                await SendEventToClient(response, "connected", new
+                await SendEventToClient(client, "connected", new
                 {
                     message = "SSE connection established",
                     timestamp = DateTime.UtcNow
@@ -64,36 +65,42 @@ namespace RimworldRestApi.Core
 
                 // Send initial game state
                 var gameState = _gameDataService.GetGameState();
-                await SendEventToClient(response, "gameState", gameState);
+                await SendEventToClient(client, "gameState", gameState);
 
                 // Keep connection alive with heartbeat
                 var lastHeartbeat = DateTime.UtcNow;
-                var clientDisconnected = false;
+                var lastActivity = DateTime.UtcNow;
 
-                while (!_disposed && !clientDisconnected && response.OutputStream.CanWrite)
+                while (!_disposed && client.IsConnected)
                 {
                     try
                     {
                         // Send heartbeat every 30 seconds
                         if ((DateTime.UtcNow - lastHeartbeat).TotalSeconds >= 30)
                         {
-                            await SendEventToClient(response, "heartbeat", new
+                            await SendEventToClient(client, "heartbeat", new
                             {
                                 timestamp = DateTime.UtcNow
                             });
                             lastHeartbeat = DateTime.UtcNow;
                         }
 
-                        // Check if client is still connected by attempting a flush
-                        await response.OutputStream.FlushAsync();
+                        // Check if client is still connected by testing the stream
+                        if (!await TestClientConnection(client))
+                        {
+                            Log.Message("RIMAPI: SSE client connection test failed");
+                            break;
+                        }
+
+                        lastActivity = DateTime.UtcNow;
 
                         // Small delay to prevent tight looping
                         await Task.Delay(1000); // 1 second delay
                     }
                     catch (Exception ex)
                     {
-                        Log.Message($"RIMAPI: SSE client disconnected - {ex.Message}");
-                        clientDisconnected = true;
+                        Log.Message($"RIMAPI: SSE client error - {ex.Message}");
+                        break;
                     }
                 }
             }
@@ -103,19 +110,35 @@ namespace RimworldRestApi.Core
             }
             finally
             {
-                // Remove client from connected list
+                // Remove client from connected list and mark as disconnected
+                client.MarkDisconnected();
                 lock (_clientsLock)
                 {
-                    _connectedClients.Remove(response);
+                    _connectedClients.Remove(client);
                 }
-
-                try
-                {
-                    response.Close();
-                }
-                catch { }
 
                 Log.Message($"RIMAPI: SSE connection closed. Remaining clients: {_connectedClients.Count}");
+            }
+        }
+
+        private async Task<bool> TestClientConnection(SseClient client)
+        {
+            try
+            {
+                // Try to send a tiny test message to check if connection is alive
+                if (client.IsConnected)
+                {
+                    var testMessage = ":test\n\n";
+                    var buffer = System.Text.Encoding.UTF8.GetBytes(testMessage);
+                    await client.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                    await client.Response.OutputStream.FlushAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -144,7 +167,6 @@ namespace RimworldRestApi.Core
             }
         }
 
-        // Process any queued broadcasts (call this from GameComponentTick)
         public void ProcessBroadcastQueue()
         {
             if (_disposed || _broadcastQueue.Count == 0) return;
@@ -161,7 +183,7 @@ namespace RimworldRestApi.Core
             {
                 try
                 {
-                    broadcast(); // This will fire-and-forget the async operation
+                    broadcast();
                 }
                 catch (Exception ex)
                 {
@@ -172,19 +194,19 @@ namespace RimworldRestApi.Core
 
         private async Task BroadcastEventInternal(string eventType, object data)
         {
-            List<HttpListenerResponse> clientsToRemove = new List<HttpListenerResponse>();
-            List<HttpListenerResponse> currentClients;
+            List<SseClient> clientsToRemove = new List<SseClient>();
+            List<SseClient> currentClients;
 
             lock (_clientsLock)
             {
-                currentClients = new List<HttpListenerResponse>(_connectedClients);
+                currentClients = new List<SseClient>(_connectedClients);
             }
 
             foreach (var client in currentClients)
             {
                 try
                 {
-                    if (client.OutputStream.CanWrite)
+                    if (client.IsConnected)
                     {
                         await SendEventToClient(client, eventType, data);
                     }
@@ -208,32 +230,36 @@ namespace RimworldRestApi.Core
                     foreach (var client in clientsToRemove)
                     {
                         _connectedClients.Remove(client);
-                        try
-                        {
-                            client.Close();
-                        }
-                        catch { }
+                        client.MarkDisconnected();
                     }
                 }
                 Log.Message($"RIMAPI: Removed {clientsToRemove.Count} dead SSE connections");
             }
         }
 
-
-        private async Task SendEventToClient(HttpListenerResponse client, string eventType, object data)
+        private async Task SendEventToClient(SseClient client, string eventType, object data)
         {
+            if (!client.IsConnected)
+            {
+                return;
+            }
+
             try
             {
                 var json = JsonConvert.SerializeObject(data);
                 var message = $"event: {eventType}\ndata: {json}\n\n";
                 var buffer = System.Text.Encoding.UTF8.GetBytes(message);
 
-                await client.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                await client.OutputStream.FlushAsync();
+                await client.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                await client.Response.OutputStream.FlushAsync();
+
+                // Update last activity time
+                client.UpdateLastActivity();
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error sending SSE event '{eventType}' - {ex.Message}");
+                Log.Message($"RIMAPI: Error sending SSE event '{eventType}' - {ex.Message}");
+                client.MarkDisconnected();
                 throw;
             }
         }
@@ -252,11 +278,36 @@ namespace RimworldRestApi.Core
                 {
                     try
                     {
-                        client.Close();
+                        client.MarkDisconnected();
+                        client.Response.Close();
                     }
                     catch { }
                 }
                 _connectedClients.Clear();
+            }
+        }
+
+        private class SseClient
+        {
+            public HttpListenerResponse Response { get; }
+            public bool IsConnected { get; private set; }
+            public DateTime LastActivity { get; private set; }
+
+            public SseClient(HttpListenerResponse response)
+            {
+                Response = response;
+                IsConnected = true;
+                LastActivity = DateTime.UtcNow;
+            }
+
+            public void MarkDisconnected()
+            {
+                IsConnected = false;
+            }
+
+            public void UpdateLastActivity()
+            {
+                LastActivity = DateTime.UtcNow;
             }
         }
     }

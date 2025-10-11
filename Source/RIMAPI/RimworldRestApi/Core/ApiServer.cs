@@ -21,6 +21,7 @@ namespace RimworldRestApi.Core
 
         public int Port { get; private set; }
         public string BaseUrl => $"http://localhost:{Port}/";
+        private readonly ExtensionRegistry _extensionRegistry;
 
         public ApiServer(int port, IGameDataService gameDataService)
         {
@@ -31,9 +32,12 @@ namespace RimworldRestApi.Core
             _router = new Router();
             _requestQueue = new Queue<HttpListenerContext>();
             _sseService = new SseService(_gameDataService);
+            _extensionRegistry = new ExtensionRegistry(); // NEW
 
             RegisterRoutes();
+            RegisterExtensions(); // NEW
         }
+
 
 
         private void RegisterRoutes()
@@ -53,6 +57,18 @@ namespace RimworldRestApi.Core
                 {
                     Log.Message("RIMAPI: Handling /api/v1/game/state");
                     await new GameController(_gameDataService).GetGameState(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/colonists/detailed", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/colonists/detailed");
+                    await new GameController(_gameDataService).GetColonistsDetailed(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/colonists/detailed/id", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/colonists/detailed/id");
+                    await new GameController(_gameDataService).GetColonistDetailed(context);
                 });
 
                 // Server-Sent Events endpoint for real-time updates
@@ -184,6 +200,60 @@ namespace RimworldRestApi.Core
         public void ProcessBroadcastQueue()
         {
             _sseService?.ProcessBroadcastQueue();
+        }
+
+        private void RegisterExtensions()
+        {
+            try
+            {
+                Log.Message("RIMAPI: Initializing extensions...");
+
+                // Discover extensions automatically via reflection
+                _extensionRegistry.DiscoverExtensions();
+
+                // Register endpoints for each extension
+                var extensions = _extensionRegistry.GetExtensions();
+                foreach (var extension in extensions)
+                {
+                    try
+                    {
+                        var extensionRouter = new ExtensionRouter(_router, extension.ExtensionId);
+                        extension.RegisterEndpoints(extensionRouter);
+                        Log.Message($"RIMAPI: Successfully registered endpoints for extension '{extension.ExtensionName}'");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"RIMAPI: Failed to register endpoints for extension '{extension.ExtensionId}': {ex}");
+                    }
+                }
+
+                Log.Message($"RIMAPI: Extension registration complete. {extensions.Count} extensions loaded.");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error during extension registration: {ex}");
+            }
+        }
+
+        // Add method for manual extension registration (for mods that can't use reflection)
+        public void RegisterExtension(IRimApiExtension extension)
+        {
+            _extensionRegistry.RegisterExtension(extension);
+
+            // If server is already running, register endpoints immediately
+            if (_isRunning)
+            {
+                try
+                {
+                    var extensionRouter = new ExtensionRouter(_router, extension.ExtensionId);
+                    extension.RegisterEndpoints(extensionRouter);
+                    Log.Message($"RIMAPI: Dynamically registered endpoints for extension '{extension.ExtensionName}'");
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"RIMAPI: Failed to dynamically register endpoints for extension '{extension.ExtensionId}': {ex}");
+                }
+            }
         }
 
         public void Dispose()

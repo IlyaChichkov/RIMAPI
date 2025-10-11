@@ -11,6 +11,7 @@ namespace RimworldRestApi.Services
         private int _lastCacheTick;
         private GameStateDto _cachedGameState;
         private List<ColonistDto> _cachedColonists;
+        private List<ColonistDetailedDto> _cachedDetailedColonists;
 
         public GameStateDto GetGameState()
         {
@@ -35,6 +36,21 @@ namespace RimworldRestApi.Services
             return GetColonists().FirstOrDefault(c => c.Id == id);
         }
 
+        public List<ColonistDetailedDto> GetColonistsDetailed()
+        {
+            if (_cachedDetailedColonists == null || NeedsRefresh())
+            {
+                RefreshCache();
+            }
+            return _cachedDetailedColonists;
+        }
+
+        public ColonistDetailedDto GetColonistDetailed(int id)
+        {
+            return GetColonistsDetailed().FirstOrDefault(c => c.Id == id);
+        }
+
+
         public void RefreshCache()
         {
             try
@@ -53,6 +69,7 @@ namespace RimworldRestApi.Services
 
                 // Update colonists cache
                 _cachedColonists = GetColonistsInternal();
+                _cachedDetailedColonists = GetColonistsDetailedInternal();
 
                 _lastCacheTick = Find.TickManager?.TicksGame ?? 0;
             }
@@ -136,5 +153,129 @@ namespace RimworldRestApi.Services
 
             return colonists;
         }
+
+        private List<ColonistDetailedDto> GetColonistsDetailedInternal()
+        {
+            var colonists = new List<ColonistDetailedDto>();
+
+            try
+            {
+                var map = Find.CurrentMap;
+                if (map == null) return colonists;
+
+                var freeColonists = map.mapPawns?.FreeColonists;
+                if (freeColonists == null) return colonists;
+
+                foreach (var pawn in freeColonists)
+                {
+                    if (pawn == null) continue;
+
+                    colonists.Add(PawnToDetailedDto(pawn));
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting detailed colonists - {ex.Message}");
+            }
+
+            return colonists;
+        }
+
+        private ColonistDetailedDto PawnToDetailedDto(Pawn pawn)
+        {
+            try
+            {
+                return new ColonistDetailedDto
+                {
+                    Id = pawn.thingIDNumber,
+                    Name = pawn.Name?.ToStringShort ?? "Unknown",
+                    Age = pawn.ageTracker?.AgeBiologicalYears ?? 0,
+                    Gender = pawn.gender.ToString(),
+                    Position = new PositionDto
+                    {
+                        X = pawn.Position.x,
+                        Y = pawn.Position.z
+                    },
+                    Mood = (pawn.needs?.mood?.CurLevelPercentage ?? -1f) * 100,
+                    Health = pawn.health?.summaryHealth?.SummaryHealthPercent ?? 1f,
+                    Hediffs = GetHediffs(pawn),
+                    CurrentJob = pawn.CurJob?.def?.defName ?? "",
+                    Traits = GetTraits(pawn),
+                    WorkPriorities = GetWorkPriorities(pawn)
+                };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error converting pawn to DTO - {ex.Message}");
+                return new ColonistDetailedDto { Id = pawn.thingIDNumber, Name = "Error" };
+            }
+        }
+
+        private List<HediffDto> GetHediffs(Pawn pawn)
+        {
+            try
+            {
+                return pawn.health?.hediffSet?.hediffs?
+                    .Where(h => h != null)
+                    .Select(h => new HediffDto
+                    {
+                        Part = h.Part?.Label,
+                        Label = h.Label
+                    })
+                    .ToList() ?? new List<HediffDto>();
+            }
+            catch
+            {
+                return new List<HediffDto>();
+            }
+        }
+
+        private List<string> GetTraits(Pawn pawn)
+        {
+            try
+            {
+                return pawn.story?.traits?.allTraits?
+                    .Where(t => t != null)
+                    .Select(t => t.def.defName)
+                    .ToList() ?? new List<string>();
+            }
+            catch
+            {
+                return new List<string>();
+            }
+        }
+
+        private List<WorkPriorityDto> GetWorkPriorities(Pawn pawn)
+        {
+            var priorities = new List<WorkPriorityDto>();
+
+            try
+            {
+                if (pawn.workSettings == null) return priorities;
+
+                foreach (var workType in DefDatabase<WorkTypeDef>.AllDefs)
+                {
+                    if (workType == null) continue;
+
+                    var priority = pawn.workSettings.GetPriority(workType);
+                    if (priority > 0)
+                    {
+                        priorities.Add(new WorkPriorityDto
+                        {
+                            WorkType = workType.defName,
+                            Priority = priority
+                        });
+                    }
+                }
+
+                return priorities.OrderBy(p => p.Priority).ToList();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting work priorities for pawn {pawn.thingIDNumber} - {ex.Message}");
+                return priorities;
+            }
+        }
+
     }
 }

@@ -11,6 +11,8 @@ namespace RimworldRestApi.Services
         // Colonists
         List<ColonistDto> GetColonists();
         ColonistDto GetColonist(int id);
+        List<ColonistDetailedDto> GetColonistsDetailed();
+        ColonistDetailedDto GetColonistDetailed(int id);
 
         // Cache management
         void RefreshCache();
