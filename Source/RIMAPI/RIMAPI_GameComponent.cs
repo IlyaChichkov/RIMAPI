@@ -1,46 +1,80 @@
-﻿using Verse;
-using System.Threading;
+﻿using System;
+using RimworldRestApi.Core;
+using Verse;
 
 namespace RIMAPI
 {
     public class RIMAPI_GameComponent : GameComponent
     {
-        private int tickCounter = RIMAPI_Mod.Settings.refreshIntervalTicks - 1;
+        private int tickCounter;
+        private ApiServer _apiServer;
+        private bool _serverInitialized;
 
-        public RIMAPI_GameComponent(Game _) : base()
+        public RIMAPI_GameComponent(Game game) : base()
         {
-            // void
+            // Server will be initialized in FinalizeInit
         }
 
         public override void FinalizeInit()
         {
             base.FinalizeInit();
-            Server.Start();
+
+            try
+            {
+                // Initialize API server with settings
+                _apiServer = new ApiServer(RIMAPI_Mod.Settings.serverPort);
+                _apiServer.Start();
+                _serverInitialized = true;
+
+                Log.Message($"RIMAPI: REST API Server started on port {RIMAPI_Mod.Settings.serverPort}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Failed to start API server - {ex.Message}");
+                _serverInitialized = false;
+            }
         }
 
         public override void GameComponentTick()
         {
             base.GameComponentTick();
 
-            // Process queued HTTP requests every tick (even when paused)
-            Server.ProcessQueuedRequests();
+            if (!_serverInitialized) return;
 
-            MainThreadDispatcher.PumpOnce();
+            // Process queued HTTP requests every tick (even when paused)
+            _apiServer.ProcessQueuedRequests();
+
             tickCounter++;
             if (tickCounter >= RIMAPI_Mod.Settings.refreshIntervalTicks)
             {
                 tickCounter = 0;
-                Server.RefreshCache();
+                _apiServer.RefreshDataCache();
             }
         }
 
-        // Also process requests during GUI ticks for better responsiveness
         public override void GameComponentOnGUI()
         {
             base.GameComponentOnGUI();
 
-            // Process a few more requests during GUI for better responsiveness
-            Server.ProcessQueuedRequests();
+            if (!_serverInitialized) return;
+
+            // Process additional requests during GUI for better responsiveness
+            _apiServer.ProcessQueuedRequests();
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            // Save any server state if needed
+        }
+
+        public override void FinalizeInit()
+        {
+            base.FinalizeInit();
+            if (_apiServer != null)
+            {
+                _apiServer.Dispose();
+            }
         }
     }
 }
