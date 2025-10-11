@@ -4,8 +4,8 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using RimworldRestApi.Services;
 using Newtonsoft.Json;
+using RimworldRestApi.Services;
 using Verse;
 
 namespace RimworldRestApi.WebSockets
@@ -22,15 +22,6 @@ namespace RimworldRestApi.WebSockets
             _sockets = new List<WebSocket>();
             _gameDataService = gameDataService;
             _lastBroadcastTick = Find.TickManager?.TicksGame ?? 0;
-
-            // Subscribe to RimWorld events for real-time updates
-            SetupEventSubscriptions();
-        }
-
-        private void SetupEventSubscriptions()
-        {
-            // This would hook into RimWorld's event system
-            // For now, we'll broadcast on cache refresh
         }
 
         public async Task HandleWebSocketRequest(HttpListenerContext context)
@@ -51,7 +42,6 @@ namespace RimworldRestApi.WebSockets
             }
 
             Log.Message("RIMAPI: WebSocket connection established");
-
             await HandleWebSocketConnection(webSocket);
         }
 
@@ -100,58 +90,85 @@ namespace RimworldRestApi.WebSockets
                 timestamp = DateTime.UtcNow
             };
 
-            BroadcastMessage(message);
+            _ = BroadcastMessageAsync(message); // Fire and forget
             _lastBroadcastTick = currentTick;
         }
 
-        private async void BroadcastMessage(object message)
+        private async Task BroadcastMessageAsync(object message)
         {
             var json = JsonConvert.SerializeObject(message);
             var buffer = System.Text.Encoding.UTF8.GetBytes(json);
             var segment = new ArraySegment<byte>(buffer);
 
             List<WebSocket> socketsToRemove = new List<WebSocket>();
+            List<WebSocket> currentSockets;
 
+            // Copy the sockets list to avoid holding the lock during async operations
             lock (_lock)
             {
-                foreach (var socket in _sockets)
+                currentSockets = new List<WebSocket>(_sockets);
+            }
+
+            // Send messages to all sockets without holding the lock
+            foreach (var socket in currentSockets)
+            {
+                if (socket.State == WebSocketState.Open)
                 {
-                    if (socket.State == WebSocketState.Open)
+                    try
                     {
-                        try
-                        {
-                            await socket.SendAsync(segment, WebSocketMessageType.Text,
-                                true, CancellationToken.None);
-                        }
-                        catch
-                        {
-                            socketsToRemove.Add(socket);
-                        }
+                        await socket.SendAsync(segment, WebSocketMessageType.Text,
+                            true, CancellationToken.None);
                     }
-                    else
+                    catch
                     {
                         socketsToRemove.Add(socket);
                     }
                 }
-
-                // Clean up dead connections
-                foreach (var socket in socketsToRemove)
+                else
                 {
-                    _sockets.Remove(socket);
-                    socket.Dispose();
+                    socketsToRemove.Add(socket);
+                }
+            }
+
+            // Clean up dead connections (with lock)
+            if (socketsToRemove.Count > 0)
+            {
+                lock (_lock)
+                {
+                    foreach (var socket in socketsToRemove)
+                    {
+                        _sockets.Remove(socket);
+                        socket.Dispose();
+                    }
                 }
             }
         }
 
         public void Dispose()
         {
+            List<WebSocket> socketsToDispose;
+
             lock (_lock)
             {
-                foreach (var socket in _sockets)
-                {
-                    socket?.Dispose();
-                }
+                socketsToDispose = new List<WebSocket>(_sockets);
                 _sockets.Clear();
+            }
+
+            foreach (var socket in socketsToDispose)
+            {
+                try
+                {
+                    if (socket.State == WebSocketState.Open)
+                    {
+                        socket.CloseAsync(WebSocketCloseStatus.NormalClosure,
+                            "Server shutting down", CancellationToken.None).Wait(1000);
+                    }
+                    socket.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"RIMAPI: Error disposing WebSocket - {ex.Message}");
+                }
             }
         }
     }
