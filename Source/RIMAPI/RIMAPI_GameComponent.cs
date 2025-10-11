@@ -1,5 +1,6 @@
 ﻿using System;
 using RimworldRestApi.Core;
+using RimworldRestApi.Services;
 using Verse;
 
 namespace RIMAPI
@@ -9,10 +10,12 @@ namespace RIMAPI
         private int tickCounter;
         private ApiServer _apiServer;
         private bool _serverInitialized;
+        private IGameDataService _gameDataService;
 
         public RIMAPI_GameComponent(Game game) : base()
         {
-            // Server will be initialized in FinalizeInit
+            // Initialize services
+            _gameDataService = new GameDataService();
         }
 
         public override void FinalizeInit()
@@ -21,8 +24,11 @@ namespace RIMAPI
 
             try
             {
-                // Initialize API server with settings
-                _apiServer = new ApiServer(RIMAPI_Mod.Settings.serverPort);
+                // Initialize API server with injected dependencies
+                _apiServer = new ApiServer(
+                    RIMAPI_Mod.Settings.serverPort,
+                    _gameDataService
+                );
                 _apiServer.Start();
                 _serverInitialized = true;
 
@@ -43,6 +49,9 @@ namespace RIMAPI
 
             // Process queued HTTP requests every tick (even when paused)
             _apiServer.ProcessQueuedRequests();
+
+            // Update game data service with current tick
+            _gameDataService.UpdateGameTick(Find.TickManager.TicksGame);
 
             tickCounter++;
             if (tickCounter >= RIMAPI_Mod.Settings.refreshIntervalTicks)
@@ -65,16 +74,7 @@ namespace RIMAPI
         public override void ExposeData()
         {
             base.ExposeData();
-            // Save any server state if needed
-        }
-
-        public override void FinalizeInit()
-        {
-            base.FinalizeInit();
-            if (_apiServer != null)
-            {
-                _apiServer.Dispose();
-            }
+            // Save server state if needed in future
         }
     }
 }

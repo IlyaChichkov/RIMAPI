@@ -2,6 +2,8 @@ using System;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Verse;
 
 namespace RimworldRestApi.Core
 {
@@ -26,10 +28,7 @@ namespace RimworldRestApi.Core
                 response.StatusCode = (int)statusCode;
                 response.ContentType = "application/json";
 
-                var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions
-                {
-                    WriteIndented = true
-                });
+                var json = JsonConvert.SerializeObject(data);
 
                 var buffer = Encoding.UTF8.GetBytes(json);
                 response.ContentLength64 = buffer.Length;

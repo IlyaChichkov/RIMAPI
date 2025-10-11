@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using RimworldRestApi.Services;
+using RimworldRestApi.WebSockets;
+using RimworldRestApi.Controllers;
 using Verse;
 
 namespace RimworldRestApi.Core
@@ -19,15 +22,15 @@ namespace RimworldRestApi.Core
         public int Port { get; private set; }
         public string BaseUrl => $"http://localhost:{Port}/";
 
-        public ApiServer(int port = 8765)
+        public ApiServer(int port, IGameDataService gameDataService)
         {
             Port = port;
+            _gameDataService = gameDataService;
             _listener = new HttpListener();
             _listener.Prefixes.Add(BaseUrl);
             _router = new Router();
             _requestQueue = new Queue<HttpListenerContext>();
-            _gameDataService = new GameDataService();
-            _webSocketManager = new WebSocketManager();
+            _webSocketManager = new WebSocketManager(_gameDataService);
 
             RegisterRoutes();
         }
@@ -42,17 +45,15 @@ namespace RimworldRestApi.Core
             _router.AddRoute("GET", "/api/v1/game/state", context =>
                 new GameController(_gameDataService).GetGameState(context));
 
-            _router.AddRoute("GET", "/api/v1/colonists", context =>
-                new ColonistsController(_gameDataService).GetColonists(context));
-
-            _router.AddRoute("GET", "/api/v1/colonists/{id}", context =>
-                new ColonistsController(_gameDataService).GetColonist(context));
+            _router.AddRoute("GET", "/api/v1/game/info", context =>
+                new GameController(_gameDataService).GetGameInfo(context));
 
             // WebSocket upgrade endpoint
             _router.AddRoute("GET", "/api/v1/events/stream", context =>
                 _webSocketManager.HandleWebSocketRequest(context));
         }
 
+        // ... (rest of the class remains same as Phase 1)
         public void Start()
         {
             if (_isRunning) return;

@@ -4,6 +4,8 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using RimworldRestApi.Services;
+using Newtonsoft.Json;
 using Verse;
 
 namespace RimworldRestApi.WebSockets
@@ -11,14 +13,24 @@ namespace RimworldRestApi.WebSockets
     public class WebSocketManager : IDisposable
     {
         private readonly List<WebSocket> _sockets;
-        private readonly GameEventBroadcaster _broadcaster;
+        private readonly IGameDataService _gameDataService;
         private readonly object _lock = new object();
+        private int _lastBroadcastTick;
 
-        public WebSocketManager()
+        public WebSocketManager(IGameDataService gameDataService)
         {
             _sockets = new List<WebSocket>();
-            _broadcaster = new GameEventBroadcaster();
-            _broadcaster.OnEvent += BroadcastToAll;
+            _gameDataService = gameDataService;
+            _lastBroadcastTick = Find.TickManager?.TicksGame ?? 0;
+
+            // Subscribe to RimWorld events for real-time updates
+            SetupEventSubscriptions();
+        }
+
+        private void SetupEventSubscriptions()
+        {
+            // This would hook into RimWorld's event system
+            // For now, we'll broadcast on cache refresh
         }
 
         public async Task HandleWebSocketRequest(HttpListenerContext context)
@@ -38,9 +50,8 @@ namespace RimworldRestApi.WebSockets
                 _sockets.Add(webSocket);
             }
 
-            Log.Message("WebSocket connection established");
+            Log.Message("RIMAPI: WebSocket connection established");
 
-            // Keep connection alive and handle messages
             await HandleWebSocketConnection(webSocket);
         }
 
@@ -64,7 +75,7 @@ namespace RimworldRestApi.WebSockets
             }
             catch (Exception ex)
             {
-                Log.Error($"WebSocket error: {ex.Message}");
+                Log.Error($"RIMAPI: WebSocket error - {ex.Message}");
             }
             finally
             {
@@ -76,16 +87,27 @@ namespace RimworldRestApi.WebSockets
             }
         }
 
-        private async void BroadcastToAll(string eventType, object data)
+        public void BroadcastGameUpdate()
         {
-            var message = System.Text.Json.JsonSerializer.Serialize(new
-            {
-                type = eventType,
-                data = data,
-                timestamp = DateTime.UtcNow
-            });
+            var currentTick = Find.TickManager?.TicksGame ?? 0;
+            if (currentTick - _lastBroadcastTick < 30) return; // Throttle broadcasts
 
-            var buffer = System.Text.Encoding.UTF8.GetBytes(message);
+            var gameState = _gameDataService.GetGameState();
+            var message = new
+            {
+                type = "gameUpdate",
+                data = gameState,
+                timestamp = DateTime.UtcNow
+            };
+
+            BroadcastMessage(message);
+            _lastBroadcastTick = currentTick;
+        }
+
+        private async void BroadcastMessage(object message)
+        {
+            var json = JsonConvert.SerializeObject(message);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(json);
             var segment = new ArraySegment<byte>(buffer);
 
             List<WebSocket> socketsToRemove = new List<WebSocket>();
@@ -131,7 +153,6 @@ namespace RimworldRestApi.WebSockets
                 }
                 _sockets.Clear();
             }
-            _broadcaster?.Dispose();
         }
     }
 }
