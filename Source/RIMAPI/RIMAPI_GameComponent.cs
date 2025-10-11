@@ -22,6 +22,9 @@ namespace RIMAPI
         {
             base.GameComponentTick();
 
+            // Process queued HTTP requests every tick (even when paused)
+            Server.ProcessQueuedRequests();
+
             MainThreadDispatcher.PumpOnce();
             tickCounter++;
             if (tickCounter >= RIMAPI_Mod.Settings.refreshIntervalTicks)
@@ -29,6 +32,15 @@ namespace RIMAPI
                 tickCounter = 0;
                 Server.RefreshCache();
             }
+        }
+
+        // Also process requests during GUI ticks for better responsiveness
+        public override void GameComponentOnGUI()
+        {
+            base.GameComponentOnGUI();
+
+            // Process a few more requests during GUI for better responsiveness
+            Server.ProcessQueuedRequests();
         }
     }
 }

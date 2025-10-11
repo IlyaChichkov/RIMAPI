@@ -23,6 +23,10 @@ namespace RIMAPI
         private static readonly Dictionary<int, string> _cacheColonistsById = new Dictionary<int, string>();
         private static readonly object _cacheLock = new object();
 
+        // Request queue for main thread processing
+        private static readonly Queue<HttpListenerContext> _requestQueue = new Queue<HttpListenerContext>();
+        private static readonly object _queueLock = new object();
+
         static Server()
         {
             _apiHandler = new ApiHandler();
@@ -110,10 +114,12 @@ namespace RIMAPI
                 // Immediately start listening for the next request
                 _listener.BeginGetContext(new AsyncCallback(GetContextCallback), null);
 
-                // Process the request SYNCHRONOUSLY in the callback
-                Log.Message("[RIMAPI] Processing request synchronously");
-                Handle(ctx);
-                Log.Message("[RIMAPI] Synchronous processing completed");
+                // Queue the request for main thread processing instead of handling immediately
+                lock (_queueLock)
+                {
+                    _requestQueue.Enqueue(ctx);
+                }
+                Log.Message("[RIMAPI] Request queued for main thread processing");
             }
             catch (HttpListenerException ex)
             {
@@ -142,30 +148,53 @@ namespace RIMAPI
             }
         }
 
+        // New method to process queued requests from main thread
+        public static void ProcessQueuedRequests()
+        {
+            if (_requestQueue.Count == 0) return;
 
-        private static void Handle(HttpListenerContext ctx)
+            List<HttpListenerContext> requestsToProcess;
+            lock (_queueLock)
+            {
+                // Take up to 5 requests per tick to avoid performance issues
+                requestsToProcess = new List<HttpListenerContext>();
+                for (int i = 0; i < 5 && _requestQueue.Count > 0; i++)
+                {
+                    requestsToProcess.Add(_requestQueue.Dequeue());
+                }
+            }
+
+            foreach (var ctx in requestsToProcess)
+            {
+                try
+                {
+                    HandleRequestOnMainThread(ctx);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"[RIMAPI] Error processing queued request: {ex}");
+                }
+            }
+        }
+
+        private static void HandleRequestOnMainThread(HttpListenerContext ctx)
         {
             string json = "{}";
             byte[] data = null;
             string path = ctx.Request.Url.AbsolutePath.Trim(new char[] { '/' }).ToLowerInvariant();
+
             try
             {
                 // Handle POST requests
                 if (ctx.Request.HttpMethod == "POST")
                 {
-                    json = MainThreadDispatcher.Invoke(() => ProcessPostRequest(ctx, path));
-                    // Send response (existing code remains the same)
-                    data = Encoding.UTF8.GetBytes(json);
-                    ctx.Response.ContentType = "application/json";
-                    ctx.Response.ContentEncoding = Encoding.UTF8;
-                    ctx.Response.ContentLength64 = data.Length;
-                    ctx.Response.OutputStream.Write(data, 0, data.Length);
-                    ctx.Response.OutputStream.Close();
-                    return;
+                    json = ProcessPostRequest(ctx, path);
                 }
-
-                // Process the request
-                json = MainThreadDispatcher.Invoke(() => ProcessRequest(ctx, path));
+                else
+                {
+                    // Process GET request directly on main thread
+                    json = ProcessRequest(ctx, path);
+                }
 
                 // Send response
                 data = Encoding.UTF8.GetBytes(json);
@@ -197,7 +226,7 @@ namespace RIMAPI
             }
         }
 
-
+        // Remove MainThreadDispatcher.Invoke from these methods since they're already on main thread
         private static string ProcessRequest(HttpListenerContext ctx, string path)
         {
             Log.Message($"[RIMAPI] ProcessRequest: {path}");
@@ -264,7 +293,7 @@ namespace RIMAPI
                 }
                 if (path == "power")
                 {
-                    return _apiHandler.GetPowerProduction();
+                    return _apiHandler.GetPowerInfo();
                 }
                 if (path == "buildings")
                 {
@@ -278,11 +307,21 @@ namespace RIMAPI
                         return _apiHandler.GetMapTile(tx, ty);
                     return "{}";
                 }
+                if (path.StartsWith("item/image/"))
+                {
+                    var parts = path.Split(new char[] { '/' });
+                    if (parts.Length >= 3 && int.TryParse(parts[2], out int thingId))
+                    {
+                        return _apiHandler.GetItemImage(thingId);
+                    }
+                    return "{\"error\": \"Invalid item ID\"}";
+                }
+
 
                 if (path.StartsWith("colonists/"))
                 {
                     var parts = path.Split(new char[] { '/' });
-                    string idPart = parts[parts.Length - 1]; // Manual .Last() equivalent
+                    string idPart = parts[parts.Length - 1];
                     if (int.TryParse(idPart, out int cid) && _cacheColonistsById.TryGetValue(cid, out string json))
                         return json;
                     return "{}";
@@ -315,10 +354,6 @@ namespace RIMAPI
                 {
                     return _apiHandler.MoveCamera(requestBody);
                 }
-                //if (path == "camera/follow/pawn")
-                //{
-                //    return _apiHandler.CameraFollowPawn(requestBody);
-                //}
                 if (path == "camera/zoom")
                 {
                     return _apiHandler.SetCameraZoom(requestBody);
@@ -345,11 +380,11 @@ namespace RIMAPI
                 }
                 if (path == "zones/create")
                 {
-                    return _apiHandler.CreateStorageZone(requestBody); // Updated to use storage version
+                    return _apiHandler.CreateStorageZone(requestBody);
                 }
                 if (path == "zones/create/basic")
                 {
-                    return _apiHandler.CreateBasicStorageZone(requestBody); // Simpler version
+                    return _apiHandler.CreateBasicStorageZone(requestBody);
                 }
 
                 ctx.Response.StatusCode = 404;
@@ -362,6 +397,5 @@ namespace RIMAPI
                 return "{\"error\": \"Internal server error processing POST request\"}";
             }
         }
-
     }
 }
