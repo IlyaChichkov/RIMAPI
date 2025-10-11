@@ -74,14 +74,18 @@
     <Compile Include="RimworldRestApi/BaseControllers/GameController.cs" />
     <Compile Include="RimworldRestApi/BaseControllers/VersionController.cs" />
     <Compile Include="RimworldRestApi/Core/ApiServer.cs" />
+    <Compile Include="RimworldRestApi/Core/ExtensionRegistry.cs" />
+    <Compile Include="RimworldRestApi/Core/ExtensionRouter.cs" />
+    <Compile Include="RimworldRestApi/Core/IExtentionRouter.cs" />
+    <Compile Include="RimworldRestApi/Core/IRimApiExtention.cs" />
     <Compile Include="RimworldRestApi/Core/ResponceBuilder.cs" />
     <Compile Include="RimworldRestApi/Core/Router.cs" />
+    <Compile Include="RimworldRestApi/Core/SseService.cs" />
     <Compile Include="RimworldRestApi/Models/ColonistDto.cs" />
     <Compile Include="RimworldRestApi/Models/GameStateDto.cs" />
     <Compile Include="RimworldRestApi/Models/VersionDto.cs" />
     <Compile Include="RimworldRestApi/Services/GameDataService.cs" />
     <Compile Include="RimworldRestApi/Services/IGameDataService.cs" />
-    <Compile Include="RimworldRestApi/WebSockets/WebSocketManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
