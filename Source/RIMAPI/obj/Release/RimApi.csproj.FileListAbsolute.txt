@@ -1,0 +1,2 @@
+D:\Games\RimAnomaly\RimWorld\Mods\My_test_mod\Source\RIMAPI\obj\Release\RimApi.csproj.AssemblyReference.cache
+D:\Games\RimAnomaly\RimWorld\Mods\My_test_mod\Source\RIMAPI\obj\Release\RimApi.csproj.CoreCompileInputs.cache

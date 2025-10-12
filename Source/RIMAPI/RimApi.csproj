@@ -53,13 +53,25 @@
       <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="FollowMe">
+      <HintPath>..\..\..\FollowMe\1.5\Assemblies\FollowMe.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RIMAPI_GameComponent.cs" />
     <Compile Include="RIMAPI_Mod.cs" />
     <Compile Include="RIMAPI_Settings.cs" />
-    <Compile Include="Server.cs" />
-    <Compile Include="ApiHandler.cs" />
+    <Compile Include="RimworldRestApi/*.cs" />
+    <Compile Include="RimworldRestApi/*/*.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

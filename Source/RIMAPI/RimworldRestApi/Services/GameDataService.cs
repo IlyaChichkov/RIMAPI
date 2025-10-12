@@ -1,0 +1,279 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
+using RimWorld;
+using RimworldRestApi.Helpers;
+using RimworldRestApi.Models;
+using UnityEngine;
+using Verse;
+
+namespace RimworldRestApi.Services
+{
+    public class GameDataService : IGameDataService
+    {
+        private MapHelper _mapHelper;
+        private ColonistsHelper _colonistsHelper;
+        private TextureHelper _textureHelper;
+        private int _lastCacheTick;
+        private int needRefreshCooldownTicks = 60; // Refresh every 60 ticks
+        private GameStateDto _cachedGameState;
+        private List<MapDto> _cachedMaps;
+        private List<ColonistDto> _cachedColonists;
+        private List<ColonistDetailedDto> _cachedDetailedColonists;
+
+        public GameDataService()
+        {
+            _mapHelper = new MapHelper();
+            _colonistsHelper = new ColonistsHelper();
+            _textureHelper = new TextureHelper();
+        }
+
+        public void RefreshCache()
+        {
+            try
+            {
+                var game = Current.Game;
+
+                // Update game state
+                _cachedGameState = new GameStateDto
+                {
+                    GameTick = Find.TickManager?.TicksGame ?? 0,
+                    ColonyWealth = GetColonyWealth(),
+                    ColonistCount = GetColonistCount(),
+                    Storyteller = game?.storyteller?.def?.defName ?? "Unknown",
+                    LastUpdate = DateTime.UtcNow
+                };
+
+                // Update colonists cache
+                _cachedColonists = _colonistsHelper.GetColonists();
+                _cachedDetailedColonists = _colonistsHelper.GetColonistsDetailed();
+
+                // Update maps cache
+                _cachedMaps = _mapHelper.GetMaps();
+
+                _lastCacheTick = Find.TickManager?.TicksGame ?? 0;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error refreshing cache - {ex.Message}");
+            }
+        }
+
+        public void UpdateGameTick(int currentTick)
+        {
+            // Track game time for cache invalidation
+        }
+
+        private bool NeedsRefresh()
+        {
+            return (Find.TickManager?.TicksGame ?? 0) - _lastCacheTick > needRefreshCooldownTicks;
+        }
+
+        public GameStateDto GetGameState()
+        {
+            if (_cachedGameState == null || NeedsRefresh())
+            {
+                RefreshCache();
+            }
+            return _cachedGameState;
+        }
+
+        public List<MapDto> GetMaps()
+        {
+            if (_cachedMaps == null || NeedsRefresh())
+            {
+                RefreshCache();
+            }
+            return _cachedMaps;
+        }
+
+        public MapPowerInfoDto GetMapPowerInfo(int mapId)
+        {
+            return _mapHelper.GetMapPowerInfoInternal(mapId);
+        }
+
+        public List<ColonistDto> GetColonists()
+        {
+            if (_cachedColonists == null || NeedsRefresh())
+            {
+                RefreshCache();
+            }
+            return _cachedColonists;
+        }
+
+        public ColonistDto GetColonist(int id)
+        {
+            return GetColonists().FirstOrDefault(c => c.Id == id);
+        }
+
+        public List<ColonistDetailedDto> GetColonistsDetailed()
+        {
+            if (_cachedDetailedColonists == null || NeedsRefresh())
+            {
+                RefreshCache();
+            }
+            return _cachedDetailedColonists;
+        }
+
+        public ColonistDetailedDto GetColonistDetailed(int id)
+        {
+            return GetColonistsDetailed().FirstOrDefault(c => c.Id == id);
+        }
+
+        private float GetColonyWealth()
+        {
+            try
+            {
+                return Find.CurrentMap?.wealthWatcher?.WealthTotal ?? 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        private int GetColonistCount()
+        {
+            try
+            {
+                return Find.CurrentMap?.mapPawns?.FreeColonistsCount ?? 0;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        public ColonistInventoryDto GetColonistInventory(int id)
+        {
+            Pawn colonist = PawnsFinder.AllMaps_FreeColonists.Where(
+                p => p.thingIDNumber == id
+            ).FirstOrDefault();
+
+            try
+            {
+                List<ThingDto> Items = new List<ThingDto>();
+                List<ThingDto> Apparels = new List<ThingDto>();
+                List<ThingDto> Equipment = new List<ThingDto>();
+
+                foreach (var item in colonist.inventory.innerContainer)
+                {
+                    Items.Add(new ThingDto
+                    {
+                        ID = item.thingIDNumber,
+                        Name = item.def.defName,
+                        StackCount = item.stackCount
+                    });
+                }
+
+                foreach (var apparel in colonist.apparel.WornApparel)
+                {
+                    Apparels.Add(new ThingDto
+                    {
+                        ID = apparel.thingIDNumber,
+                        Name = apparel.def.defName,
+                        StackCount = apparel.stackCount
+                    });
+                }
+
+                foreach (var equipment in colonist.equipment.AllEquipmentListForReading)
+                {
+                    Equipment.Add(new ThingDto
+                    {
+                        ID = equipment.thingIDNumber,
+                        Name = equipment.def.defName,
+                        StackCount = equipment.stackCount
+                    });
+                }
+
+                return new ColonistInventoryDto
+                {
+                    Items = Items,
+                    Apparels = Apparels,
+                    Equipment = Equipment,
+                };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting colonist inventory - {ex.Message}");
+            }
+
+            return new ColonistInventoryDto();
+        }
+
+        public BodyPartsDto GetColonistBodyParts(int id)
+        {
+            BodyPartsDto bodyParts = new BodyPartsDto();
+
+            try
+            {
+                Pawn colonist = PawnsFinder.AllMaps_FreeColonists.Where(
+                    p => p.thingIDNumber == id
+                ).FirstOrDefault();
+
+                Material bodyMaterial = colonist.Drawer.renderer.BodyGraphic.MatAt(Rot4.South);
+                Texture2D bodyTexture = (Texture2D)bodyMaterial.mainTexture;
+
+                Material headMaterial = colonist.Drawer.renderer.HeadGraphic.MatAt(Rot4.South);
+                Texture2D headTexture = (Texture2D)headMaterial.mainTexture;
+
+                bodyParts.BodyImage = _textureHelper.TextureToBase64(bodyTexture);
+                bodyParts.BodyColor = bodyMaterial.color.ToString();
+                bodyParts.HeadImage = _textureHelper.TextureToBase64(headTexture);
+                bodyParts.HeadColor = headMaterial.color.ToString();
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting body image - {ex.Message}");
+            }
+            return bodyParts;
+        }
+
+        public ImageDto GetItemImage(string name)
+        {
+            ImageDto image = new ImageDto();
+
+            try
+            {
+                var thingDef = DefDatabase<ThingDef>.GetNamed(name);
+                Texture2D icon = null;
+
+                if (!thingDef.uiIconPath.NullOrEmpty())
+                {
+                    icon = thingDef.uiIcon;
+                }
+                else
+                {
+                    icon = (Texture2D)thingDef.DrawMatSingle.mainTexture;
+                }
+
+                if (icon == null)
+                {
+                    image.Result = $"No icon available for item - {name}";
+                }
+                else
+                {
+                    image.Result = "Success";
+                    image.ImageBase64 = _textureHelper.TextureToBase64(icon);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting item image - {ex.Message}");
+            }
+
+            return image;
+        }
+
+        public MapTimeDto GetCurrentMapDatetime()
+        {
+            return _mapHelper.GetDatetimeAt(Find.CurrentMap.Tile);
+        }
+
+        public MapTimeDto GetWorldTileDatetime(int tileID)
+        {
+            return _mapHelper.GetDatetimeAt(tileID);
+        }
+    }
+}
