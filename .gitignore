@@ -1,1 +1,8 @@
+.cursor
 .vscode/obj
+lib/
+.venv
+*/.venv/
+RimworldDirector/
+RimworldDashboard/
+*.cache
