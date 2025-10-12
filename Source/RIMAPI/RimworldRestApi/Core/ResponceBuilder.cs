@@ -3,10 +3,43 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Verse;
 
 namespace RimworldRestApi.Core
 {
+    public class SnakeCaseContractResolver : DefaultContractResolver
+    {
+        protected override string ResolvePropertyName(string propertyName)
+        {
+            return ConvertToSnakeCase(propertyName);
+        }
+
+        private string ConvertToSnakeCase(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            var result = new StringBuilder();
+            result.Append(char.ToLower(input[0]));
+
+            for (int i = 1; i < input.Length; i++)
+            {
+                if (char.IsUpper(input[i]))
+                {
+                    result.Append('_');
+                    result.Append(char.ToLower(input[i]));
+                }
+                else
+                {
+                    result.Append(input[i]);
+                }
+            }
+
+            return result.ToString();
+        }
+    }
+
     public static class ResponseBuilder
     {
         public static async Task Success(HttpListenerResponse response, object data)
@@ -32,7 +65,12 @@ namespace RimworldRestApi.Core
                 response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
                 response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Accept, ETag, If-None-Match");
 
-                var json = JsonConvert.SerializeObject(data);
+                var settings = new JsonSerializerSettings
+                {
+                    ContractResolver = new SnakeCaseContractResolver(),
+                };
+
+                var json = JsonConvert.SerializeObject(data, settings);
 
                 var buffer = Encoding.UTF8.GetBytes(json);
                 response.ContentLength64 = buffer.Length;

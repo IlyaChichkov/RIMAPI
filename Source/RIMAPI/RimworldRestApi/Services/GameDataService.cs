@@ -153,13 +153,13 @@ namespace RimworldRestApi.Services
 
             try
             {
-                List<ThingDto> Items = new List<ThingDto>();
-                List<ThingDto> Apparels = new List<ThingDto>();
-                List<ThingDto> Equipment = new List<ThingDto>();
+                List<InventoryThingDto> Items = new List<InventoryThingDto>();
+                List<InventoryThingDto> Apparels = new List<InventoryThingDto>();
+                List<InventoryThingDto> Equipment = new List<InventoryThingDto>();
 
                 foreach (var item in colonist.inventory.innerContainer)
                 {
-                    Items.Add(new ThingDto
+                    Items.Add(new InventoryThingDto
                     {
                         ID = item.thingIDNumber,
                         Name = item.def.defName,
@@ -169,7 +169,7 @@ namespace RimworldRestApi.Services
 
                 foreach (var apparel in colonist.apparel.WornApparel)
                 {
-                    Apparels.Add(new ThingDto
+                    Apparels.Add(new InventoryThingDto
                     {
                         ID = apparel.thingIDNumber,
                         Name = apparel.def.defName,
@@ -179,7 +179,7 @@ namespace RimworldRestApi.Services
 
                 foreach (var equipment in colonist.equipment.AllEquipmentListForReading)
                 {
-                    Equipment.Add(new ThingDto
+                    Equipment.Add(new InventoryThingDto
                     {
                         ID = equipment.thingIDNumber,
                         Name = equipment.def.defName,
@@ -230,6 +230,30 @@ namespace RimworldRestApi.Services
             return bodyParts;
         }
 
+        public List<ModInfoDto> GetModsInfo()
+        {
+            List<ModInfoDto> modsInfo = new List<ModInfoDto>();
+
+            try
+            {
+                foreach (ModContentPack mod in LoadedModManager.RunningModsListForReading)
+                {
+                    modsInfo.Add(new ModInfoDto
+                    {
+                        Name = mod.Name,
+                        PackageId = mod.PackageId,
+                        LoadOrder = mod.loadOrder,
+                    });
+                }
+                return modsInfo;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting mods list - {ex.Message}");
+                return modsInfo;
+            }
+        }
+
         public ImageDto GetItemImage(string name)
         {
             ImageDto image = new ImageDto();
@@ -274,6 +298,53 @@ namespace RimworldRestApi.Services
         public MapTimeDto GetWorldTileDatetime(int tileID)
         {
             return _mapHelper.GetDatetimeAt(tileID);
+        }
+
+        public List<FactionsDto> GetFactions()
+        {
+            List<FactionsDto> factions = new List<FactionsDto>();
+            try
+            {
+                if (Current.ProgramState != ProgramState.Playing || Find.FactionManager == null)
+                {
+                    return factions;
+                }
+
+                factions = Find.FactionManager.AllFactionsListForReading
+                    .Select(f => new FactionsDto
+                    {
+                        Name = f.Name,
+                        Def = f.def?.defName,
+                        IsPlayer = f.IsPlayer,
+                        Relation = f.IsPlayer ? string.Empty :
+                            (
+                                Find.FactionManager?.OfPlayer != null
+                                ? Find.FactionManager.OfPlayer.RelationKindWith(f).ToString()
+                                : string.Empty
+                            ),
+                        Goodwill = f.IsPlayer ? 0 :
+                            (Find.FactionManager?.OfPlayer?.GoodwillWith(f) ?? 0),
+                    })
+                    .ToList();
+
+                return factions;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting factions list - {ex.Message}");
+                return new List<FactionsDto>();
+            }
+
+        }
+
+        public List<AnimalDto> GetMapAnimals(int mapId)
+        {
+            return _mapHelper.GetMapAnimals(mapId);
+        }
+
+        public List<MapThingDto> GetMapThings(int mapId)
+        {
+            return _mapHelper.GetMapThings(mapId);
         }
     }
 }

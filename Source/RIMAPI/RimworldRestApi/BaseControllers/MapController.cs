@@ -61,5 +61,65 @@ namespace RimworldRestApi.Controllers
                     HttpStatusCode.InternalServerError, "Error retrieving map power info");
             }
         }
+
+        public async Task GetMapAnimals(HttpListenerContext context)
+        {
+            try
+            {
+                var mapIdStr = context.Request.QueryString["mapId"];
+                if (string.IsNullOrEmpty(mapIdStr))
+                {
+                    await ResponseBuilder.Error(context.Response,
+                        HttpStatusCode.BadRequest, "Missing mapId parameter");
+                    return;
+                }
+
+                if (!int.TryParse(mapIdStr, out int mapId))
+                {
+                    await ResponseBuilder.Error(context.Response,
+                        HttpStatusCode.BadRequest, "Invalid mapId format");
+                    return;
+                }
+
+                var powerInfo = _gameDataService.GetMapAnimals(mapId);
+                await ResponseBuilder.Success(context.Response, powerInfo);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting map animals: {ex}");
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, "Error retrieving map animals");
+            }
+        }
+
+        public async Task GetMapThings(HttpListenerContext context)
+        {
+            try
+            {
+                var mapIdStr = context.Request.QueryString["mapId"];
+                if (string.IsNullOrEmpty(mapIdStr))
+                {
+                    await ResponseBuilder.Error(context.Response,
+                        HttpStatusCode.BadRequest, "Missing mapId parameter");
+                    return;
+                }
+
+                if (!int.TryParse(mapIdStr, out int mapId))
+                {
+                    await ResponseBuilder.Error(context.Response,
+                        HttpStatusCode.BadRequest, "Invalid mapId format");
+                    return;
+                }
+
+                var powerInfo = _gameDataService.GetMapThings(mapId);
+                await ResponseBuilder.Success(context.Response, powerInfo);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting map things: {ex}");
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, "Error retrieving map things");
+            }
+        }
     }
 }

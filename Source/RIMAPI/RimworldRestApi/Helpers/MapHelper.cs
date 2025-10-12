@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using RimworldRestApi.Models;
 using UnityEngine;
@@ -58,6 +59,11 @@ namespace RimworldRestApi.Helpers
             MapTimeDto mapTimeDto = new MapTimeDto();
             try
             {
+                if (Current.ProgramState != ProgramState.Playing || Find.WorldGrid == null)
+                {
+                    return mapTimeDto;
+                }
+
                 var vector = Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile);
                 mapTimeDto.Datetime = GenDate.DateFullStringWithHourAt(Find.TickManager.TicksAbs, vector);
 
@@ -122,6 +128,74 @@ namespace RimworldRestApi.Helpers
             {
                 Log.Error($"RIMAPI: Error getting game maps - {ex.Message}");
                 return powerInfo;
+            }
+        }
+
+        public List<AnimalDto> GetMapAnimals(int mapId)
+        {
+            List<AnimalDto> animals = new List<AnimalDto>();
+            try
+            {
+                Map map = FindMapByUniqueID(mapId);
+                if (map == null)
+                {
+                    return animals;
+                }
+
+                animals = map.mapPawns.AllPawns
+                    .Where(p => p.RaceProps?.Animal == true)
+                    .Select(p => new AnimalDto
+                    {
+                        Id = p.thingIDNumber,
+                        Name = p.LabelShortCap,
+                        Def = p.def?.defName,
+                        Faction = p.Faction?.ToString(),
+                        Position = new PositionDto { X = p.Position.x, Y = p.Position.z },
+                        Trainer = p.relations?.DirectRelations
+                            .Where(r => r.def == PawnRelationDefOf.Bond)
+                            .Select(r => r.otherPawn?.thingIDNumber)
+                            .FirstOrDefault(),
+                        Pregnant = p.health?.hediffSet?.HasHediff(HediffDefOf.Pregnant) ?? false,
+                    })
+                    .ToList();
+
+                return animals;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting animals - {ex.Message}");
+                return new List<AnimalDto>();
+            }
+        }
+
+        public List<MapThingDto> GetMapThings(int mapId)
+        {
+            List<MapThingDto> things = new List<MapThingDto>();
+            try
+            {
+                Map map = FindMapByUniqueID(mapId);
+                if (map == null)
+                {
+                    return things;
+                }
+
+                things = map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver)
+                    .Select(p => new MapThingDto
+                    {
+                        Id = p.thingIDNumber,
+                        Type = p.GetType().FullName,
+                        Def = p.def?.defName,
+                        Position = new PositionDto { X = p.Position.x, Y = p.Position.z },
+                        IsForbidden = p.IsForbidden(Faction.OfPlayer),
+                    })
+                    .ToList();
+
+                return things;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting things from map - {ex.Message}");
+                return new List<MapThingDto>();
             }
         }
     }

@@ -31,6 +31,15 @@ namespace RimworldRestApi.Controllers
             );
         }
 
+        public async Task GetModsInfo(HttpListenerContext context)
+        {
+            var modsInfo = _gameDataService.GetModsInfo();
+
+            await HandleETagCaching(context, modsInfo, data =>
+                GenerateHash(data)
+            );
+        }
+
         public async Task GetColonists(HttpListenerContext context)
         {
             try
@@ -286,7 +295,7 @@ namespace RimworldRestApi.Controllers
 
                     var datetime = _gameDataService.GetWorldTileDatetime(tileId);
                     await HandleETagCaching(context, datetime, data =>
-                        GenerateHash(datetime)
+                        GenerateHash(data)
                     );
                 }
                 await ResponseBuilder.Error(

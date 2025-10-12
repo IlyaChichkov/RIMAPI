@@ -45,23 +45,27 @@ namespace RimworldRestApi.Core
             try
             {
                 #region Basic
-                // Version endpoint - simple static route
                 _router.AddRoute("GET", "/api/v1/version", async context =>
                 {
                     Log.Message("RIMAPI: Handling /api/v1/version");
                     await new VersionController().GetVersion(context);
                 });
 
-                // Game state endpoints
                 _router.AddRoute("GET", "/api/v1/game/state", async context =>
                 {
                     Log.Message("RIMAPI: Handling /api/v1/game/state");
                     await new GameController(_gameDataService).GetGameState(context);
                 });
+
+                _router.AddRoute("GET", "/api/v1/mods/info", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/mods/info");
+                    await new GameController(_gameDataService).GetModsInfo(context);
+                });
                 #endregion
 
                 #region Map
-                _router.AddRoute("GET", "/api/v1/map", async context =>
+                _router.AddRoute("GET", "/api/v1/maps", async context =>
                 {
                     Log.Message("RIMAPI: Handling /api/v1/maps");
                     await new MapController(_gameDataService).GetMaps(context);
@@ -69,8 +73,20 @@ namespace RimworldRestApi.Core
 
                 _router.AddRoute("GET", "/api/v1/map/power/info", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/maps");
+                    Log.Message("RIMAPI: Handling /api/v1/map/power/info");
                     await new MapController(_gameDataService).GetMapPowerInfo(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/animals", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/map/animals");
+                    await new MapController(_gameDataService).GetMapAnimals(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/things", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/map/things");
+                    await new MapController(_gameDataService).GetMapThings(context);
                 });
                 #endregion
 
@@ -116,6 +132,11 @@ namespace RimworldRestApi.Core
                     await new GameController(_gameDataService).GetMapTime(context);
                 });
 
+                _router.AddRoute("GET", "/api/v1/factions", async context =>
+                {
+                    await new FactionsController(_gameDataService).GetFactions(context);
+                });
+
                 // Server-Sent Events endpoint for real-time updates
                 _router.AddRoute("GET", "/api/v1/events", async context =>
                 {
@@ -132,7 +153,6 @@ namespace RimworldRestApi.Core
             }
         }
 
-        // ... (rest of the class remains same as Phase 1)
         public void Start()
         {
             if (_isRunning) return;
