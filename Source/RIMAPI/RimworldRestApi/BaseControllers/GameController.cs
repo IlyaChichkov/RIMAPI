@@ -21,7 +21,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                object r = _gameDataService.GetModsInfo();
+                var gameState = _gameDataService.GetGameState();
                 await HandleETagCaching(context, gameState, data =>
                     GenerateHash(
                         data.GameTick,
@@ -42,9 +42,9 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                object r = _gameDataService.GetModsInfo();
-                HandleFiltering(context, ref r);
-                await ResponseBuilder.Success(context.Response, r);
+                object mods = _gameDataService.GetModsInfo();
+                HandleFiltering(context, ref mods);
+                await ResponseBuilder.Success(context.Response, mods);
             }
             catch (Exception ex)
             {
@@ -57,9 +57,9 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                object r = _gameDataService.GetColonists();
-                HandleFiltering(context, ref r);
-                await ResponseBuilder.Success(context.Response, r);
+                object colonists = _gameDataService.GetColonists();
+                HandleFiltering(context, ref colonists);
+                await ResponseBuilder.Success(context.Response, colonists);
             }
             catch (Exception ex)
             {
@@ -72,30 +72,30 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                string id = context.Request.QueryString["id"];
-                if (string.IsNullOrEmpty(id))
+                string idStr = context.Request.QueryString["id"];
+                if (string.IsNullOrEmpty(idStr))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Missing colonist ID parameter");
                     return;
                 }
 
-                if (!int.TryParse(id, out int colonistId))
+                if (!int.TryParse(idStr, out int colonistId))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Invalid colonist ID format");
                     return;
                 }
 
-                object r = _gameDataService.GetColonist(colonistId);
-                if (r == null)
+                object colonist = _gameDataService.GetColonist(colonistId);
+                if (colonist == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist not found");
                     return;
                 }
-                HandleFiltering(context, ref r);
-                await ResponseBuilder.Success(context.Response, r);
+                HandleFiltering(context, ref colonist);
+                await ResponseBuilder.Success(context.Response, colonist);
             }
             catch (Exception ex)
             {
@@ -108,9 +108,9 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                object r = _gameDataService.GetColonistsDetailed();
+                var colonistsDetailed = _gameDataService.GetColonistsDetailed();
 
-                await HandleETagCaching(context, r, data =>
+                await HandleETagCaching(context, colonistsDetailed, data =>
                 {
                     if (data.Count == 0) return "empty";
 
@@ -132,7 +132,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var idStr = context.Request.QueryString["id"];
+                string idStr = context.Request.QueryString["id"];
                 if (string.IsNullOrEmpty(idStr))
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -147,14 +147,14 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                object r = _gameDataService.GetColonistDetailed(colonistId);
-                if (r == null)
+                var colonistDetailed = _gameDataService.GetColonistDetailed(colonistId);
+                if (colonistDetailed == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist not found");
                     return;
                 }
-                await HandleETagCaching(context, r, data =>
+                await HandleETagCaching(context, colonistDetailed, data =>
                     GenerateHash(
                         data.Id,
                         data.Health,
@@ -176,7 +176,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                string id = context.Request.QueryString["id"];
+                string idStr = context.Request.QueryString["id"];
                 if (string.IsNullOrEmpty(idStr))
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -191,15 +191,15 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                object r = _gameDataService.GetColonistInventory(colonistId);
-                if (r == null)
+                object colonistInventory = _gameDataService.GetColonistInventory(colonistId);
+                if (colonistInventory == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist's inventory not found");
                     return;
                 }
-                HandleFiltering(context, ref r);
-                await ResponseBuilder.Success(context.Response, r);
+                HandleFiltering(context, ref colonistInventory);
+                await ResponseBuilder.Success(context.Response, colonistInventory);
             }
             catch (Exception ex)
             {
@@ -212,23 +212,23 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                string name = context.Request.QueryString["name"];
-                if (string.IsNullOrEmpty(name))
+                string nameStr = context.Request.QueryString["name"];
+                if (string.IsNullOrEmpty(nameStr))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Missing item name parameter");
                     return;
                 }
 
-                var r = _gameDataService.GetItemImage(name);
-                if (r == null)
+                object itemImage = _gameDataService.GetItemImage(nameStr);
+                if (itemImage == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Failed to get item's image");
                     return;
                 }
-                HandleFiltering(context, ref r);
-                await ResponseBuilder.Success(context.Response, r);
+                HandleFiltering(context, ref itemImage);
+                await ResponseBuilder.Success(context.Response, itemImage);
             }
             catch (Exception ex)
             {
@@ -241,30 +241,30 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                string id = context.Request.QueryString["id"];
-                if (string.IsNullOrEmpty(id))
+                string idStr = context.Request.QueryString["id"];
+                if (string.IsNullOrEmpty(idStr))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Missing colonist ID parameter");
                     return;
                 }
 
-                if (!int.TryParse(id, out int colonistId))
+                if (!int.TryParse(idStr, out int colonistId))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Invalid colonist ID format");
                     return;
                 }
 
-                var r = _gameDataService.GetColonistBodyParts(colonistId);
-                if (r == null)
+                object colonistBodyParts = _gameDataService.GetColonistBodyParts(colonistId);
+                if (colonistBodyParts == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist's inventory not found");
                     return;
                 }
-                HandleFiltering(context, ref r);
-                await ResponseBuilder.Success(context.Response, r);
+                HandleFiltering(context, ref colonistBodyParts);
+                await ResponseBuilder.Success(context.Response, colonistBodyParts);
             }
             catch (Exception ex)
             {
@@ -277,7 +277,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var datetimeAtStr = context.Request.QueryString["at"];
+                string datetimeAtStr = context.Request.QueryString["at"];
                 if (string.IsNullOrEmpty(datetimeAtStr))
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -287,14 +287,12 @@ namespace RimworldRestApi.Controllers
 
                 if (datetimeAtStr == "current_map")
                 {
-                    var datetime = _gameDataService.GetCurrentMapDatetime();
-                    await HandleETagCaching(context, datetime, data =>
-                        GenerateHash(datetime)
-                    );
+                    object mapDatetime = _gameDataService.GetCurrentMapDatetime();
+                    ResponseBuilder.Success(context.Response, mapDatetime);
                 }
                 else if (datetimeAtStr == "world_tile")
                 {
-                    var tileIdStr = context.Request.QueryString["tile_id"];
+                    string tileIdStr = context.Request.QueryString["tile_id"];
 
                     if (!int.TryParse(tileIdStr, out int tileId))
                     {
@@ -303,10 +301,8 @@ namespace RimworldRestApi.Controllers
                         return;
                     }
 
-                    object r = _gameDataService.GetWorldTileDatetime(tileId);
-                    await HandleETagCaching(context, r, data =>
-                        GenerateHash(data)
-                    );
+                    object worldDatetime = _gameDataService.GetWorldTileDatetime(tileId);
+                    ResponseBuilder.Success(context.Response, worldDatetime);
                 }
                 await ResponseBuilder.Error(
                     context.Response,

@@ -21,8 +21,9 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var colonists = _gameDataService.GetMaps();
-                await ResponseBuilder.Success(context.Response, colonists);
+                var maps = _gameDataService.GetMaps();
+                await HandleETagCaching(context, maps, data =>
+                        GenerateHash(data));
             }
             catch (Exception ex)
             {
@@ -51,8 +52,9 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                var powerInfo = _gameDataService.GetMapPowerInfo(mapId);
-                await ResponseBuilder.Success(context.Response, powerInfo);
+                object powerInfo = _gameDataService.GetMapPowerInfo(mapId);
+                await HandleETagCaching(context, powerInfo, data =>
+                        GenerateHash(data));
             }
             catch (Exception ex)
             {
@@ -81,8 +83,9 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                var powerInfo = _gameDataService.GetMapAnimals(mapId);
-                await ResponseBuilder.Success(context.Response, powerInfo);
+                object animals = _gameDataService.GetMapAnimals(mapId);
+                await HandleETagCaching(context, animals, data =>
+                        GenerateHash(data));
             }
             catch (Exception ex)
             {
@@ -96,7 +99,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapIdStr = context.Request.QueryString["mapId"];
+                string mapIdStr = context.Request.QueryString["mapId"];
                 if (string.IsNullOrEmpty(mapIdStr))
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -111,8 +114,9 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                var powerInfo = _gameDataService.GetMapThings(mapId);
-                await ResponseBuilder.Success(context.Response, powerInfo);
+                object things = _gameDataService.GetMapThings(mapId);
+                await HandleETagCaching(context, things, data =>
+                        GenerateHash(data));
             }
             catch (Exception ex)
             {
