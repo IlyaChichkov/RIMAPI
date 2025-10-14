@@ -19,39 +19,52 @@ namespace RimworldRestApi.Controllers
 
         public async Task GetGameState(HttpListenerContext context)
         {
-            var gameState = _gameDataService.GetGameState();
-
-            await HandleETagCaching(context, gameState, data =>
-                GenerateHash(
-                    data.GameTick,
-                    data.ColonyWealth,
-                    data.ColonistCount,
-                    data.Storyteller
-                )
-            );
+            try
+            {
+                object r = _gameDataService.GetModsInfo();
+                await HandleETagCaching(context, gameState, data =>
+                    GenerateHash(
+                        data.GameTick,
+                        data.ColonyWealth,
+                        data.ColonistCount,
+                        data.Storyteller
+                    )
+                );
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         public async Task GetModsInfo(HttpListenerContext context)
         {
-            var modsInfo = _gameDataService.GetModsInfo();
-
-            await HandleETagCaching(context, modsInfo, data =>
-                GenerateHash(data)
-            );
+            try
+            {
+                object r = _gameDataService.GetModsInfo();
+                HandleFiltering(context, ref r);
+                await ResponseBuilder.Success(context.Response, r);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         public async Task GetColonists(HttpListenerContext context)
         {
             try
             {
-                var colonists = _gameDataService.GetColonists();
-                await ResponseBuilder.Success(context.Response, colonists);
+                object r = _gameDataService.GetColonists();
+                HandleFiltering(context, ref r);
+                await ResponseBuilder.Success(context.Response, r);
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting colonists - {ex}");
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, "Error retrieving colonists");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -59,36 +72,35 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var idStr = context.Request.QueryString["id"];
-                if (string.IsNullOrEmpty(idStr))
+                string id = context.Request.QueryString["id"];
+                if (string.IsNullOrEmpty(id))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Missing colonist ID parameter");
                     return;
                 }
 
-                if (!int.TryParse(idStr, out int colonistId))
+                if (!int.TryParse(id, out int colonistId))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Invalid colonist ID format");
                     return;
                 }
 
-                var colonist = _gameDataService.GetColonist(colonistId);
-                if (colonist == null)
+                object r = _gameDataService.GetColonist(colonistId);
+                if (r == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist not found");
                     return;
                 }
-
-                await ResponseBuilder.Success(context.Response, colonist);
+                HandleFiltering(context, ref r);
+                await ResponseBuilder.Success(context.Response, r);
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting colonist - {ex}");
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, "Error retrieving colonist");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -96,10 +108,9 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var colonists = _gameDataService.GetColonistsDetailed();
+                object r = _gameDataService.GetColonistsDetailed();
 
-                // Use more comprehensive hash for detailed data
-                await HandleETagCaching(context, colonists, data =>
+                await HandleETagCaching(context, r, data =>
                 {
                     if (data.Count == 0) return "empty";
 
@@ -112,9 +123,8 @@ namespace RimworldRestApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting detailed colonists - {ex}");
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, "Error retrieving detailed colonists");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -137,16 +147,14 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                var colonist = _gameDataService.GetColonistDetailed(colonistId);
-                if (colonist == null)
+                object r = _gameDataService.GetColonistDetailed(colonistId);
+                if (r == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist not found");
                     return;
                 }
-
-                // Comprehensive hash for detailed colonist data
-                await HandleETagCaching(context, colonist, data =>
+                await HandleETagCaching(context, r, data =>
                     GenerateHash(
                         data.Id,
                         data.Health,
@@ -159,9 +167,8 @@ namespace RimworldRestApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting detailed colonist - {ex}");
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, "Error retrieving detailed colonist");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -169,7 +176,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var idStr = context.Request.QueryString["id"];
+                string id = context.Request.QueryString["id"];
                 if (string.IsNullOrEmpty(idStr))
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -184,19 +191,20 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                var colonistInventory = _gameDataService.GetColonistInventory(colonistId);
-                if (colonistInventory == null)
+                object r = _gameDataService.GetColonistInventory(colonistId);
+                if (r == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist's inventory not found");
                     return;
                 }
-                await ResponseBuilder.Success(context.Response, colonistInventory);
+                HandleFiltering(context, ref r);
+                await ResponseBuilder.Success(context.Response, r);
             }
             catch (Exception ex)
             {
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, $"Error retrieving data - {ex}");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -204,7 +212,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var name = context.Request.QueryString["name"];
+                string name = context.Request.QueryString["name"];
                 if (string.IsNullOrEmpty(name))
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -212,19 +220,20 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                var image = _gameDataService.GetItemImage(name);
-                if (image == null)
+                var r = _gameDataService.GetItemImage(name);
+                if (r == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Failed to get item's image");
                     return;
                 }
-                await ResponseBuilder.Success(context.Response, image);
+                HandleFiltering(context, ref r);
+                await ResponseBuilder.Success(context.Response, r);
             }
             catch (Exception ex)
             {
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, $"Error retrieving data - {ex}");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -232,34 +241,35 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var idStr = context.Request.QueryString["id"];
-                if (string.IsNullOrEmpty(idStr))
+                string id = context.Request.QueryString["id"];
+                if (string.IsNullOrEmpty(id))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Missing colonist ID parameter");
                     return;
                 }
 
-                if (!int.TryParse(idStr, out int colonistId))
+                if (!int.TryParse(id, out int colonistId))
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.BadRequest, "Invalid colonist ID format");
                     return;
                 }
 
-                var colonistInventory = _gameDataService.GetColonistBodyParts(colonistId);
-                if (colonistInventory == null)
+                var r = _gameDataService.GetColonistBodyParts(colonistId);
+                if (r == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist's inventory not found");
                     return;
                 }
-                await ResponseBuilder.Success(context.Response, colonistInventory);
+                HandleFiltering(context, ref r);
+                await ResponseBuilder.Success(context.Response, r);
             }
             catch (Exception ex)
             {
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, $"Error retrieving data - {ex}");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -293,8 +303,8 @@ namespace RimworldRestApi.Controllers
                         return;
                     }
 
-                    var datetime = _gameDataService.GetWorldTileDatetime(tileId);
-                    await HandleETagCaching(context, datetime, data =>
+                    object r = _gameDataService.GetWorldTileDatetime(tileId);
+                    await HandleETagCaching(context, r, data =>
                         GenerateHash(data)
                     );
                 }
@@ -308,7 +318,7 @@ namespace RimworldRestApi.Controllers
             catch (Exception ex)
             {
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, $"Error retrieving data - {ex}");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
     }
