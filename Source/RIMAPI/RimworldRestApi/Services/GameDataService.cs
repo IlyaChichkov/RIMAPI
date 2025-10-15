@@ -13,6 +13,7 @@ namespace RimworldRestApi.Services
     public class GameDataService : IGameDataService
     {
         private MapHelper _mapHelper;
+        private ResourcesHelper _resourcesHelper;
         private ColonistsHelper _colonistsHelper;
         private TextureHelper _textureHelper;
         private int _lastCacheTick;
@@ -27,6 +28,7 @@ namespace RimworldRestApi.Services
             _mapHelper = new MapHelper();
             _colonistsHelper = new ColonistsHelper();
             _textureHelper = new TextureHelper();
+            _resourcesHelper = new ResourcesHelper();
         }
 
         public void RefreshCache()
@@ -345,6 +347,23 @@ namespace RimworldRestApi.Services
         public List<MapThingDto> GetMapThings(int mapId)
         {
             return _mapHelper.GetMapThings(mapId);
+        }
+
+        public ResourcesSummaryDto GetResourcesSummary(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _resourcesHelper.GenerateResourcesSummary(map);
+        }
+
+        public StoragesSummaryDto GetStoragesSummary(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _resourcesHelper.StoragesSummary(map);
+        }
+
+        public MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId)
+        {
+            return _mapHelper.GetMapCreaturesSummary(mapId);
         }
     }
 }

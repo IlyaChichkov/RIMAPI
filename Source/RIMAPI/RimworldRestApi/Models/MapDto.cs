@@ -40,4 +40,13 @@ namespace RimworldRestApi.Models
         public bool Pregnant { get; set; }
     }
 
+    public class MapCreaturesSummaryDto
+    {
+        public int ColonistsCount { get; set; }
+        public int PrisonersCount { get; set; }
+        public int EnemiesCount { get; set; }
+        public int AnimalsCount { get; set; }
+        public int InsectoidsCount { get; set; }
+        public int MechanoidsCount { get; set; }
+    }
 }

@@ -26,9 +26,15 @@ namespace RimworldRestApi.Services
         MapPowerInfoDto GetMapPowerInfo(int mapId);
         List<AnimalDto> GetMapAnimals(int mapId);
         List<MapThingDto> GetMapThings(int mapId);
+        MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId);
 
         // Factions
         List<FactionsDto> GetFactions();
+
+        // Resources
+        ResourcesSummaryDto GetResourcesSummary(int mapId);
+        StoragesSummaryDto GetStoragesSummary(int mapId);
+
 
         // Cache management
         void RefreshCache();

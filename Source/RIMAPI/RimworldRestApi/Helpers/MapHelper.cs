@@ -49,8 +49,38 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting game maps - {ex.Message}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
                 return maps;
+            }
+        }
+
+        public MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId)
+        {
+            try
+            {
+                Log.Message($"RIMAPI: Error - {mapId}");
+                var map = FindMapByUniqueID(mapId);
+                Log.Message($"RIMAPI: Error - {map == null}");
+                return new MapCreaturesSummaryDto
+                {
+                    ColonistsCount = map.mapPawns.FreeColonistsSpawnedCount,
+                    PrisonersCount = map.mapPawns.PrisonersOfColonyCount,
+                    EnemiesCount = map.mapPawns.AllPawnsSpawned.Count(p =>
+                                    p.RaceProps.Humanlike && p.HostileTo(Faction.OfPlayer)),
+                    AnimalsCount = map.mapPawns.AllPawnsSpawned.Count(p => p.RaceProps.Animal),
+                    InsectoidsCount = map.mapPawns.AllPawnsSpawned.Count(p => p != null &&
+                                                                         p.Faction != null &&
+                                                                         p.Faction.def == FactionDefOf.Insect),
+                    MechanoidsCount = map.mapPawns.AllPawnsSpawned.Count(p => p != null &&
+                                                                         p.RaceProps != null &&
+                                                                         p.RaceProps.IsMechanoid),
+                };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error - {ex}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
+                return new MapCreaturesSummaryDto();
             }
         }
 
@@ -71,7 +101,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting game maps - {ex.Message}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
                 return mapTimeDto;
             }
         }
@@ -126,7 +156,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting game maps - {ex.Message}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
                 return powerInfo;
             }
         }
@@ -163,7 +193,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting animals - {ex.Message}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
                 return new List<AnimalDto>();
             }
         }
@@ -194,7 +224,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting things from map - {ex.Message}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
                 return new List<MapThingDto>();
             }
         }

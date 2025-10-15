@@ -67,26 +67,27 @@ namespace RimworldRestApi.Core
                 #region Map
                 _router.AddRoute("GET", "/api/v1/maps", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/maps");
                     await new MapController(_gameDataService).GetMaps(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/map/power/info", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/map/power/info");
                     await new MapController(_gameDataService).GetMapPowerInfo(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/map/animals", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/map/animals");
                     await new MapController(_gameDataService).GetMapAnimals(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/map/things", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/map/things");
                     await new MapController(_gameDataService).GetMapThings(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/creatures/summary", async context =>
+                {
+                    await new MapController(_gameDataService).GetMapCreaturesSummary(context);
                 });
                 #endregion
 
@@ -136,6 +137,18 @@ namespace RimworldRestApi.Core
                 {
                     await new FactionsController(_gameDataService).GetFactions(context);
                 });
+
+                #region Resources
+                _router.AddRoute("GET", "/api/v1/resources/summary", async context =>
+                {
+                    await new ResourcesController(_gameDataService).GetResourcesSummary(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/resources/storages/summary", async context =>
+                {
+                    await new ResourcesController(_gameDataService).GetStoragesSummary(context);
+                });
+                #endregion
 
                 // Server-Sent Events endpoint for real-time updates
                 _router.AddRoute("GET", "/api/v1/events", async context =>

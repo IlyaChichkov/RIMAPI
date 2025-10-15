@@ -198,5 +198,23 @@ namespace RimworldRestApi.Controllers
             string json = JsonConvert.SerializeObject(obj);
             return GenerateHash(json);
         }
+
+        protected async Task<int> GetMapIdProperty(HttpListenerContext context)
+        {
+            string mapIdStr = context.Request.QueryString["mapId"];
+            if (string.IsNullOrEmpty(mapIdStr))
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.BadRequest, "Missing mapId parameter");
+            }
+
+            if (!int.TryParse(mapIdStr, out int mapId))
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.BadRequest, "Invalid mapId format");
+            }
+
+            return mapId;
+        }
     }
 }

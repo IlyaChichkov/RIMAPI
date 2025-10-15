@@ -288,7 +288,7 @@ namespace RimworldRestApi.Controllers
                 if (datetimeAtStr == "current_map")
                 {
                     object mapDatetime = _gameDataService.GetCurrentMapDatetime();
-                    ResponseBuilder.Success(context.Response, mapDatetime);
+                    await ResponseBuilder.Success(context.Response, mapDatetime);
                 }
                 else if (datetimeAtStr == "world_tile")
                 {
@@ -302,7 +302,7 @@ namespace RimworldRestApi.Controllers
                     }
 
                     object worldDatetime = _gameDataService.GetWorldTileDatetime(tileId);
-                    ResponseBuilder.Success(context.Response, worldDatetime);
+                    await ResponseBuilder.Success(context.Response, worldDatetime);
                 }
                 await ResponseBuilder.Error(
                     context.Response,
