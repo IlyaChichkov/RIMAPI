@@ -49,163 +49,404 @@ if (response.StatusCode == HttpStatusCode.NotModified)
 
 ## Endpoints
 
-### Version Information
-**GET /api/v1/version**
+# RimWorld REST API Documentation
 
-Get API and mod version information.
+## Base URL
+```
+http://localhost:8765/api/v1/
+```
 
-**Response:**
+## Table of Contents
+- [Basic Endpoints](#basic-endpoints)
+- [Map Endpoints](#map-endpoints)
+- [Research Endpoints](#research-endpoints)
+- [Colonist Endpoints](#colonist-endpoints)
+- [Resource Endpoints](#resource-endpoints)
+- [Other Endpoints](#other-endpoints)
+- [Real-time Events](#real-time-events)
+
+## Basic Endpoints
+
+### Get API Version
+- **GET** `/api/v1/version`
+- **Description**: Returns API version and RimWorld compatibility information
+- **Response**:
 ```json
 {
   "version": "1.0.0",
-  "rimWorldVersion": "1.4.0",
+  "rimWorldVersion": "1.4.xxxx",
   "modVersion": "1.0.0",
   "apiVersion": "v1"
 }
 ```
 
-**C# Example:**
-```csharp
-public async Task<VersionDto> GetVersionAsync()
-{
-    using var client = new HttpClient();
-    var response = await client.GetAsync("http://localhost:8765/api/v1/version");
-    response.EnsureSuccessStatusCode();
-    
-    var json = await response.Content.ReadAsStringAsync();
-    return JsonSerializer.Deserialize<VersionDto>(json);
-}
-```
-
-### Game State
-**GET /api/v1/game/state**
-
-Get current game state including tick, wealth, and colonist count.
-
-**Response:**
+### Get Game State
+- **GET** `/api/v1/game/state`
+- **Description**: Returns current game state including time, weather, and storyteller info
+- **Response**:
 ```json
 {
-  "gameTick": 15420,
-  "colonyWealth": 12500.5,
-  "colonistCount": 8,
+  "gameTime": "5503.5.12",
+  "timeSpeed": "Normal",
+  "weather": "Clear",
+  "temperature": 21.5,
   "storyteller": "Cassandra Classic",
-  "lastUpdate": "2023-10-15T14:30:00Z"
+  "difficulty": "Rough"
 }
 ```
 
-**With ETag Example:**
-```csharp
-public async Task<GameStateDto> GetGameStateAsync(string previousEtag = null)
+### Get Mods Info
+- **GET** `/api/v1/mods/info`
+- **Description**: Returns list of loaded mods
+- **Response**:
+```json
 {
-    using var client = new HttpClient();
-    var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:8765/api/v1/game/state");
-    
-    if (!string.IsNullOrEmpty(previousEtag))
+  "mods": [
     {
-        request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(previousEtag));
+      "name": "Core",
+      "version": "1.4.xxxx"
     }
-    
-    var response = await client.SendAsync(request);
-    
-    if (response.StatusCode == HttpStatusCode.NotModified)
-        return null; // Data unchanged
-        
-    response.EnsureSuccessStatusCode();
-    
-    var json = await response.Content.ReadAsStringAsync();
-    return JsonSerializer.Deserialize<GameStateDto>(json);
+  ]
 }
 ```
 
-### Colonists
-**GET /api/v1/colonists**
+## Map Endpoints
 
-Get list of all colonists with basic information.
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "name": "John",
-    "gender": "Male", 
-    "age": 28,
-    "health": 0.95,
-    "mood": 0.72,
-    "position": {
-      "x": 15,
-      "y": 0,
-      "z": 22
-    }
-  }
-]
-```
-
-**GET /api/v1/colonists/{id}**
-
-Get detailed information about a specific colonist.
-
-**Parameters:**
-- `id` (path) - Colonist ID
-
-**Response:**
+### Get Available Maps
+- **GET** `/api/v1/maps`
+- **Description**: Returns list of available maps
+- **Response**:
 ```json
 {
-  "id": 1,
+  "maps": [
+    {
+      "id": 1,
+      "name": "Main Colony",
+      "biome": "Temperate Forest"
+    }
+  ]
+}
+```
+
+### Get Weather Info
+- **GET** `/api/v1/map/weather`
+- **Description**: Returns current weather conditions
+- **Response**:
+```json
+{
+  "currentWeather": "Clear",
+  "temperature": 21.5,
+  "rainRate": 0.0,
+  "windSpeed": 0.0
+}
+```
+
+### Get Power Network Info
+- **GET** `/api/v1/map/power/info`
+- **Description**: Returns power grid status and consumption
+- **Response**:
+```json
+{
+  "powerGenerated": 2500,
+  "powerConsumed": 1800,
+  "powerStored": 1200,
+  "batteryCount": 3
+}
+```
+
+### Get Map Animals
+- **GET** `/api/v1/map/animals`
+- **Description**: Returns animals on the map
+- **Response**:
+```json
+{
+  "animals": [
+    {
+      "id": 456,
+      "defName": "Deer",
+      "label": "deer",
+      "position": {"x": 123, "z": 456}
+    }
+  ]
+}
+```
+
+### Get Map Things
+- **GET** `/api/v1/map/things`
+- **Description**: Returns all things/items on the map
+- **Response**:
+```json
+{
+  "things": [
+    {
+      "thingId": 789,
+      "defName": "Steel",
+      "label": "steel",
+      "stackCount": 75
+    }
+  ]
+}
+```
+
+### Get Creatures Summary
+- **GET** `/api/v1/map/creatures/summary`
+- **Description**: Returns summary of all creatures on map by type
+- **Response**:
+```json
+{
+  "colonistsCount": 8,
+  "prisonersCount": 2,
+  "enemiesCount": 0,
+  "animalsCount": 15,
+  "insectoidsCount": 0,
+  "mechanoidsCount": 0
+}
+```
+
+### Get Farm Summary
+- **GET** `/api/v1/map/farm/summary`
+- **Description**: Returns farming and crop information
+- **Response**:
+```json
+{
+  "totalGrowingZones": 3,
+  "totalPlants": 45,
+  "totalExpectedYield": 120,
+  "cropTypes": [
+    {
+      "plantDefName": "RicePlant",
+      "plantLabel": "rice",
+      "totalPlants": 25,
+      "expectedYield": 75
+    }
+  ]
+}
+```
+
+### Get Growing Zone Details
+- **GET** `/api/v1/map/zone/growing?zoneId={id}`
+- **Description**: Returns detailed information about a specific growing zone
+- **Parameters**: `zoneId` - ID of the growing zone
+- **Response**:
+```json
+{
+  "zoneId": 1,
+  "plantDefName": "RicePlant",
+  "plantCount": 25,
+  "growthProgress": 0.75,
+  "soilType": "RichSoil"
+}
+```
+
+## Research Endpoints
+
+### Get Research Progress
+- **GET** `/api/v1/research/progress`
+- **Description**: Returns current research project and progress
+- **Response**:
+```json
+{
+  "currentProject": "Hydroponics",
+  "progress": 0.25
+}
+```
+
+### Get Finished Research
+- **GET** `/api/v1/research/finished`
+- **Description**: Returns list of completed research projects
+- **Response**:
+```json
+{
+  "finishedProjects": ["Stonecutting", "Electricity"]
+}
+```
+
+### Get Research Tree
+- **GET** `/api/v1/research/tree`
+- **Description**: Returns complete research tree with all projects
+- **Response**:
+```json
+{
+  "projects": [
+    {
+      "name": "Stonecutting",
+      "progress": 1.0,
+      "researchPoints": 1000,
+      "description": "Allows cutting stone blocks",
+      "isFinished": true
+    }
+  ]
+}
+```
+
+## Colonist Endpoints
+
+### Get Colonists List
+- **GET** `/api/v1/colonists`
+- **Description**: Returns basic list of all colonists
+- **Response**:
+```json
+{
+  "colonists": [
+    {
+      "id": 123,
+      "name": "John",
+      "gender": "Male",
+      "age": 32
+    }
+  ]
+}
+```
+
+### Get Colonist Details
+- **GET** `/api/v1/colonist?id={id}`
+- **GET** `/api/v1/colonist/detailed?id={id}`
+- **Description**: Returns detailed information about a specific colonist
+- **Parameters**: `id` - Colonist ID
+- **Response**:
+```json
+{
+  "id": 123,
   "name": "John",
-  "gender": "Male",
-  "age": 28,
-  "health": 0.95,
-  "mood": 0.72,
-  "position": {
-    "x": 15,
-    "y": 0, 
-    "z": 22
-  }
+  "health": 1.0,
+  "mood": 0.75,
+  "skills": [
+    {
+      "skill": "Shooting",
+      "level": 8
+    }
+  ]
 }
 ```
 
-**Fields Filtering Example:**
-```csharp
-// Only get name and health fields
-var url = "http://localhost:8765/api/v1/colonists?fields=name,health";
-var response = await client.GetAsync(url);
+### Get All Colonists Detailed
+- **GET** `/api/v1/colonists/detailed`
+- **Description**: Returns detailed information for all colonists
+- **Response**: Array of colonist details
 
-// Response will only contain:
-// [{"name": "John", "health": 0.95}, ...]
-```
-
-### World Information
-**GET /api/v1/world/info**
-
-Get world information including seed and planet details.
-
-**Response:**
+### Get Colonist Inventory
+- **GET** `/api/v1/colonist/inventory?id={id}`
+- **Description**: Returns items carried by a colonist
+- **Parameters**: `id` - Colonist ID
+- **Response**:
 ```json
 {
-  "name": "My World",
-  "seed": "abc123",
-  "coverage": "0.3", 
-  "planetName": "Earth"
+  "colonistId": 123,
+  "items": [
+    {
+      "thingId": 456,
+      "defName": "Gun_Autopistol",
+      "label": "autopistol"
+    }
+  ]
 }
 ```
 
-**GET /api/v1/world/maps**
+## Resource Endpoints
 
-Get list of all maps in the world.
-
-**Response:**
+### Get Resources Summary
+- **GET** `/api/v1/resources/summary`
+- **Description**: Returns comprehensive resource inventory summary
+- **Response**:
 ```json
-[
-  {
-    "id": 1,
-    "name": "Home Map",
-    "tile": 125,
-    "biome": "Temperate Forest",
-    "size": "250x250"
-  }
-]
+{
+  "totalItems": 150,
+  "totalMarketValue": 12500,
+  "categories": [
+    {
+      "category": "Resource",
+      "count": 45,
+      "marketValue": 5000
+    }
+  ]
+}
 ```
+
+### Get Storages Summary
+- **GET** `/api/v1/resources/storages/summary`
+- **Description**: Returns storage zone information and utilization
+- **Response**:
+```json
+{
+  "totalStockpiles": 5,
+  "totalCells": 200,
+  "usedCells": 150,
+  "utilizationPercent": 75
+}
+```
+
+## Other Endpoints
+
+### Get Item Image
+- **GET** `/api/v1/item/image?thingId={id}`
+- **Description**: Returns item icon information
+- **Parameters**: `thingId` - Item ID
+- **Response**:
+```json
+{
+  "thingId": 789,
+  "defName": "MedicineIndustrial",
+  "uiIconPath": "Things/Item/Resource/MedicineIndustrial"
+}
+```
+
+### Get Colonist Body
+- **GET** `/api/v1/colonist/body/image?id={id}`
+- **Description**: Returns colonist body/health visualization data
+- **Parameters**: `id` - Colonist ID
+
+### Get Date/Time
+- **GET** `/api/v1/datetime`
+- **Description**: Returns current in-game date and time
+- **Response**:
+```json
+{
+  "date": "5503-05-12",
+  "time": "14:30",
+  "ticks": 123456789
+}
+```
+
+### Get Factions
+- **GET** `/api/v1/factions`
+- **Description**: Returns information about all factions
+- **Response**:
+```json
+{
+  "factions": [
+    {
+      "name": "The Tribe",
+      "relation": "Hostile",
+      "goodwill": -80
+    }
+  ]
+}
+```
+
+## Real-time Events
+
+### Server-Sent Events
+- **GET** `/api/v1/events`
+- **Description**: Establishes a Server-Sent Events connection for real-time game updates
+- **Content-Type**: `text/event-stream`
+- **Events**: Game state changes, colonist updates, threats, etc.
+
+## Field Filtering
+
+All GET endpoints support field filtering using the `fields` query parameter:
+
+```
+GET /api/v1/colonists?fields=id,name,skills
+GET /api/v1/resources/summary?fields=totalItems,categories.category,categories.count
+```
+
+## Common HTTP Status Codes
+
+- `200 OK` - Successful request
+- `304 Not Modified` - Data unchanged (ETag caching)
+- `400 Bad Request` - Invalid parameters
+- `404 Not Found` - Resource not found
+- `500 Internal Server Error` - Server-side error
 
 ## Real-time Events (Server-Sent Events)
 
