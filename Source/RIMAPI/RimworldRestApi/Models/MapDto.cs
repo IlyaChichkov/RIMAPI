@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RimworldRestApi.Models
 {
@@ -12,6 +13,12 @@ namespace RimworldRestApi.Models
         public bool IsPocketMap { get; set; }
         public bool IsTempIncidentMap { get; set; }
         public string Size { get; set; }
+    }
+
+    public class MapWeatherDto
+    {
+        public string Weather { get; set; }
+        public float Temperature { get; set; }
     }
 
     public class MapPowerInfoDto
@@ -48,5 +55,50 @@ namespace RimworldRestApi.Models
         public int AnimalsCount { get; set; }
         public int InsectoidsCount { get; set; }
         public int MechanoidsCount { get; set; }
+    }
+
+    public class MapFarmSummaryDto
+    {
+        public int TotalGrowingZones { get; set; }
+        public int TotalPlants { get; set; }
+        public int TotalExpectedYield { get; set; }
+        public int TotalInfectedPlants { get; set; }
+        public float GrowthProgressAverage { get; set; }
+        public List<CropTypeDto> CropTypes { get; set; } = new List<CropTypeDto>();
+    }
+
+    public class CropTypeDto
+    {
+        public string PlantDefName { get; set; }
+        public string PlantLabel { get; set; }
+        public string PlantCategory { get; set; }
+        public int TotalPlants { get; set; }
+        public int HarvestablePlants { get; set; }
+        public int ExpectedYield { get; set; }
+        public int InfectedCount { get; set; }
+        public float GrowthProgressAverage { get; set; }
+        public float DaysUntilHarvest { get; set; }
+        public bool IsFullyGrown { get; set; }
+        public bool IsHarvestable { get; set; }
+        public int ZoneId { get; set; }
+    }
+
+    public class GrowingZoneDto
+    {
+        public int ZoneId { get; set; }
+        public int CellsCount { get; set; }
+        public string ZoneLabel { get; set; }
+        public string PlantDefName { get; set; }
+        public int PlantCount { get; set; }
+        public int DefExpectedYield { get; set; }
+        public int ExpectedYield { get; set; }
+        public int InfectedCount { get; set; }
+        public float GrowthProgress { get; set; }
+        public bool IsSowing { get; set; }
+        public string SoilType { get; set; }
+        public float Fertility { get; set; }
+        public bool HasDying { get; set; }
+        public bool HasDyingFromPollution { get; set; }
+        public bool HasDyingFromNoPollution { get; set; }
     }
 }

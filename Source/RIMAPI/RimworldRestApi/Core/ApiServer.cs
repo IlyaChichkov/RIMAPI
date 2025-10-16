@@ -70,6 +70,11 @@ namespace RimworldRestApi.Core
                     await new MapController(_gameDataService).GetMaps(context);
                 });
 
+                _router.AddRoute("GET", "/api/v1/map/weather", async context =>
+                {
+                    await new MapController(_gameDataService).GetWeather(context);
+                });
+
                 _router.AddRoute("GET", "/api/v1/map/power/info", async context =>
                 {
                     await new MapController(_gameDataService).GetMapPowerInfo(context);
@@ -88,6 +93,33 @@ namespace RimworldRestApi.Core
                 _router.AddRoute("GET", "/api/v1/map/creatures/summary", async context =>
                 {
                     await new MapController(_gameDataService).GetMapCreaturesSummary(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/farm/summary", async context =>
+                {
+                    await new MapController(_gameDataService).GetFarmSummary(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/zone/growing", async context =>
+                {
+                    await new MapController(_gameDataService).GetGrowingZone(context);
+                });
+                #endregion
+                #region Research
+
+                _router.AddRoute("GET", "/api/v1/research/progress", async context =>
+                {
+                    await new ResearchController(_gameDataService).GetResearchProgress(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/research/finished", async context =>
+                {
+                    await new ResearchController(_gameDataService).GetResearchFinished(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/research/tree", async context =>
+                {
+                    await new ResearchController(_gameDataService).GetResearchTree(context);
                 });
                 #endregion
 

@@ -61,4 +61,18 @@ namespace RimworldRestApi.Models
         public string WorkType { get; set; }
         public int Priority { get; set; }
     }
+
+    public class PawnWorkPrioritiesResponseDto
+    {
+        public List<PawnWorkPrioritiesDto> Pawns { get; set; } = new List<PawnWorkPrioritiesDto>();
+        public int TotalPawns { get; set; }
+        public string LastUpdated { get; set; }
+    }
+
+    public class PawnWorkPrioritiesDto
+    {
+        public int PawnId { get; set; }
+        public string PawnName { get; set; }
+        public List<WorkPriorityDto> WorkPriorities { get; set; } = new List<WorkPriorityDto>();
+    }
 }

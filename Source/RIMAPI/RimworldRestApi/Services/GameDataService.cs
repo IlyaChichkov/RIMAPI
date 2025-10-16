@@ -13,6 +13,7 @@ namespace RimworldRestApi.Services
     public class GameDataService : IGameDataService
     {
         private MapHelper _mapHelper;
+        private FarmHelper _farmHelper;
         private ResourcesHelper _resourcesHelper;
         private ColonistsHelper _colonistsHelper;
         private TextureHelper _textureHelper;
@@ -26,6 +27,7 @@ namespace RimworldRestApi.Services
         public GameDataService()
         {
             _mapHelper = new MapHelper();
+            _farmHelper = new FarmHelper();
             _colonistsHelper = new ColonistsHelper();
             _textureHelper = new TextureHelper();
             _resourcesHelper = new ResourcesHelper();
@@ -364,6 +366,90 @@ namespace RimworldRestApi.Services
         public MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId)
         {
             return _mapHelper.GetMapCreaturesSummary(mapId);
+        }
+
+        public MapFarmSummaryDto GenerateFarmSummary(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _farmHelper.GenerateFarmSummary(map);
+        }
+
+        public GrowingZoneDto GetGrowingZoneById(int mapId, int zoneId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _farmHelper.GetGrowingZoneById(map, zoneId);
+        }
+
+        public ResearchProgressDto GetResearchProgress()
+        {
+            ResearchManager researchManager = Find.ResearchManager;
+            ResearchProjectDef currentProj = researchManager?.GetProject();
+
+            return new ResearchProgressDto
+            {
+                CurrentProject = currentProj?.defName ?? "None",
+                Label = currentProj?.label ?? "None",
+                Progress = currentProj != null ? researchManager.GetProgress(currentProj) : 0f
+            };
+        }
+
+        public ResearchFinishedDto GetResearchFinished()
+        {
+            ResearchManager researchManager = Find.ResearchManager;
+            var finishedProjects = new List<string>();
+
+            if (researchManager != null)
+            {
+                // Get all finished research projects
+                finishedProjects = DefDatabase<ResearchProjectDef>.AllDefs
+                    .Where(proj => researchManager.GetProgress(proj) >= proj.CostApparent)
+                    .Select(proj => proj.defName)
+                    .ToList();
+            }
+
+            return new ResearchFinishedDto
+            {
+                FinishedProjects = finishedProjects
+            };
+        }
+
+        public ResearchTreeDto GetResearchTree()
+        {
+            ResearchManager researchManager = Find.ResearchManager;
+            var projects = new List<ResearchProjectDto>();
+
+            foreach (var projectDef in DefDatabase<ResearchProjectDef>.AllDefs)
+            {
+                int progress = Mathf.RoundToInt(researchManager?.GetProgress(projectDef) ?? 0);
+                bool isFinished = progress >= projectDef.CostApparent;
+
+                projects.Add(new ResearchProjectDto
+                {
+                    Name = projectDef.defName,
+                    Label = projectDef.label,
+                    Progress = progress,
+                    ResearchPoints = (int)projectDef.CostApparent,
+                    Description = projectDef.Description,
+                    IsFinished = isFinished,
+                    IsAvailable = projectDef.CanStartNow,
+                    TechLevel = projectDef.techLevel.ToString()
+                });
+            }
+
+            return new ResearchTreeDto
+            {
+                Projects = projects.OrderBy(p => p.TechLevel).ThenBy(p => p.Name).ToList()
+            };
+        }
+
+        public MapWeatherDto GetWeather(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return new MapWeatherDto
+            {
+                Weather = map.weatherManager?.curWeather?.defName,
+                Temperature = map.mapTemperature?.OutdoorTemp ?? 0f,
+            };
         }
     }
 }
