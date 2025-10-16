@@ -11,6 +11,9 @@ RIMAPI exposes a comprehensive REST API from inside RimWorld.
 The API listens on `http://localhost:8765/` by default once the
 game reaches the main menu. The port can be changed in the mod settings.
 
+[  API Documentation  ](https://github.com/IlyaChichkov/RIMAPI/blob/main/Docs/API.md)|
+[  For developers  ](https://github.com/IlyaChichkov/RIMAPI/blob/main/Docs/DEVELOPER.md)
+
 ## 🚀 Features
 
 ### Monitor current game state
@@ -65,7 +68,6 @@ Share your projects - send integrations to be featured here
 | Name | Link |
 |---   |---   |
 |Rimworld Dashboard | Upcoming soon|
-
 
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/IlyaChichkov/RIMAPI/blob/main/LICENSE) file for details.
