@@ -74,6 +74,13 @@ Share your projects - send integrations to be featured here
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/IlyaChichkov/RIMAPI/blob/main/LICENSE) file for details.
 
+## Credits and Acknowledgments
+
+This project started as a fork of ARROM by MasterPNJ.
+- Original Repository: [ARROM](https://github.com/MasterPNJ/API-REST-RimwOrld-Mod)
+
+A significant portion of the code has been rewritten and new features have been added, but the initial inspiration and base came from the aforementioned project, which is released under the MIT License.
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
