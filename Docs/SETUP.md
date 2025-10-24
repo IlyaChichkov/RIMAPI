@@ -381,29 +381,3 @@ server {
     }
 }
 ```
-
-## Support
-
-### Getting Help
-1. **Check Logs**: Always include relevant log entries
-2. **Reproduce Issue**: Note steps to reproduce the problem
-3. **Environment Details**: 
-   - RimWorld version
-   - Mod version
-   - Operating System
-   - Other active mods
-
-### Reporting Issues
-When reporting issues, include:
-- Error messages from logs
-- Steps to reproduce
-- Expected vs actual behavior
-- RimWorld and mod versions
-
-### Common Solutions
-- **Restart RimWorld** after changing settings
-- **Verify mod load order** for conflicts
-- **Check port availability** before changing settings
-- **Update RimWorld** and mod to latest versions
-
-This setup guide should help you get RIMAPI running and troubleshoot common issues. For advanced usage, refer to the API documentation and developer guide.

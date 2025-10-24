@@ -31,6 +31,8 @@ RimworldRestApi/
     └── HashUtility.cs     # ETag generation
 ```
 
+Project architecture: [Link](https://github.com/IlyaChichkov/RIMAPI/blob/main/Docs/ARCHITECTURE.md)
+
 ## Adding New API Endpoints
 
 ### Step 1: Create Data Transfer Object (DTO)

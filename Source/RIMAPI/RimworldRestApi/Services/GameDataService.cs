@@ -13,6 +13,8 @@ namespace RimworldRestApi.Services
     public class GameDataService : IGameDataService
     {
         private MapHelper _mapHelper;
+        private FarmHelper _farmHelper;
+        private ResourcesHelper _resourcesHelper;
         private ColonistsHelper _colonistsHelper;
         private TextureHelper _textureHelper;
         private int _lastCacheTick;
@@ -25,8 +27,10 @@ namespace RimworldRestApi.Services
         public GameDataService()
         {
             _mapHelper = new MapHelper();
+            _farmHelper = new FarmHelper();
             _colonistsHelper = new ColonistsHelper();
             _textureHelper = new TextureHelper();
+            _resourcesHelper = new ResourcesHelper();
         }
 
         public void RefreshCache()
@@ -153,13 +157,13 @@ namespace RimworldRestApi.Services
 
             try
             {
-                List<ThingDto> Items = new List<ThingDto>();
-                List<ThingDto> Apparels = new List<ThingDto>();
-                List<ThingDto> Equipment = new List<ThingDto>();
+                List<InventoryThingDto> Items = new List<InventoryThingDto>();
+                List<InventoryThingDto> Apparels = new List<InventoryThingDto>();
+                List<InventoryThingDto> Equipment = new List<InventoryThingDto>();
 
                 foreach (var item in colonist.inventory.innerContainer)
                 {
-                    Items.Add(new ThingDto
+                    Items.Add(new InventoryThingDto
                     {
                         ID = item.thingIDNumber,
                         Name = item.def.defName,
@@ -169,7 +173,7 @@ namespace RimworldRestApi.Services
 
                 foreach (var apparel in colonist.apparel.WornApparel)
                 {
-                    Apparels.Add(new ThingDto
+                    Apparels.Add(new InventoryThingDto
                     {
                         ID = apparel.thingIDNumber,
                         Name = apparel.def.defName,
@@ -179,7 +183,7 @@ namespace RimworldRestApi.Services
 
                 foreach (var equipment in colonist.equipment.AllEquipmentListForReading)
                 {
-                    Equipment.Add(new ThingDto
+                    Equipment.Add(new InventoryThingDto
                     {
                         ID = equipment.thingIDNumber,
                         Name = equipment.def.defName,
@@ -230,6 +234,30 @@ namespace RimworldRestApi.Services
             return bodyParts;
         }
 
+        public List<ModInfoDto> GetModsInfo()
+        {
+            List<ModInfoDto> modsInfo = new List<ModInfoDto>();
+
+            try
+            {
+                foreach (ModContentPack mod in LoadedModManager.RunningModsListForReading)
+                {
+                    modsInfo.Add(new ModInfoDto
+                    {
+                        Name = mod.Name,
+                        PackageId = mod.PackageId,
+                        LoadOrder = mod.loadOrder,
+                    });
+                }
+                return modsInfo;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting mods list - {ex.Message}");
+                return modsInfo;
+            }
+        }
+
         public ImageDto GetItemImage(string name)
         {
             ImageDto image = new ImageDto();
@@ -268,12 +296,160 @@ namespace RimworldRestApi.Services
 
         public MapTimeDto GetCurrentMapDatetime()
         {
-            return _mapHelper.GetDatetimeAt(Find.CurrentMap.Tile);
+            return _mapHelper.GetDatetimeAt(MapHelper.GetMapTileId(Find.CurrentMap));
         }
 
         public MapTimeDto GetWorldTileDatetime(int tileID)
         {
             return _mapHelper.GetDatetimeAt(tileID);
+        }
+
+        public List<FactionsDto> GetFactions()
+        {
+            List<FactionsDto> factions = new List<FactionsDto>();
+            try
+            {
+                if (Current.ProgramState != ProgramState.Playing || Find.FactionManager == null)
+                {
+                    return factions;
+                }
+
+                factions = Find.FactionManager.AllFactionsListForReading
+                    .Select(f => new FactionsDto
+                    {
+                        Name = f.Name,
+                        Def = f.def?.defName,
+                        IsPlayer = f.IsPlayer,
+                        Relation = f.IsPlayer ? string.Empty :
+                            (
+                                Find.FactionManager?.OfPlayer != null
+                                ? Find.FactionManager.OfPlayer.RelationKindWith(f).ToString()
+                                : string.Empty
+                            ),
+                        Goodwill = f.IsPlayer ? 0 :
+                            (Find.FactionManager?.OfPlayer?.GoodwillWith(f) ?? 0),
+                    })
+                    .ToList();
+
+                return factions;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error getting factions list - {ex.Message}");
+                return new List<FactionsDto>();
+            }
+
+        }
+
+        public List<AnimalDto> GetMapAnimals(int mapId)
+        {
+            return _mapHelper.GetMapAnimals(mapId);
+        }
+
+        public List<MapThingDto> GetMapThings(int mapId)
+        {
+            return _mapHelper.GetMapThings(mapId);
+        }
+
+        public ResourcesSummaryDto GetResourcesSummary(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _resourcesHelper.GenerateResourcesSummary(map);
+        }
+
+        public StoragesSummaryDto GetStoragesSummary(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _resourcesHelper.StoragesSummary(map);
+        }
+
+        public MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId)
+        {
+            return _mapHelper.GetMapCreaturesSummary(mapId);
+        }
+
+        public MapFarmSummaryDto GenerateFarmSummary(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _farmHelper.GenerateFarmSummary(map);
+        }
+
+        public GrowingZoneDto GetGrowingZoneById(int mapId, int zoneId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _farmHelper.GetGrowingZoneById(map, zoneId);
+        }
+
+        public ResearchProgressDto GetResearchProgress()
+        {
+            ResearchManager researchManager = Find.ResearchManager;
+            ResearchProjectDef currentProj = researchManager?.GetProject();
+
+            return new ResearchProgressDto
+            {
+                CurrentProject = currentProj?.defName ?? "None",
+                Label = currentProj?.label ?? "None",
+                Progress = currentProj != null ? researchManager.GetProgress(currentProj) : 0f
+            };
+        }
+
+        public ResearchFinishedDto GetResearchFinished()
+        {
+            ResearchManager researchManager = Find.ResearchManager;
+            var finishedProjects = new List<string>();
+
+            if (researchManager != null)
+            {
+                // Get all finished research projects
+                finishedProjects = DefDatabase<ResearchProjectDef>.AllDefs
+                    .Where(proj => researchManager.GetProgress(proj) >= proj.CostApparent)
+                    .Select(proj => proj.defName)
+                    .ToList();
+            }
+
+            return new ResearchFinishedDto
+            {
+                FinishedProjects = finishedProjects
+            };
+        }
+
+        public ResearchTreeDto GetResearchTree()
+        {
+            ResearchManager researchManager = Find.ResearchManager;
+            var projects = new List<ResearchProjectDto>();
+
+            foreach (var projectDef in DefDatabase<ResearchProjectDef>.AllDefs)
+            {
+                int progress = Mathf.RoundToInt(researchManager?.GetProgress(projectDef) ?? 0);
+                bool isFinished = progress >= projectDef.CostApparent;
+
+                projects.Add(new ResearchProjectDto
+                {
+                    Name = projectDef.defName,
+                    Label = projectDef.label,
+                    Progress = progress,
+                    ResearchPoints = (int)projectDef.CostApparent,
+                    Description = projectDef.Description,
+                    IsFinished = isFinished,
+                    IsAvailable = projectDef.CanStartNow,
+                    TechLevel = projectDef.techLevel.ToString()
+                });
+            }
+
+            return new ResearchTreeDto
+            {
+                Projects = projects.OrderBy(p => p.TechLevel).ThenBy(p => p.Name).ToList()
+            };
+        }
+
+        public MapWeatherDto GetWeather(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return new MapWeatherDto
+            {
+                Weather = map.weatherManager?.curWeather?.defName,
+                Temperature = map.mapTemperature?.OutdoorTemp ?? 0f,
+            };
         }
     }
 }

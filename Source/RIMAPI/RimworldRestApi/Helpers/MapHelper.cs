@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using RimworldRestApi.Models;
 using UnityEngine;
@@ -48,8 +49,38 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting game maps - {ex.Message}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
                 return maps;
+            }
+        }
+
+        public MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId)
+        {
+            try
+            {
+                Log.Message($"RIMAPI: Error - {mapId}");
+                var map = FindMapByUniqueID(mapId);
+                Log.Message($"RIMAPI: Error - {map == null}");
+                return new MapCreaturesSummaryDto
+                {
+                    ColonistsCount = map.mapPawns.FreeColonistsSpawnedCount,
+                    PrisonersCount = map.mapPawns.PrisonersOfColonyCount,
+                    EnemiesCount = map.mapPawns.AllPawnsSpawned.Count(p =>
+                                    p.RaceProps.Humanlike && p.HostileTo(Faction.OfPlayer)),
+                    AnimalsCount = map.mapPawns.AllPawnsSpawned.Count(p => p.RaceProps.Animal),
+                    InsectoidsCount = map.mapPawns.AllPawnsSpawned.Count(p => p != null &&
+                                                                         p.Faction != null &&
+                                                                         p.Faction.def == FactionDefOf.Insect),
+                    MechanoidsCount = map.mapPawns.AllPawnsSpawned.Count(p => p != null &&
+                                                                         p.RaceProps != null &&
+                                                                         p.RaceProps.IsMechanoid),
+                };
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error - {ex}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
+                return new MapCreaturesSummaryDto();
             }
         }
 
@@ -58,14 +89,19 @@ namespace RimworldRestApi.Helpers
             MapTimeDto mapTimeDto = new MapTimeDto();
             try
             {
-                var vector = Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile);
+                if (Current.ProgramState != ProgramState.Playing || Find.WorldGrid == null)
+                {
+                    return mapTimeDto;
+                }
+
+                var vector = Find.WorldGrid.LongLatOf(GetMapTileId(Find.CurrentMap));
                 mapTimeDto.Datetime = GenDate.DateFullStringWithHourAt(Find.TickManager.TicksAbs, vector);
 
                 return mapTimeDto;
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting game maps - {ex.Message}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
                 return mapTimeDto;
             }
         }
@@ -120,8 +156,86 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting game maps - {ex.Message}");
+                Log.Error($"RIMAPI: Error - {ex.Message}");
                 return powerInfo;
+            }
+        }
+
+        public static int GetMapTileId(Map map)
+        {
+#if RIMWORLD_1_5
+                return map.Tile;
+#elif RIMWORLD_1_6
+                return map.Tile.tileId;
+#endif
+            throw new Exception("Failed to get GetMapTileId for this rimworld version.");
+        }
+
+        public List<AnimalDto> GetMapAnimals(int mapId)
+        {
+            List<AnimalDto> animals = new List<AnimalDto>();
+            try
+            {
+                Map map = FindMapByUniqueID(mapId);
+                if (map == null)
+                {
+                    return animals;
+                }
+
+                animals = map.mapPawns.AllPawns
+                    .Where(p => p.RaceProps?.Animal == true)
+                    .Select(p => new AnimalDto
+                    {
+                        Id = p.thingIDNumber,
+                        Name = p.LabelShortCap,
+                        Def = p.def?.defName,
+                        Faction = p.Faction?.ToString(),
+                        Position = new PositionDto { X = p.Position.x, Y = p.Position.z },
+                        Trainer = p.relations?.DirectRelations
+                            .Where(r => r.def == PawnRelationDefOf.Bond)
+                            .Select(r => r.otherPawn?.thingIDNumber)
+                            .FirstOrDefault(),
+                        Pregnant = p.health?.hediffSet?.HasHediff(HediffDefOf.Pregnant) ?? false,
+                    })
+                    .ToList();
+
+                return animals;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error - {ex.Message}");
+                return new List<AnimalDto>();
+            }
+        }
+
+        public List<MapThingDto> GetMapThings(int mapId)
+        {
+            List<MapThingDto> things = new List<MapThingDto>();
+            try
+            {
+                Map map = FindMapByUniqueID(mapId);
+                if (map == null)
+                {
+                    return things;
+                }
+
+                things = map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver)
+                    .Select(p => new MapThingDto
+                    {
+                        Id = p.thingIDNumber,
+                        Type = p.GetType().FullName,
+                        Def = p.def?.defName,
+                        Position = new PositionDto { X = p.Position.x, Y = p.Position.z },
+                        IsForbidden = p.IsForbidden(Faction.OfPlayer),
+                    })
+                    .ToList();
+
+                return things;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"RIMAPI: Error - {ex.Message}");
+                return new List<MapThingDto>();
             }
         }
     }

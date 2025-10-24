@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Linq;
+using System.Reflection;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Verse;
+
 using RimworldRestApi.Core;
 
 namespace RimworldRestApi.Controllers
@@ -40,6 +44,12 @@ namespace RimworldRestApi.Controllers
             await ResponseBuilder.Success(response, filteredData);
         }
 
+        protected void HandleFiltering(HttpListenerContext context, ref object data)
+        {
+            var fieldsParam = context.Request.QueryString["fields"];
+            data = ApplyFieldsFilter(data, fieldsParam);
+        }
+
         private object ApplyFieldsFilter(object data, string fields)
         {
             if (string.IsNullOrEmpty(fields) || data == null)
@@ -57,23 +67,119 @@ namespace RimworldRestApi.Controllers
         {
             if (obj == null) return null;
 
-            var type = obj.GetType();
+            // Handle arrays/lists - THIS IS THE KEY FIX
+            if (obj is System.Collections.IEnumerable enumerable && obj.GetType() != typeof(string))
+            {
+                var resultList = new List<object>();
+                foreach (var item in enumerable)
+                {
+                    // Filter each individual item in the collection
+                    var filteredItem = FilterSingleObjectByFields(item, fields);
+                    if (filteredItem != null)
+                    {
+                        resultList.Add(filteredItem);
+                    }
+                }
+                return resultList;
+            }
+
+            // Handle single object
+            return FilterSingleObjectByFields(obj, fields);
+        }
+
+        private object FilterSingleObjectByFields(object obj, List<string> fields)
+        {
+            if (obj == null) return null;
+
             var result = new Dictionary<string, object>();
+            var objType = obj.GetType();
 
             foreach (var field in fields)
             {
-                var property = type.GetProperty(field,
-                    System.Reflection.BindingFlags.IgnoreCase |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.Instance);
-
-                if (property != null && property.CanRead)
+                // Handle nested properties (e.g., "position.x")
+                if (field.Contains('.'))
                 {
-                    result[field] = property.GetValue(obj);
+                    var value = GetNestedPropertyValue(obj, field);
+                    if (value != null)
+                    {
+                        SetNestedProperty(result, field, value);
+                    }
+                }
+                else
+                {
+                    // Handle top-level properties on the actual object type
+                    var property = GetPropertyInfo(objType, field);
+                    if (property != null && property.CanRead)
+                    {
+                        try
+                        {
+                            var value = property.GetValue(obj);
+                            result[field] = value;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Warning($"[RIMAPI] Error getting property {field}: {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Log.Warning($"[RIMAPI] Property '{field}' not found or not readable on type {objType.Name}");
+                    }
                 }
             }
 
-            return result;
+            return result.Count > 0 ? result : null;
+        }
+
+        private PropertyInfo GetPropertyInfo(Type type, string propertyName)
+        {
+            return type.GetProperty(propertyName,
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+        }
+
+        private object GetNestedPropertyValue(object obj, string propertyPath)
+        {
+            var currentObj = obj;
+            var parts = propertyPath.Split('.');
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (currentObj == null) return null;
+
+                var currentType = currentObj.GetType();
+                var property = GetPropertyInfo(currentType, parts[i]);
+                if (property == null)
+                {
+                    Log.Warning($"[RIMAPI] Nested property '{parts[i]}' not found in path '{propertyPath}'");
+                    return null;
+                }
+
+                currentObj = property.GetValue(currentObj);
+
+                // If this is the last part, return the value
+                if (i == parts.Length - 1)
+                    return currentObj;
+            }
+
+            return null;
+        }
+
+        private void SetNestedProperty(Dictionary<string, object> dict, string propertyPath, object value)
+        {
+            var current = dict;
+            var parts = propertyPath.Split('.');
+
+            for (int i = 0; i < parts.Length - 1; i++)
+            {
+                if (!current.ContainsKey(parts[i]) ||
+                    !(current[parts[i]] is Dictionary<string, object>))
+                {
+                    current[parts[i]] = new Dictionary<string, object>();
+                }
+                current = current[parts[i]] as Dictionary<string, object>;
+            }
+
+            current[parts[parts.Length - 1]] = value;
         }
 
         protected string GenerateHash(params object[] values)
@@ -83,6 +189,32 @@ namespace RimworldRestApi.Controllers
                 .Replace("+", "-")
                 .Replace("/", "_")
                 .Replace("=", "");
+        }
+
+        protected string GenerateObjectHash<T>(T obj) where T : class
+        {
+            if (obj == null) return "null";
+
+            string json = JsonConvert.SerializeObject(obj);
+            return GenerateHash(json);
+        }
+
+        protected async Task<int> GetMapIdProperty(HttpListenerContext context)
+        {
+            string mapIdStr = context.Request.QueryString["mapId"];
+            if (string.IsNullOrEmpty(mapIdStr))
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.BadRequest, "Missing mapId parameter");
+            }
+
+            if (!int.TryParse(mapIdStr, out int mapId))
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.BadRequest, "Invalid mapId format");
+            }
+
+            return mapId;
         }
     }
 }

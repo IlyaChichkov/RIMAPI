@@ -8,7 +8,7 @@
       "args": [
         "build",
         "${workspaceFolder}/Source/RIMAPI/RimApi.csproj",
-        "--configuration", "Release",
+        "--configuration", "Release-1.5",
         "--verbosity", "normal",
         "/p:CopyLocalLockFileAssemblies=true"
       ],

@@ -7,6 +7,7 @@ namespace RimworldRestApi.Services
     {
         // Game state
         GameStateDto GetGameState();
+        List<ModInfoDto> GetModsInfo();
 
         // Colonists
         List<ColonistDto> GetColonists();
@@ -16,12 +17,31 @@ namespace RimworldRestApi.Services
         ColonistInventoryDto GetColonistInventory(int id);
         ImageDto GetItemImage(string name);
         BodyPartsDto GetColonistBodyParts(int id);
+        // Datetime
         MapTimeDto GetCurrentMapDatetime();
         MapTimeDto GetWorldTileDatetime(int tileID);
 
         // Map
         List<MapDto> GetMaps();
         MapPowerInfoDto GetMapPowerInfo(int mapId);
+        MapWeatherDto GetWeather(int mapId);
+        List<AnimalDto> GetMapAnimals(int mapId);
+        List<MapThingDto> GetMapThings(int mapId);
+        MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId);
+        MapFarmSummaryDto GenerateFarmSummary(int mapId);
+        GrowingZoneDto GetGrowingZoneById(int mapId, int zoneId);
+        // Research
+        ResearchProgressDto GetResearchProgress();
+        ResearchFinishedDto GetResearchFinished();
+        ResearchTreeDto GetResearchTree();
+
+        // Factions
+        List<FactionsDto> GetFactions();
+
+        // Resources
+        ResourcesSummaryDto GetResourcesSummary(int mapId);
+        StoragesSummaryDto GetStoragesSummary(int mapId);
+
 
         // Cache management
         void RefreshCache();

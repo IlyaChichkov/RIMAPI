@@ -45,32 +45,81 @@ namespace RimworldRestApi.Core
             try
             {
                 #region Basic
-                // Version endpoint - simple static route
                 _router.AddRoute("GET", "/api/v1/version", async context =>
                 {
                     Log.Message("RIMAPI: Handling /api/v1/version");
                     await new VersionController().GetVersion(context);
                 });
 
-                // Game state endpoints
                 _router.AddRoute("GET", "/api/v1/game/state", async context =>
                 {
                     Log.Message("RIMAPI: Handling /api/v1/game/state");
                     await new GameController(_gameDataService).GetGameState(context);
                 });
+
+                _router.AddRoute("GET", "/api/v1/mods/info", async context =>
+                {
+                    Log.Message("RIMAPI: Handling /api/v1/mods/info");
+                    await new GameController(_gameDataService).GetModsInfo(context);
+                });
                 #endregion
 
                 #region Map
-                _router.AddRoute("GET", "/api/v1/map", async context =>
+                _router.AddRoute("GET", "/api/v1/maps", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/maps");
                     await new MapController(_gameDataService).GetMaps(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/weather", async context =>
+                {
+                    await new MapController(_gameDataService).GetWeather(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/map/power/info", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/maps");
                     await new MapController(_gameDataService).GetMapPowerInfo(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/animals", async context =>
+                {
+                    await new MapController(_gameDataService).GetMapAnimals(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/things", async context =>
+                {
+                    await new MapController(_gameDataService).GetMapThings(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/creatures/summary", async context =>
+                {
+                    await new MapController(_gameDataService).GetMapCreaturesSummary(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/farm/summary", async context =>
+                {
+                    await new MapController(_gameDataService).GetFarmSummary(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/zone/growing", async context =>
+                {
+                    await new MapController(_gameDataService).GetGrowingZone(context);
+                });
+                #endregion
+                #region Research
+
+                _router.AddRoute("GET", "/api/v1/research/progress", async context =>
+                {
+                    await new ResearchController(_gameDataService).GetResearchProgress(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/research/finished", async context =>
+                {
+                    await new ResearchController(_gameDataService).GetResearchFinished(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/research/tree", async context =>
+                {
+                    await new ResearchController(_gameDataService).GetResearchTree(context);
                 });
                 #endregion
 
@@ -116,6 +165,23 @@ namespace RimworldRestApi.Core
                     await new GameController(_gameDataService).GetMapTime(context);
                 });
 
+                _router.AddRoute("GET", "/api/v1/factions", async context =>
+                {
+                    await new FactionsController(_gameDataService).GetFactions(context);
+                });
+
+                #region Resources
+                _router.AddRoute("GET", "/api/v1/resources/summary", async context =>
+                {
+                    await new ResourcesController(_gameDataService).GetResourcesSummary(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/resources/storages/summary", async context =>
+                {
+                    await new ResourcesController(_gameDataService).GetStoragesSummary(context);
+                });
+                #endregion
+
                 // Server-Sent Events endpoint for real-time updates
                 _router.AddRoute("GET", "/api/v1/events", async context =>
                 {
@@ -132,7 +198,6 @@ namespace RimworldRestApi.Core
             }
         }
 
-        // ... (rest of the class remains same as Phase 1)
         public void Start()
         {
             if (_isRunning) return;

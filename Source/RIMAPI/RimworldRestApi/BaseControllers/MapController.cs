@@ -21,14 +21,14 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var colonists = _gameDataService.GetMaps();
-                await ResponseBuilder.Success(context.Response, colonists);
+                var maps = _gameDataService.GetMaps();
+                await HandleETagCaching(context, maps, data =>
+                        GenerateHash(data));
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting colonists - {ex}");
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, "Error retrieving colonists");
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -36,29 +36,130 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapIdStr = context.Request.QueryString["mapId"];
-                if (string.IsNullOrEmpty(mapIdStr))
-                {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Missing mapId parameter");
-                    return;
-                }
-
-                if (!int.TryParse(mapIdStr, out int mapId))
-                {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Invalid mapId format");
-                    return;
-                }
-
-                var powerInfo = _gameDataService.GetMapPowerInfo(mapId);
-                await ResponseBuilder.Success(context.Response, powerInfo);
+                var mapId = await GetMapIdProperty(context);
+                object powerInfo = _gameDataService.GetMapPowerInfo(mapId);
+                await HandleETagCaching(context, powerInfo, data =>
+                        GenerateHash(data));
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting map power info: {ex}");
                 await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.InternalServerError, "Error retrieving map power info");
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetMapAnimals(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = await GetMapIdProperty(context);
+                object animals = _gameDataService.GetMapAnimals(mapId);
+                await HandleETagCaching(context, animals, data =>
+                        GenerateHash(data));
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetMapThings(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = await GetMapIdProperty(context);
+                object things = _gameDataService.GetMapThings(mapId);
+                await HandleETagCaching(context, things, data =>
+                        GenerateHash(data));
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetMapCreaturesSummary(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = await GetMapIdProperty(context);
+                object creaturesSummary = _gameDataService.GetMapCreaturesSummary(mapId);
+                HandleFiltering(context, ref creaturesSummary);
+                await ResponseBuilder.Success(context.Response, creaturesSummary);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetFarmSummary(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = await GetMapIdProperty(context);
+                object summary = _gameDataService.GenerateFarmSummary(mapId);
+                HandleFiltering(context, ref summary);
+                await ResponseBuilder.Success(context.Response, summary);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetWeather(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = await GetMapIdProperty(context);
+                object weather = _gameDataService.GetWeather(mapId);
+                HandleFiltering(context, ref weather);
+                await ResponseBuilder.Success(context.Response, weather);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetGrowingZone(HttpListenerContext context)
+        {
+            try
+            {
+                string zoneIdStr = context.Request.QueryString["zoneId"];
+                if (string.IsNullOrEmpty(zoneIdStr))
+                {
+                    await ResponseBuilder.Error(context.Response,
+                        HttpStatusCode.BadRequest, "Missing zoneId parameter");
+                }
+
+                if (!int.TryParse(zoneIdStr, out int zoneId))
+                {
+                    await ResponseBuilder.Error(context.Response,
+                        HttpStatusCode.BadRequest, "Invalid zoneId format");
+                }
+
+                var mapId = await GetMapIdProperty(context);
+                object zone = _gameDataService.GetGrowingZoneById(mapId, zoneId);
+                if (zone == null)
+                {
+                    await ResponseBuilder.Error(context.Response, HttpStatusCode.NotFound, "Growing zone not found");
+                    return;
+                }
+
+                HandleFiltering(context, ref zone);
+                await ResponseBuilder.Success(context.Response, zone);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
             }
         }
     }

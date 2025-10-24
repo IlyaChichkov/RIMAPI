@@ -1,0 +1,119 @@
+name: Build and Release RimWorld Mod
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Build RimWorld 1.5 Version
+      run: |
+        cd Source/RIMAPI
+        dotnet build -c Release-1.5 --nologo --verbosity minimal
+        
+    - name: Build RimWorld 1.6 Version
+      run: |
+        cd Source/RIMAPI
+        dotnet build -c Release-1.6 --nologo --verbosity minimal
+        
+    - name: Verify Assemblies
+      run: |
+        echo "Checking built assemblies:"
+        dir "1.5/Assemblies/" /B
+        dir "1.6/Assemblies/" /B
+        
+    - name: Create Version 1.5 Release Package
+      run: |
+        $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
+        $zipName = "MyMod-1.5-$version.zip"
+        
+        # Create temp directory for 1.5 package
+        New-Item -ItemType Directory -Force -Path "temp_1.5"
+        
+        # Copy common files
+        Copy-Item "About" -Destination "temp_1.5/" -Recurse
+        Copy-Item "Languages" -Destination "temp_1.5/" -Recurse
+        Copy-Item "Docs" -Destination "temp_1.5/" -Recurse -ErrorAction SilentlyContinue
+        Copy-Item "Example" -Destination "temp_1.5/" -Recurse -ErrorAction SilentlyContinue
+        
+        # Copy 1.5 specific assemblies
+        Copy-Item "1.5/Assemblies" -Destination "temp_1.5/" -Recurse
+        
+        # Copy Libraries (assuming they're needed for both versions)
+        Copy-Item "Libraries" -Destination "temp_1.5/" -Recurse
+        
+        # Create the zip file
+        Compress-Archive -Path "temp_15/*" -DestinationPath $zipName -CompressionLevel Optimal
+        
+        # Cleanup
+        Remove-Item "temp_1.5" -Recurse -Force
+        
+        echo "Created: $zipName"
+      shell: pwsh
+      
+    - name: Create Version 1.6 Release Package
+      run: |
+        $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
+        $zipName = "MyMod-1.6-$version.zip"
+        
+        # Create temp directory for 1.6 package
+        New-Item -ItemType Directory -Force -Path "temp_1.6"
+        
+        # Copy common files
+        Copy-Item "About" -Destination "temp_1.6/" -Recurse
+        Copy-Item "Languages" -Destination "temp_1.6/" -Recurse
+        Copy-Item "Docs" -Destination "temp_1.6/" -Recurse -ErrorAction SilentlyContinue
+        Copy-Item "Example" -Destination "temp_1.6/" -Recurse -ErrorAction SilentlyContinue
+        
+        # Copy 1.6 specific assemblies
+        Copy-Item "1.6/Assemblies" -Destination "temp_1.6/" -Recurse
+        
+        # Copy Libraries (assuming they're needed for both versions)
+        Copy-Item "Libraries" -Destination "temp_1.6/" -Recurse
+        
+        # Create the zip file
+        Compress-Archive -Path "temp_1.6/*" -DestinationPath $zipName -CompressionLevel Optimal
+        
+        # Cleanup
+        Remove-Item "temp_1.6" -Recurse -Force
+        
+        echo "Created: $zipName"
+      shell: pwsh
+      
+    - name: Upload 1.5 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mymod-1.5
+        path: MyMod-1.5-*.zip
+        retention-days: 30
+        
+    - name: Upload 1.6 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mymod-1.6
+        path: MyMod-1.6-*.zip
+        retention-days: 30
+        
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          MyMod-1.5-*.zip
+          MyMod-1.6-*.zip
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -10,4 +10,12 @@ namespace RimworldRestApi.Models
         public string Storyteller { get; set; }
         public DateTime LastUpdate { get; set; }
     }
+
+    public class ModInfoDto
+    {
+        public string Name { get; set; }
+        public string PackageId { get; set; }
+        public int LoadOrder { get; set; }
+
+    }
 }
