@@ -3,6 +3,8 @@
 ![Status](https://img.shields.io/badge/Status-In_Progress-blue.svg)
 ![RimWorld Version](https://img.shields.io/badge/RimWorld-v1.5+-blue.svg)
 ![API Version](https://img.shields.io/badge/API-v0.1.0-green.svg)
+![Build](https://github.com/IlyaChichkov/RIMAPI/actions/workflows/build.yml/badge.svg)
+![Release](https://img.shields.io/github/v/release/IlyaChichkov/RIMAPI)
 
 # RIMAPI
 RIMAPI is a RimWorld mod that gives you an API Server to interact with your current game.
