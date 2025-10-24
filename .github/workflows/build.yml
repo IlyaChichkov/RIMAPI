@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        version: [1.5, 1.6]
     
     steps:
     - name: Checkout code
@@ -19,101 +22,68 @@ jobs:
       with:
         dotnet-version: '6.0.x'
         
-    - name: Build RimWorld 1.5 Version
+    - name: Build for RimWorld ${{ matrix.version }}
       run: |
         cd Source/RIMAPI
-        dotnet build -c Release-1.5 --nologo --verbosity minimal
+        # Build the .csproj file directly, not the .sln
+        dotnet build RimApi.csproj -c Release-${{ matrix.version }} --nologo --verbosity minimal
         
-    - name: Build RimWorld 1.6 Version
+    - name: Create Release Package for ${{ matrix.version }}
       run: |
-        cd Source/RIMAPI
-        dotnet build -c Release-1.6 --nologo --verbosity minimal
+        $tagVersion = $env:GITHUB_REF -replace 'refs/tags/v', ''
+        $modName = "RIMAPI"  # Change this to your actual mod name
+        $zipName = "$modName-${{ matrix.version }}-$tagVersion.zip"
         
-    - name: Verify Assemblies
-      run: |
-        echo "Checking built assemblies:"
-        dir "1.5/Assemblies/" /B
-        dir "1.6/Assemblies/" /B
-        
-    - name: Create Version 1.5 Release Package
-      run: |
-        $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
-        $zipName = "MyMod-1.5-$version.zip"
-        
-        # Create temp directory for 1.5 package
-        New-Item -ItemType Directory -Force -Path "temp_1.5"
+        # Create temp directory
+        New-Item -ItemType Directory -Force -Path "temp_${{ matrix.version }}"
         
         # Copy common files
-        Copy-Item "About" -Destination "temp_1.5/" -Recurse
-        Copy-Item "Languages" -Destination "temp_1.5/" -Recurse
-        Copy-Item "Docs" -Destination "temp_1.5/" -Recurse -ErrorAction SilentlyContinue
-        Copy-Item "Example" -Destination "temp_1.5/" -Recurse -ErrorAction SilentlyContinue
+        Copy-Item "About" -Destination "temp_${{ matrix.version }}/" -Recurse
+        Copy-Item "Languages" -Destination "temp_${{ matrix.version }}/" -Recurse
+        Copy-Item "Docs" -Destination "temp_${{ matrix.version }}/" -Recurse -ErrorAction SilentlyContinue
+        Copy-Item "Example" -Destination "temp_${{ matrix.version }}/" -Recurse -ErrorAction SilentlyContinue
         
-        # Copy 1.5 specific assemblies
-        Copy-Item "1.5/Assemblies" -Destination "temp_1.5/" -Recurse
+        # Copy version-specific assemblies
+        Copy-Item "${{ matrix.version }}/Assemblies" -Destination "temp_${{ matrix.version }}/" -Recurse
         
-        # Copy Libraries (assuming they're needed for both versions)
-        Copy-Item "Libraries" -Destination "temp_1.5/" -Recurse
+        # Copy Libraries
+        Copy-Item "Libraries" -Destination "temp_${{ matrix.version }}/" -Recurse
         
         # Create the zip file
-        Compress-Archive -Path "temp_15/*" -DestinationPath $zipName -CompressionLevel Optimal
+        Compress-Archive -Path "temp_${{ matrix.version }}/*" -DestinationPath $zipName -CompressionLevel Optimal
         
         # Cleanup
-        Remove-Item "temp_1.5" -Recurse -Force
+        Remove-Item "temp_${{ matrix.version }}" -Recurse -Force
         
         echo "Created: $zipName"
       shell: pwsh
       
-    - name: Create Version 1.6 Release Package
-      run: |
-        $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
-        $zipName = "MyMod-1.6-$version.zip"
+    - name: Upload Artifact for ${{ matrix.version }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: rimapi-${{ matrix.version }}
+        path: RIMAPI-${{ matrix.version }}-*.zip
+        retention-days: 30
         
-        # Create temp directory for 1.6 package
-        New-Item -ItemType Directory -Force -Path "temp_1.6"
-        
-        # Copy common files
-        Copy-Item "About" -Destination "temp_1.6/" -Recurse
-        Copy-Item "Languages" -Destination "temp_1.6/" -Recurse
-        Copy-Item "Docs" -Destination "temp_1.6/" -Recurse -ErrorAction SilentlyContinue
-        Copy-Item "Example" -Destination "temp_1.6/" -Recurse -ErrorAction SilentlyContinue
-        
-        # Copy 1.6 specific assemblies
-        Copy-Item "1.6/Assemblies" -Destination "temp_1.6/" -Recurse
-        
-        # Copy Libraries (assuming they're needed for both versions)
-        Copy-Item "Libraries" -Destination "temp_1.6/" -Recurse
-        
-        # Create the zip file
-        Compress-Archive -Path "temp_1.6/*" -DestinationPath $zipName -CompressionLevel Optimal
-        
-        # Cleanup
-        Remove-Item "temp_1.6" -Recurse -Force
-        
-        echo "Created: $zipName"
+  release:
+    runs-on: windows-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Download All Artifacts
+      uses: actions/download-artifact@v4
+      
+    - name: List Files for Release
+      run: dir -Recurse
       shell: pwsh
       
-    - name: Upload 1.5 Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: mymod-1.5
-        path: MyMod-1.5-*.zip
-        retention-days: 30
-        
-    - name: Upload 1.6 Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: mymod-1.6
-        path: MyMod-1.6-*.zip
-        retention-days: 30
-        
     - name: Create GitHub Release
-      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          MyMod-1.5-*.zip
-          MyMod-1.6-*.zip
+          rimapi-1.5/*.zip
+          rimapi-1.6/*.zip
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
