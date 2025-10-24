@@ -296,7 +296,7 @@ namespace RimworldRestApi.Services
 
         public MapTimeDto GetCurrentMapDatetime()
         {
-            return _mapHelper.GetDatetimeAt(Find.CurrentMap.Tile);
+            return _mapHelper.GetDatetimeAt(MapHelper.GetMapTileId(Find.CurrentMap));
         }
 
         public MapTimeDto GetWorldTileDatetime(int tileID)

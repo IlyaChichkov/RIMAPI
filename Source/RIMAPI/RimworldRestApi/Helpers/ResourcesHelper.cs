@@ -108,7 +108,7 @@ namespace RimworldRestApi.Helpers
                         if (rottable != null && rottable.Active)
                         {
                             daysUntilRot = (float)DaysUntilRotCalculator.ApproxTicksUntilRot_AssumeTimePassesBy(
-                                rottable, map.Tile) / 60000f;
+                                rottable, MapHelper.GetMapTileId(map)) / 60000f;
                         }
 
                         float nutrition = thing.GetStatValue(StatDefOf.Nutrition) * thing.stackCount;

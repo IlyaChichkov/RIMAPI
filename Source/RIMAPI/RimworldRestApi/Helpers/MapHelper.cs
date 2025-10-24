@@ -94,7 +94,7 @@ namespace RimworldRestApi.Helpers
                     return mapTimeDto;
                 }
 
-                var vector = Find.WorldGrid.LongLatOf(Find.CurrentMap.Tile);
+                var vector = Find.WorldGrid.LongLatOf(GetMapTileId(Find.CurrentMap));
                 mapTimeDto.Datetime = GenDate.DateFullStringWithHourAt(Find.TickManager.TicksAbs, vector);
 
                 return mapTimeDto;
@@ -159,6 +159,16 @@ namespace RimworldRestApi.Helpers
                 Log.Error($"RIMAPI: Error - {ex.Message}");
                 return powerInfo;
             }
+        }
+
+        public static int GetMapTileId(Map map)
+        {
+#if RIMWORLD_1_5
+                return map.Tile;
+#elif RIMWORLD_1_6
+                return map.Tile.tileId;
+#endif
+            throw new Exception("Failed to get GetMapTileId for this rimworld version.");
         }
 
         public List<AnimalDto> GetMapAnimals(int mapId)

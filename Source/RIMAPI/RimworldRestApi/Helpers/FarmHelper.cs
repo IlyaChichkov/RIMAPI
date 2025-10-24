@@ -131,9 +131,13 @@ namespace RimworldRestApi.Helpers
                 HasDying = false,
                 HasDyingFromPollution = false,
                 HasDyingFromNoPollution = false,
+#if RIMWORLD_1_5
                 IsSowing = zone.allowSow &&
                            PlantUtility.GrowthSeasonNow(zone.Cells.FirstOrDefault(), map, forSowing: true) &&
                            zone.Cells.Any(c => c.GetPlant(map) == null),
+#elif RIMWORLD_1_6
+                IsSowing = zone.allowSow,
+#endif
                 SoilType = GetSoilType(zone.Cells.FirstOrDefault(), map),
                 Fertility = GetZoneFertility(zone, map)
             };
