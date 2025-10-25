@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using RimworldRestApi.Services;
 using RimworldRestApi.Controllers;
 using Verse;
+using RIMAPI;
 
 namespace RimworldRestApi.Core
 {
@@ -22,10 +23,12 @@ namespace RimworldRestApi.Core
         public int Port { get; private set; }
         public string BaseUrl => $"http://localhost:{Port}/";
         private readonly ExtensionRegistry _extensionRegistry;
+        private RIMAPI_Settings Settings;
 
-        public ApiServer(int port, IGameDataService gameDataService)
+        public ApiServer(RIMAPI_Settings settings, IGameDataService gameDataService)
         {
-            Port = port;
+            Settings = settings;
+            Port = settings.serverPort;
             _gameDataService = gameDataService;
             _listener = new HttpListener();
             _listener.Prefixes.Add(BaseUrl);
@@ -38,8 +41,6 @@ namespace RimworldRestApi.Core
             RegisterExtensions(); // NEW
         }
 
-
-
         private void RegisterRoutes()
         {
             try
@@ -48,7 +49,7 @@ namespace RimworldRestApi.Core
                 _router.AddRoute("GET", "/api/v1/version", async context =>
                 {
                     Log.Message("RIMAPI: Handling /api/v1/version");
-                    await new VersionController().GetVersion(context);
+                    await new VersionController().GetVersion(context, Settings);
                 });
 
                 _router.AddRoute("GET", "/api/v1/game/state", async context =>

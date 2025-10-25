@@ -36,7 +36,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object powerInfo = _gameDataService.GetMapPowerInfo(mapId);
                 await HandleETagCaching(context, powerInfo, data =>
                         GenerateHash(data));
@@ -52,7 +52,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object animals = _gameDataService.GetMapAnimals(mapId);
                 await HandleETagCaching(context, animals, data =>
                         GenerateHash(data));
@@ -68,7 +68,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object things = _gameDataService.GetMapThings(mapId);
                 await HandleETagCaching(context, things, data =>
                         GenerateHash(data));
@@ -84,7 +84,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object creaturesSummary = _gameDataService.GetMapCreaturesSummary(mapId);
                 HandleFiltering(context, ref creaturesSummary);
                 await ResponseBuilder.Success(context.Response, creaturesSummary);
@@ -100,7 +100,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object summary = _gameDataService.GenerateFarmSummary(mapId);
                 HandleFiltering(context, ref summary);
                 await ResponseBuilder.Success(context.Response, summary);
@@ -116,7 +116,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object weather = _gameDataService.GetWeather(mapId);
                 HandleFiltering(context, ref weather);
                 await ResponseBuilder.Success(context.Response, weather);
@@ -145,7 +145,7 @@ namespace RimworldRestApi.Controllers
                         HttpStatusCode.BadRequest, "Invalid zone_id format");
                 }
 
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object zone = _gameDataService.GetGrowingZoneById(mapId, zoneId);
                 if (zone == null)
                 {
