@@ -280,9 +280,7 @@ namespace RimworldRestApi.Controllers
                 string datetimeAtStr = context.Request.QueryString["at"];
                 if (string.IsNullOrEmpty(datetimeAtStr))
                 {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Missing datetime 'at' parameter");
-                    return;
+                    throw new Exception("Missing at parameter");
                 }
 
                 if (datetimeAtStr == "current_map")
@@ -296,20 +294,16 @@ namespace RimworldRestApi.Controllers
 
                     if (!int.TryParse(tileIdStr, out int tileId))
                     {
-                        await ResponseBuilder.Error(context.Response,
-                            HttpStatusCode.BadRequest, "Invalid tile ID format");
-                        return;
+                        throw new Exception("Invalid tile ID format");
                     }
 
                     object worldDatetime = _gameDataService.GetWorldTileDatetime(tileId);
                     await ResponseBuilder.Success(context.Response, worldDatetime);
                 }
-                await ResponseBuilder.Error(
-                    context.Response,
-                    HttpStatusCode.BadRequest,
-                    "Failed to parse 'at' parameter. Expected 'current_map' or 'world_tile'"
-                );
-                return;
+                else
+                {
+                    throw new Exception("Failed to parse 'at' parameter. Expected 'current_map' or 'world_tile'");
+                }
             }
             catch (Exception ex)
             {

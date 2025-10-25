@@ -132,24 +132,28 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                string zoneIdStr = context.Request.QueryString["zoneId"];
+                string zoneIdStr = context.Request.QueryString["zone_id"];
                 if (string.IsNullOrEmpty(zoneIdStr))
                 {
                     await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Missing zoneId parameter");
+                        HttpStatusCode.BadRequest, "Missing zone_id parameter");
                 }
 
                 if (!int.TryParse(zoneIdStr, out int zoneId))
                 {
                     await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Invalid zoneId format");
+                        HttpStatusCode.BadRequest, "Invalid zone_id format");
                 }
 
                 var mapId = await GetMapIdProperty(context);
                 object zone = _gameDataService.GetGrowingZoneById(mapId, zoneId);
                 if (zone == null)
                 {
-                    await ResponseBuilder.Error(context.Response, HttpStatusCode.NotFound, "Growing zone not found");
+                    await ResponseBuilder.Error(
+                        context.Response,
+                        HttpStatusCode.NotFound,
+                        $"Growing zone with id={zoneId} not found"
+                    );
                     return;
                 }
 
