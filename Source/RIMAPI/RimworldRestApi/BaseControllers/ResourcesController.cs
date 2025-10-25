@@ -21,7 +21,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object resourcesSummary = _gameDataService.GetResourcesSummary(mapId);
                 HandleFiltering(context, ref resourcesSummary);
                 await ResponseBuilder.Success(context.Response, resourcesSummary);
@@ -37,7 +37,7 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var mapId = await GetMapIdProperty(context);
+                var mapId = GetMapIdProperty(context);
                 object resourcesSummary = _gameDataService.GetStoragesSummary(mapId);
                 HandleFiltering(context, ref resourcesSummary);
                 await ResponseBuilder.Success(context.Response, resourcesSummary);

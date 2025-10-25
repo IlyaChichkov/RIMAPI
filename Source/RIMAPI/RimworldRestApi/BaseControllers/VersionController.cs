@@ -10,17 +10,15 @@ namespace RimworldRestApi.Controllers
 {
     public class VersionController : BaseController
     {
-        public async Task GetVersion(HttpListenerContext context)
+        public async Task GetVersion(HttpListenerContext context, RIMAPI.RIMAPI_Settings Settings)
         {
             try
             {
-                // TODO: Pull the data from config
                 object version = new VersionDto
                 {
-                    Version = "1.0.0",
                     RimWorldVersion = VersionControl.CurrentVersionString,
-                    ModVersion = "1.0.0",
-                    ApiVersion = "v1"
+                    ModVersion = Settings.version,
+                    ApiVersion = Settings.apiVersion
                 };
 
                 HandleFiltering(context, ref version);

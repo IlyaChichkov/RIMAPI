@@ -19,6 +19,12 @@ namespace RIMAPI
             Listing_Standard list = new Listing_Standard();
             list.Begin(inRect);
 
+            list.Label("Version".Translate());
+            list.Label(Settings.version.ToString());
+
+            list.Label("API Version".Translate());
+            list.Label(Settings.apiVersion.ToString());
+
             list.Label("RIMAPI.ServerPortLabel".Translate());
             string bufferPort = Settings.serverPort.ToString();
             list.TextFieldNumeric(ref Settings.serverPort, ref bufferPort, 1, 65535);

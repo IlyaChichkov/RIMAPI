@@ -33,7 +33,7 @@ namespace RIMAPI
                 try
                 {
                     _apiServer?.Dispose();
-                    _apiServer = new ApiServer(RIMAPI_Mod.Settings.serverPort, _gameDataService);
+                    _apiServer = new ApiServer(RIMAPI_Mod.Settings, _gameDataService);
                     _apiServer.Start();
                     _serverInitialized = true;
 
