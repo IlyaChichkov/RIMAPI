@@ -201,17 +201,15 @@ namespace RimworldRestApi.Controllers
 
         protected async Task<int> GetMapIdProperty(HttpListenerContext context)
         {
-            string mapIdStr = context.Request.QueryString["mapId"];
+            string mapIdStr = context.Request.QueryString["map_id"];
             if (string.IsNullOrEmpty(mapIdStr))
             {
-                await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.BadRequest, "Missing mapId parameter");
+                throw new Exception("Missing map_id parameter");
             }
 
             if (!int.TryParse(mapIdStr, out int mapId))
             {
-                await ResponseBuilder.Error(context.Response,
-                    HttpStatusCode.BadRequest, "Invalid mapId format");
+                throw new Exception("Invalid map_id format");
             }
 
             return mapId;
