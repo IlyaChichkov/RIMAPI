@@ -199,7 +199,7 @@ namespace RimworldRestApi.Controllers
             return GenerateHash(json);
         }
 
-        protected async Task<int> GetMapIdProperty(HttpListenerContext context)
+        protected int GetMapIdProperty(HttpListenerContext context)
         {
             string mapIdStr = context.Request.QueryString["map_id"];
             if (string.IsNullOrEmpty(mapIdStr))
