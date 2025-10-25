@@ -35,6 +35,14 @@ game reaches the main menu. The port can be changed in the mod settings.
 - **ETag support** - Intelligent caching with 304 Not Modified responses
 - **Non-blocking operations** - Game non-blocking API operations
 
+## 🔍 Integrations
+
+Share your projects - send integrations to be featured here
+
+| Name | Link |
+|---   |---   |
+|Rimworld Dashboard | https://github.com/IlyaChichkov/rimapi-dashboard |
+
 ## 🛠️ Usage
 1. Start RimWorld with the mod enabled. When the main menu loads the API server will begin listening.
 2. The default address is `http://localhost:8765/`. You can change the port from the RIMAPI mod settings.
@@ -62,14 +70,6 @@ curl http://localhost:8765/api/v1/colonists
 
 > Note: This mod is under active development. API endpoints may change between versions.
   Always check /api/v1/version for compatibility information.
-
-## 🔍 Integrations
-
-Share your projects - send integrations to be featured here
-
-| Name | Link |
-|---   |---   |
-|Rimworld Dashboard | Upcoming soon|
 
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/IlyaChichkov/RIMAPI/blob/main/LICENSE) file for details.
