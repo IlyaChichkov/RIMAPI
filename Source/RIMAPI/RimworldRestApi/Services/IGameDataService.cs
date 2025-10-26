@@ -31,9 +31,11 @@ namespace RimworldRestApi.Services
         MapFarmSummaryDto GenerateFarmSummary(int mapId);
         GrowingZoneDto GetGrowingZoneById(int mapId, int zoneId);
         // Research
-        ResearchProgressDto GetResearchProgress();
+        ResearchProjectDto GetResearchProgress();
         ResearchFinishedDto GetResearchFinished();
         ResearchTreeDto GetResearchTree();
+        ResearchProjectDto GetResearchProjectByName(string name);
+        ResearchSummaryDto GetResearchSummary();
 
         // Factions
         List<FactionsDto> GetFactions();

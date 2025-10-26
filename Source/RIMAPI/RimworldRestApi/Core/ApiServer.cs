@@ -122,6 +122,16 @@ namespace RimworldRestApi.Core
                 {
                     await new ResearchController(_gameDataService).GetResearchTree(context);
                 });
+
+                _router.AddRoute("GET", "/api/v1/research/project", async context =>
+                {
+                    await new ResearchController(_gameDataService).GetResearchProject(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/research/summary", async context =>
+                {
+                    await new ResearchController(_gameDataService).GetResearchSummary(context);
+                });
                 #endregion
 
                 #region Colonists
