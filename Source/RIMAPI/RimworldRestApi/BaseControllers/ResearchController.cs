@@ -63,5 +63,41 @@ namespace RimworldRestApi.Controllers
                     HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        public async Task GetResearchProject(HttpListenerContext context)
+        {
+            try
+            {
+                string projectNameStr = context.Request.QueryString["name"];
+                if (string.IsNullOrEmpty(projectNameStr))
+                {
+                    throw new Exception("Missing project def name parameter");
+                }
+
+                object project = _gameDataService.GetResearchProjectByName(projectNameStr);
+                HandleFiltering(context, ref project);
+                await ResponseBuilder.Success(context.Response, project);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetResearchSummary(HttpListenerContext context)
+        {
+            try
+            {
+                object researchSummary = _gameDataService.GetResearchSummary();
+                HandleFiltering(context, ref researchSummary);
+                await ResponseBuilder.Success(context.Response, researchSummary);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }
