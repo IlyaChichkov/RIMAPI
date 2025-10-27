@@ -27,21 +27,7 @@ namespace RimworldRestApi.Helpers
                 {
                     if (pawn == null) continue;
 
-                    colonists.Add(new ColonistDto
-                    {
-                        Id = pawn.thingIDNumber,
-                        Name = pawn.Name?.ToStringShort ?? "Unknown",
-                        Gender = pawn.gender.ToString(),
-                        Age = pawn.ageTracker.AgeBiologicalYears,
-                        Health = pawn.health?.summaryHealth?.SummaryHealthPercent ?? 1f,
-                        Mood = pawn.needs?.mood?.CurLevelPercentage ?? 0.5f,
-                        Position = new PositionDto
-                        {
-                            X = pawn.Position.x,
-                            Y = pawn.Position.y,
-                            Z = pawn.Position.z
-                        }
-                    });
+                    colonists.Add(CreateColonistDto(pawn));
                 }
             }
             catch (Exception ex)
@@ -50,6 +36,26 @@ namespace RimworldRestApi.Helpers
             }
 
             return colonists;
+        }
+
+        public ColonistDto CreateColonistDto(Pawn pawn)
+        {
+            return new ColonistDto
+            {
+                Id = pawn.thingIDNumber,
+                Name = pawn.Name?.ToStringShort ?? "Unknown",
+                Gender = pawn.gender.ToString(),
+                Age = pawn.ageTracker.AgeBiologicalYears,
+                Health = pawn.health?.summaryHealth?.SummaryHealthPercent ?? 1f,
+                Mood = pawn.needs?.mood?.CurLevelPercentage ?? 0.5f,
+                Hunger = pawn.needs.food?.CurLevel ?? 0,
+                Position = new PositionDto
+                {
+                    X = pawn.Position.x,
+                    Y = pawn.Position.y,
+                    Z = pawn.Position.z
+                }
+            };
         }
 
         public List<ColonistDetailedDto> GetColonistsDetailed()
@@ -85,21 +91,11 @@ namespace RimworldRestApi.Helpers
             {
                 return new ColonistDetailedDto
                 {
-                    Colonist = new ColonistDto
-                    {
-                        Id = pawn.thingIDNumber,
-                        Name = pawn.Name?.ToStringShort ?? "Unknown",
-                        Age = pawn.ageTracker?.AgeBiologicalYears ?? 0,
-                        Gender = pawn.gender.ToString(),
-                        Position = new PositionDto
-                        {
-                            X = pawn.Position.x,
-                            Y = pawn.Position.z,
-                            Z = pawn.Position.z
-                        },
-                        Health = pawn.health?.summaryHealth?.SummaryHealthPercent ?? 1f,
-                        Mood = (pawn.needs?.mood?.CurLevelPercentage ?? -1f) * 100
-                    },
+                    Sleep = pawn.needs.rest?.CurLevel ?? 0,
+                    Comfort = pawn.needs.comfort?.CurLevel ?? 0,
+                    SurroundingBeauty = pawn.needs.beauty?.CurLevel ?? 0,
+                    FreshAir = pawn.needs.outdoors?.CurLevel ?? 0,
+                    Colonist = CreateColonistDto(pawn),
                     ColonistWorkInfo = new ColonistWorkInfoDto
                     {
                         Skills = pawn.skills.skills?

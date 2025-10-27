@@ -11,6 +11,7 @@ namespace RimworldRestApi.Models
         public int Age { get; set; }
         public float Health { get; set; }
         public float Mood { get; set; }
+        public float Hunger { get; set; }
         public PositionDto Position { get; set; }
     }
 
@@ -38,6 +39,10 @@ namespace RimworldRestApi.Models
 
     public class ColonistDetailedDto
     {
+        public float Sleep { get; set; }
+        public float Comfort { get; set; }
+        public float SurroundingBeauty { get; set; }
+        public float FreshAir { get; set; }
         public ColonistDto Colonist { get; set; }
         public ColonistWorkInfoDto ColonistWorkInfo { get; set; }
         public ColonistPoliciesInfoDto ColonistPoliciesInfo { get; set; }
