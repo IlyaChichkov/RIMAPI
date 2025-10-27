@@ -85,28 +85,103 @@ namespace RimworldRestApi.Helpers
             {
                 return new ColonistDetailedDto
                 {
-                    Id = pawn.thingIDNumber,
-                    Name = pawn.Name?.ToStringShort ?? "Unknown",
-                    Age = pawn.ageTracker?.AgeBiologicalYears ?? 0,
-                    Gender = pawn.gender.ToString(),
-                    Position = new PositionDto
+                    Colonist = new ColonistDto
                     {
-                        X = pawn.Position.x,
-                        Y = pawn.Position.z
+                        Id = pawn.thingIDNumber,
+                        Name = pawn.Name?.ToStringShort ?? "Unknown",
+                        Age = pawn.ageTracker?.AgeBiologicalYears ?? 0,
+                        Gender = pawn.gender.ToString(),
+                        Position = new PositionDto
+                        {
+                            X = pawn.Position.x,
+                            Y = pawn.Position.z,
+                            Z = pawn.Position.z
+                        },
+                        Health = pawn.health?.summaryHealth?.SummaryHealthPercent ?? 1f,
+                        Mood = (pawn.needs?.mood?.CurLevelPercentage ?? -1f) * 100
                     },
-                    Mood = (pawn.needs?.mood?.CurLevelPercentage ?? -1f) * 100,
-                    Health = pawn.health?.summaryHealth?.SummaryHealthPercent ?? 1f,
-                    Hediffs = GetHediffs(pawn),
-                    CurrentJob = pawn.CurJob?.def?.defName ?? "",
-                    Traits = GetTraits(pawn),
-                    WorkPriorities = GetWorkPriorities(pawn)
+                    ColonistWorkInfo = new ColonistWorkInfoDto
+                    {
+                        Skills = pawn.skills.skills?
+                            .Where(skill => skill != null && skill.def != null)
+                            .Select(skill => new SkillDto
+                            {
+                                Name = skill.def.defName,
+                                Level = skill.Level,
+                                MinLevel = SkillRecord.MinLevel,
+                                MaxLevel = SkillRecord.MaxLevel,
+                                LevelDescriptor = skill.LevelDescriptor,
+                                PermanentlyDisabled = skill.PermanentlyDisabled,
+                                TotallyDisabled = skill.TotallyDisabled,
+                                XpTotalEarned = skill.XpTotalEarned,
+                                XpProgressPercent = skill.XpProgressPercent,
+                                XpRequiredForLevelUp = skill.XpRequiredForLevelUp,
+                                Aptitude = skill.Aptitude
+                            })
+                            .ToList() ?? new List<SkillDto>(),
+                        CurrentJob = pawn.CurJob?.def?.defName ?? "",
+                        Traits = GetTraits(pawn),
+                        WorkPriorities = GetWorkPriorities(pawn)
+                    },
+                    ColonistPoliciesInfo = new ColonistPoliciesInfoDto
+                    {
+                        FoodPolicyId = pawn.foodRestriction?.CurrentFoodPolicy?.id ?? 0,
+                        HostilityResponse = (int)pawn.playerSettings.hostilityResponse,
+                    },
+                    ColonistMedicalInfo = new ColonistMedicalInfoDto
+                    {
+                        Health = pawn.health?.summaryHealth?.SummaryHealthPercent ?? 1f,
+                        Hediffs = GetHediffs(pawn),
+                        MedicalPolicyId = (int)(pawn.playerSettings?.medCare ?? MedicalCareCategory.NoCare),
+                        IsSelfTendAllowed = pawn.playerSettings?.selfTend ?? false
+                    },
+                    ColonistSocialInfo = CreatePawnSocialInfoDto(pawn),
                 };
             }
             catch (Exception ex)
             {
                 Log.Error($"RIMAPI: Error converting pawn to DTO - {ex.Message}");
-                return new ColonistDetailedDto { Id = pawn.thingIDNumber, Name = "Error" };
+                return new ColonistDetailedDto
+                {
+                    Colonist = new ColonistDto
+                    {
+                        Id = pawn.thingIDNumber,
+                        Name = "Error"
+                    }
+                };
             }
+        }
+
+        public static ColonistSocialInfoDto CreatePawnSocialInfoDto(Pawn pawn)
+        {
+            var dto = new ColonistSocialInfoDto
+            {
+                Id = pawn.ThingID,
+                Name = pawn.Name?.ToString(),
+                directRelations = new List<RelationDto>(),
+                ChildrenCount = pawn.relations.ChildrenCount,
+            };
+
+            foreach (var relation in pawn.relations.DirectRelations)
+            {
+                dto.DirectRelations.Add(new RelationDto
+                {
+                    relationDefName = relation.def.defName,
+                    otherPawnId = relation.otherPawn.ThingID,
+                    otherPawnName = relation.otherPawn.Name?.ToString(),
+                });
+            }
+
+            foreach (var relation in pawn.relations.VirtualRelations)
+            {
+                dto.VirtualRelations.Add(new RelationDto
+                {
+                    relationDefName = relation.def.defName,
+                    otherPawnId = relation.otherPawn.ThingID,
+                    otherPawnName = relation.otherPawn.Name?.ToString(),
+                });
+            }
+            return dto;
         }
 
         public List<HediffDto> GetHediffs(Pawn pawn)

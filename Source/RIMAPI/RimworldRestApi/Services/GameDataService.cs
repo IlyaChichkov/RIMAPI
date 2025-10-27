@@ -124,7 +124,7 @@ namespace RimworldRestApi.Services
 
         public ColonistDetailedDto GetColonistDetailed(int id)
         {
-            return GetColonistsDetailed().FirstOrDefault(c => c.Id == id);
+            return GetColonistsDetailed().FirstOrDefault(c => c.Colonist.Id == id);
         }
 
         private float GetColonyWealth()

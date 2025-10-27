@@ -108,18 +108,9 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var colonistsDetailed = _gameDataService.GetColonistsDetailed();
-
-                await HandleETagCaching(context, colonistsDetailed, data =>
-                {
-                    if (data.Count == 0) return "empty";
-
-                    var maxId = data.Max(c => c.Id);
-                    var totalHediffs = data.Sum(c => c.Hediffs?.Count ?? 0);
-                    var maxHealth = data.Max(c => c.Health);
-
-                    return GenerateHash(data.Count, maxId, totalHediffs, maxHealth);
-                });
+                object colonistsDetailed = _gameDataService.GetColonistsDetailed();
+                HandleFiltering(context, ref colonistsDetailed);
+                await ResponseBuilder.Success(context.Response, colonistsDetailed);
             }
             catch (Exception ex)
             {
@@ -147,23 +138,15 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                var colonistDetailed = _gameDataService.GetColonistDetailed(colonistId);
+                object colonistDetailed = _gameDataService.GetColonistDetailed(colonistId);
                 if (colonistDetailed == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist not found");
                     return;
                 }
-                await HandleETagCaching(context, colonistDetailed, data =>
-                    GenerateHash(
-                        data.Id,
-                        data.Health,
-                        data.Mood,
-                        data.Hediffs?.Count ?? 0,
-                        data.WorkPriorities?.Count ?? 0,
-                        data.CurrentJob
-                    )
-                );
+                HandleFiltering(context, ref colonistDetailed);
+                await ResponseBuilder.Success(context.Response, colonistDetailed);
             }
             catch (Exception ex)
             {
