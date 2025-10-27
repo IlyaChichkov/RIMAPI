@@ -158,23 +158,13 @@ namespace RimworldRestApi.Helpers
             {
                 Id = pawn.ThingID,
                 Name = pawn.Name?.ToString(),
-                directRelations = new List<RelationDto>(),
+                DirectRelations = new List<RelationDto>(),
                 ChildrenCount = pawn.relations.ChildrenCount,
             };
 
             foreach (var relation in pawn.relations.DirectRelations)
             {
                 dto.DirectRelations.Add(new RelationDto
-                {
-                    relationDefName = relation.def.defName,
-                    otherPawnId = relation.otherPawn.ThingID,
-                    otherPawnName = relation.otherPawn.Name?.ToString(),
-                });
-            }
-
-            foreach (var relation in pawn.relations.VirtualRelations)
-            {
-                dto.VirtualRelations.Add(new RelationDto
                 {
                     relationDefName = relation.def.defName,
                     otherPawnId = relation.otherPawn.ThingID,

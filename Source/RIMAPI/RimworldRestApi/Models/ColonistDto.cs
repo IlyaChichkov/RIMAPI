@@ -64,15 +64,20 @@ namespace RimworldRestApi.Models
         public string Id { get; set; }
         public string Name { get; set; }
         public List<RelationDto> DirectRelations { get; set; }
-        public List<RelationDto> VirtualRelations { get; set; }
         public int ChildrenCount { get; set; }
     }
 
     public class RelationDto
     {
-        public string relationDefName;
-        public string otherPawnId;
-        public string otherPawnName;
+        public string relationDefName { get; set; }
+        public string otherPawnId { get; set; }
+        public string otherPawnName { get; set; }
+    }
+
+    public class OpinionAboutPawnDto
+    {
+        public int Opinion { get; set; }
+        public int OpinionAboutMe { get; set; }
     }
 
     public class ColonistMedicalInfoDto

@@ -416,5 +416,24 @@ namespace RimworldRestApi.Services
         {
             return _researchHelper.GetResearchSummary();
         }
+
+        public OpinionAboutPawnDto GetOpinionAboutPawn(int id, int otherId)
+        {
+            Pawn pawn = PawnsFinder.AllMaps_FreeColonists.Where(
+                p => p.thingIDNumber == id
+            ).FirstOrDefault();
+            if (pawn == null) throw new ArgumentException("Failed to find pawn by id");
+
+            Pawn other = PawnsFinder.AllMaps_FreeColonists.Where(
+                p => p.thingIDNumber == otherId
+            ).FirstOrDefault();
+            if (other == null) throw new ArgumentException("Failed to find other pawn by id");
+
+            return new OpinionAboutPawnDto
+            {
+                Opinion = pawn.relations.OpinionOf(other),
+                OpinionAboutMe = other.relations.OpinionOf(pawn),
+            };
+        }
     }
 }

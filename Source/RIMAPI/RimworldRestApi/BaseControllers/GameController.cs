@@ -294,5 +294,41 @@ namespace RimworldRestApi.Controllers
                     HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        public async Task GetPawnOpinionAboutPawn(HttpListenerContext context)
+        {
+            try
+            {
+                string pawnIdStr = context.Request.QueryString["id"];
+                if (string.IsNullOrEmpty(pawnIdStr))
+                {
+                    throw new Exception("Missing 'id' parameter");
+                }
+
+                if (!int.TryParse(pawnIdStr, out int pawnId))
+                {
+                    throw new Exception("Invalid 'id' format");
+                }
+
+                string otherIdStr = context.Request.QueryString["other_id"];
+                if (string.IsNullOrEmpty(otherIdStr))
+                {
+                    throw new Exception("Missing 'id' parameter");
+                }
+
+                if (!int.TryParse(otherIdStr, out int otherId))
+                {
+                    throw new Exception("Invalid 'id' format");
+                }
+
+                object opinion = _gameDataService.GetOpinionAboutPawn(pawnId, otherId);
+                await ResponseBuilder.Success(context.Response, opinion);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }
