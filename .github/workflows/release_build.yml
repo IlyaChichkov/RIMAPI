@@ -1,4 +1,4 @@
-name: Build and Release RimWorld Mod
+name: Release
 
 on:
   push:
