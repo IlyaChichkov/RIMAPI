@@ -1,0 +1,98 @@
+name: Build and Release RimWorld Mod
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        version: [1.5, 1.6]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Build for RimWorld ${{ matrix.version }}
+      run: |
+        cd Source/RIMAPI
+        # Build the .csproj file directly, not the .sln
+        dotnet build RimApi.csproj -c Release-${{ matrix.version }} --nologo --verbosity minimal
+        
+    - name: Upload Assemblies for ${{ matrix.version }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: assemblies-${{ matrix.version }}
+        path: ${{ matrix.version }}/Assemblies/
+        retention-days: 30
+        
+  release:
+    runs-on: windows-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download All Assemblies
+      uses: actions/download-artifact@v4
+      with:
+        path: downloaded-assemblies
+        
+    - name: Setup Combined Release Structure
+      run: |
+        $tagVersion = $env:GITHUB_REF -replace 'refs/tags/v', ''
+        $modName = "RIMAPI"
+        $zipName = "$modName-$tagVersion.zip"
+        
+        # Create main temp directory
+        New-Item -ItemType Directory -Force -Path "temp_release"
+        
+        # Copy common files
+        Copy-Item "About" -Destination "temp_release/" -Recurse
+        Copy-Item "Languages" -Destination "temp_release/" -Recurse
+        Copy-Item "Docs" -Destination "temp_release/" -Recurse -ErrorAction SilentlyContinue
+        Copy-Item "Example" -Destination "temp_release/" -Recurse -ErrorAction SilentlyContinue
+        Copy-Item "Libraries" -Destination "temp_release/" -Recurse
+        
+        # Create version folders
+        New-Item -ItemType Directory -Force -Path "temp_release/1.5"
+        New-Item -ItemType Directory -Force -Path "temp_release/1.6"
+        
+        # Copy 1.5 assemblies
+        if (Test-Path "downloaded-assemblies/assemblies-1.5") {
+            Copy-Item "downloaded-assemblies/assemblies-1.5/*" -Destination "temp_release/1.5/Assemblies/" -Recurse -Force
+        }
+        
+        # Copy 1.6 assemblies
+        if (Test-Path "downloaded-assemblies/assemblies-1.6") {
+            Copy-Item "downloaded-assemblies/assemblies-1.6/*" -Destination "temp_release/1.6/Assemblies/" -Recurse -Force
+        }
+        
+        # Create the combined zip file
+        Compress-Archive -Path "temp_release/*" -DestinationPath $zipName -CompressionLevel Optimal
+        
+        # Cleanup
+        Remove-Item "temp_release" -Recurse -Force
+        Remove-Item "downloaded-assemblies" -Recurse -Force
+        
+        echo "Created combined release: $zipName"
+      shell: pwsh
+      
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: RIMAPI-*.zip
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
