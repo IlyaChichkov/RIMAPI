@@ -24,7 +24,11 @@ namespace RimworldRestApi.Helpers
                     Name = quest.name,
                     Description = quest.description.ToString(),
                     State = quest.State.ToString(),
+#if RIMWORLD_1_5
                     ExpiryHours = TimeHelper.TicksToDays(quest.ticksUntilAcceptanceExpiry) * 24,
+#elif RIMWORLD_1_6
+                    ExpiryHours = TimeHelper.TicksToDays(quest.TicksUntilExpiry) * 24,
+#endif
                     Reward = GetQuestRewardString(quest)
                 }));
 
@@ -36,7 +40,11 @@ namespace RimworldRestApi.Helpers
                     Name = quest.name,
                     Description = quest.description.ToString(),
                     State = quest.State.ToString(),
+#if RIMWORLD_1_5
                     ExpiryHours = TimeHelper.TicksToDays(quest.ticksUntilAcceptanceExpiry) * 24,
+#elif RIMWORLD_1_6
+                    ExpiryHours = TimeHelper.TicksToDays(quest.TicksUntilExpiry) * 24,
+#endif
                     Reward = GetQuestRewardString(quest)
                 }));
             return dto;
