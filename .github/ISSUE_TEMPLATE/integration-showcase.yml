@@ -1,0 +1,71 @@
+name: 🔌 Integration Showcase
+description: Share your project that uses RIMAPI to be featured in the README
+title: "[Integration]: "
+labels: ["showcase"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share your awesome project that uses RIMAPI!
+
+  - type: input
+    id: project-name
+    attributes:
+      label: Project Name
+      description: The name of your project/integration
+      placeholder: e.g., RimWorld Dashboard
+
+  - type: input
+    id: project-url
+    attributes:
+      label: Project URL
+      description: Link to your project (GitHub, website, etc.)
+      placeholder: e.g., https://github.com/username/project
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Project Description
+      description: Briefly describe what your project does
+      placeholder: A web dashboard that displays colony status in real-time...
+
+  - type: textarea
+    id: features
+    attributes:
+      label: Key Features
+      description: What are the main features of your integration?
+      placeholder: |
+        - Real-time colonist monitoring
+        - Resource tracking
+        - Alert system
+
+  - type: textarea
+    id: technical
+    attributes:
+      label: Technical Details
+      description: What RIMAPI endpoints do you use? Any interesting implementation details?
+      placeholder: |
+        Uses endpoints:
+        - /api/v1/colonists
+        - /api/v1/resources
+        - Built with React/Node.js
+
+  - type: dropdown
+    id: project-type
+    attributes:
+      label: Project Type
+      options:
+        - "Web Dashboard"
+        - "Mobile App"
+        - "Desktop Application"
+        - "Script/Tool"
+        - "Other Mod Integration"
+        - "Other"
+
+  - type: checkboxes
+    id: permission
+    attributes:
+      label: Permissions
+      options:
+        - label: I give permission to feature this project in the RIMAPI README
+          required: true

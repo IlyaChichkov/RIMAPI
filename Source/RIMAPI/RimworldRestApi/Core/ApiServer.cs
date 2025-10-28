@@ -63,6 +63,16 @@ namespace RimworldRestApi.Core
                     Log.Message("RIMAPI: Handling /api/v1/mods/info");
                     await new GameController(_gameDataService).GetModsInfo(context);
                 });
+
+                _router.AddRoute("GET", "/api/v1/datetime", async context =>
+                {
+                    await new GameController(_gameDataService).GetMapTime(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/factions", async context =>
+                {
+                    await new FactionsController(_gameDataService).GetFactions(context);
+                });
                 #endregion
 
                 #region Map
@@ -134,6 +144,17 @@ namespace RimworldRestApi.Core
                 });
                 #endregion
 
+                #region Quests & Incidents
+                _router.AddRoute("GET", "/api/v1/quests", async context =>
+                {
+                    await new GameController(_gameDataService).GetQuestsData(context);
+                });
+                
+                _router.AddRoute("GET", "/api/v1/incidents", async context =>
+                {
+                    await new GameController(_gameDataService).GetIncidentsData(context);
+                });
+                #endregion
                 #region Colonists
                 _router.AddRoute("GET", "/api/v1/colonists", async context =>
                 {
@@ -155,32 +176,27 @@ namespace RimworldRestApi.Core
                     await new GameController(_gameDataService).GetColonistDetailed(context);
                 });
 
+                _router.AddRoute("GET", "/api/v1/colonist/opinion-about", async context =>
+                {
+                    await new GameController(_gameDataService).GetPawnOpinionAboutPawn(context);
+                });
+
                 _router.AddRoute("GET", "/api/v1/colonist/inventory", async context =>
                 {
                     await new GameController(_gameDataService).GetColonistInventory(context);
                 });
                 #endregion
-
-                _router.AddRoute("GET", "/api/v1/item/image", async context =>
-                {
-                    await new GameController(_gameDataService).GetItemImage(context);
-                });
-
+                #region Image
                 _router.AddRoute("GET", "/api/v1/colonist/body/image", async context =>
                 {
                     await new GameController(_gameDataService).GetColonistBody(context);
                 });
 
-                _router.AddRoute("GET", "/api/v1/datetime", async context =>
+                _router.AddRoute("GET", "/api/v1/item/image", async context =>
                 {
-                    await new GameController(_gameDataService).GetMapTime(context);
+                    await new GameController(_gameDataService).GetItemImage(context);
                 });
-
-                _router.AddRoute("GET", "/api/v1/factions", async context =>
-                {
-                    await new FactionsController(_gameDataService).GetFactions(context);
-                });
-
+                #endregion
                 #region Resources
                 _router.AddRoute("GET", "/api/v1/resources/summary", async context =>
                 {
@@ -193,6 +209,7 @@ namespace RimworldRestApi.Core
                 });
                 #endregion
 
+                #region SSE
                 // Server-Sent Events endpoint for real-time updates
                 _router.AddRoute("GET", "/api/v1/events", async context =>
                 {
@@ -200,6 +217,7 @@ namespace RimworldRestApi.Core
                     await _sseService.HandleSSEConnection(context);
                 });
 
+                #endregion
                 Log.Message("RIMAPI: Routes registered successfully");
             }
             catch (Exception ex)

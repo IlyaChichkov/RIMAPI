@@ -14,6 +14,7 @@ namespace RimworldRestApi.Services
     {
         private MapHelper _mapHelper;
         private FarmHelper _farmHelper;
+        private GameEventsHelper _gameEventsHelper;
         private ResearchHelper _researchHelper;
         private ResourcesHelper _resourcesHelper;
         private ColonistsHelper _colonistsHelper;
@@ -33,6 +34,7 @@ namespace RimworldRestApi.Services
             _colonistsHelper = new ColonistsHelper();
             _textureHelper = new TextureHelper();
             _resourcesHelper = new ResourcesHelper();
+            _gameEventsHelper = new GameEventsHelper();
         }
 
         public void RefreshCache()
@@ -124,7 +126,7 @@ namespace RimworldRestApi.Services
 
         public ColonistDetailedDto GetColonistDetailed(int id)
         {
-            return GetColonistsDetailed().FirstOrDefault(c => c.Id == id);
+            return GetColonistsDetailed().FirstOrDefault(c => c.Colonist.Id == id);
         }
 
         private float GetColonyWealth()
@@ -415,6 +417,46 @@ namespace RimworldRestApi.Services
         public ResearchSummaryDto GetResearchSummary()
         {
             return _researchHelper.GetResearchSummary();
+        }
+
+        public OpinionAboutPawnDto GetOpinionAboutPawn(int id, int otherId)
+        {
+            Pawn pawn = PawnsFinder.AllMaps_FreeColonists.Where(
+                p => p.thingIDNumber == id
+            ).FirstOrDefault();
+            if (pawn == null) throw new ArgumentException("Failed to find pawn by id");
+
+            Pawn other = PawnsFinder.AllMaps_FreeColonists.Where(
+                p => p.thingIDNumber == otherId
+            ).FirstOrDefault();
+            if (other == null) throw new ArgumentException("Failed to find other pawn by id");
+
+            return new OpinionAboutPawnDto
+            {
+                Opinion = pawn.relations.OpinionOf(other),
+                OpinionAboutMe = other.relations.OpinionOf(pawn),
+            };
+        }
+
+        public QuestsDto GetIncidentQuestData(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _gameEventsHelper.GetQuestsDto(map);
+        }
+
+        public QuestsDto GetQuestsData(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _gameEventsHelper.GetQuestsDto(map);
+        }
+
+        public IncidentsDto GetIncidentsData(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return new IncidentsDto
+            {
+                Incidents = _gameEventsHelper.GetIncidentsLog(map),
+            };
         }
     }
 }

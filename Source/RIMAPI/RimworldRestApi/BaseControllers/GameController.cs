@@ -108,18 +108,9 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                var colonistsDetailed = _gameDataService.GetColonistsDetailed();
-
-                await HandleETagCaching(context, colonistsDetailed, data =>
-                {
-                    if (data.Count == 0) return "empty";
-
-                    var maxId = data.Max(c => c.Id);
-                    var totalHediffs = data.Sum(c => c.Hediffs?.Count ?? 0);
-                    var maxHealth = data.Max(c => c.Health);
-
-                    return GenerateHash(data.Count, maxId, totalHediffs, maxHealth);
-                });
+                object colonistsDetailed = _gameDataService.GetColonistsDetailed();
+                HandleFiltering(context, ref colonistsDetailed);
+                await ResponseBuilder.Success(context.Response, colonistsDetailed);
             }
             catch (Exception ex)
             {
@@ -147,23 +138,15 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
 
-                var colonistDetailed = _gameDataService.GetColonistDetailed(colonistId);
+                object colonistDetailed = _gameDataService.GetColonistDetailed(colonistId);
                 if (colonistDetailed == null)
                 {
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.NotFound, "Colonist not found");
                     return;
                 }
-                await HandleETagCaching(context, colonistDetailed, data =>
-                    GenerateHash(
-                        data.Id,
-                        data.Health,
-                        data.Mood,
-                        data.Hediffs?.Count ?? 0,
-                        data.WorkPriorities?.Count ?? 0,
-                        data.CurrentJob
-                    )
-                );
+                HandleFiltering(context, ref colonistDetailed);
+                await ResponseBuilder.Success(context.Response, colonistDetailed);
             }
             catch (Exception ex)
             {
@@ -304,6 +287,74 @@ namespace RimworldRestApi.Controllers
                 {
                     throw new Exception("Failed to parse 'at' parameter. Expected 'current_map' or 'world_tile'");
                 }
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetPawnOpinionAboutPawn(HttpListenerContext context)
+        {
+            try
+            {
+                string pawnIdStr = context.Request.QueryString["id"];
+                if (string.IsNullOrEmpty(pawnIdStr))
+                {
+                    throw new Exception("Missing 'id' parameter");
+                }
+
+                if (!int.TryParse(pawnIdStr, out int pawnId))
+                {
+                    throw new Exception("Invalid 'id' format");
+                }
+
+                string otherIdStr = context.Request.QueryString["other_id"];
+                if (string.IsNullOrEmpty(otherIdStr))
+                {
+                    throw new Exception("Missing 'id' parameter");
+                }
+
+                if (!int.TryParse(otherIdStr, out int otherId))
+                {
+                    throw new Exception("Invalid 'id' format");
+                }
+
+                object opinion = _gameDataService.GetOpinionAboutPawn(pawnId, otherId);
+                await ResponseBuilder.Success(context.Response, opinion);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetQuestsData(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                object questData = _gameDataService.GetQuestsData(mapId);
+                HandleFiltering(context, ref questData);
+                await ResponseBuilder.Success(context.Response, questData);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetIncidentsData(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                object incidentsData = _gameDataService.GetIncidentsData(mapId);
+                HandleFiltering(context, ref incidentsData);
+                await ResponseBuilder.Success(context.Response, incidentsData);
             }
             catch (Exception ex)
             {
