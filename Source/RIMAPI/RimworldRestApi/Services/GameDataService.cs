@@ -14,6 +14,7 @@ namespace RimworldRestApi.Services
     {
         private MapHelper _mapHelper;
         private FarmHelper _farmHelper;
+        private GameEventsHelper _gameEventsHelper;
         private ResearchHelper _researchHelper;
         private ResourcesHelper _resourcesHelper;
         private ColonistsHelper _colonistsHelper;
@@ -33,6 +34,7 @@ namespace RimworldRestApi.Services
             _colonistsHelper = new ColonistsHelper();
             _textureHelper = new TextureHelper();
             _resourcesHelper = new ResourcesHelper();
+            _gameEventsHelper = new GameEventsHelper();
         }
 
         public void RefreshCache()
@@ -433,6 +435,27 @@ namespace RimworldRestApi.Services
             {
                 Opinion = pawn.relations.OpinionOf(other),
                 OpinionAboutMe = other.relations.OpinionOf(pawn),
+            };
+        }
+
+        public QuestsDto GetIncidentQuestData(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _gameEventsHelper.GetQuestsDto(map);
+        }
+
+        public QuestsDto GetQuestsData(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _gameEventsHelper.GetQuestsDto(map);
+        }
+
+        public IncidentsDto GetIncidentsData(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return new IncidentsDto
+            {
+                Incidents = _gameEventsHelper.GetIncidentsLog(map),
             };
         }
     }

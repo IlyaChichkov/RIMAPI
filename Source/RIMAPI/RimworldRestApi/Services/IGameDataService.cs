@@ -22,6 +22,10 @@ namespace RimworldRestApi.Services
         MapTimeDto GetCurrentMapDatetime();
         MapTimeDto GetWorldTileDatetime(int tileID);
 
+        // Quests
+        QuestsDto GetQuestsData(int mapId);
+        IncidentsDto GetIncidentsData(int mapId);
+
         // Map
         List<MapDto> GetMaps();
         MapPowerInfoDto GetMapPowerInfo(int mapId);

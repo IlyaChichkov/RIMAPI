@@ -144,6 +144,17 @@ namespace RimworldRestApi.Core
                 });
                 #endregion
 
+                #region Quests & Incidents
+                _router.AddRoute("GET", "/api/v1/quests", async context =>
+                {
+                    await new GameController(_gameDataService).GetQuestsData(context);
+                });
+                
+                _router.AddRoute("GET", "/api/v1/incidents", async context =>
+                {
+                    await new GameController(_gameDataService).GetIncidentsData(context);
+                });
+                #endregion
                 #region Colonists
                 _router.AddRoute("GET", "/api/v1/colonists", async context =>
                 {

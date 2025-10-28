@@ -330,5 +330,37 @@ namespace RimworldRestApi.Controllers
                     HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        public async Task GetQuestsData(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                object questData = _gameDataService.GetQuestsData(mapId);
+                HandleFiltering(context, ref questData);
+                await ResponseBuilder.Success(context.Response, questData);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetIncidentsData(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                object incidentsData = _gameDataService.GetIncidentsData(mapId);
+                HandleFiltering(context, ref incidentsData);
+                await ResponseBuilder.Success(context.Response, incidentsData);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }
