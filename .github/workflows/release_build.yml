@@ -65,19 +65,27 @@ jobs:
         Copy-Item "Example" -Destination "temp_release/" -Recurse -ErrorAction SilentlyContinue
         Copy-Item "Libraries" -Destination "temp_release/" -Recurse
         
-        # Create version folders
-        New-Item -ItemType Directory -Force -Path "temp_release/1.5"
-        New-Item -ItemType Directory -Force -Path "temp_release/1.6"
+        # Create version folders WITH Assemblies subdirectories
+        New-Item -ItemType Directory -Force -Path "temp_release/1.5/Assemblies"
+        New-Item -ItemType Directory -Force -Path "temp_release/1.6/Assemblies"
         
         # Copy 1.5 assemblies
         if (Test-Path "downloaded-assemblies/assemblies-1.5") {
             Copy-Item "downloaded-assemblies/assemblies-1.5/*" -Destination "temp_release/1.5/Assemblies/" -Recurse -Force
+        } else {
+            Write-Warning "No 1.5 assemblies found"
         }
         
         # Copy 1.6 assemblies
         if (Test-Path "downloaded-assemblies/assemblies-1.6") {
             Copy-Item "downloaded-assemblies/assemblies-1.6/*" -Destination "temp_release/1.6/Assemblies/" -Recurse -Force
+        } else {
+            Write-Warning "No 1.6 assemblies found"
         }
+        
+        # Debug: Show the structure
+        Write-Host "Final directory structure:"
+        Get-ChildItem "temp_release" -Recurse | ForEach-Object { Write-Host $_.FullName }
         
         # Create the combined zip file
         Compress-Archive -Path "temp_release/*" -DestinationPath $zipName -CompressionLevel Optimal
