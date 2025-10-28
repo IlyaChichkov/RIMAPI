@@ -3,7 +3,7 @@
 ![Status](https://img.shields.io/badge/Status-In_Progress-blue.svg)
 ![RimWorld Version](https://img.shields.io/badge/RimWorld-v1.5+-blue.svg)
 ![API Version](https://img.shields.io/badge/API-v0.1.0-green.svg)
-![Build](https://github.com/IlyaChichkov/RIMAPI/actions/workflows/build.yml/badge.svg)
+![Build](https://github.com/IlyaChichkov/RIMAPI/actions/workflows/release_build.yml/badge.svg)
 ![Release](https://img.shields.io/github/v/release/IlyaChichkov/RIMAPI)
 
 # RIMAPI
@@ -23,6 +23,7 @@ game reaches the main menu. The port can be changed in the mod settings.
 - **Colonist management** - Track health, mood, skills, inventory, and work priorities
 - **Resource tracking** - Monitor food, medicine, materials, and storage utilization
 - **Research progress** - Check current projects and completed research
+- **Quests & incidents** - Get list of quests and incidents
 
 ### Game world manipulation
 
@@ -57,15 +58,18 @@ curl http://localhost:8765/api/v1/colonists
 **Response:**
 ```json
 {
-  "colonists": [
-    {
-      "id": 123,
-      "name": "John",
-      "age": 32,
-      "health": 1.0
-    }
-  ]
-}
+  "id": 555,
+  "name": "Scott",
+  "gender": "Male",
+  "age": 21,
+  "health": 1.0,
+  "mood": 0.63,
+  "position": {
+    "x": 95,
+    "y": 0,
+    "z": 80
+  }
+},
 ```
 
 > Note: This mod is under active development. API endpoints may change between versions.
