@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using RimWorld;
 using RimworldRestApi.Services;
 using Verse;
 
@@ -237,23 +238,81 @@ namespace RimworldRestApi.Core
             }
         }
 
+        private void QueueEventBroadcast(string eventType, object data)
+        {
+            if (_disposed) return;
+
+            lock (_queueLock)
+            {
+                _broadcastQueue.Enqueue(() => _ = BroadcastEventInternal(eventType, data));
+            }
+        }
+
+        public void BroadcastFoodEvent(Pawn colonist, Thing food, float nutritionWanted, float result)
+        {
+            if (_disposed || colonist == null || food == null) return;
+            float hungerBefore = colonist.needs?.food?.CurLevelPercentage ?? 0;
+            float hungerAfter = hungerBefore + result;
+
+            var foodEvent = new
+            {
+                colonist = new
+                {
+                    name = colonist.Name?.ToStringShort ?? "Unknown",
+                    hungerBefore = hungerBefore,
+                    hungerAfter = hungerAfter > 1f ? 1f : hungerAfter,
+                },
+                food = new
+                {
+                    defName = food.def.defName,
+                    label = food.Label,
+                    nutrition = food.GetStatValue(StatDefOf.Nutrition),
+                    foodType = food.def.ingestible?.foodType.ToString() ?? "Unknown"
+                },
+                ticks = Find.TickManager.TicksGame
+            };
+
+            QueueEventBroadcast("colonist_ate", foodEvent);
+        }
+
         private async Task SendEventToClient(SseClient client, string eventType, object data)
         {
             if (!client.IsConnected)
             {
+                Log.Message($"RIMAPI: client not Connected");
                 return;
             }
 
             try
             {
-                var json = JsonConvert.SerializeObject(data);
-                var message = $"event: {eventType}\ndata: {json}\n\n";
+                var json = JsonConvert.SerializeObject(data, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.None
+                });
+
+                // Proper SSE format with id and retry
+                var message = $"id: {Guid.NewGuid()}\n";
+                message += $"event: {eventType}\n";
+                message += $"data: {json}\n";
+                message += $"retry: 3000\n\n"; // 3 second retry
+
                 var buffer = System.Text.Encoding.UTF8.GetBytes(message);
+
+                Log.Message($"RIMAPI: Sending event: {eventType} with {buffer.Length} bytes");
+
+                if (!client.IsConnected || client.Response.OutputStream == null)
+                {
+                    Log.Message($"RIMAPI: Client disconnected before send");
+                    client.MarkDisconnected();
+                    return;
+                }
 
                 await client.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 await client.Response.OutputStream.FlushAsync();
 
-                // Update last activity time
+                Log.Message($"RIMAPI: Successfully sent event: {eventType}");
+
                 client.UpdateLastActivity();
             }
             catch (Exception ex)

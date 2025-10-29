@@ -14,6 +14,7 @@ namespace RimworldRestApi.Core
         private readonly HttpListener _listener;
         private readonly Router _router;
         private readonly SseService _sseService;
+        public SseService SseService => _sseService;
         private readonly Queue<HttpListenerContext> _requestQueue;
         private readonly object _queueLock = new object();
         private bool _isRunning;
