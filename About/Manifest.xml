@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Manifest>
+    <identifier>redeyedev.rimapi</identifier>
+    <version>0.4.4</version>
+    <manifestUri>
+        https://raw.githubusercontent.com/IlyaChichkov/RIMAPI/refs/heads/main/About/Manifest.xml</manifestUri>
+    <downloadUri>https://github.com/IlyaChichkov/RIMAPI/releases</downloadUri>
+</Manifest>
