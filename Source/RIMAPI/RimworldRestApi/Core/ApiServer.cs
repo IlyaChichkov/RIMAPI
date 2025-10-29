@@ -25,6 +25,8 @@ namespace RimworldRestApi.Core
         private readonly ExtensionRegistry _extensionRegistry;
         private RIMAPI_Settings Settings;
 
+        private CameraStreamController _streamController;
+
         public ApiServer(RIMAPI_Settings settings, IGameDataService gameDataService)
         {
             Settings = settings;
@@ -35,10 +37,11 @@ namespace RimworldRestApi.Core
             _router = new Router();
             _requestQueue = new Queue<HttpListenerContext>();
             _sseService = new SseService(_gameDataService);
-            _extensionRegistry = new ExtensionRegistry(); // NEW
+            _extensionRegistry = new ExtensionRegistry();
+            _streamController = new CameraStreamController(_gameDataService);
 
             RegisterRoutes();
-            RegisterExtensions(); // NEW
+            RegisterExtensions();
         }
 
         private void RegisterRoutes()
@@ -149,7 +152,7 @@ namespace RimworldRestApi.Core
                 {
                     await new GameController(_gameDataService).GetQuestsData(context);
                 });
-                
+
                 _router.AddRoute("GET", "/api/v1/incidents", async context =>
                 {
                     await new GameController(_gameDataService).GetIncidentsData(context);
@@ -206,6 +209,25 @@ namespace RimworldRestApi.Core
                 _router.AddRoute("GET", "/api/v1/resources/storages/summary", async context =>
                 {
                     await new ResourcesController(_gameDataService).GetStoragesSummary(context);
+                });
+                #endregion
+
+                #region Camera Stream
+                _router.AddRoute("POST", "/api/v1/stream/start", async context =>
+                {
+                    await _streamController.PostStreamStart(context);
+                });
+                _router.AddRoute("POST", "/api/v1/stream/stop", async context =>
+                {
+                    await _streamController.PostStreamStop(context);
+                });
+                _router.AddRoute("POST", "/api/v1/stream/setup", async context =>
+                {
+                    await _streamController.PostStreamSetup(context);
+                });
+                _router.AddRoute("GET", "/api/v1/stream/status", async context =>
+                {
+                    await _streamController.GetStreamStatus(context);
                 });
                 #endregion
 
