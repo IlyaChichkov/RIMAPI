@@ -19,6 +19,7 @@ namespace RimworldRestApi.CameraStreamer
 
     public class UdpCameraStreamer
     {
+        private Camera _cachedCamera;
         private UdpClient udpClient;
         private Texture2D captureTexture;
         private RenderTexture renderTexture;
@@ -120,37 +121,45 @@ namespace RimworldRestApi.CameraStreamer
 
         private void CaptureAndSendFrame()
         {
-            Camera camera = Find.Camera;
-            if (camera == null)
+            Camera camera = _cachedCamera ?? Find.Camera ?? Camera.current;
+
+            if (camera == null && Camera.allCameras.Length > 0)
             {
-                camera = Camera.current ?? (Camera.allCameras.Length > 0 ? Camera.allCameras[0] : null);
+                camera = Camera.allCameras[0];
+                _cachedCamera = camera; // Cache for future use
             }
 
             if (camera == null) return;
 
-            // Set up render texture
-            Camera tempCamera = camera;
-            tempCamera.targetTexture = renderTexture;
-            tempCamera.Render();
-            tempCamera.targetTexture = null;
-
-            // Read pixels from render texture
-            RenderTexture.active = renderTexture;
-            captureTexture.ReadPixels(new Rect(0, 0, frameWidth, frameHeight), 0, 0);
-            captureTexture.Apply();
-            RenderTexture.active = null;
-
-            // Encode to JPEG with lower quality
-            byte[] jpegData = ImageConversion.EncodeToJPG(captureTexture, jpegQuality);
-
-            // Send data in chunks if too large
-            if (jpegData.Length > MAX_PACKET_SIZE - HEADER_SIZE)
+            try
             {
-                SendDataInChunks(jpegData);
+                // Use existing render texture instead of reassigning
+                RenderTexture previousTarget = camera.targetTexture;
+                camera.targetTexture = renderTexture;
+                camera.Render();
+                camera.targetTexture = previousTarget;
+
+                RenderTexture.active = renderTexture;
+                captureTexture.ReadPixels(new Rect(0, 0, frameWidth, frameHeight), 0, 0);
+                captureTexture.Apply();
+                RenderTexture.active = null;
+
+                // Encode to JPEG
+                byte[] jpegData = ImageConversion.EncodeToJPG(captureTexture, jpegQuality);
+
+                // Send data based on size
+                if (jpegData.Length > MAX_PACKET_SIZE - HEADER_SIZE)
+                {
+                    SendDataInChunks(jpegData);
+                }
+                else
+                {
+                    SendSinglePacket(jpegData);
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                SendSinglePacket(jpegData);
+                Debug.LogError($"Frame capture failed: {ex.Message}");
             }
         }
 
