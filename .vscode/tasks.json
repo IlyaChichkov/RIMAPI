@@ -62,7 +62,7 @@
             "args": [
                 "/c",
                 "start",
-                "\"D:\\Games\\RimAnomaly\\RimWorld\\RimWorldWin64.exe\""
+                "\"E:\\Games\\RimWorld\\RimWorldWin64.exe\""
             ],
             "group": "build",
             "presentation": {
@@ -73,7 +73,7 @@
         {
             "label": "Build, Deploy and Launch",
             "dependsOrder": "sequence",
-            "dependsOn": ["Build and Deploy", "Launch RimWorld"],
+            "dependsOn": ["Build and Deploy 1.5", "Launch RimWorld"],
             "group": "build",
             "presentation": {
                 "echo": true,
