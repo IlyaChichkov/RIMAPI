@@ -5,11 +5,15 @@ namespace RimworldRestApi.Services
 {
     public interface IGameDataService
     {
-        // Game state
+        #region Game state
         GameStateDto GetGameState();
         List<ModInfoDto> GetModsInfo();
+        void SelectGameObject(string objectType, int id);
+        void DeselectAll();
+        void OpenTab(string tabName);
 
-        // Colonists
+        #endregion
+        #region Colonists
         List<ColonistDto> GetColonists();
         ColonistDto GetColonist(int id);
         List<ColonistDetailedDto> GetColonistsDetailed();
@@ -18,15 +22,18 @@ namespace RimworldRestApi.Services
         ImageDto GetItemImage(string name);
         BodyPartsDto GetColonistBodyParts(int id);
         OpinionAboutPawnDto GetOpinionAboutPawn(int id, int otherId);
-        // Datetime
+        #endregion
+        #region Datetime
         MapTimeDto GetCurrentMapDatetime();
         MapTimeDto GetWorldTileDatetime(int tileID);
 
-        // Quests
+        #endregion
+        #region Quests
         QuestsDto GetQuestsData(int mapId);
         IncidentsDto GetIncidentsData(int mapId);
 
-        // Map
+        #endregion
+        #region Map
         List<MapDto> GetMaps();
         MapPowerInfoDto GetMapPowerInfo(int mapId);
         MapWeatherDto GetWeather(int mapId);
@@ -35,23 +42,33 @@ namespace RimworldRestApi.Services
         MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId);
         MapFarmSummaryDto GenerateFarmSummary(int mapId);
         GrowingZoneDto GetGrowingZoneById(int mapId, int zoneId);
-        // Research
+        MapZonesDto GetMapZones(int mapId);
+        List<BuildingDto> GetMapBuildings(int mapId);
+        #endregion
+        #region Buildings
+        BuildingDto GetBuildingInfo(int buildingId);
+        #endregion
+        #region Research
         ResearchProjectDto GetResearchProgress();
         ResearchFinishedDto GetResearchFinished();
         ResearchTreeDto GetResearchTree();
         ResearchProjectDto GetResearchProjectByName(string name);
         ResearchSummaryDto GetResearchSummary();
 
-        // Factions
+        #endregion
+        #region Factions
         List<FactionsDto> GetFactions();
 
-        // Resources
+        #endregion
+        #region Resources
         ResourcesSummaryDto GetResourcesSummary(int mapId);
         StoragesSummaryDto GetStoragesSummary(int mapId);
 
 
-        // Cache management
+        #endregion
+        #region Cache management
         void RefreshCache();
         void UpdateGameTick(int currentTick);
+        #endregion
     }
 }
