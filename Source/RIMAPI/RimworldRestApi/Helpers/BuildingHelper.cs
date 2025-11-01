@@ -134,8 +134,13 @@ namespace RimworldRestApi.Helpers
             return new WeaponStatsDto
             {
                 DamageDef = verbProps.defaultProjectile?.projectile?.damageDef?.defName,
+#if RIMWORLD_1_5
                 DamageAmount = verbProps.defaultProjectile?.projectile?.GetDamageAmount(1f) ?? 0,
                 ArmorPenetration = verbProps.defaultProjectile?.projectile?.GetArmorPenetration(1f) ?? 0f,
+#elif RIMWORLD_1_6
+                DamageAmount = verbProps.defaultProjectile?.projectile?.GetDamageAmount(1f, null) ?? 0,
+                ArmorPenetration = verbProps.defaultProjectile?.projectile?.GetArmorPenetration() ?? 0f,
+#endif
                 ExplosionRadius = verbProps.defaultProjectile?.projectile?.explosionRadius ?? 0f,
                 Range = verbProps.range,
                 WarmupTime = verbProps.warmupTime,
