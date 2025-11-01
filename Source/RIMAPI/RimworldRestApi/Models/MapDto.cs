@@ -29,6 +29,9 @@ namespace RimworldRestApi.Models
         public int TotalPowerStorage { get; set; }
         public int TotalConsumption { get; set; }
         public int ConsumptionPowerOn { get; set; }
+        public List<int> ProducePowerBuildings = new List<int>();
+        public List<int> ConsumePowerBuildings = new List<int>();
+        public List<int> StorePowerBuildings = new List<int>();
     }
 
     public class MapTimeDto
@@ -85,9 +88,7 @@ namespace RimworldRestApi.Models
 
     public class GrowingZoneDto
     {
-        public int ZoneId { get; set; }
-        public int CellsCount { get; set; }
-        public string ZoneLabel { get; set; }
+        public ZoneDto Zone { get; set; }
         public string PlantDefName { get; set; }
         public int PlantCount { get; set; }
         public int DefExpectedYield { get; set; }
@@ -100,5 +101,20 @@ namespace RimworldRestApi.Models
         public bool HasDying { get; set; }
         public bool HasDyingFromPollution { get; set; }
         public bool HasDyingFromNoPollution { get; set; }
+    }
+
+    public class MapZonesDto
+    {
+        public List<ZoneDto> Zones { get; set; }
+        public List<ZoneDto> Areas { get; set; }
+    }
+
+    public class ZoneDto
+    {
+        public int Id { get; set; }
+        public int CellsCount { get; set; }
+        public string Label { get; set; }
+        public string BaseLabel { get; set; }
+        public string Type { get; set; }
     }
 }

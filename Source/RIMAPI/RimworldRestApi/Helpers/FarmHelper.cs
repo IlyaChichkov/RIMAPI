@@ -120,9 +120,13 @@ namespace RimworldRestApi.Helpers
 
             var zoneDto = new GrowingZoneDto
             {
-                ZoneId = zone.ID,
-                CellsCount = zone.CellCount,
-                ZoneLabel = zone.label ?? "Unnamed Zone",
+                Zone = new ZoneDto
+                {
+                    Id = zone.ID,
+                    CellsCount = zone.CellCount,
+                    Label = zone.label ?? "Unnamed Zone",
+                    BaseLabel = zone.BaseLabel,
+                },
                 PlantDefName = zone.GetPlantDefToGrow()?.defName ?? "None",
                 PlantCount = zonePlants.Count,
                 ExpectedYield = 0,

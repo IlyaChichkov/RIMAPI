@@ -124,6 +124,7 @@ namespace RimworldRestApi.Helpers
                             Mathf.Abs(powerPlant.Props.PowerConsumption)
                         );
                         powerInfo.CurrentPower += Mathf.RoundToInt(powerPlant.PowerOutput);
+                        powerInfo.ProducePowerBuildings.Add(building.thingIDNumber);
                         continue;
                     }
 
@@ -133,6 +134,7 @@ namespace RimworldRestApi.Helpers
                     {
                         powerInfo.CurrentlyStoredPower += Mathf.RoundToInt(powerBattery.StoredEnergy);
                         powerInfo.TotalPowerStorage += Mathf.RoundToInt(powerBattery.Props.storedEnergyMax);
+                        powerInfo.StorePowerBuildings.Add(building.thingIDNumber);
                     }
                 }
 
@@ -148,6 +150,12 @@ namespace RimworldRestApi.Helpers
                         if (comp.PowerOn && comp.PowerOutput < 0f)
                         {
                             powerInfo.ConsumptionPowerOn += Mathf.RoundToInt(Mathf.Abs(comp.PowerOutput));
+                        }
+
+                        Building building = comp.parent as Building;
+                        if (building != null)
+                        {
+                            powerInfo.ConsumePowerBuildings.Add(building.thingIDNumber);
                         }
                     }
                 }
@@ -237,6 +245,97 @@ namespace RimworldRestApi.Helpers
                 Log.Error($"RIMAPI: Error - {ex.Message}");
                 return new List<MapThingDto>();
             }
+        }
+
+        public List<ZoneDto> GetMapZones(int mapId)
+        {
+            List<ZoneDto> zones = new List<ZoneDto>();
+            try
+            {
+                Map map = FindMapByUniqueID(mapId);
+                if (map == null)
+                {
+                    throw new Exception("Map with this id wasn't found");
+                }
+
+                foreach (Zone zone in map.zoneManager.AllZones)
+                {
+                    zones.Add(new ZoneDto
+                    {
+                        Id = zone.ID,
+                        CellsCount = zone.CellCount,
+                        Label = zone.label,
+                        BaseLabel = zone.BaseLabel,
+                        Type = zone.GetType().Name,
+                    });
+                }
+
+                return zones;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<ZoneDto> GetMapAreas(int mapId)
+        {
+            List<ZoneDto> zones = new List<ZoneDto>();
+            try
+            {
+                Map map = FindMapByUniqueID(mapId);
+                if (map == null)
+                {
+                    throw new Exception("Map with this id wasn't found");
+                }
+
+                foreach (Area area in map.areaManager.AllAreas)
+                {
+                    zones.Add(new ZoneDto
+                    {
+                        Id = area.ID,
+                        CellsCount = area.ActiveCells.Count(),
+                        Label = area.Label,
+                        BaseLabel = area.Label,
+                        Type = area.GetType().Name,
+                    });
+                }
+
+                return zones;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<BuildingDto> GetMapBuildings(int mapId)
+        {
+            List<BuildingDto> buildings = new List<BuildingDto>();
+            Map map = FindMapByUniqueID(mapId);
+            if (map == null)
+            {
+                throw new Exception("Map with this id wasn't found");
+            }
+
+            foreach (Building building in map.listerBuildings.allBuildingsColonist)
+            {
+                buildings.Add(new BuildingDto
+                {
+                    Id = building.thingIDNumber,
+                    Def = building.def.defName,
+                    Label = building.Label,
+                    Position = new PositionDto
+                    {
+                        X = building.Position.x,
+                        Y = building.Position.y,
+                        Z = building.Position.z
+                    },
+                    Type = building.GetType().Name,
+                });
+            }
+
+            return buildings;
         }
     }
 }

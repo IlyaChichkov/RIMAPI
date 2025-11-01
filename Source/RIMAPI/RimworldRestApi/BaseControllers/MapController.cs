@@ -166,5 +166,37 @@ namespace RimworldRestApi.Controllers
                     HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        public async Task GetZones(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                object zones = _gameDataService.GetMapZones(mapId);
+                HandleFiltering(context, ref zones);
+                await ResponseBuilder.Success(context.Response, zones);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetBuildings(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                object building = _gameDataService.GetMapBuildings(mapId);
+                HandleFiltering(context, ref building);
+                await ResponseBuilder.Success(context.Response, building);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }

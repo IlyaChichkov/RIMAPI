@@ -9,15 +9,57 @@ using Verse;
 
 namespace RimworldRestApi.Controllers
 {
-    public class CameraStreamController : BaseController
+    public class CameraController : BaseController
     {
         private readonly IGameDataService _gameDataService;
         private UdpCameraStreamer _udpStreamer;
 
-        public CameraStreamController(IGameDataService gameDataService)
+        public CameraController(IGameDataService gameDataService)
         {
             _gameDataService = gameDataService;
             _udpStreamer = new UdpCameraStreamer();
+        }
+
+        public async Task ChangeZoom(HttpListenerContext context)
+        {
+            try
+            {
+                var zoom = GetIntProperty(context, "zoom");
+
+                Find.CameraDriver.SetRootPosAndSize(Find.CameraDriver.MapPosition.ToVector3(), zoom);
+                var result = new
+                {
+                    Result = "success"
+                };
+                await ResponseBuilder.Success(context.Response, result);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task MoveToPosition(HttpListenerContext context)
+        {
+            try
+            {
+                var x = GetIntProperty(context, "x");
+                var y = GetIntProperty(context, "y");
+
+                IntVec3 position = new IntVec3(x, 0, y);
+                Find.CameraDriver.JumpToCurrentMapLoc(position);
+                var result = new
+                {
+                    Result = "success"
+                };
+                await ResponseBuilder.Success(context.Response, result);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         public async Task PostStreamStart(HttpListenerContext context)

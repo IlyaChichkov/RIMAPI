@@ -26,7 +26,7 @@ namespace RimworldRestApi.Core
         private readonly ExtensionRegistry _extensionRegistry;
         private RIMAPI_Settings Settings;
 
-        private CameraStreamController _streamController;
+        private CameraController _cameraController;
 
         public ApiServer(RIMAPI_Settings settings, IGameDataService gameDataService)
         {
@@ -39,7 +39,7 @@ namespace RimworldRestApi.Core
             _requestQueue = new Queue<HttpListenerContext>();
             _sseService = new SseService(_gameDataService);
             _extensionRegistry = new ExtensionRegistry();
-            _streamController = new CameraStreamController(_gameDataService);
+            _cameraController = new CameraController(_gameDataService);
 
             RegisterRoutes();
             RegisterExtensions();
@@ -76,6 +76,21 @@ namespace RimworldRestApi.Core
                 _router.AddRoute("GET", "/api/v1/factions", async context =>
                 {
                     await new FactionsController(_gameDataService).GetFactions(context);
+                });
+
+                _router.AddRoute("POST", "/api/v1/deselect", async context =>
+                {
+                    await new GameController(_gameDataService).DeselectGameObject(context);
+                });
+
+                _router.AddRoute("POST", "/api/v1/select", async context =>
+                {
+                    await new GameController(_gameDataService).SelectGameObject(context);
+                });
+
+                _router.AddRoute("POST", "/api/v1/open-tab", async context =>
+                {
+                    await new GameController(_gameDataService).OpenTab(context);
                 });
                 #endregion
 
@@ -118,6 +133,22 @@ namespace RimworldRestApi.Core
                 _router.AddRoute("GET", "/api/v1/map/zone/growing", async context =>
                 {
                     await new MapController(_gameDataService).GetGrowingZone(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/zones", async context =>
+                {
+                    await new MapController(_gameDataService).GetZones(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/buildings", async context =>
+                {
+                    await new MapController(_gameDataService).GetBuildings(context);
+                });
+                #endregion
+                #region Buildings
+                _router.AddRoute("GET", "/api/v1/building/info", async context =>
+                {
+                    await new BuildingController(_gameDataService).GetBuildingInfo(context);
                 });
                 #endregion
                 #region Research
@@ -167,7 +198,7 @@ namespace RimworldRestApi.Core
 
                 _router.AddRoute("GET", "/api/v1/colonist", async context =>
                 {
-                    await new GameController(_gameDataService).GetColonistDetailed(context);
+                    await new GameController(_gameDataService).GetColonist(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/colonists/detailed", async context =>
@@ -213,22 +244,30 @@ namespace RimworldRestApi.Core
                 });
                 #endregion
 
-                #region Camera Stream
+                #region Camera
+                _router.AddRoute("POST", "/api/v1/camera/change/position", async context =>
+                {
+                    await _cameraController.MoveToPosition(context);
+                });
+                _router.AddRoute("POST", "/api/v1/camera/change/zoom", async context =>
+                {
+                    await _cameraController.ChangeZoom(context);
+                });
                 _router.AddRoute("POST", "/api/v1/stream/start", async context =>
                 {
-                    await _streamController.PostStreamStart(context);
+                    await _cameraController.PostStreamStart(context);
                 });
                 _router.AddRoute("POST", "/api/v1/stream/stop", async context =>
                 {
-                    await _streamController.PostStreamStop(context);
+                    await _cameraController.PostStreamStop(context);
                 });
                 _router.AddRoute("POST", "/api/v1/stream/setup", async context =>
                 {
-                    await _streamController.PostStreamSetup(context);
+                    await _cameraController.PostStreamSetup(context);
                 });
                 _router.AddRoute("GET", "/api/v1/stream/status", async context =>
                 {
-                    await _streamController.GetStreamStatus(context);
+                    await _cameraController.GetStreamStatus(context);
                 });
                 #endregion
 
