@@ -47,7 +47,119 @@ namespace RimworldRestApi.Controllers
         protected void HandleFiltering(HttpListenerContext context, ref object data)
         {
             var fieldsParam = context.Request.QueryString["fields"];
+            var filterParam = context.Request.QueryString["filter"];
+
             data = ApplyFieldsFilter(data, fieldsParam);
+            data = ApplyArrayFilter(data, filterParam);
+        }
+
+        private object ApplyArrayFilter(object data, string filter)
+        {
+            if (string.IsNullOrEmpty(filter) || data == null)
+                return data;
+
+            try
+            {
+                // Parse filter expression (e.g., "type=Building_TrapExplosive")
+                var filterParts = filter.Split('=');
+                if (filterParts.Length != 2)
+                {
+                    Log.Warning($"[RIMAPI] Invalid filter format: {filter}. Expected 'field=value'");
+                    return data;
+                }
+
+                var fieldName = filterParts[0].Trim();
+                var expectedValue = filterParts[1].Trim();
+
+                return FilterArrayByCondition(data, fieldName, expectedValue);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"[RIMAPI] Error applying filter {filter}: {ex.Message}");
+                return data;
+            }
+        }
+
+        private object FilterArrayByCondition(object obj, string fieldName, object expectedValue)
+        {
+            if (obj == null) return null;
+
+            // Handle arrays/lists
+            if (obj is System.Collections.IEnumerable enumerable && obj.GetType() != typeof(string))
+            {
+                var resultList = new List<object>();
+                foreach (var item in enumerable)
+                {
+                    if (item == null) continue;
+
+                    // Get the field value from the item
+                    var fieldValue = GetFieldValue(item, fieldName);
+
+                    // Compare values (supporting string comparison with case insensitivity)
+                    if (ValuesMatch(fieldValue, expectedValue))
+                    {
+                        resultList.Add(item);
+                    }
+                }
+
+                // Return the filtered list
+                return resultList;
+            }
+
+            // For single objects, return as-is if it matches the filter
+            var singleFieldValue = GetFieldValue(obj, fieldName);
+            return ValuesMatch(singleFieldValue, expectedValue) ? obj : null;
+        }
+
+        private object GetFieldValue(object obj, string fieldPath)
+        {
+            if (obj == null) return null;
+
+            // Handle nested properties (e.g., "position.x")
+            if (fieldPath.Contains('.'))
+            {
+                return GetNestedPropertyValue(obj, fieldPath);
+            }
+
+            // Handle top-level properties
+            var property = GetPropertyInfo(obj.GetType(), fieldPath);
+            if (property != null && property.CanRead)
+            {
+                try
+                {
+                    return property.GetValue(obj);
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning($"[RIMAPI] Error getting property {fieldPath}: {ex.Message}");
+                }
+            }
+
+            // Try fields if properties don't work
+            var field = obj.GetType().GetField(fieldPath,
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            if (field != null)
+            {
+                return field.GetValue(obj);
+            }
+
+            Log.Warning($"[RIMAPI] Field '{fieldPath}' not found on type {obj.GetType().Name}");
+            return null;
+        }
+
+        private bool ValuesMatch(object actualValue, object expectedValue)
+        {
+            if (actualValue == null && expectedValue == null) return true;
+            if (actualValue == null || expectedValue == null) return false;
+
+            // Handle string comparison (case insensitive)
+            if (actualValue is string actualStr && expectedValue is string expectedStr)
+            {
+                return string.Equals(actualStr, expectedStr, StringComparison.OrdinalIgnoreCase);
+            }
+
+            // Handle other types
+            return actualValue.Equals(expectedValue);
         }
 
         private object ApplyFieldsFilter(object data, string fields)
@@ -201,18 +313,34 @@ namespace RimworldRestApi.Controllers
 
         protected int GetMapIdProperty(HttpListenerContext context)
         {
-            string mapIdStr = context.Request.QueryString["map_id"];
-            if (string.IsNullOrEmpty(mapIdStr))
+            return GetIntProperty(context, "map_id");
+        }
+
+        protected int GetIntProperty(HttpListenerContext context, string searchName = "id")
+        {
+            string idStr = context.Request.QueryString[searchName];
+            if (string.IsNullOrEmpty(idStr))
             {
-                throw new Exception("Missing map_id parameter");
+                throw new Exception($"Missing '{searchName}' parameter");
             }
 
-            if (!int.TryParse(mapIdStr, out int mapId))
+            if (!int.TryParse(idStr, out int id))
             {
-                throw new Exception("Invalid map_id format");
+                throw new Exception($"Invalid '{searchName}' format");
             }
 
-            return mapId;
+            return id;
+        }
+
+        protected string GetStringProperty(HttpListenerContext context, string searchName = "id")
+        {
+            string idStr = context.Request.QueryString[searchName];
+            if (string.IsNullOrEmpty(idStr))
+            {
+                throw new Exception($"Missing '{searchName}' parameter");
+            }
+
+            return idStr;
         }
     }
 }
