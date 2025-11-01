@@ -11,6 +11,11 @@ namespace RimworldRestApi.Helpers
 {
     public class ColonistsHelper
     {
+        public Pawn GetPawnById(int id)
+        {
+            return Find.CurrentMap.mapPawns.AllPawns.Where(p => p.thingIDNumber == id).FirstOrDefault();
+        }
+
         public List<ColonistDto> GetColonists()
         {
             var colonists = new List<ColonistDto>();
@@ -176,17 +181,60 @@ namespace RimworldRestApi.Helpers
             {
                 return pawn.health?.hediffSet?.hediffs?
                     .Where(h => h != null)
-                    .Select(h => new HediffDto
-                    {
-                        Part = h.Part?.Label,
-                        Label = h.Label
-                    })
+                    .Select(h => HediffToDto(h))
                     .ToList() ?? new List<HediffDto>();
             }
             catch
             {
                 return new List<HediffDto>();
             }
+        }
+
+        public static HediffDto HediffToDto(Hediff hediff)
+        {
+            if (hediff == null) return null;
+
+            var dto = new HediffDto
+            {
+                LoadId = hediff.loadID,
+                DefName = hediff.def?.defName,
+                Label = hediff.Label,
+                LabelCap = hediff.LabelCap,
+                LabelInBrackets = hediff.LabelInBrackets,
+
+                Severity = hediff.Severity,
+                SeverityLabel = hediff.SeverityLabel,
+                CurStageIndex = hediff.CurStageIndex,
+                CurStageLabel = hediff.CurStage?.label,
+
+                PartLabel = hediff.Part?.Label,
+                PartDefName = hediff.Part?.def?.defName,
+
+                AgeTicks = hediff.ageTicks,
+                AgeString = hediff.ageTicks.ToStringTicksToPeriod(),
+
+                Visible = hediff.Visible,
+                IsPermanent = hediff.IsPermanent(),
+                IsTended = hediff.IsTended(),
+                TendableNow = hediff.TendableNow(),
+                Bleeding = hediff.Bleeding,
+                BleedRate = hediff.BleedRate,
+                IsLethal = hediff.IsLethal,
+                IsCurrentlyLifeThreatening = hediff.IsCurrentlyLifeThreatening,
+                CanEverKill = hediff.CanEverKill(),
+
+                SourceDefName = hediff.sourceDef?.defName,
+                SourceLabel = hediff.sourceDef?.label,
+                SourceBodyPartGroupDefName = hediff.sourceBodyPartGroup?.defName,
+                SourceHediffDefName = hediff.sourceHediffDef?.defName,
+
+                CombatLogText = hediff.combatLogText,
+                TipStringExtra = hediff.TipStringExtra,
+                PainFactor = hediff.PainFactor,
+                PainOffset = hediff.PainOffset,
+            };
+
+            return dto;
         }
 
         public List<string> GetTraits(Pawn pawn)

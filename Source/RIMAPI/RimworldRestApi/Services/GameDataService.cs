@@ -18,6 +18,7 @@ namespace RimworldRestApi.Services
         private ResearchHelper _researchHelper;
         private ResourcesHelper _resourcesHelper;
         private ColonistsHelper _colonistsHelper;
+        private BuildingHelper _buildingHelper;
         private TextureHelper _textureHelper;
         private int _lastCacheTick;
         private int needRefreshCooldownTicks = 60; // Refresh every 60 ticks
@@ -35,6 +36,7 @@ namespace RimworldRestApi.Services
             _textureHelper = new TextureHelper();
             _resourcesHelper = new ResourcesHelper();
             _gameEventsHelper = new GameEventsHelper();
+            _buildingHelper = new BuildingHelper();
         }
 
         public void RefreshCache()
@@ -457,6 +459,100 @@ namespace RimworldRestApi.Services
             {
                 Incidents = _gameEventsHelper.GetIncidentsLog(map),
             };
+        }
+
+        public MapZonesDto GetMapZones(int mapId)
+        {
+            MapZonesDto mapZones = new MapZonesDto();
+            mapZones.Zones = _mapHelper.GetMapZones(mapId);
+            mapZones.Areas = _mapHelper.GetMapAreas(mapId);
+            return mapZones;
+        }
+
+        public List<BuildingDto> GetMapBuildings(int mapId)
+        {
+            return _mapHelper.GetMapBuildings(mapId);
+        }
+
+        public BuildingDto GetBuildingInfo(int buildingId)
+        {
+            Building building = _buildingHelper.FindBuildingByID(buildingId);
+            if (building == null)
+            {
+                throw new Exception("Building with this id wasn't found");
+            }
+
+            // Turret Info
+            if (building is Building_Turret)
+            {
+                return _buildingHelper.GetTurretInfo(building);
+            }
+
+            // Generator Info
+            if (building.TryGetComp<CompPowerPlant>() != null)
+            {
+                return _buildingHelper.GetPowerGeneratorInfo(building);
+            }
+
+            return _buildingHelper.BuildingToDto(building);
+        }
+
+        public void SelectGameObject(string objectType, int id)
+        {
+            switch (objectType)
+            {
+                case "item":
+                    var item = Find.CurrentMap.listerThings.AllThings.Where(p => p.thingIDNumber == id).FirstOrDefault();
+                    Find.Selector.Select(item);
+                    break;
+                case "pawn":
+                    var pawn = _colonistsHelper.GetPawnById(id);
+                    Find.Selector.Select(pawn);
+                    break;
+                case "building":
+                    var building = _buildingHelper.FindBuildingByID(id);
+                    Find.Selector.Select(building);
+                    break;
+                default:
+                    throw new Exception($"Tried to select unknown object type: {objectType}");
+            }
+        }
+
+        public void OpenTab(string tabName)
+        {
+            switch (tabName.ToLower())
+            {
+                case "health":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Health));
+                    break;
+                case "character":
+                case "backstory":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Character));
+                    break;
+                case "gear":
+                case "equipment":
+                case "inventory":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Gear));
+                    break;
+                case "needs":
+                case "mood":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Needs));
+                    break;
+                case "training":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Training));
+                    break;
+                case "log":
+                case "combatlog":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Log));
+                    break;
+                default:
+                    throw new Exception($"Tried to open unknown tab menu: {tabName}");
+            }
+        }
+
+        public void DeselectAll()
+        {
+            Find.Selector.ClearSelection();
         }
     }
 }

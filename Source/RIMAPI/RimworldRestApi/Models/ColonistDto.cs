@@ -95,8 +95,51 @@ namespace RimworldRestApi.Models
 
     public class HediffDto
     {
-        public string Part { get; set; }
+        // Basic identification  
+        public int LoadId { get; set; }
+        public string DefName { get; set; }
         public string Label { get; set; }
+        public string LabelCap { get; set; }
+        public string LabelInBrackets { get; set; }
+
+        // Severity and stage  
+        public float Severity { get; set; }
+        public string SeverityLabel { get; set; }
+        public int CurStageIndex { get; set; }
+        public string CurStageLabel { get; set; }
+
+        // Body part information  
+        public string PartLabel { get; set; }
+        public string PartDefName { get; set; }
+
+        // Age and timing  
+        public int AgeTicks { get; set; }
+        public string AgeString { get; set; }
+
+        // Status flags  
+        public bool Visible { get; set; }
+        public bool IsPermanent { get; set; }
+        public bool IsTended { get; set; }
+        public bool TendableNow { get; set; }
+        public bool Bleeding { get; set; }
+        public float BleedRate { get; set; }
+        public bool IsLethal { get; set; }
+        public bool IsCurrentlyLifeThreatening { get; set; }
+        public bool CanEverKill { get; set; }
+
+        // Source information  
+        public string SourceDefName { get; set; }
+        public string SourceLabel { get; set; }
+        public string SourceBodyPartGroupDefName { get; set; }
+        public string SourceHediffDefName { get; set; }
+
+        // Combat log  
+        public string CombatLogText { get; set; }
+
+        // Additional properties  
+        public string TipStringExtra { get; set; }
+        public float PainFactor { get; set; }
+        public float PainOffset { get; set; }
     }
 
     public class SkillDto

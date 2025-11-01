@@ -347,6 +347,72 @@ namespace RimworldRestApi.Controllers
             }
         }
 
+        public async Task DeselectGameObject(HttpListenerContext context)
+        {
+            try
+            {
+                var objType = GetStringProperty(context, "type");
+                if (objType == "all")
+                {
+                    _gameDataService.DeselectAll();
+                    var result = new
+                    {
+                        Result = "success"
+                    };
+                    await ResponseBuilder.Success(context.Response, result);
+                }
+                else
+                {
+                    // TODO: deselect by id
+                }
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task SelectGameObject(HttpListenerContext context)
+        {
+            try
+            {
+                // TODO: select all
+                var objType = GetStringProperty(context, "type");
+                var id = GetIntProperty(context, "id");
+                _gameDataService.SelectGameObject(objType, id);
+                var result = new
+                {
+                    Result = "success"
+                };
+                await ResponseBuilder.Success(context.Response, result);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task OpenTab(HttpListenerContext context)
+        {
+            try
+            {
+                var tab = GetStringProperty(context, "type");
+                _gameDataService.OpenTab(tab);
+                var result = new
+                {
+                    Result = "success"
+                };
+                await ResponseBuilder.Success(context.Response, result);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         public async Task GetIncidentsData(HttpListenerContext context)
         {
             try
