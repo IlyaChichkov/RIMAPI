@@ -4,4 +4,7 @@
   <RIMAPI.APIVersion>API バージョン：</RIMAPI.APIVersion>
   <RIMAPI.ServerPortLabel>REST サーバーポート（再起動必要）：</RIMAPI.ServerPortLabel>
   <RIMAPI.RefreshIntervalLabel>更新間隔（ティック）：</RIMAPI.RefreshIntervalLabel>
+  <RIMAPI.RestartServer>サーバー再起動</RIMAPI.RestartServer>
+  <RIMAPI.EnableLogging>ログ記録を有効化：</RIMAPI.EnableLogging>
+  <RIMAPI.LoggingLevel>ログレベル：</RIMAPI.LoggingLevel>
 </LanguageData>

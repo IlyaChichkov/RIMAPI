@@ -4,4 +4,7 @@
   <RIMAPI.APIVersion>Versione API:</RIMAPI.APIVersion>
   <RIMAPI.ServerPortLabel>Porta server REST (richiede riavvio):</RIMAPI.ServerPortLabel>
   <RIMAPI.RefreshIntervalLabel>Intervallo di aggiornamento (ticks):</RIMAPI.RefreshIntervalLabel>
+  <RIMAPI.RestartServer>Riavvia server</RIMAPI.RestartServer>
+  <RIMAPI.EnableLogging>Abilita registrazione:</RIMAPI.EnableLogging>
+  <RIMAPI.LoggingLevel>Livello di registrazione:</RIMAPI.LoggingLevel>
 </LanguageData>

@@ -4,4 +4,7 @@
   <RIMAPI.APIVersion>API 版本：</RIMAPI.APIVersion>
   <RIMAPI.ServerPortLabel>REST 伺服器端口（需要重啟）：</RIMAPI.ServerPortLabel>
   <RIMAPI.RefreshIntervalLabel>刷新間隔（時鐘週期）：</RIMAPI.RefreshIntervalLabel>
+  <RIMAPI.RestartServer>重啟伺服器</RIMAPI.RestartServer>
+  <RIMAPI.EnableLogging>啟用日誌記錄：</RIMAPI.EnableLogging>
+  <RIMAPI.LoggingLevel>日誌級別：</RIMAPI.LoggingLevel>
 </LanguageData>

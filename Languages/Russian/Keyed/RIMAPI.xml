@@ -4,4 +4,7 @@
   <RIMAPI.APIVersion>Версия API:</RIMAPI.APIVersion>
   <RIMAPI.ServerPortLabel>Порт REST-сервера (требуется перезагрузка):</RIMAPI.ServerPortLabel>
   <RIMAPI.RefreshIntervalLabel>Интервал обновления (тики):</RIMAPI.RefreshIntervalLabel>
+  <RIMAPI.RestartServer>Перезапустить сервер</RIMAPI.RestartServer>
+  <RIMAPI.EnableLogging>Включить логгирование:</RIMAPI.EnableLogging>
+  <RIMAPI.LoggingLevel>Уровень логгирования:</RIMAPI.LoggingLevel>
 </LanguageData>
