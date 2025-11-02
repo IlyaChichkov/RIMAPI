@@ -1,4 +1,6 @@
 <LanguageData>
+  <RIMAPI.Version>Version:</RIMAPI.Version>
+  <RIMAPI.APIVersion>API Version:</RIMAPI.APIVersion>
   <RIMAPI.ServerPortLabel>REST server port (restart required):</RIMAPI.ServerPortLabel>
   <RIMAPI.RefreshIntervalLabel>Refresh interval (ticks):</RIMAPI.RefreshIntervalLabel>
 </LanguageData>

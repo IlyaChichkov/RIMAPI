@@ -1,0 +1,7 @@
+<!-- Spanish -->
+<LanguageData>
+    <RIMAPI.Version>Versión:</RIMAPI.Version>
+    <RIMAPI.APIVersion>Versión API:</RIMAPI.APIVersion>
+    <RIMAPI.ServerPortLabel>Puerto del servidor REST (reinicio requerido):</RIMAPI.ServerPortLabel>
+    <RIMAPI.RefreshIntervalLabel>Intervalo de actualización (ticks):</RIMAPI.RefreshIntervalLabel>
+</LanguageData>

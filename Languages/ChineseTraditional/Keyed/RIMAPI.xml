@@ -1,0 +1,7 @@
+<!-- ChineseTraditional -->
+<LanguageData>
+  <RIMAPI.Version>版本：</RIMAPI.Version>
+  <RIMAPI.APIVersion>API 版本：</RIMAPI.APIVersion>
+  <RIMAPI.ServerPortLabel>REST 伺服器端口（需要重啟）：</RIMAPI.ServerPortLabel>
+  <RIMAPI.RefreshIntervalLabel>刷新間隔（時鐘週期）：</RIMAPI.RefreshIntervalLabel>
+</LanguageData>

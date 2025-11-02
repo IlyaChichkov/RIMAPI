@@ -1,0 +1,7 @@
+<!-- Polish -->
+<LanguageData>
+  <RIMAPI.Version>Wersja:</RIMAPI.Version>
+  <RIMAPI.APIVersion>Wersja API:</RIMAPI.APIVersion>
+  <RIMAPI.ServerPortLabel>Port serwera REST (wymaga restartu):</RIMAPI.ServerPortLabel>
+  <RIMAPI.RefreshIntervalLabel>Interwał odświeżania (tyknięcia):</RIMAPI.RefreshIntervalLabel>
+</LanguageData>

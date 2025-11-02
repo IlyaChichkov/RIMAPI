@@ -1,0 +1,7 @@
+<!-- Japanese -->
+<LanguageData>
+  <RIMAPI.Version>バージョン：</RIMAPI.Version>
+  <RIMAPI.APIVersion>API バージョン：</RIMAPI.APIVersion>
+  <RIMAPI.ServerPortLabel>REST サーバーポート（再起動必要）：</RIMAPI.ServerPortLabel>
+  <RIMAPI.RefreshIntervalLabel>更新間隔（ティック）：</RIMAPI.RefreshIntervalLabel>
+</LanguageData>

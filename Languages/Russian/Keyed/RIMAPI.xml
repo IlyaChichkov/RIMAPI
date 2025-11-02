@@ -1,4 +1,7 @@
+<!-- Russian -->
 <LanguageData>
-  <RIMAPI.ServerPortLabel>Порт REST сервера (требуется перезапуск):</RIMAPI.ServerPortLabel>
-  <RIMAPI.RefreshIntervalLabel>Интервал обновления (тиков):</RIMAPI.RefreshIntervalLabel>
+  <RIMAPI.Version>Версия:</RIMAPI.Version>
+  <RIMAPI.APIVersion>Версия API:</RIMAPI.APIVersion>
+  <RIMAPI.ServerPortLabel>Порт REST-сервера (требуется перезагрузка):</RIMAPI.ServerPortLabel>
+  <RIMAPI.RefreshIntervalLabel>Интервал обновления (тики):</RIMAPI.RefreshIntervalLabel>
 </LanguageData>
