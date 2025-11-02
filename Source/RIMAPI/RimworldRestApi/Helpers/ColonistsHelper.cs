@@ -117,7 +117,9 @@ namespace RimworldRestApi.Helpers
                                 XpTotalEarned = skill.XpTotalEarned,
                                 XpProgressPercent = skill.XpProgressPercent,
                                 XpRequiredForLevelUp = skill.XpRequiredForLevelUp,
-                                Aptitude = skill.Aptitude
+                                XpSinceLastLevel = skill.xpSinceLastLevel,
+                                Aptitude = skill.Aptitude,
+                                Passion = (int)skill.passion
                             })
                             .ToList() ?? new List<SkillDto>(),
                         CurrentJob = pawn.CurJob?.def?.defName ?? "",

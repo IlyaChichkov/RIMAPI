@@ -27,8 +27,10 @@ game reaches the main menu. The port can be changed in the mod settings.
 
 ### Game world manipulation
 
+- **Camera Controls** - Set position, zoom, stream output
+- **Interface Controls** - Select objects, open tabs
 - **In development**</br>
-  *camera control, item spawning, event triggering, zone management*
+  *item spawning, event triggering, zone management*
 
 ### Performance optimizations
 - **Caching** - Efficient data updates without game lag
@@ -69,21 +71,21 @@ curl http://localhost:8765/api/v1/colonists
     "y": 0,
     "z": 80
   }
-},
+}
 ```
 
 > Note: This mod is under active development. API endpoints may change between versions.
-  Always check /api/v1/version for compatibility information.
 
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/IlyaChichkov/RIMAPI/blob/main/LICENSE) file for details.
 
-## Credits and Acknowledgments
+## 👥 Credits and Acknowledgments
 
-This project started as a fork of ARROM by MasterPNJ.
-- Original Repository: [ARROM](https://github.com/MasterPNJ/API-REST-RimwOrld-Mod)
+Thanks to MasterPNJ and his project for insipiration: [ARROM](https://github.com/MasterPNJ/API-REST-RimwOrld-Mod)
 
-A significant portion of the code has been rewritten and new features have been added, but the initial inspiration and base came from the aforementioned project, which is released under the MIT License.
+## 📋 Changelog
+
+[CHANGELOG](https://github.com/IlyaChichkov/RIMAPI/blob/main/CHANGELOG)
 
 ## 🤝 Contributing
 

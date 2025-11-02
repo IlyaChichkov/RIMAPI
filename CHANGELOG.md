@@ -1,4 +1,7 @@
 # Changelog
+## v0.5.1
+Update skills Dto
+
 ## v0.5.0
 
 Add more endpoints
