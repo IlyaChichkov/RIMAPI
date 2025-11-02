@@ -154,7 +154,9 @@ namespace RimworldRestApi.Models
         public float XpTotalEarned { get; set; }
         public float XpProgressPercent { get; set; }
         public float XpRequiredForLevelUp { get; set; }
+        public float XpSinceLastLevel { get; set; }
         public int Aptitude { get; set; }
+        public int Passion { get; set; }
     }
 
     public class WorkPriorityDto
