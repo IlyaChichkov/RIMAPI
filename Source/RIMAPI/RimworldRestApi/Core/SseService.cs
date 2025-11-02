@@ -55,7 +55,7 @@ namespace RimworldRestApi.Core
                     _connectedClients.Add(client);
                 }
 
-                Log.Message($"RIMAPI: SSE connection established. Total clients: {_connectedClients.Count}");
+                DebugLogging.Info($"SSE connection established. Total clients: {_connectedClients.Count}");
 
                 // Send initial connection message
                 await SendEventToClient(client, "connected", new
@@ -89,7 +89,7 @@ namespace RimworldRestApi.Core
                         // Check if client is still connected by testing the stream
                         if (!await TestClientConnection(client))
                         {
-                            Log.Message("RIMAPI: SSE client connection test failed");
+                            DebugLogging.Info("SSE client connection test failed");
                             break;
                         }
 
@@ -100,14 +100,14 @@ namespace RimworldRestApi.Core
                     }
                     catch (Exception ex)
                     {
-                        Log.Message($"RIMAPI: SSE client error - {ex.Message}");
+                        DebugLogging.Info($"SSE client error - {ex.Message}");
                         break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: SSE connection error - {ex}");
+                DebugLogging.Error($"SSE connection error - {ex}");
             }
             finally
             {
@@ -118,7 +118,7 @@ namespace RimworldRestApi.Core
                     _connectedClients.Remove(client);
                 }
 
-                Log.Message($"RIMAPI: SSE connection closed. Remaining clients: {_connectedClients.Count}");
+                DebugLogging.Info($"SSE connection closed. Remaining clients: {_connectedClients.Count}");
             }
         }
 
@@ -164,7 +164,7 @@ namespace RimworldRestApi.Core
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error preparing game update broadcast - {ex}");
+                DebugLogging.Error($"Error preparing game update broadcast - {ex}");
             }
         }
 
@@ -188,7 +188,7 @@ namespace RimworldRestApi.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"RIMAPI: Error processing broadcast - {ex}");
+                    DebugLogging.Error($"Error processing broadcast - {ex}");
                 }
             }
         }
@@ -218,7 +218,7 @@ namespace RimworldRestApi.Core
                 }
                 catch (Exception ex)
                 {
-                    Log.Message($"RIMAPI: Error sending to SSE client - {ex.Message}");
+                    DebugLogging.Info($"Error sending to SSE client - {ex.Message}");
                     clientsToRemove.Add(client);
                 }
             }
@@ -234,7 +234,7 @@ namespace RimworldRestApi.Core
                         client.MarkDisconnected();
                     }
                 }
-                Log.Message($"RIMAPI: Removed {clientsToRemove.Count} dead SSE connections");
+                DebugLogging.Info($"Removed {clientsToRemove.Count} dead SSE connections");
             }
         }
 
@@ -279,7 +279,7 @@ namespace RimworldRestApi.Core
         {
             if (!client.IsConnected)
             {
-                Log.Message($"RIMAPI: client not Connected");
+                DebugLogging.Info($"client not Connected");
                 return;
             }
 
@@ -299,11 +299,11 @@ namespace RimworldRestApi.Core
 
                 var buffer = System.Text.Encoding.UTF8.GetBytes(message);
 
-                Log.Message($"RIMAPI: Sending event: {eventType} with {buffer.Length} bytes");
+                DebugLogging.Info($"Sending event: {eventType} with {buffer.Length} bytes");
 
                 if (!client.IsConnected || client.Response.OutputStream == null)
                 {
-                    Log.Message($"RIMAPI: Client disconnected before send");
+                    DebugLogging.Info($"Client disconnected before send");
                     client.MarkDisconnected();
                     return;
                 }
@@ -311,13 +311,13 @@ namespace RimworldRestApi.Core
                 await client.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 await client.Response.OutputStream.FlushAsync();
 
-                Log.Message($"RIMAPI: Successfully sent event: {eventType}");
+                DebugLogging.Info($"Successfully sent event: {eventType}");
 
                 client.UpdateLastActivity();
             }
             catch (Exception ex)
             {
-                Log.Message($"RIMAPI: Error sending SSE event '{eventType}' - {ex.Message}");
+                DebugLogging.Info($"Error sending SSE event '{eventType}' - {ex.Message}");
                 client.MarkDisconnected();
                 throw;
             }
@@ -331,7 +331,7 @@ namespace RimworldRestApi.Core
 
             lock (_clientsLock)
             {
-                Log.Message($"RIMAPI: Disposing SSE service with {_connectedClients.Count} connected clients");
+                DebugLogging.Info($"Disposing SSE service with {_connectedClients.Count} connected clients");
 
                 foreach (var client in _connectedClients)
                 {

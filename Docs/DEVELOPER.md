@@ -94,7 +94,7 @@ public List<ResearchProjectDto> GetResearchProjects()
     }
     catch (Exception ex)
     {
-        Log.Error($"RIMAPI: Error getting research projects - {ex.Message}");
+        DebugLogging.Error($"Error getting research projects - {ex.Message}");
     }
     
     return projects;
@@ -338,7 +338,7 @@ public async Task GetDataWithValidation(HttpListenerContext context)
     }
     catch (Exception ex)
     {
-        Log.Error($"RIMAPI: Error in GetDataWithValidation - {ex}");
+        DebugLogging.Error($"Error in GetDataWithValidation - {ex}");
         await ResponseBuilder.Error(context.Response, 
             HttpStatusCode.InternalServerError, "Internal server error");
     }

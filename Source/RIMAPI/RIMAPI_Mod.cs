@@ -23,11 +23,11 @@ namespace RIMAPI
             {
                 _harmony = new Harmony("RIMAPI.Harmony");
                 _harmony.PatchAll();
-                Log.Message("RIMAPI: Harmony patches applied successfully");
+                DebugLogging.Info("Harmony patches applied successfully");
             }
             catch (System.Exception ex)
             {
-                Log.Error($"RIMAPI: Failed to apply Harmony patches - {ex}");
+                DebugLogging.Error($"Failed to apply Harmony patches - {ex}");
             }
         }
 
@@ -51,6 +51,25 @@ namespace RIMAPI
             list.Label("RIMAPI.RefreshIntervalLabel".Translate());
             string bufferRefresh = Settings.refreshIntervalTicks.ToString();
             list.TextFieldNumeric(ref Settings.refreshIntervalTicks, ref bufferRefresh, 1);
+
+            if (list.ButtonText("RIMAPI.RestartServer".Translate()))
+            {
+                RIMAPI_GameComponent component = Current.Game.GetComponent<RIMAPI_GameComponent>();
+                if (component != null)
+                {
+                    component.RestartServer();
+                }
+            }
+
+            bool tempEnableLogging = Settings.EnableLogging;
+            list.CheckboxLabeled("RIMAPI.EnableLogging".Translate(), ref tempEnableLogging);
+            Settings.EnableLogging = tempEnableLogging;
+
+            list.Label("RIMAPI.LoggingLevel".Translate());
+            int tempLoggingLevelValue = Settings.LoggingLevel;
+            string tempLoggingLevel = Settings.LoggingLevel.ToString();
+            list.TextFieldNumeric(ref tempLoggingLevelValue, ref tempLoggingLevel, 0, 4);
+            Settings.LoggingLevel = tempLoggingLevelValue;
 
             list.End();
         }

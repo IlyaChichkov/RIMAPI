@@ -22,7 +22,7 @@ namespace RimworldRestApi.Hooks
             }
             catch (System.Exception ex)
             {
-                Log.Error($"RIMAPI: Error in Ingested patch - {ex}");
+                DebugLogging.Error($"Error in Ingested patch - {ex}");
             }
         }
 

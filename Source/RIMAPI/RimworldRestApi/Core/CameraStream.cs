@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using RimworldRestApi.Core;
 using UnityEngine;
 using Verse;
 
@@ -38,7 +39,7 @@ namespace RimworldRestApi.CameraStreamer
 
         public void Setup(StreamingSetup setup)
         {
-            Log.Message("[CameraStreamer] Setup");
+            DebugLogging.Info("[CameraStreamer] Setup");
             streamPort = setup.Port;
             targetIP = setup.Address;
             frameWidth = setup.FrameWidth;
@@ -49,7 +50,7 @@ namespace RimworldRestApi.CameraStreamer
 
         public StreamingSetup GetCurrentSetup()
         {
-            Log.Message("[CameraStreamer] GetCurrentSetup");
+            DebugLogging.Info("[CameraStreamer] GetCurrentSetup");
             return new StreamingSetup
             {
                 Port = streamPort,
@@ -69,14 +70,14 @@ namespace RimworldRestApi.CameraStreamer
                 captureTexture = new Texture2D(frameWidth, frameHeight, TextureFormat.RGB24, false);
                 renderTexture = new RenderTexture(frameWidth, frameHeight, 24);
 
-                Log.Message("[CameraStreamer] Started UDP streaming to " + targetIP + ":" + streamPort);
+                DebugLogging.Info("[CameraStreamer] Started UDP streaming to " + targetIP + ":" + streamPort);
 
                 CameraStreamerUpdater.Register(this);
                 IsStreaming = true;
             }
             catch (Exception e)
             {
-                Log.Error("[CameraStreamer] Failed to start streaming: " + e.Message);
+                DebugLogging.Error("[CameraStreamer] Failed to start streaming: " + e.Message);
                 throw;
             }
         }
@@ -100,7 +101,7 @@ namespace RimworldRestApi.CameraStreamer
                 UnityEngine.Object.Destroy(captureTexture);
             }
 
-            Log.Message("[CameraStreamer] Stopped UDP streaming");
+            DebugLogging.Info("[CameraStreamer] Stopped UDP streaming");
         }
 
         public void Update()
@@ -115,7 +116,7 @@ namespace RimworldRestApi.CameraStreamer
             }
             catch (Exception e)
             {
-                Log.Error("[CameraStreamer] Error capturing frame: " + e.Message);
+                DebugLogging.Error("[CameraStreamer] Error capturing frame: " + e.Message);
             }
         }
 

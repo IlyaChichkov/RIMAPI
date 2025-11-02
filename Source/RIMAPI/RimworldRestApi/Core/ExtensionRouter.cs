@@ -43,7 +43,7 @@ namespace RimworldRestApi.Core
         {
             if (string.IsNullOrEmpty(path))
             {
-                Log.Error($"RIMAPI: Extension '{_extensionNamespace}' attempted to register empty path");
+                DebugLogging.Error($"Extension '{_extensionNamespace}' attempted to register empty path");
                 return;
             }
 
@@ -58,12 +58,12 @@ namespace RimworldRestApi.Core
             {
                 try
                 {
-                    Log.Message($"RIMAPI: Handling extension endpoint {method} {fullPath}");
+                    DebugLogging.Info($"Handling extension endpoint {method} {fullPath}");
                     await handler(context);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"RIMAPI: Error in extension '{_extensionNamespace}' endpoint {path}: {ex}");
+                    DebugLogging.Error($"Error in extension '{_extensionNamespace}' endpoint {path}: {ex}");
                     await ResponseBuilder.Error(context.Response,
                         HttpStatusCode.InternalServerError,
                         $"Extension '{_extensionNamespace}' error: {ex.Message}");
@@ -71,7 +71,7 @@ namespace RimworldRestApi.Core
             }
 
             _mainRouter.AddRoute(method, fullPath, WrappedHandler);
-            Log.Message($"RIMAPI: Registered extension endpoint: {method} {fullPath}");
+            DebugLogging.Info($"Registered extension endpoint: {method} {fullPath}");
         }
     }
 }

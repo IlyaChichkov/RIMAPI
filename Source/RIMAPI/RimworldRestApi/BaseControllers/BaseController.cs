@@ -64,7 +64,7 @@ namespace RimworldRestApi.Controllers
                 var filterParts = filter.Split('=');
                 if (filterParts.Length != 2)
                 {
-                    Log.Warning($"[RIMAPI] Invalid filter format: {filter}. Expected 'field=value'");
+                    DebugLogging.Warning($"[RIMAPI] Invalid filter format: {filter}. Expected 'field=value'");
                     return data;
                 }
 
@@ -75,7 +75,7 @@ namespace RimworldRestApi.Controllers
             }
             catch (Exception ex)
             {
-                Log.Warning($"[RIMAPI] Error applying filter {filter}: {ex.Message}");
+                DebugLogging.Warning($"[RIMAPI] Error applying filter {filter}: {ex.Message}");
                 return data;
             }
         }
@@ -131,7 +131,7 @@ namespace RimworldRestApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Log.Warning($"[RIMAPI] Error getting property {fieldPath}: {ex.Message}");
+                    DebugLogging.Warning($"[RIMAPI] Error getting property {fieldPath}: {ex.Message}");
                 }
             }
 
@@ -143,7 +143,7 @@ namespace RimworldRestApi.Controllers
                 return field.GetValue(obj);
             }
 
-            Log.Warning($"[RIMAPI] Field '{fieldPath}' not found on type {obj.GetType().Name}");
+            DebugLogging.Warning($"[RIMAPI] Field '{fieldPath}' not found on type {obj.GetType().Name}");
             return null;
         }
 
@@ -230,12 +230,12 @@ namespace RimworldRestApi.Controllers
                         }
                         catch (Exception ex)
                         {
-                            Log.Warning($"[RIMAPI] Error getting property {field}: {ex.Message}");
+                            DebugLogging.Warning($"[RIMAPI] Error getting property {field}: {ex.Message}");
                         }
                     }
                     else
                     {
-                        Log.Warning($"[RIMAPI] Property '{field}' not found or not readable on type {objType.Name}");
+                        DebugLogging.Warning($"[RIMAPI] Property '{field}' not found or not readable on type {objType.Name}");
                     }
                 }
             }
@@ -262,7 +262,7 @@ namespace RimworldRestApi.Controllers
                 var property = GetPropertyInfo(currentType, parts[i]);
                 if (property == null)
                 {
-                    Log.Warning($"[RIMAPI] Nested property '{parts[i]}' not found in path '{propertyPath}'");
+                    DebugLogging.Warning($"[RIMAPI] Nested property '{parts[i]}' not found in path '{propertyPath}'");
                     return null;
                 }
 

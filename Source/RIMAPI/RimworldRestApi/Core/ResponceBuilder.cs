@@ -50,7 +50,7 @@ namespace RimworldRestApi.Core
         public static async Task Error(HttpListenerResponse response,
             HttpStatusCode statusCode, string message)
         {
-            Log.Warning($"RIMAPI: API Error {statusCode}: {message}");
+            DebugLogging.Warning($"API Error {statusCode}: {message}");
             await WriteResponse(response, statusCode, new { error = message });
         }
 
@@ -78,11 +78,11 @@ namespace RimworldRestApi.Core
                 await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 response.Close();
 
-                Log.Message($"RIMAPI: Response sent - Status: {statusCode}, Length: {buffer.Length}");
+                DebugLogging.Info($"Response sent - Status: {statusCode}, Length: {buffer.Length}");
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error writing response: {ex.Message}");
+                DebugLogging.Error($"Error writing response: {ex.Message}");
                 try
                 {
                     response.Abort();

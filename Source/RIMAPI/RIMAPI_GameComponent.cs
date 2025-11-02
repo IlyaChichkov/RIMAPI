@@ -22,30 +22,44 @@ namespace RIMAPI
         {
             base.FinalizeInit();
 
+            StartServer();
+        }
+
+        public void StartServer()
+        {
             lock (_serverLock)
             {
                 if (_serverInitialized)
                 {
-                    Log.Message("RIMAPI: Server already initialized, skipping...");
+                    DebugLogging.Info("Server already initialized, skipping...");
                     return;
                 }
 
                 try
                 {
+                    DebugLogging.IsLogging = RIMAPI_Mod.Settings.EnableLogging;
+
                     _apiServer?.Dispose();
                     _apiServer = new ApiServer(RIMAPI_Mod.Settings, _gameDataService);
                     RIMAPI_Mod.RegisterSseService(_apiServer.SseService);
                     _apiServer.Start();
                     _serverInitialized = true;
 
-                    Log.Message($"RIMAPI: REST API Server started on port {RIMAPI_Mod.Settings.serverPort}");
+                    DebugLogging.Info($"REST API Server started on port {RIMAPI_Mod.Settings.serverPort}");
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"RIMAPI: Failed to start API server - {ex.Message}");
+                    DebugLogging.Error($"Failed to start API server - {ex.Message}");
                     _serverInitialized = false;
                 }
             }
+        }
+
+        public void RestartServer()
+        {
+            Log.Message("Restarting API server...");
+            Shutdown();
+            StartServer();
         }
 
         public override void GameComponentTick()
@@ -100,7 +114,7 @@ namespace RIMAPI
             {
                 if (_serverInitialized)
                 {
-                    Log.Message("RIMAPI: Shutting down API server...");
+                    Log.Message("Shutting down API server...");
                     _apiServer?.Dispose();
                     _apiServer = null;
                     _serverInitialized = false;

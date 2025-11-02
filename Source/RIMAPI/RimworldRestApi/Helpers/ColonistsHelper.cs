@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using RimWorld;
+using RimworldRestApi.Core;
 using RimworldRestApi.Models;
 using UnityEngine;
 using Verse;
@@ -37,7 +38,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting colonists - {ex.Message}");
+                DebugLogging.Error($"Error getting colonists - {ex.Message}");
             }
 
             return colonists;
@@ -84,7 +85,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting detailed colonists - {ex.Message}");
+                DebugLogging.Error($"Error getting detailed colonists - {ex.Message}");
             }
 
             return colonists;
@@ -143,7 +144,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error converting pawn to DTO - {ex.Message}");
+                DebugLogging.Error($"Error converting pawn to DTO - {ex.Message}");
                 return new ColonistDetailedDto
                 {
                     Colonist = new ColonistDto
@@ -281,7 +282,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting work priorities for pawn {pawn.thingIDNumber} - {ex.Message}");
+                DebugLogging.Error($"Error getting work priorities for pawn {pawn.thingIDNumber} - {ex.Message}");
                 return priorities;
             }
         }

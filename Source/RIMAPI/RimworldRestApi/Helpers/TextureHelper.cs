@@ -1,6 +1,7 @@
 
 
 using System;
+using RimworldRestApi.Core;
 using UnityEngine;
 using Verse;
 
@@ -12,7 +13,7 @@ namespace RimworldRestApi.Helpers
         {
             try
             {
-                Log.Message($"[RIMAPI] GetItemImage request for thingId: {thingId}");
+                DebugLogging.Info($"[RIMAPI] GetItemImage request for thingId: {thingId}");
 
                 Map currentMap = Find.CurrentMap;
                 if (currentMap == null)
@@ -52,7 +53,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"[RIMAPI] GetItemImage error: {ex}");
+                DebugLogging.Error($"[RIMAPI] GetItemImage error: {ex}");
                 return "{\"error\": \"Failed to get item image: " + ex.Message + "\"}";
             }
         }
@@ -96,7 +97,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"[RIMAPI] TextureToBase64 error: {ex}");
+                DebugLogging.Error($"[RIMAPI] TextureToBase64 error: {ex}");
                 return "";
             }
         }

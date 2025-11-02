@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
+using RimworldRestApi.Core;
 using RimworldRestApi.Models;
 using UnityEngine;
 using Verse;
@@ -33,7 +34,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"[RIMAPI] Error generating resources summary: {ex}");
+                DebugLogging.Error($"[RIMAPI] Error generating resources summary: {ex}");
             }
             return new ResourcesSummaryDto();
         }
@@ -149,7 +150,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"[RIMAPI] Error getting food rot status: {ex}");
+                DebugLogging.Error($"[RIMAPI] Error getting food rot status: {ex}");
                 return dto;
             }
         }
@@ -183,7 +184,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"[RIMAPI] Error analyzing storage: {ex}");
+                DebugLogging.Error($"[RIMAPI] Error analyzing storage: {ex}");
             }
 
             return analysis;
@@ -229,7 +230,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"[RIMAPI] Error analyzing storage: {ex.Message}");
+                DebugLogging.Error($"[RIMAPI] Error analyzing storage: {ex.Message}");
             }
             return new List<ResourceCategoryDto>();
         }

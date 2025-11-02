@@ -27,7 +27,7 @@ namespace RimworldRestApi.Core
             var path = request.Url.AbsolutePath;
             var method = request.HttpMethod;
 
-            Log.Message($"RIMAPI: Routing {method} {path}");
+            DebugLogging.Info($"Routing {method} {path}");
 
             foreach (var route in _routes)
             {
@@ -37,7 +37,7 @@ namespace RimworldRestApi.Core
                 var match = route.Pattern.Match(path);
                 if (match.Success)
                 {
-                    Log.Message($"RIMAPI: Route matched: {route.Method} {route.PathPattern}");
+                    DebugLogging.Info($"Route matched: {route.Method} {route.PathPattern}");
 
                     // Extract route parameters
                     foreach (Group group in match.Groups)
@@ -64,7 +64,7 @@ namespace RimworldRestApi.Core
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"RIMAPI: Error in route handler: {ex}");
+                        DebugLogging.Error($"Error in route handler: {ex}");
                         await ResponseBuilder.Error(context.Response,
                             HttpStatusCode.InternalServerError, "Handler error");
                         return;
@@ -73,7 +73,7 @@ namespace RimworldRestApi.Core
             }
 
             // No route found
-            Log.Warning($"RIMAPI: No route found for {method} {path}");
+            DebugLogging.Warning($"No route found for {method} {path}");
             await ResponseBuilder.Error(context.Response,
                 HttpStatusCode.NotFound, $"Endpoint not found: {path}");
         }

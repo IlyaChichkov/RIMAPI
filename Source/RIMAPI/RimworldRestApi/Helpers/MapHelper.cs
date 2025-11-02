@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using RimworldRestApi.Core;
 using RimworldRestApi.Models;
 using UnityEngine;
 using Verse;
@@ -49,7 +50,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error - {ex.Message}");
+                DebugLogging.Error($"Error - {ex.Message}");
                 return maps;
             }
         }
@@ -58,9 +59,7 @@ namespace RimworldRestApi.Helpers
         {
             try
             {
-                Log.Message($"RIMAPI: Error - {mapId}");
                 var map = FindMapByUniqueID(mapId);
-                Log.Message($"RIMAPI: Error - {map == null}");
                 return new MapCreaturesSummaryDto
                 {
                     ColonistsCount = map.mapPawns.FreeColonistsSpawnedCount,
@@ -78,8 +77,8 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error - {ex}");
-                Log.Error($"RIMAPI: Error - {ex.Message}");
+                DebugLogging.Error($"Error - {ex}");
+                DebugLogging.Error($"Error - {ex.Message}");
                 return new MapCreaturesSummaryDto();
             }
         }
@@ -101,7 +100,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error - {ex.Message}");
+                DebugLogging.Error($"Error - {ex.Message}");
                 return mapTimeDto;
             }
         }
@@ -164,7 +163,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error - {ex.Message}");
+                DebugLogging.Error($"Error - {ex.Message}");
                 return powerInfo;
             }
         }
@@ -211,7 +210,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error - {ex.Message}");
+                DebugLogging.Error($"Error - {ex.Message}");
                 return new List<AnimalDto>();
             }
         }
@@ -242,7 +241,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error - {ex.Message}");
+                DebugLogging.Error($"Error - {ex.Message}");
                 return new List<MapThingDto>();
             }
         }
