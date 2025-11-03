@@ -49,5 +49,30 @@ namespace RimworldRestApi.Controllers
             }
         }
 
+        public async Task GetResourcesStored(HttpListenerContext context)
+        {
+            try
+            {
+                // TODO: add caching
+                object resources = null;
+                var mapId = GetMapIdProperty(context);
+                var categoryDef = GetStringProperty(context, "category", false);
+                if (categoryDef != null)
+                {
+                    resources = _gameDataService.GetAllStoredResourcesByCategory(mapId, categoryDef);
+                }
+                else
+                {
+                    resources = _gameDataService.GetAllStoredResources(mapId);
+                }
+                HandleFiltering(context, ref resources);
+                await ResponseBuilder.Success(context.Response, resources);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }

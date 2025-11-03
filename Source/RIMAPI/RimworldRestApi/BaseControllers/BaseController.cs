@@ -332,10 +332,10 @@ namespace RimworldRestApi.Controllers
             return id;
         }
 
-        protected string GetStringProperty(HttpListenerContext context, string searchName = "id")
+        protected string GetStringProperty(HttpListenerContext context, string searchName = "id", bool required = true)
         {
             string idStr = context.Request.QueryString[searchName];
-            if (string.IsNullOrEmpty(idStr))
+            if (required && string.IsNullOrEmpty(idStr))
             {
                 throw new Exception($"Missing '{searchName}' parameter");
             }

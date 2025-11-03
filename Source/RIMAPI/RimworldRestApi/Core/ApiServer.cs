@@ -232,12 +232,15 @@ namespace RimworldRestApi.Core
                     await new GameController(_gameDataService).GetItemImage(context);
                 });
                 #endregion
-                #region Resources
+                #region Resources & Items
                 _router.AddRoute("GET", "/api/v1/resources/summary", async context =>
                 {
                     await new ResourcesController(_gameDataService).GetResourcesSummary(context);
                 });
-
+                _router.AddRoute("GET", "/api/v1/resources/stored", async context =>
+                {
+                    await new ResourcesController(_gameDataService).GetResourcesStored(context);
+                });
                 _router.AddRoute("GET", "/api/v1/resources/storages/summary", async context =>
                 {
                     await new ResourcesController(_gameDataService).GetStoragesSummary(context);

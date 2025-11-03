@@ -555,5 +555,20 @@ namespace RimworldRestApi.Services
         {
             Find.Selector.ClearSelection();
         }
+
+        public Dictionary<string, List<ResourceItemDto>> GetAllStoredResources(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
+            return _resourcesHelper.GetStoredItemsByCategory(storageLocations);
+        }
+
+        public List<ResourceItemDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
+            DebugLogging.Info("categoryDef: " + categoryDef);
+            return _resourcesHelper.GetStoredItemsListByCategory(storageLocations, categoryDef);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
@@ -234,5 +235,154 @@ namespace RimworldRestApi.Helpers
             }
             return new List<ResourceCategoryDto>();
         }
+
+        public List<ISlotGroupParent> GetAllStorageLocations(Map map)
+        {
+            List<ISlotGroupParent> storageLocations = new List<ISlotGroupParent>();
+
+            // Get all storage buildings  
+            List<Building> allBuildings = map.listerBuildings.allBuildingsColonist;
+            for (int i = 0; i < allBuildings.Count; i++)
+            {
+                Building_Storage storage = allBuildings[i] as Building_Storage;
+                if (storage != null)
+                {
+                    storageLocations.Add(storage);
+                }
+            }
+
+            // Get all stockpile zones  
+            List<Zone> allZones = map.zoneManager.AllZones;
+            for (int i = 0; i < allZones.Count; i++)
+            {
+                Zone_Stockpile stockpile = allZones[i] as Zone_Stockpile;
+                if (stockpile != null)
+                {
+                    storageLocations.Add(stockpile);
+                }
+            }
+
+            return storageLocations;
+        }
+
+        public Dictionary<string, List<ResourceItemDto>> GetStoredItemsByCategory(
+            List<ISlotGroupParent> storageLocations)
+        {
+            if (storageLocations == null || storageLocations.Count == 0)
+                return new Dictionary<string, List<ResourceItemDto>>();
+
+            var itemsByCategory = new Dictionary<string, List<ResourceItemDto>>();
+
+            foreach (var storage in storageLocations)
+            {
+                var slotGroup = storage.GetSlotGroup();
+                if (slotGroup == null) continue;
+
+                foreach (var thing in slotGroup.HeldThings)
+                {
+                    var category = GetPrimaryCategoryForThing(thing.def);
+                    if (category == null) continue;
+
+                    var categoryLabel = category.defName;
+
+                    // Get or create the list for this category
+                    if (!itemsByCategory.TryGetValue(categoryLabel, out var categoryList))
+                    {
+                        categoryList = new List<ResourceItemDto>();
+                        itemsByCategory[categoryLabel] = categoryList;
+                    }
+
+                    categoryList.Add(CreateResourceItemDto(thing));
+                }
+            }
+
+            return itemsByCategory;
+        }
+
+        public List<ResourceItemDto> GetStoredItemsListByCategory(
+            List<ISlotGroupParent> storageLocations,
+            string categoryDef)
+        {
+            if (storageLocations == null || storageLocations.Count == 0)
+                return new List<ResourceItemDto>();
+
+            var itemsByCategory = new List<ResourceItemDto>();
+
+            foreach (var storage in storageLocations)
+            {
+                var slotGroup = storage.GetSlotGroup();
+                if (slotGroup == null) continue;
+
+                foreach (var thing in slotGroup.HeldThings)
+                {
+                    if (!IsThingInCategory(thing, categoryDef)) continue;
+
+                    var dto = CreateResourceItemDto(thing);
+                    itemsByCategory.Add(dto);
+                }
+            }
+
+            return itemsByCategory;
+        }
+
+        private bool IsThingInCategory(Thing thing, string categoryDef)
+        {
+            var categories = thing.def.thingCategories;
+            return categories != null && categories.Any(c => c.defName == TransformToPascalCase(categoryDef));
+        }
+
+        private ResourceItemDto CreateResourceItemDto(Thing thing)
+        {
+            var dto = new ResourceItemDto
+            {
+                ThingId = thing.thingIDNumber,
+                DefName = thing.def.defName,
+                Label = thing.Label,
+                Categories = thing.def.thingCategories?.Select(c => c.defName).ToList() ?? new List<string>(),
+                Position = new PositionDto
+                {
+                    X = thing.Position.x,
+                    Y = thing.Position.y,
+                    Z = thing.Position.z
+                },
+                StackCount = thing.stackCount,
+                MarketValue = thing.MarketValue,
+                IsForbidden = thing.IsForbidden(Faction.OfPlayer)
+            };
+
+            dto.Quality = -1;
+            if (thing.TryGetQuality(out QualityCategory quality))
+            {
+                dto.Quality = (int)quality;
+            }
+
+            // Set hit points if applicable
+            if (thing.def.useHitPoints)
+            {
+                dto.HitPoints = thing.HitPoints;
+                dto.MaxHitPoints = thing.MaxHitPoints;
+            }
+
+            return dto;
+        }
+
+        private static ThingCategoryDef GetPrimaryCategoryForThing(ThingDef thingDef)
+        {
+            // Get the first (most specific) category from thingCategories list  
+            if (thingDef.thingCategories != null && thingDef.thingCategories.Count > 0)
+            {
+                return thingDef.thingCategories[0];
+            }
+            return null;
+        }
+
+        public string TransformToPascalCase(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+
+            var textInfo = CultureInfo.CurrentCulture.TextInfo;
+            return textInfo.ToTitleCase(input.Replace('_', ' ')).Replace(" ", "");
+        }
+
     }
 }
