@@ -1,4 +1,10 @@
 # Changelog
+## v0.5.2
+Add endpoint:
+- /api/v1/resources/stored
+
+Update resources Dto
+
 ## v0.5.1
 Update skills Dto
 

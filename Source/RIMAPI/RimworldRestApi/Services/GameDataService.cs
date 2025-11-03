@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using RimWorld;
+using RimworldRestApi.Core;
 using RimworldRestApi.Helpers;
 using RimworldRestApi.Models;
 using UnityEngine;
@@ -66,7 +67,7 @@ namespace RimworldRestApi.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error refreshing cache - {ex.Message}");
+                DebugLogging.Error($"Error refreshing cache - {ex.Message}");
             }
         }
 
@@ -206,7 +207,7 @@ namespace RimworldRestApi.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting colonist inventory - {ex.Message}");
+                DebugLogging.Error($"Error getting colonist inventory - {ex.Message}");
             }
 
             return new ColonistInventoryDto();
@@ -235,7 +236,7 @@ namespace RimworldRestApi.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting body image - {ex.Message}");
+                DebugLogging.Error($"Error getting body image - {ex.Message}");
             }
             return bodyParts;
         }
@@ -259,7 +260,7 @@ namespace RimworldRestApi.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting mods list - {ex.Message}");
+                DebugLogging.Error($"Error getting mods list - {ex.Message}");
                 return modsInfo;
             }
         }
@@ -294,7 +295,7 @@ namespace RimworldRestApi.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting item image - {ex.Message}");
+                DebugLogging.Error($"Error getting item image - {ex.Message}");
             }
 
             return image;
@@ -341,7 +342,7 @@ namespace RimworldRestApi.Services
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error getting factions list - {ex.Message}");
+                DebugLogging.Error($"Error getting factions list - {ex.Message}");
                 return new List<FactionsDto>();
             }
 
@@ -553,6 +554,21 @@ namespace RimworldRestApi.Services
         public void DeselectAll()
         {
             Find.Selector.ClearSelection();
+        }
+
+        public Dictionary<string, List<ResourceItemDto>> GetAllStoredResources(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
+            return _resourcesHelper.GetStoredItemsByCategory(storageLocations);
+        }
+
+        public List<ResourceItemDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
+            DebugLogging.Info("categoryDef: " + categoryDef);
+            return _resourcesHelper.GetStoredItemsListByCategory(storageLocations, categoryDef);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace RimworldRestApi.Core
         {
             if (extension == null)
             {
-                Log.Error("RIMAPI: Attempted to register null extension");
+                DebugLogging.Error("Attempted to register null extension");
                 return;
             }
 
@@ -35,12 +35,12 @@ namespace RimworldRestApi.Core
             {
                 if (_extensions.Any(e => e.ExtensionId == extension.ExtensionId))
                 {
-                    Log.Warning($"RIMAPI: Extension with ID '{extension.ExtensionId}' already registered");
+                    DebugLogging.Warning($"Extension with ID '{extension.ExtensionId}' already registered");
                     return;
                 }
 
                 _extensions.Add(extension);
-                Log.Message($"RIMAPI: Registered extension '{extension.ExtensionName}' ({extension.ExtensionId}) v{extension.Version}");
+                DebugLogging.Info($"Registered extension '{extension.ExtensionName}' ({extension.ExtensionId}) v{extension.Version}");
             }
         }
 
@@ -51,13 +51,13 @@ namespace RimworldRestApi.Core
         {
             if (_initialized)
             {
-                Log.Warning("RIMAPI: Extension discovery already completed");
+                DebugLogging.Warning("Extension discovery already completed");
                 return;
             }
 
             try
             {
-                Log.Message("RIMAPI: Scanning for extensions...");
+                DebugLogging.Info("Scanning for extensions...");
 
                 // Scan all loaded assemblies for IRimApiExtension implementations
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -68,16 +68,16 @@ namespace RimworldRestApi.Core
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"RIMAPI: Error scanning assembly {assembly.GetName().Name}: {ex.Message}");
+                        DebugLogging.Error($"Error scanning assembly {assembly.GetName().Name}: {ex.Message}");
                     }
                 }
 
                 _initialized = true;
-                Log.Message($"RIMAPI: Extension discovery complete. Found {_extensions.Count} extensions.");
+                DebugLogging.Info($"Extension discovery complete. Found {_extensions.Count} extensions.");
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error during extension discovery: {ex}");
+                DebugLogging.Error($"Error during extension discovery: {ex}");
             }
         }
 
@@ -101,14 +101,14 @@ namespace RimworldRestApi.Core
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"RIMAPI: Failed to create extension instance {type.Name}: {ex.Message}");
+                        DebugLogging.Error($"Failed to create extension instance {type.Name}: {ex.Message}");
                     }
                 }
             }
             catch (Exception ex)
             {
                 // Some assemblies may not be accessible, just log and continue
-                Log.Message($"RIMAPI: Could not scan assembly {assembly.GetName().Name}: {ex.Message}");
+                DebugLogging.Info($"Could not scan assembly {assembly.GetName().Name}: {ex.Message}");
             }
         }
 

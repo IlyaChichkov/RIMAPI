@@ -52,19 +52,19 @@ namespace RimworldRestApi.Core
                 #region Basic
                 _router.AddRoute("GET", "/api/v1/version", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/version");
+                    DebugLogging.Info("Handling /api/v1/version");
                     await new VersionController().GetVersion(context, Settings);
                 });
 
                 _router.AddRoute("GET", "/api/v1/game/state", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/game/state");
+                    DebugLogging.Info("Handling /api/v1/game/state");
                     await new GameController(_gameDataService).GetGameState(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/mods/info", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/mods/info");
+                    DebugLogging.Info("Handling /api/v1/mods/info");
                     await new GameController(_gameDataService).GetModsInfo(context);
                 });
 
@@ -232,12 +232,15 @@ namespace RimworldRestApi.Core
                     await new GameController(_gameDataService).GetItemImage(context);
                 });
                 #endregion
-                #region Resources
+                #region Resources & Items
                 _router.AddRoute("GET", "/api/v1/resources/summary", async context =>
                 {
                     await new ResourcesController(_gameDataService).GetResourcesSummary(context);
                 });
-
+                _router.AddRoute("GET", "/api/v1/resources/stored", async context =>
+                {
+                    await new ResourcesController(_gameDataService).GetResourcesStored(context);
+                });
                 _router.AddRoute("GET", "/api/v1/resources/storages/summary", async context =>
                 {
                     await new ResourcesController(_gameDataService).GetStoragesSummary(context);
@@ -275,16 +278,16 @@ namespace RimworldRestApi.Core
                 // Server-Sent Events endpoint for real-time updates
                 _router.AddRoute("GET", "/api/v1/events", async context =>
                 {
-                    Log.Message("RIMAPI: Handling /api/v1/events");
+                    DebugLogging.Info("Handling /api/v1/events");
                     await _sseService.HandleSSEConnection(context);
                 });
 
                 #endregion
-                Log.Message("RIMAPI: Routes registered successfully");
+                DebugLogging.Info("Routes registered successfully");
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error registering routes: {ex}");
+                DebugLogging.Error($"Error registering routes: {ex}");
                 throw;
             }
         }
@@ -301,11 +304,11 @@ namespace RimworldRestApi.Core
                 // Start background listener
                 _ = ListenForRequestsAsync();
 
-                Log.Message($"RIMAPI: API Server listening on {BaseUrl}");
+                DebugLogging.Info($"API Server listening on {BaseUrl}");
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Failed to start API server - {ex.Message}");
+                DebugLogging.Error($"Failed to start API server - {ex.Message}");
                 throw;
             }
         }
@@ -330,7 +333,7 @@ namespace RimworldRestApi.Core
                 catch (Exception ex)
                 {
                     if (_isRunning)
-                        Log.Error($"RIMAPI: Error accepting request - {ex.Message}");
+                        DebugLogging.Error($"Error accepting request - {ex.Message}");
                 }
             }
         }
@@ -377,7 +380,7 @@ namespace RimworldRestApi.Core
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error processing request - {ex.Message}");
+                DebugLogging.Error($"Error processing request - {ex.Message}");
                 await ResponseBuilder.Error(context.Response,
                     System.Net.HttpStatusCode.InternalServerError, "Internal server error");
             }
@@ -399,7 +402,7 @@ namespace RimworldRestApi.Core
         {
             try
             {
-                Log.Message("RIMAPI: Initializing extensions...");
+                DebugLogging.Info("Initializing extensions...");
 
                 // Discover extensions automatically via reflection
                 _extensionRegistry.DiscoverExtensions();
@@ -412,19 +415,19 @@ namespace RimworldRestApi.Core
                     {
                         var extensionRouter = new ExtensionRouter(_router, extension.ExtensionId);
                         extension.RegisterEndpoints(extensionRouter);
-                        Log.Message($"RIMAPI: Successfully registered endpoints for extension '{extension.ExtensionName}'");
+                        DebugLogging.Info($"Successfully registered endpoints for extension '{extension.ExtensionName}'");
                     }
                     catch (Exception ex)
                     {
-                        Log.Error($"RIMAPI: Failed to register endpoints for extension '{extension.ExtensionId}': {ex}");
+                        DebugLogging.Error($"Failed to register endpoints for extension '{extension.ExtensionId}': {ex}");
                     }
                 }
 
-                Log.Message($"RIMAPI: Extension registration complete. {extensions.Count} extensions loaded.");
+                DebugLogging.Info($"Extension registration complete. {extensions.Count} extensions loaded.");
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error during extension registration: {ex}");
+                DebugLogging.Error($"Error during extension registration: {ex}");
             }
         }
 
@@ -440,11 +443,11 @@ namespace RimworldRestApi.Core
                 {
                     var extensionRouter = new ExtensionRouter(_router, extension.ExtensionId);
                     extension.RegisterEndpoints(extensionRouter);
-                    Log.Message($"RIMAPI: Dynamically registered endpoints for extension '{extension.ExtensionName}'");
+                    DebugLogging.Info($"Dynamically registered endpoints for extension '{extension.ExtensionName}'");
                 }
                 catch (Exception ex)
                 {
-                    Log.Error($"RIMAPI: Failed to dynamically register endpoints for extension '{extension.ExtensionId}': {ex}");
+                    DebugLogging.Error($"Failed to dynamically register endpoints for extension '{extension.ExtensionId}': {ex}");
                 }
             }
         }
@@ -458,7 +461,7 @@ namespace RimworldRestApi.Core
 
             try
             {
-                Log.Message("RIMAPI: Disposing API server...");
+                DebugLogging.Info("Disposing API server...");
 
                 // Stop listening first
                 if (_listener?.IsListening == true)
@@ -483,11 +486,11 @@ namespace RimworldRestApi.Core
                     }
                 }
 
-                Log.Message("RIMAPI: API server disposed successfully");
+                DebugLogging.Info("API server disposed successfully");
             }
             catch (Exception ex)
             {
-                Log.Error($"RIMAPI: Error disposing server - {ex.Message}");
+                DebugLogging.Error($"Error disposing server - {ex.Message}");
             }
         }
     }

@@ -1,0 +1,10 @@
+<!-- Korean -->
+<LanguageData>
+  <RIMAPI.Version>버전:</RIMAPI.Version>
+  <RIMAPI.APIVersion>API 버전:</RIMAPI.APIVersion>
+  <RIMAPI.ServerPortLabel>REST 서버 포트 (재시작 필요):</RIMAPI.ServerPortLabel>
+  <RIMAPI.RefreshIntervalLabel>새로 고침 간격 (틱):</RIMAPI.RefreshIntervalLabel>
+  <RIMAPI.RestartServer>서버 재시작</RIMAPI.RestartServer>
+  <RIMAPI.EnableLogging>로깅 활성화:</RIMAPI.EnableLogging>
+  <RIMAPI.LoggingLevel>로깅 수준:</RIMAPI.LoggingLevel>
+</LanguageData>

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using RimworldRestApi.Core;
 using RimworldRestApi.Models;
 using UnityEngine;
 using Verse;
@@ -79,7 +80,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
+                DebugLogging.Error(ex.Message);
                 throw;
             }
         }
@@ -217,7 +218,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
+                DebugLogging.Error(ex.Message);
                 throw;
             }
         }
