@@ -19,9 +19,13 @@ namespace RimworldRestApi.Services
         List<ColonistDetailedDto> GetColonistsDetailed();
         ColonistDetailedDto GetColonistDetailed(int id);
         ColonistInventoryDto GetColonistInventory(int id);
-        ImageDto GetItemImage(string name);
         BodyPartsDto GetColonistBodyParts(int id);
         OpinionAboutPawnDto GetOpinionAboutPawn(int id, int otherId);
+        #endregion
+        #region Images
+        ImageDto GetItemImage(string name);
+        ImageDto GetPawnPortraitImage(int pawnId, int width, int height, string direction);
+
         #endregion
         #region Datetime
         MapTimeDto GetCurrentMapDatetime();

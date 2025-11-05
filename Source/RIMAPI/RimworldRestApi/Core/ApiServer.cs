@@ -237,6 +237,11 @@ namespace RimworldRestApi.Core
                 {
                     await new GameController(_gameDataService).GetItemImage(context);
                 });
+
+                _router.AddRoute("GET", "/api/v1/pawn/portrait/image", async context =>
+                {
+                    await new GameController(_gameDataService).GetPawnPortraitImage(context);
+                });
                 #endregion
                 #region Resources & Items
                 _router.AddRoute("GET", "/api/v1/resources/summary", async context =>

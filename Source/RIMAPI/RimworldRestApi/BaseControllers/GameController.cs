@@ -220,6 +220,31 @@ namespace RimworldRestApi.Controllers
             }
         }
 
+        public async Task GetPawnPortraitImage(HttpListenerContext context)
+        {
+            try
+            {
+                int pawnId = GetIntProperty(context, "pawn_id");
+                int width = GetIntProperty(context, "width");
+                int height = GetIntProperty(context, "height");
+                string direction = GetStringProperty(context, "direction");
+
+                object itemImage = _gameDataService.GetPawnPortraitImage(pawnId, width, height, direction);
+                if (itemImage == null)
+                {
+                    await ResponseBuilder.Error(context.Response,
+                        HttpStatusCode.NotFound, "Failed to get item's image");
+                    return;
+                }
+                await ResponseBuilder.Success(context.Response, itemImage);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         public async Task GetColonistBody(HttpListenerContext context)
         {
             try

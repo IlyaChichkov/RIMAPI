@@ -286,10 +286,5 @@ namespace RimworldRestApi.Helpers
                 return priorities;
             }
         }
-
-        public ColonistDetailedDto GetColonistInventory(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

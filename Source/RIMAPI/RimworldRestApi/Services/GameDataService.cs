@@ -269,38 +269,13 @@ namespace RimworldRestApi.Services
 
         public ImageDto GetItemImage(string name)
         {
-            ImageDto image = new ImageDto();
+            return _textureHelper.GetItemImageByName(name);
+        }
 
-            try
-            {
-                var thingDef = DefDatabase<ThingDef>.GetNamed(name);
-                Texture2D icon = null;
-
-                if (!thingDef.uiIconPath.NullOrEmpty())
-                {
-                    icon = thingDef.uiIcon;
-                }
-                else
-                {
-                    icon = (Texture2D)thingDef.DrawMatSingle.mainTexture;
-                }
-
-                if (icon == null)
-                {
-                    image.Result = $"No icon available for item - {name}";
-                }
-                else
-                {
-                    image.Result = "Success";
-                    image.ImageBase64 = _textureHelper.TextureToBase64(icon);
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugLogging.Error($"Error getting item image - {ex.Message}");
-            }
-
-            return image;
+        public ImageDto GetPawnPortraitImage(int pawnId, int width, int height, string direction)
+        {
+            Pawn pawn = _colonistsHelper.GetPawnById(pawnId);
+            return _textureHelper.GetPawnPortraitImage(pawn, width, height, direction);
         }
 
         public MapTimeDto GetCurrentMapDatetime()

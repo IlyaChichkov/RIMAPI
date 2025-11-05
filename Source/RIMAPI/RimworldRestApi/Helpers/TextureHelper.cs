@@ -1,7 +1,10 @@
 
 
 using System;
+using HarmonyLib;
+using RimWorld;
 using RimworldRestApi.Core;
+using RimworldRestApi.Models;
 using UnityEngine;
 using Verse;
 
@@ -9,53 +12,85 @@ namespace RimworldRestApi.Helpers
 {
     public class TextureHelper
     {
-        public string GetItemImage(int thingId)
+        public ImageDto GetItemImageByName(string thingName)
         {
+            ImageDto image = new ImageDto();
             try
             {
-                DebugLogging.Info($"GetItemImage request for thingId: {thingId}");
+                var thingDef = DefDatabase<ThingDef>.GetNamed(thingName);
+                Texture2D icon = null;
 
-                Map currentMap = Find.CurrentMap;
-                if (currentMap == null)
+                if (!thingDef.uiIconPath.NullOrEmpty())
                 {
-                    return "{\"error\": \"No map available\"}";
-                }
-
-                // Find the thing by ID
-                Thing thing = currentMap.listerThings.AllThings.FirstOrDefault(t => t.thingIDNumber == thingId);
-                if (thing == null)
-                {
-                    return "{\"error\": \"Item not found\"}";
-                }
-
-                // Get the texture
-                Texture2D icon;
-
-                if (!thing.def.uiIconPath.NullOrEmpty())
-                {
-                    icon = thing.def.uiIcon;
+                    icon = thingDef.uiIcon;
                 }
                 else
                 {
-                    // Use the thing's graphic
-                    icon = (Texture2D)thing.Graphic.MatSingle.mainTexture;
+                    icon = (Texture2D)thingDef.DrawMatSingle.mainTexture;
                 }
 
                 if (icon == null)
                 {
-                    return "{\"error\": \"No icon available for this item\"}";
+                    image.Result = $"No icon available for item - {thingName}";
                 }
-
-                // Convert texture to base64
-                string base64Image = TextureToBase64(icon);
-
-                return $"{{\"success\": true, \"thingId\": {thingId}, \"image\": \"{base64Image}\", \"format\": \"png\", \"width\": {icon.width}, \"height\": {icon.height}, \"label\": \"{thing.Label}\"}}";
+                else
+                {
+                    image.Result = "success";
+                    image.ImageBase64 = TextureToBase64(icon);
+                }
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"GetItemImage error: {ex}");
-                return "{\"error\": \"Failed to get item image: " + ex.Message + "\"}";
+                image.Result = ex.Message;
+                throw;
             }
+            return image;
+        }
+
+        public ImageDto GetPawnPortraitImage(Pawn pawn, int width, int height, string faceDir = "south")
+        {
+            ImageDto image = new ImageDto();
+            try
+            {
+                var dir = Rot4.South;
+                switch (faceDir)
+                {
+                    case "north":
+                        dir = Rot4.North;
+                        break;
+                    case "east":
+                        dir = Rot4.East;
+                        break;
+                    case "south":
+                        dir = Rot4.South;
+                        break;
+                    case "west":
+                        dir = Rot4.West;
+                        break;
+                }
+
+                RenderTexture renderTexture = PortraitsCache.Get(
+                    pawn,
+                    new Vector2(width, height),
+                    dir
+                );
+
+                // Convert to Texture2D  
+                RenderTexture.active = renderTexture;
+                Texture2D texture = new Texture2D(renderTexture.width, renderTexture.height);
+                texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+                texture.Apply();
+                RenderTexture.active = null;
+
+                image.Result = "success";
+                image.ImageBase64 = TextureToBase64(texture);
+            }
+            catch (Exception ex)
+            {
+                image.Result = ex.Message;
+                throw;
+            }
+            return image;
         }
 
         public string TextureToBase64(Texture2D texture)
@@ -98,7 +133,7 @@ namespace RimworldRestApi.Helpers
             catch (Exception ex)
             {
                 DebugLogging.Error($"TextureToBase64 error: {ex}");
-                return "";
+                throw;
             }
         }
 
