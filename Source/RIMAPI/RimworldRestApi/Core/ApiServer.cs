@@ -93,7 +93,13 @@ namespace RimworldRestApi.Core
                     await new GameController(_gameDataService).OpenTab(context);
                 });
                 #endregion
+                #region Jobs
 
+                _router.AddRoute("POST", "/api/v1/jobs/make/equip", async context =>
+                {
+                    await new GameController(_gameDataService).MakeJobEquip(context);
+                });
+                #endregion
                 #region Map
                 _router.AddRoute("GET", "/api/v1/maps", async context =>
                 {

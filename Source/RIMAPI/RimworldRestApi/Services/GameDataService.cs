@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using Newtonsoft.Json;
 using RimWorld;
 using RimworldRestApi.Core;
@@ -8,6 +9,7 @@ using RimworldRestApi.Helpers;
 using RimworldRestApi.Models;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace RimworldRestApi.Services
 {
@@ -569,6 +571,60 @@ namespace RimworldRestApi.Services
             var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
             DebugLogging.Info("categoryDef: " + categoryDef);
             return _resourcesHelper.GetStoredItemsListByCategory(storageLocations, categoryDef);
+        }
+
+        public void MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            if (map == null)
+            {
+                throw new Exception($"Map with ID={mapId} not found");
+            }
+            Pawn pawn = map.listerThings.AllThings
+                .OfType<Pawn>()
+                .FirstOrDefault(p => p.thingIDNumber == pawnId);
+            if (pawn == null)
+            {
+                throw new Exception($"Pawn with ID={pawnId} not found");
+            }
+
+            Thing foundThing = map.listerThings.AllThings.FirstOrDefault(t => t.thingIDNumber == equipmentId);
+            if (foundThing == null)
+            {
+                throw new Exception($"Thing with ID={equipmentId} not found");
+            }
+
+            Job job = null;
+            switch (equipmentType)
+            {
+                case "weapon":
+                    if (EquipmentUtility.CanEquip(foundThing, pawn) == false)
+                    {
+                        throw new Exception($"Can't equip this weapon");
+                    }
+
+                    job = JobMaker.MakeJob(JobDefOf.Equip, foundThing);
+                    break;
+                case "apparel":
+                    if (ApparelUtility.HasPartsToWear(pawn, foundThing.def) == false)
+                    {
+                        throw new Exception($"Can't equip this apparel");
+                    }
+
+                    job = JobMaker.MakeJob(JobDefOf.Wear, foundThing);
+                    break;
+            }
+
+            if (job == null)
+            {
+                throw new Exception($"Failed to make a job");
+            }
+
+            bool result = pawn.jobs.TryTakeOrderedJob(job);
+            if (!result)
+            {
+                throw new Exception($"Failed to assign job to pawn");
+            }
         }
     }
 }

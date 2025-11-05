@@ -56,6 +56,10 @@ namespace RimworldRestApi.Services
         ResearchSummaryDto GetResearchSummary();
 
         #endregion
+        #region Jobs
+        void MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType);
+
+        #endregion
         #region Factions
         List<FactionsDto> GetFactions();
 
@@ -65,7 +69,6 @@ namespace RimworldRestApi.Services
         StoragesSummaryDto GetStoragesSummary(int mapId);
         Dictionary<string, List<ResourceItemDto>> GetAllStoredResources(int mapId);
         List<ResourceItemDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef);
-
 
         #endregion
         #region Cache management

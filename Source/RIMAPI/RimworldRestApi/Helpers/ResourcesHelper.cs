@@ -35,7 +35,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[RIMAPI] Error generating resources summary: {ex}");
+                DebugLogging.Error($"Error generating resources summary: {ex}");
             }
             return new ResourcesSummaryDto();
         }
@@ -151,7 +151,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[RIMAPI] Error getting food rot status: {ex}");
+                DebugLogging.Error($"Error getting food rot status: {ex}");
                 return dto;
             }
         }
@@ -185,7 +185,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[RIMAPI] Error analyzing storage: {ex}");
+                DebugLogging.Error($"Error analyzing storage: {ex}");
             }
 
             return analysis;
@@ -231,7 +231,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[RIMAPI] Error analyzing storage: {ex.Message}");
+                DebugLogging.Error($"Error analyzing storage: {ex.Message}");
             }
             return new List<ResourceCategoryDto>();
         }
@@ -383,6 +383,5 @@ namespace RimworldRestApi.Helpers
             var textInfo = CultureInfo.CurrentCulture.TextInfo;
             return textInfo.ToTitleCase(input.Replace('_', ' ')).Replace(" ", "");
         }
-
     }
 }

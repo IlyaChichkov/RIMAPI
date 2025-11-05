@@ -347,6 +347,28 @@ namespace RimworldRestApi.Controllers
             }
         }
 
+        public async Task MakeJobEquip(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                var pawnId = GetIntProperty(context, "pawn_id");
+                var itemId = GetIntProperty(context, "item_id");
+                var itemType = GetStringProperty(context, "item_type");
+                _gameDataService.MakeJobEquip(mapId, pawnId, itemId, itemType);
+                var result = new
+                {
+                    Result = "success"
+                };
+                await ResponseBuilder.Success(context.Response, result);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         public async Task DeselectGameObject(HttpListenerContext context)
         {
             try
