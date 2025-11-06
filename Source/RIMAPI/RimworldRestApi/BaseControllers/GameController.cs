@@ -490,5 +490,20 @@ namespace RimworldRestApi.Controllers
                     HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        internal async Task GetWorkList(HttpListenerContext context)
+        {
+            try
+            {
+                object incidentsData = _gameDataService.GetWorkList();
+                HandleFiltering(context, ref incidentsData);
+                await ResponseBuilder.Success(context.Response, incidentsData);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }

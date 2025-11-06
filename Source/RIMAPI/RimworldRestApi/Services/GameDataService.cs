@@ -652,7 +652,14 @@ namespace RimworldRestApi.Services
             }
 
             // Find the WorkTypeDef by defName  
-            WorkTypeDef workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(workDef);
+            WorkTypeDef workTypeDef = null;
+            foreach (WorkTypeDef workType in DefDatabase<WorkTypeDef>.AllDefs)
+            {
+                if (workType.defName.ToLower() == workDef.ToLower())
+                {
+                    workTypeDef = workType;
+                }
+            }
             if (workTypeDef == null)
             {
                 throw new Exception($"Could not find WorkTypeDef with defName {workDef}");
@@ -680,6 +687,22 @@ namespace RimworldRestApi.Services
             pawn.workSettings.SetPriority(workTypeDef, priority);
 
             RefreshCache();
+        }
+
+        public WorkListDto GetWorkList()
+        {
+            WorkListDto workList = new WorkListDto
+            {
+                Work = new List<string>()
+            };
+
+            foreach (WorkTypeDef workType in DefDatabase<WorkTypeDef>.AllDefs)
+            {
+                if (workType == null) continue;
+                workList.Work.Add(workType.defName);
+            }
+
+            return workList;
         }
     }
 }

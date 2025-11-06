@@ -192,6 +192,11 @@ namespace RimworldRestApi.Models
         public List<WorkPriorityDto> WorkPriorities { get; set; } = new List<WorkPriorityDto>();
     }
 
+    public class WorkListDto
+    {
+        public List<string> Work { get; set; }
+    }
+
     public class WorkPriorityUpdateDto
     {
         [JsonProperty("id")]
