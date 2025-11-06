@@ -226,6 +226,16 @@ namespace RimworldRestApi.Core
                 {
                     await new GameController(_gameDataService).GetColonistInventory(context);
                 });
+
+                _router.AddRoute("POST", "/api/v1/colonist/work-priority", async context =>
+                {
+                    await new GameController(_gameDataService).SetColonistWorkPriority(context);
+                });
+
+                _router.AddRoute("POST", "/api/v1/colonists/work-priority", async context =>
+                {
+                    await new GameController(_gameDataService).SetColonistsWorkPriority(context);
+                });
                 #endregion
                 #region Image
                 _router.AddRoute("GET", "/api/v1/colonist/body/image", async context =>

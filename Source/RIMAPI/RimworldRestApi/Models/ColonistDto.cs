@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using RimWorld;
 
 namespace RimworldRestApi.Models
@@ -54,8 +55,17 @@ namespace RimworldRestApi.Models
     {
         public List<SkillDto> Skills { get; set; }
         public string CurrentJob { get; set; }
-        public List<string> Traits { get; set; }
+        public List<TraitDto> Traits { get; set; }
         public List<WorkPriorityDto> WorkPriorities { get; set; }
+    }
+
+    public class TraitDto
+    {
+        public string Name { get; set; }
+        public string Label { get; set; }
+        public string Description { get; set; }
+        public int DisabledWorkTags { get; set; }
+        public bool Suppressed { get; set; }
     }
 
     public class ColonistPoliciesInfoDto
@@ -146,6 +156,7 @@ namespace RimworldRestApi.Models
     {
         public string Name { get; set; }
         public int Level { get; set; }
+        public string Description { get; set; }
         public int MinLevel { get; set; }
         public int MaxLevel { get; set; }
         public string LevelDescriptor { get; set; }
@@ -157,12 +168,14 @@ namespace RimworldRestApi.Models
         public float XpSinceLastLevel { get; set; }
         public int Aptitude { get; set; }
         public int Passion { get; set; }
+        public int DisabledWorkTags { get; set; }
     }
 
     public class WorkPriorityDto
     {
         public string WorkType { get; set; }
         public int Priority { get; set; }
+        public bool IsTotallyDisabled { get; set; }
     }
 
     public class PawnWorkPrioritiesResponseDto
@@ -178,4 +191,17 @@ namespace RimworldRestApi.Models
         public string PawnName { get; set; }
         public List<WorkPriorityDto> WorkPriorities { get; set; } = new List<WorkPriorityDto>();
     }
+
+    public class WorkPriorityUpdateDto
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("work")]
+        public string Work { get; set; } = "";
+
+        [JsonProperty("priority")]
+        public int Priority { get; set; }
+    }
+
 }

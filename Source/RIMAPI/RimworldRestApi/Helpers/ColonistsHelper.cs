@@ -110,6 +110,7 @@ namespace RimworldRestApi.Helpers
                             {
                                 Name = skill.def.defName,
                                 Level = skill.Level,
+                                Description = skill.def.description,
                                 MinLevel = SkillRecord.MinLevel,
                                 MaxLevel = SkillRecord.MaxLevel,
                                 LevelDescriptor = skill.LevelDescriptor,
@@ -120,7 +121,8 @@ namespace RimworldRestApi.Helpers
                                 XpRequiredForLevelUp = skill.XpRequiredForLevelUp,
                                 XpSinceLastLevel = skill.xpSinceLastLevel,
                                 Aptitude = skill.Aptitude,
-                                Passion = (int)skill.passion
+                                Passion = (int)skill.passion,
+                                DisabledWorkTags = (int)skill.def.disablingWorkTags,
                             })
                             .ToList() ?? new List<SkillDto>(),
                         CurrentJob = pawn.CurJob?.def?.defName ?? "",
@@ -240,18 +242,25 @@ namespace RimworldRestApi.Helpers
             return dto;
         }
 
-        public List<string> GetTraits(Pawn pawn)
+        public List<TraitDto> GetTraits(Pawn pawn)
         {
             try
             {
                 return pawn.story?.traits?.allTraits?
                     .Where(t => t != null)
-                    .Select(t => t.def.defName)
-                    .ToList() ?? new List<string>();
+                    .Select(t => new TraitDto
+                    {
+                        Name = t.def.defName,
+                        Label = t.Label,
+                        Description = t.def.description,
+                        DisabledWorkTags = (int)t.def.disabledWorkTags,
+                        Suppressed = t.Suppressed,
+                    })
+                    .ToList() ?? new List<TraitDto>();
             }
             catch
             {
-                return new List<string>();
+                return new List<TraitDto>();
             }
         }
 
@@ -263,7 +272,7 @@ namespace RimworldRestApi.Helpers
             {
                 if (pawn.workSettings == null) return priorities;
 
-                foreach (var workType in DefDatabase<WorkTypeDef>.AllDefs)
+                foreach (WorkTypeDef workType in DefDatabase<WorkTypeDef>.AllDefs)
                 {
                     if (workType == null) continue;
 
@@ -273,7 +282,8 @@ namespace RimworldRestApi.Helpers
                         priorities.Add(new WorkPriorityDto
                         {
                             WorkType = workType.defName,
-                            Priority = priority
+                            Priority = priority,
+                            IsTotallyDisabled = pawn.WorkTypeIsDisabled(workType),
                         });
                     }
                 }

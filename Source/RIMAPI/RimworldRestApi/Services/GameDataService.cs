@@ -601,5 +601,85 @@ namespace RimworldRestApi.Services
                 throw new Exception($"Failed to assign job to pawn");
             }
         }
+
+        public void SetColonistWorkPriority(int pawnId, string workDef, int priority)
+        {
+            // Find the pawn by thingIDNumber  
+            Pawn pawn = _colonistsHelper.GetPawnById(pawnId);
+            if (pawn == null)
+            {
+                throw new Exception($"Could not find pawn with ID {pawnId}");
+            }
+
+            // Find the WorkTypeDef by defName  
+            WorkTypeDef workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(workDef);
+            if (workTypeDef == null)
+            {
+                throw new Exception($"Could not find WorkTypeDef with defName {workDef}");
+            }
+
+            // Check if pawn has work settings initialized  
+            if (pawn.workSettings == null || !pawn.workSettings.EverWork)
+            {
+                throw new Exception($"Pawn {pawn.LabelShort} does not have work settings initialized");
+            }
+
+            // Check if the work type is disabled for this pawn  
+            if (priority != 0 && pawn.WorkTypeIsDisabled(workTypeDef))
+            {
+                throw new Exception($"Cannot set priority for disabled work type {workTypeDef.defName} on pawn {pawn.LabelShort}");
+            }
+
+            // Validate priority range (0-9)  
+            if (priority < 0 || priority > 9)
+            {
+                throw new Exception($"Invalid priority {priority}. Must be between 0 and 4");
+            }
+
+            // Set the priority
+            pawn.workSettings.SetPriority(workTypeDef, priority);
+
+            RefreshCache();
+        }
+
+        public void SetColonistsWorkPriorities(int pawnId, string workDef, int priority)
+        {
+            // Find the pawn by thingIDNumber  
+            Pawn pawn = _colonistsHelper.GetPawnById(pawnId);
+            if (pawn == null)
+            {
+                throw new Exception($"Could not find pawn with ID {pawnId}");
+            }
+
+            // Find the WorkTypeDef by defName  
+            WorkTypeDef workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(workDef);
+            if (workTypeDef == null)
+            {
+                throw new Exception($"Could not find WorkTypeDef with defName {workDef}");
+            }
+
+            // Check if pawn has work settings initialized  
+            if (pawn.workSettings == null || !pawn.workSettings.EverWork)
+            {
+                throw new Exception($"Pawn {pawn.LabelShort} does not have work settings initialized");
+            }
+
+            // Check if the work type is disabled for this pawn  
+            if (priority != 0 && pawn.WorkTypeIsDisabled(workTypeDef))
+            {
+                throw new Exception($"Cannot set priority for disabled work type {workTypeDef.defName} on pawn {pawn.LabelShort}");
+            }
+
+            // Validate priority range (0-9)  
+            if (priority < 0 || priority > 9)
+            {
+                throw new Exception($"Invalid priority {priority}. Must be between 0 and 4");
+            }
+
+            // Set the priority
+            pawn.workSettings.SetPriority(workTypeDef, priority);
+
+            RefreshCache();
+        }
     }
 }
