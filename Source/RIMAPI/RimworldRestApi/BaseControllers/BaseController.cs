@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using Verse;
 
 using RimworldRestApi.Core;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace RimworldRestApi.Controllers
 {
@@ -341,6 +343,166 @@ namespace RimworldRestApi.Controllers
             }
 
             return idStr;
+        }
+
+        /// <summary>
+        /// Read and deserialize the JSON request body to T.
+        /// - Validates Content-Type (must contain "application/json" unless allowNonJson is true)
+        /// - Enforces a size limit (default 1 MB)
+        /// - Uses request.ContentEncoding or UTF8
+        /// - Throws ArgumentException with clear messages on bad input
+        /// </summary>
+        /// <typeparam name="T">Target type (e.g., DTO, List&lt;DTO&gt;, JToken)</typeparam>
+        /// <param name="context">HttpListenerContext</param>
+        /// <param name="required">If true, throws when body is missing/empty</param>
+        /// <param name="maxBytes">Max body size in bytes (default 1 MiB)</param>
+        /// <param name="allowNonJson">Allow non-JSON content types</param>
+        protected async Task<T> ReadJsonBodyAsync<T>(
+            HttpListenerContext context,
+            bool required = true,
+            long maxBytes = 1_048_576,
+            bool allowNonJson = false)
+        {
+            if (context?.Request == null)
+                throw new ArgumentException("Invalid HTTP context.");
+
+            var request = context.Request;
+
+            if (!request.HasEntityBody)
+            {
+                if (required)
+                    throw new ArgumentException("Missing request body.");
+                return default(T);
+            }
+
+            // Content-Type check
+            var contentType = request.ContentType ?? string.Empty;
+            if (!allowNonJson && contentType.IndexOf("application/json", StringComparison.OrdinalIgnoreCase) < 0)
+                throw new ArgumentException($"Unsupported Content-Type '{contentType}'. Expected 'application/json'.");
+
+            // Size checks
+            if (request.ContentLength64 > 0 && request.ContentLength64 > maxBytes)
+                throw new ArgumentException($"Request body exceeds the limit of {maxBytes} bytes.");
+
+            using (var input = request.InputStream)
+            {
+                string body;
+
+                // If ContentLength is known, read exactly that much (and it’s within limit).
+                if (request.ContentLength64 >= 0)
+                {
+                    var enc = request.ContentEncoding ?? Encoding.UTF8;
+                    using (var sr = new StreamReader(input, enc, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: false))
+                    {
+                        body = await sr.ReadToEndAsync().ConfigureAwait(false);
+                    }
+                }
+                else
+                {
+                    // Unknown length: copy with a hard cap to prevent DoS via large body.
+                    using (var ms = new MemoryStream())
+                    {
+                        await CopyToWithLimitAsync(input, ms, maxBytes + 1).ConfigureAwait(false);
+                        if (ms.Length > maxBytes)
+                            throw new ArgumentException($"Request body exceeds the limit of {maxBytes} bytes.");
+                        body = (request.ContentEncoding ?? Encoding.UTF8).GetString(ms.ToArray());
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(body))
+                {
+                    if (required)
+                        throw new ArgumentException("Request body is empty.");
+                    return default(T);
+                }
+
+                try
+                {
+                    // If T is a JToken (JObject/JArray), let JSON.NET parse it dynamically.
+                    if (typeof(T) == typeof(JToken) || typeof(T) == typeof(JObject) || typeof(T) == typeof(JArray))
+                    {
+                        var token = JToken.Parse(body);
+                        return token.ToObject<T>();
+                    }
+
+                    // Otherwise, deserialize to the requested type.
+                    var obj = JsonConvert.DeserializeObject<T>(body);
+                    if (obj == null && required)
+                        throw new ArgumentException("Invalid or empty JSON payload.");
+                    return obj;
+                }
+                catch (JsonReaderException jre)
+                {
+                    throw new ArgumentException($"Malformed JSON: {jre.Message}");
+                }
+                catch (JsonSerializationException jse)
+                {
+                    throw new ArgumentException($"JSON does not match expected schema: {jse.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Convenience wrapper when you specifically expect a JSON array.
+        /// Provides a clearer error if the root is not an array.
+        /// </summary>
+        protected async Task<List<TItem>> ReadJsonArrayBodyAsync<TItem>(
+            HttpListenerContext context,
+            bool required = true,
+            long maxBytes = 1_048_576)
+        {
+            var token = await ReadJsonBodyAsync<JToken>(context, required, maxBytes).ConfigureAwait(false);
+            if (token == null)
+                return null;
+
+            if (token.Type != JTokenType.Array)
+                throw new ArgumentException("Expected request body to be a JSON array.");
+
+            try
+            {
+                return token.ToObject<List<TItem>>();
+            }
+            catch (JsonException jex)
+            {
+                throw new ArgumentException($"JSON array items could not be deserialized: {jex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Non-throwing variant. Returns (success, value, errorMessage).
+        /// </summary>
+        protected async Task<(bool ok, T value, string error)> TryReadJsonBodyAsync<T>(
+            HttpListenerContext context,
+            long maxBytes = 1_048_576)
+        {
+            try
+            {
+                var val = await ReadJsonBodyAsync<T>(context, required: true, maxBytes: maxBytes).ConfigureAwait(false);
+                return (true, val, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, default(T), ex.Message);
+            }
+        }
+
+        private static async Task CopyToWithLimitAsync(Stream source, Stream destination, long maxBytes)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            long total = 0;
+            int read;
+            while ((read = await source.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+            {
+                total += read;
+                if (total > maxBytes)
+                {
+                    // Write what we have plus one extra chunk detection; caller will check length.
+                    await destination.WriteAsync(buffer, 0, read).ConfigureAwait(false);
+                    break;
+                }
+                await destination.WriteAsync(buffer, 0, read).ConfigureAwait(false);
+            }
+            await destination.FlushAsync().ConfigureAwait(false);
         }
     }
 }

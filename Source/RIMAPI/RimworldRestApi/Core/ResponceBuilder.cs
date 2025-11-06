@@ -59,26 +59,31 @@ namespace RimworldRestApi.Core
         {
             try
             {
+                // Ensure the response status code is set correctly
                 response.StatusCode = (int)statusCode;
-                response.ContentType = "application/json";
-                response.Headers.Add("Access-Control-Allow-Origin", "*");
-                response.Headers.Add("Access-Control-Allow-Methods", "GET, OPTIONS");
-                response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Accept, ETag, If-None-Match");
 
+                // Set Content-Type header for JSON responses
+                response.ContentType = "application/json; charset=utf-8";
+
+                // Create JSON serializer settings with snake_case formatting
                 var settings = new JsonSerializerSettings
                 {
                     ContractResolver = new SnakeCaseContractResolver(),
                 };
 
+                // Serialize the data to a JSON string
                 var json = JsonConvert.SerializeObject(data, settings);
 
+                // Convert the JSON string to bytes
                 var buffer = Encoding.UTF8.GetBytes(json);
                 response.ContentLength64 = buffer.Length;
 
+                // Write the JSON data to the response output stream
                 await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 response.Close();
 
-                DebugLogging.Info($"Response sent - Status: {statusCode}, Length: {buffer.Length}");
+                // Log success for debugging purposes
+                DebugLogging.Info($"Response sent - Status: {statusCode}, Length: {buffer.Length} bytes");
             }
             catch (Exception ex)
             {
@@ -89,9 +94,10 @@ namespace RimworldRestApi.Core
                 }
                 catch
                 {
-                    // Ignore abort errors
+                    // Ignore any errors on response abort
                 }
             }
         }
     }
+
 }
