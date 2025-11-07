@@ -73,8 +73,8 @@ namespace RimworldRestApi.Services
         #region Resources
         ResourcesSummaryDto GetResourcesSummary(int mapId);
         StoragesSummaryDto GetStoragesSummary(int mapId);
-        Dictionary<string, List<ResourceItemDto>> GetAllStoredResources(int mapId);
-        List<ResourceItemDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef);
+        Dictionary<string, List<ThingDto>> GetAllStoredResources(int mapId);
+        List<ThingDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef);
 
         #endregion
         #region Cache management

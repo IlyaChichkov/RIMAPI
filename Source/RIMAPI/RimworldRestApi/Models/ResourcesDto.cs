@@ -26,7 +26,7 @@ namespace RimworldRestApi.Models
         public double MarketValue { get; set; }
     }
 
-    public class ResourceItemDto
+    public class ThingDto
     {
         public int ThingId { get; set; }
         public string DefName { get; set; }

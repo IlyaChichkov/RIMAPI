@@ -265,13 +265,13 @@ namespace RimworldRestApi.Helpers
             return storageLocations;
         }
 
-        public Dictionary<string, List<ResourceItemDto>> GetStoredItemsByCategory(
+        public Dictionary<string, List<ThingDto>> GetStoredItemsByCategory(
             List<ISlotGroupParent> storageLocations)
         {
             if (storageLocations == null || storageLocations.Count == 0)
-                return new Dictionary<string, List<ResourceItemDto>>();
+                return new Dictionary<string, List<ThingDto>>();
 
-            var itemsByCategory = new Dictionary<string, List<ResourceItemDto>>();
+            var itemsByCategory = new Dictionary<string, List<ThingDto>>();
 
             foreach (var storage in storageLocations)
             {
@@ -288,7 +288,7 @@ namespace RimworldRestApi.Helpers
                     // Get or create the list for this category
                     if (!itemsByCategory.TryGetValue(categoryLabel, out var categoryList))
                     {
-                        categoryList = new List<ResourceItemDto>();
+                        categoryList = new List<ThingDto>();
                         itemsByCategory[categoryLabel] = categoryList;
                     }
 
@@ -299,14 +299,14 @@ namespace RimworldRestApi.Helpers
             return itemsByCategory;
         }
 
-        public List<ResourceItemDto> GetStoredItemsListByCategory(
+        public List<ThingDto> GetStoredItemsListByCategory(
             List<ISlotGroupParent> storageLocations,
             string categoryDef)
         {
             if (storageLocations == null || storageLocations.Count == 0)
-                return new List<ResourceItemDto>();
+                return new List<ThingDto>();
 
-            var itemsByCategory = new List<ResourceItemDto>();
+            var itemsByCategory = new List<ThingDto>();
 
             foreach (var storage in storageLocations)
             {
@@ -331,9 +331,9 @@ namespace RimworldRestApi.Helpers
             return categories != null && categories.Any(c => c.defName == TransformToPascalCase(categoryDef));
         }
 
-        private ResourceItemDto CreateResourceItemDto(Thing thing)
+        private ThingDto CreateResourceItemDto(Thing thing)
         {
-            var dto = new ResourceItemDto
+            var dto = new ThingDto
             {
                 ThingId = thing.thingIDNumber,
                 DefName = thing.def.defName,
