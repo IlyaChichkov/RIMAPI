@@ -19,9 +19,15 @@ namespace RimworldRestApi.Services
         List<ColonistDetailedDto> GetColonistsDetailed();
         ColonistDetailedDto GetColonistDetailed(int id);
         ColonistInventoryDto GetColonistInventory(int id);
-        ImageDto GetItemImage(string name);
         BodyPartsDto GetColonistBodyParts(int id);
         OpinionAboutPawnDto GetOpinionAboutPawn(int id, int otherId);
+        void SetColonistWorkPriority(int pawnId, string workDef, int priority);
+        WorkListDto GetWorkList();
+        #endregion
+        #region Images
+        ImageDto GetItemImage(string name);
+        ImageDto GetPawnPortraitImage(int pawnId, int width, int height, string direction);
+
         #endregion
         #region Datetime
         MapTimeDto GetCurrentMapDatetime();
@@ -38,7 +44,7 @@ namespace RimworldRestApi.Services
         MapPowerInfoDto GetMapPowerInfo(int mapId);
         MapWeatherDto GetWeather(int mapId);
         List<AnimalDto> GetMapAnimals(int mapId);
-        List<MapThingDto> GetMapThings(int mapId);
+        List<ThingDto> GetMapThings(int mapId);
         MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId);
         MapFarmSummaryDto GenerateFarmSummary(int mapId);
         GrowingZoneDto GetGrowingZoneById(int mapId, int zoneId);
@@ -56,6 +62,10 @@ namespace RimworldRestApi.Services
         ResearchSummaryDto GetResearchSummary();
 
         #endregion
+        #region Jobs
+        void MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType);
+
+        #endregion
         #region Factions
         List<FactionsDto> GetFactions();
 
@@ -63,9 +73,8 @@ namespace RimworldRestApi.Services
         #region Resources
         ResourcesSummaryDto GetResourcesSummary(int mapId);
         StoragesSummaryDto GetStoragesSummary(int mapId);
-        Dictionary<string, List<ResourceItemDto>> GetAllStoredResources(int mapId);
-        List<ResourceItemDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef);
-
+        Dictionary<string, List<ThingDto>> GetAllStoredResources(int mapId);
+        List<ThingDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef);
 
         #endregion
         #region Cache management

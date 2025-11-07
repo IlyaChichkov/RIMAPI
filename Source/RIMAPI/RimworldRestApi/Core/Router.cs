@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Verse;
 
 namespace RimworldRestApi.Core
 {
     public class Router
     {
         private readonly List<Route> _routes;
+
+        private readonly HashSet<string> _allowedOrigins;
 
         public Router()
         {
@@ -24,58 +25,64 @@ namespace RimworldRestApi.Core
         public async Task RouteRequest(HttpListenerContext context)
         {
             var request = context.Request;
-            var path = request.Url.AbsolutePath;
-            var method = request.HttpMethod;
+            var response = context.Response;
+
+            var path = NormalizePath(request.Url.AbsolutePath);
+            var method = request.HttpMethod?.ToUpperInvariant() ?? "GET";
 
             DebugLogging.Info($"Routing {method} {path}");
 
+            // Handle CORS preflight request (OPTIONS)
+            if (method == "OPTIONS")
+            {
+                CorsUtil.WritePreflight(context); // Handles OPTIONS preflight
+                return;
+            }
+
+            // Ensure CORS headers are applied before response (check for valid origin)
+            CorsUtil.WriteCors(request, response, _allowedOrigins);
+
+            // 1) HEAD -> treat as GET but don't send a body (controller can decide what to do)
+            var matchMethod = method == "HEAD" ? "GET" : method;
+
             foreach (var route in _routes)
             {
-                if (route.Method != method)
+                if (route.Method != matchMethod)
                     continue;
 
-                var match = route.Pattern.Match(path);
-                if (match.Success)
+                var m = route.Pattern.Match(path);
+                if (!m.Success) continue;
+
+                DebugLogging.Info($"Route matched: {route.Method} {route.PathPattern}");
+
+                try
                 {
-                    DebugLogging.Info($"Route matched: {route.Method} {route.PathPattern}");
-
-                    // Extract route parameters
-                    foreach (Group group in match.Groups)
-                    {
-                        if (group.Name.StartsWith("param_"))
-                        {
-                            var paramName = group.Name.Substring(6);
-                            // Store parameters in a way we can access them later
-                            if (context.Request.QueryString == null)
-                            {
-                                // This shouldn't happen, but just in case
-                                continue;
-                            }
-
-                            // Use reflection to add to query string or use custom storage
-                            // For now, we'll use a simpler approach - parse from URL directly
-                        }
-                    }
-
-                    try
-                    {
-                        await route.Handler(context);
-                        return;
-                    }
-                    catch (Exception ex)
-                    {
-                        DebugLogging.Error($"Error in route handler: {ex}");
-                        await ResponseBuilder.Error(context.Response,
-                            HttpStatusCode.InternalServerError, "Handler error");
-                        return;
-                    }
+                    await route.Handler(context);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    DebugLogging.Error($"Error in route handler: {ex}");
+                    // Ensure CORS is set before responding with error
+                    CorsUtil.WriteCors(request, response, _allowedOrigins);  // Set CORS before error response
+                    await ResponseBuilder.Error(response, HttpStatusCode.InternalServerError, "Handler error");
+                    return;
                 }
             }
 
             // No route found
             DebugLogging.Warning($"No route found for {method} {path}");
-            await ResponseBuilder.Error(context.Response,
-                HttpStatusCode.NotFound, $"Endpoint not found: {path}");
+            CorsUtil.WriteCors(request, response, _allowedOrigins);  // Set CORS before error response
+            await ResponseBuilder.Error(response, HttpStatusCode.NotFound, $"Endpoint not found: {path}");
+        }
+
+
+        private static string NormalizePath(string p)
+        {
+            if (string.IsNullOrEmpty(p)) return "/";
+            // Trim trailing slash except root to avoid double route registration for /foo vs /foo/
+            if (p.Length > 1 && p.EndsWith("/")) p = p.TrimEnd('/');
+            return p;
         }
 
         private class Route

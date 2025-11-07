@@ -5,10 +5,10 @@ namespace RimworldRestApi.Models
 {
     public class MapDto
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public int Index { get; set; }
         public int Seed { get; set; }
-        public string FactionID { get; set; }
+        public string FactionId { get; set; }
         public bool IsPlayerHome { get; set; }
         public bool IsPocketMap { get; set; }
         public bool IsTempIncidentMap { get; set; }

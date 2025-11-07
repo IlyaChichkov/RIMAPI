@@ -1,20 +1,21 @@
 using System;
+using System.Collections.Generic;
 
 namespace RimworldRestApi.Models
 {
-    public class InventoryThingDto
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public int StackCount { get; set; }
-    }
 
-    public class MapThingDto
+    public class ThingDto
     {
-        public int Id { get; set; }
-        public string Type { get; set; }
-        public string Def { get; set; }
+        public int ThingId { get; set; }
+        public string DefName { get; set; }
+        public string Label { get; set; }
+        public List<string> Categories { get; set; }
         public PositionDto Position { get; set; }
+        public int StackCount { get; set; }
+        public double MarketValue { get; set; }
         public bool IsForbidden { get; set; }
+        public int Quality { get; set; }
+        public int HitPoints { get; set; }
+        public int MaxHitPoints { get; set; }
     }
 }

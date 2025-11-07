@@ -93,7 +93,13 @@ namespace RimworldRestApi.Core
                     await new GameController(_gameDataService).OpenTab(context);
                 });
                 #endregion
+                #region Jobs
 
+                _router.AddRoute("POST", "/api/v1/jobs/make/equip", async context =>
+                {
+                    await new GameController(_gameDataService).MakeJobEquip(context);
+                });
+                #endregion
                 #region Map
                 _router.AddRoute("GET", "/api/v1/maps", async context =>
                 {
@@ -220,6 +226,21 @@ namespace RimworldRestApi.Core
                 {
                     await new GameController(_gameDataService).GetColonistInventory(context);
                 });
+
+                _router.AddRoute("POST", "/api/v1/colonist/work-priority", async context =>
+                {
+                    await new GameController(_gameDataService).SetColonistWorkPriority(context);
+                });
+
+                _router.AddRoute("POST", "/api/v1/colonists/work-priority", async context =>
+                {
+                    await new GameController(_gameDataService).SetColonistsWorkPriority(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/work-list", async context =>
+                {
+                    await new GameController(_gameDataService).GetWorkList(context);
+                });
                 #endregion
                 #region Image
                 _router.AddRoute("GET", "/api/v1/colonist/body/image", async context =>
@@ -230,6 +251,11 @@ namespace RimworldRestApi.Core
                 _router.AddRoute("GET", "/api/v1/item/image", async context =>
                 {
                     await new GameController(_gameDataService).GetItemImage(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/pawn/portrait/image", async context =>
+                {
+                    await new GameController(_gameDataService).GetPawnPortraitImage(context);
                 });
                 #endregion
                 #region Resources & Items

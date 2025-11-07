@@ -35,7 +35,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[RIMAPI] Error generating resources summary: {ex}");
+                DebugLogging.Error($"Error generating resources summary: {ex}");
             }
             return new ResourcesSummaryDto();
         }
@@ -151,7 +151,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[RIMAPI] Error getting food rot status: {ex}");
+                DebugLogging.Error($"Error getting food rot status: {ex}");
                 return dto;
             }
         }
@@ -185,7 +185,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[RIMAPI] Error analyzing storage: {ex}");
+                DebugLogging.Error($"Error analyzing storage: {ex}");
             }
 
             return analysis;
@@ -231,7 +231,7 @@ namespace RimworldRestApi.Helpers
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[RIMAPI] Error analyzing storage: {ex.Message}");
+                DebugLogging.Error($"Error analyzing storage: {ex.Message}");
             }
             return new List<ResourceCategoryDto>();
         }
@@ -265,13 +265,13 @@ namespace RimworldRestApi.Helpers
             return storageLocations;
         }
 
-        public Dictionary<string, List<ResourceItemDto>> GetStoredItemsByCategory(
+        public Dictionary<string, List<ThingDto>> GetStoredItemsByCategory(
             List<ISlotGroupParent> storageLocations)
         {
             if (storageLocations == null || storageLocations.Count == 0)
-                return new Dictionary<string, List<ResourceItemDto>>();
+                return new Dictionary<string, List<ThingDto>>();
 
-            var itemsByCategory = new Dictionary<string, List<ResourceItemDto>>();
+            var itemsByCategory = new Dictionary<string, List<ThingDto>>();
 
             foreach (var storage in storageLocations)
             {
@@ -288,25 +288,25 @@ namespace RimworldRestApi.Helpers
                     // Get or create the list for this category
                     if (!itemsByCategory.TryGetValue(categoryLabel, out var categoryList))
                     {
-                        categoryList = new List<ResourceItemDto>();
+                        categoryList = new List<ThingDto>();
                         itemsByCategory[categoryLabel] = categoryList;
                     }
 
-                    categoryList.Add(CreateResourceItemDto(thing));
+                    categoryList.Add(ThingToDto(thing));
                 }
             }
 
             return itemsByCategory;
         }
 
-        public List<ResourceItemDto> GetStoredItemsListByCategory(
+        public List<ThingDto> GetStoredItemsListByCategory(
             List<ISlotGroupParent> storageLocations,
             string categoryDef)
         {
             if (storageLocations == null || storageLocations.Count == 0)
-                return new List<ResourceItemDto>();
+                return new List<ThingDto>();
 
-            var itemsByCategory = new List<ResourceItemDto>();
+            var itemsByCategory = new List<ThingDto>();
 
             foreach (var storage in storageLocations)
             {
@@ -317,7 +317,7 @@ namespace RimworldRestApi.Helpers
                 {
                     if (!IsThingInCategory(thing, categoryDef)) continue;
 
-                    var dto = CreateResourceItemDto(thing);
+                    var dto = ThingToDto(thing);
                     itemsByCategory.Add(dto);
                 }
             }
@@ -331,9 +331,9 @@ namespace RimworldRestApi.Helpers
             return categories != null && categories.Any(c => c.defName == TransformToPascalCase(categoryDef));
         }
 
-        private ResourceItemDto CreateResourceItemDto(Thing thing)
+        public static ThingDto ThingToDto(Thing thing)
         {
-            var dto = new ResourceItemDto
+            var dto = new ThingDto
             {
                 ThingId = thing.thingIDNumber,
                 DefName = thing.def.defName,
@@ -383,6 +383,5 @@ namespace RimworldRestApi.Helpers
             var textInfo = CultureInfo.CurrentCulture.TextInfo;
             return textInfo.ToTitleCase(input.Replace('_', ' ')).Replace(" ", "");
         }
-
     }
 }

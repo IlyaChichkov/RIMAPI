@@ -1,4 +1,16 @@
 # Changelog
+## v0.5.3
+
+Add endpoint:
+- /api/v1/jobs/make/equip
+- /api/v1/pawn/portrait/image
+- /api/v1/colonist/work-priority
+- /api/v1/colonists/work-priority
+- /api/v1/work-list
+
+Optimize resources Dto
+Update BaseController CORS header handling
+
 ## v0.5.2
 Add endpoint:
 - /api/v1/resources/stored

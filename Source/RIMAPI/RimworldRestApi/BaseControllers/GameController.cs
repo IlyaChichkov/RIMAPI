@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using RimworldRestApi.Core;
+using RimworldRestApi.Models;
 using RimworldRestApi.Services;
 using Verse;
 
@@ -72,22 +74,8 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                string idStr = context.Request.QueryString["id"];
-                if (string.IsNullOrEmpty(idStr))
-                {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Missing colonist ID parameter");
-                    return;
-                }
-
-                if (!int.TryParse(idStr, out int colonistId))
-                {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Invalid colonist ID format");
-                    return;
-                }
-
-                object colonist = _gameDataService.GetColonist(colonistId);
+                int pawnId = GetIntProperty(context, "id");
+                object colonist = _gameDataService.GetColonist(pawnId);
                 if (colonist == null)
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -123,22 +111,8 @@ namespace RimworldRestApi.Controllers
         {
             try
             {
-                string idStr = context.Request.QueryString["id"];
-                if (string.IsNullOrEmpty(idStr))
-                {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Missing colonist ID parameter");
-                    return;
-                }
-
-                if (!int.TryParse(idStr, out int colonistId))
-                {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Invalid colonist ID format");
-                    return;
-                }
-
-                object colonistDetailed = _gameDataService.GetColonistDetailed(colonistId);
+                int pawnId = GetIntProperty(context, "id");
+                object colonistDetailed = _gameDataService.GetColonistDetailed(pawnId);
                 if (colonistDetailed == null)
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -155,26 +129,67 @@ namespace RimworldRestApi.Controllers
             }
         }
 
+        public async Task SetColonistWorkPriority(HttpListenerContext context)
+        {
+            try
+            {
+                int pawnId = GetIntProperty(context, "id");
+                string workDef = GetStringProperty(context, "work");
+                int priority = GetIntProperty(context, "priority");
+                _gameDataService.SetColonistWorkPriority(pawnId, workDef, priority);
+                var result = new
+                {
+                    Result = "success"
+                };
+                await ResponseBuilder.Success(context.Response, result);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task SetColonistsWorkPriority(HttpListenerContext context)
+        {
+            try
+            {
+                var updates = await ReadJsonArrayBodyAsync<WorkPriorityUpdateDto>(context);
+
+                int applied = 0;
+                var errors = new List<object>();
+
+                foreach (var u in updates)
+                {
+                    try
+                    {
+                        if (u == null) throw new ArgumentException("Null item.");
+                        if (u.Id <= 0) throw new ArgumentException("Invalid 'id'.");
+                        if (string.IsNullOrWhiteSpace(u.Work)) throw new ArgumentException("Missing 'work'.");
+
+                        _gameDataService.SetColonistWorkPriority(u.Id, u.Work, u.Priority);
+                        applied++;
+                    }
+                    catch (Exception itemEx)
+                    {
+                        errors.Add(new { id = u?.Id, work = u?.Work, error = itemEx.Message });
+                    }
+                }
+
+                await ResponseBuilder.Success(context.Response, new { Result = "success", Applied = applied, Errors = errors });
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response, HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
         public async Task GetColonistInventory(HttpListenerContext context)
         {
             try
             {
-                string idStr = context.Request.QueryString["id"];
-                if (string.IsNullOrEmpty(idStr))
-                {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Missing colonist ID parameter");
-                    return;
-                }
-
-                if (!int.TryParse(idStr, out int colonistId))
-                {
-                    await ResponseBuilder.Error(context.Response,
-                        HttpStatusCode.BadRequest, "Invalid colonist ID format");
-                    return;
-                }
-
-                object colonistInventory = _gameDataService.GetColonistInventory(colonistId);
+                int pawnId = GetIntProperty(context, "id");
+                object colonistInventory = _gameDataService.GetColonistInventory(pawnId);
                 if (colonistInventory == null)
                 {
                     await ResponseBuilder.Error(context.Response,
@@ -211,6 +226,31 @@ namespace RimworldRestApi.Controllers
                     return;
                 }
                 HandleFiltering(context, ref itemImage);
+                await ResponseBuilder.Success(context.Response, itemImage);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        public async Task GetPawnPortraitImage(HttpListenerContext context)
+        {
+            try
+            {
+                int pawnId = GetIntProperty(context, "pawn_id");
+                int width = GetIntProperty(context, "width");
+                int height = GetIntProperty(context, "height");
+                string direction = GetStringProperty(context, "direction");
+
+                object itemImage = _gameDataService.GetPawnPortraitImage(pawnId, width, height, direction);
+                if (itemImage == null)
+                {
+                    await ResponseBuilder.Error(context.Response,
+                        HttpStatusCode.NotFound, "Failed to get item's image");
+                    return;
+                }
                 await ResponseBuilder.Success(context.Response, itemImage);
             }
             catch (Exception ex)
@@ -347,6 +387,28 @@ namespace RimworldRestApi.Controllers
             }
         }
 
+        public async Task MakeJobEquip(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                var pawnId = GetIntProperty(context, "pawn_id");
+                var itemId = GetIntProperty(context, "item_id");
+                var itemType = GetStringProperty(context, "item_type");
+                _gameDataService.MakeJobEquip(mapId, pawnId, itemId, itemType);
+                var result = new
+                {
+                    Result = "success"
+                };
+                await ResponseBuilder.Success(context.Response, result);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         public async Task DeselectGameObject(HttpListenerContext context)
         {
             try
@@ -419,6 +481,21 @@ namespace RimworldRestApi.Controllers
             {
                 var mapId = GetMapIdProperty(context);
                 object incidentsData = _gameDataService.GetIncidentsData(mapId);
+                HandleFiltering(context, ref incidentsData);
+                await ResponseBuilder.Success(context.Response, incidentsData);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        internal async Task GetWorkList(HttpListenerContext context)
+        {
+            try
+            {
+                object incidentsData = _gameDataService.GetWorkList();
                 HandleFiltering(context, ref incidentsData);
                 await ResponseBuilder.Success(context.Response, incidentsData);
             }

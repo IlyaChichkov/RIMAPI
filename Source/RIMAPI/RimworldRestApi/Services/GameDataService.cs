@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using Newtonsoft.Json;
 using RimWorld;
 using RimworldRestApi.Core;
@@ -8,6 +9,7 @@ using RimworldRestApi.Helpers;
 using RimworldRestApi.Models;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace RimworldRestApi.Services
 {
@@ -164,38 +166,23 @@ namespace RimworldRestApi.Services
 
             try
             {
-                List<InventoryThingDto> Items = new List<InventoryThingDto>();
-                List<InventoryThingDto> Apparels = new List<InventoryThingDto>();
-                List<InventoryThingDto> Equipment = new List<InventoryThingDto>();
+                List<ThingDto> Items = new List<ThingDto>();
+                List<ThingDto> Apparels = new List<ThingDto>();
+                List<ThingDto> Equipment = new List<ThingDto>();
 
                 foreach (var item in colonist.inventory.innerContainer)
                 {
-                    Items.Add(new InventoryThingDto
-                    {
-                        ID = item.thingIDNumber,
-                        Name = item.def.defName,
-                        StackCount = item.stackCount
-                    });
+                    Items.Add(ResourcesHelper.ThingToDto(item));
                 }
 
                 foreach (var apparel in colonist.apparel.WornApparel)
                 {
-                    Apparels.Add(new InventoryThingDto
-                    {
-                        ID = apparel.thingIDNumber,
-                        Name = apparel.def.defName,
-                        StackCount = apparel.stackCount
-                    });
+                    Items.Add(ResourcesHelper.ThingToDto(apparel));
                 }
 
                 foreach (var equipment in colonist.equipment.AllEquipmentListForReading)
                 {
-                    Equipment.Add(new InventoryThingDto
-                    {
-                        ID = equipment.thingIDNumber,
-                        Name = equipment.def.defName,
-                        StackCount = equipment.stackCount
-                    });
+                    Items.Add(ResourcesHelper.ThingToDto(equipment));
                 }
 
                 return new ColonistInventoryDto
@@ -267,38 +254,13 @@ namespace RimworldRestApi.Services
 
         public ImageDto GetItemImage(string name)
         {
-            ImageDto image = new ImageDto();
+            return _textureHelper.GetItemImageByName(name);
+        }
 
-            try
-            {
-                var thingDef = DefDatabase<ThingDef>.GetNamed(name);
-                Texture2D icon = null;
-
-                if (!thingDef.uiIconPath.NullOrEmpty())
-                {
-                    icon = thingDef.uiIcon;
-                }
-                else
-                {
-                    icon = (Texture2D)thingDef.DrawMatSingle.mainTexture;
-                }
-
-                if (icon == null)
-                {
-                    image.Result = $"No icon available for item - {name}";
-                }
-                else
-                {
-                    image.Result = "Success";
-                    image.ImageBase64 = _textureHelper.TextureToBase64(icon);
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugLogging.Error($"Error getting item image - {ex.Message}");
-            }
-
-            return image;
+        public ImageDto GetPawnPortraitImage(int pawnId, int width, int height, string direction)
+        {
+            Pawn pawn = _colonistsHelper.GetPawnById(pawnId);
+            return _textureHelper.GetPawnPortraitImage(pawn, width, height, direction);
         }
 
         public MapTimeDto GetCurrentMapDatetime()
@@ -353,7 +315,7 @@ namespace RimworldRestApi.Services
             return _mapHelper.GetMapAnimals(mapId);
         }
 
-        public List<MapThingDto> GetMapThings(int mapId)
+        public List<ThingDto> GetMapThings(int mapId)
         {
             return _mapHelper.GetMapThings(mapId);
         }
@@ -556,19 +518,176 @@ namespace RimworldRestApi.Services
             Find.Selector.ClearSelection();
         }
 
-        public Dictionary<string, List<ResourceItemDto>> GetAllStoredResources(int mapId)
+        public Dictionary<string, List<ThingDto>> GetAllStoredResources(int mapId)
         {
             Map map = _mapHelper.FindMapByUniqueID(mapId);
             var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
             return _resourcesHelper.GetStoredItemsByCategory(storageLocations);
         }
 
-        public List<ResourceItemDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef)
+        public List<ThingDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef)
         {
             Map map = _mapHelper.FindMapByUniqueID(mapId);
             var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
             DebugLogging.Info("categoryDef: " + categoryDef);
             return _resourcesHelper.GetStoredItemsListByCategory(storageLocations, categoryDef);
+        }
+
+        public void MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            if (map == null)
+            {
+                throw new Exception($"Map with ID={mapId} not found");
+            }
+            Pawn pawn = map.listerThings.AllThings
+                .OfType<Pawn>()
+                .FirstOrDefault(p => p.thingIDNumber == pawnId);
+            if (pawn == null)
+            {
+                throw new Exception($"Pawn with ID={pawnId} not found");
+            }
+
+            Thing foundThing = map.listerThings.AllThings.FirstOrDefault(t => t.thingIDNumber == equipmentId);
+            if (foundThing == null)
+            {
+                throw new Exception($"Thing with ID={equipmentId} not found");
+            }
+
+            Job job = null;
+            switch (equipmentType)
+            {
+                case "weapon":
+                    if (EquipmentUtility.CanEquip(foundThing, pawn) == false)
+                    {
+                        throw new Exception($"Can't equip this weapon");
+                    }
+
+                    job = JobMaker.MakeJob(JobDefOf.Equip, foundThing);
+                    break;
+                case "apparel":
+                    if (ApparelUtility.HasPartsToWear(pawn, foundThing.def) == false)
+                    {
+                        throw new Exception($"Can't equip this apparel");
+                    }
+
+                    job = JobMaker.MakeJob(JobDefOf.Wear, foundThing);
+                    break;
+            }
+
+            if (job == null)
+            {
+                throw new Exception($"Failed to make a job");
+            }
+
+            bool result = pawn.jobs.TryTakeOrderedJob(job);
+            if (!result)
+            {
+                throw new Exception($"Failed to assign job to pawn");
+            }
+        }
+
+        public void SetColonistWorkPriority(int pawnId, string workDef, int priority)
+        {
+            // Find the pawn by thingIDNumber  
+            Pawn pawn = _colonistsHelper.GetPawnById(pawnId);
+            if (pawn == null)
+            {
+                throw new Exception($"Could not find pawn with ID {pawnId}");
+            }
+
+            // Find the WorkTypeDef by defName  
+            WorkTypeDef workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(workDef);
+            if (workTypeDef == null)
+            {
+                throw new Exception($"Could not find WorkTypeDef with defName {workDef}");
+            }
+
+            // Check if pawn has work settings initialized  
+            if (pawn.workSettings == null || !pawn.workSettings.EverWork)
+            {
+                throw new Exception($"Pawn {pawn.LabelShort} does not have work settings initialized");
+            }
+
+            // Check if the work type is disabled for this pawn  
+            if (priority != 0 && pawn.WorkTypeIsDisabled(workTypeDef))
+            {
+                throw new Exception($"Cannot set priority for disabled work type {workTypeDef.defName} on pawn {pawn.LabelShort}");
+            }
+
+            // Validate priority range (0-9)  
+            if (priority < 0 || priority > 9)
+            {
+                throw new Exception($"Invalid priority {priority}. Must be between 0 and 4");
+            }
+
+            // Set the priority
+            pawn.workSettings.SetPriority(workTypeDef, priority);
+
+            RefreshCache();
+        }
+
+        public void SetColonistsWorkPriorities(int pawnId, string workDef, int priority)
+        {
+            // Find the pawn by thingIDNumber  
+            Pawn pawn = _colonistsHelper.GetPawnById(pawnId);
+            if (pawn == null)
+            {
+                throw new Exception($"Could not find pawn with ID {pawnId}");
+            }
+
+            // Find the WorkTypeDef by defName  
+            WorkTypeDef workTypeDef = null;
+            foreach (WorkTypeDef workType in DefDatabase<WorkTypeDef>.AllDefs)
+            {
+                if (workType.defName.ToLower() == workDef.ToLower())
+                {
+                    workTypeDef = workType;
+                }
+            }
+            if (workTypeDef == null)
+            {
+                throw new Exception($"Could not find WorkTypeDef with defName {workDef}");
+            }
+
+            // Check if pawn has work settings initialized  
+            if (pawn.workSettings == null || !pawn.workSettings.EverWork)
+            {
+                throw new Exception($"Pawn {pawn.LabelShort} does not have work settings initialized");
+            }
+
+            // Check if the work type is disabled for this pawn  
+            if (priority != 0 && pawn.WorkTypeIsDisabled(workTypeDef))
+            {
+                throw new Exception($"Cannot set priority for disabled work type {workTypeDef.defName} on pawn {pawn.LabelShort}");
+            }
+
+            // Validate priority range (0-9)  
+            if (priority < 0 || priority > 9)
+            {
+                throw new Exception($"Invalid priority {priority}. Must be between 0 and 4");
+            }
+
+            // Set the priority
+            pawn.workSettings.SetPriority(workTypeDef, priority);
+
+            RefreshCache();
+        }
+
+        public WorkListDto GetWorkList()
+        {
+            WorkListDto workList = new WorkListDto
+            {
+                Work = new List<string>()
+            };
+
+            foreach (WorkTypeDef workType in DefDatabase<WorkTypeDef>.AllDefs)
+            {
+                if (workType == null) continue;
+                workList.Work.Add(workType.defName);
+            }
+
+            return workList;
         }
     }
 }
