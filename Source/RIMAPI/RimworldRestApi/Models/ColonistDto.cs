@@ -18,9 +18,9 @@ namespace RimworldRestApi.Models
 
     public class ColonistInventoryDto
     {
-        public List<InventoryThingDto> Items { get; set; }
-        public List<InventoryThingDto> Apparels { get; set; }
-        public List<InventoryThingDto> Equipment { get; set; }
+        public List<ThingDto> Items { get; set; }
+        public List<ThingDto> Apparels { get; set; }
+        public List<ThingDto> Equipment { get; set; }
     }
 
     public class BodyPartsDto
