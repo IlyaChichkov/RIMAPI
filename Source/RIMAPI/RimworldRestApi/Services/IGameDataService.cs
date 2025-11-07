@@ -44,7 +44,7 @@ namespace RimworldRestApi.Services
         MapPowerInfoDto GetMapPowerInfo(int mapId);
         MapWeatherDto GetWeather(int mapId);
         List<AnimalDto> GetMapAnimals(int mapId);
-        List<MapThingDto> GetMapThings(int mapId);
+        List<ThingDto> GetMapThings(int mapId);
         MapCreaturesSummaryDto GetMapCreaturesSummary(int mapId);
         MapFarmSummaryDto GenerateFarmSummary(int mapId);
         GrowingZoneDto GetGrowingZoneById(int mapId, int zoneId);

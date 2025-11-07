@@ -292,7 +292,7 @@ namespace RimworldRestApi.Helpers
                         itemsByCategory[categoryLabel] = categoryList;
                     }
 
-                    categoryList.Add(CreateResourceItemDto(thing));
+                    categoryList.Add(ThingToDto(thing));
                 }
             }
 
@@ -317,7 +317,7 @@ namespace RimworldRestApi.Helpers
                 {
                     if (!IsThingInCategory(thing, categoryDef)) continue;
 
-                    var dto = CreateResourceItemDto(thing);
+                    var dto = ThingToDto(thing);
                     itemsByCategory.Add(dto);
                 }
             }
@@ -331,7 +331,7 @@ namespace RimworldRestApi.Helpers
             return categories != null && categories.Any(c => c.defName == TransformToPascalCase(categoryDef));
         }
 
-        private ThingDto CreateResourceItemDto(Thing thing)
+        public static ThingDto ThingToDto(Thing thing)
         {
             var dto = new ThingDto
             {

@@ -166,38 +166,23 @@ namespace RimworldRestApi.Services
 
             try
             {
-                List<InventoryThingDto> Items = new List<InventoryThingDto>();
-                List<InventoryThingDto> Apparels = new List<InventoryThingDto>();
-                List<InventoryThingDto> Equipment = new List<InventoryThingDto>();
+                List<ThingDto> Items = new List<ThingDto>();
+                List<ThingDto> Apparels = new List<ThingDto>();
+                List<ThingDto> Equipment = new List<ThingDto>();
 
                 foreach (var item in colonist.inventory.innerContainer)
                 {
-                    Items.Add(new InventoryThingDto
-                    {
-                        ID = item.thingIDNumber,
-                        Name = item.def.defName,
-                        StackCount = item.stackCount
-                    });
+                    Items.Add(ResourcesHelper.ThingToDto(item));
                 }
 
                 foreach (var apparel in colonist.apparel.WornApparel)
                 {
-                    Apparels.Add(new InventoryThingDto
-                    {
-                        ID = apparel.thingIDNumber,
-                        Name = apparel.def.defName,
-                        StackCount = apparel.stackCount
-                    });
+                    Items.Add(ResourcesHelper.ThingToDto(apparel));
                 }
 
                 foreach (var equipment in colonist.equipment.AllEquipmentListForReading)
                 {
-                    Equipment.Add(new InventoryThingDto
-                    {
-                        ID = equipment.thingIDNumber,
-                        Name = equipment.def.defName,
-                        StackCount = equipment.stackCount
-                    });
+                    Items.Add(ResourcesHelper.ThingToDto(equipment));
                 }
 
                 return new ColonistInventoryDto
@@ -330,7 +315,7 @@ namespace RimworldRestApi.Services
             return _mapHelper.GetMapAnimals(mapId);
         }
 
-        public List<MapThingDto> GetMapThings(int mapId)
+        public List<ThingDto> GetMapThings(int mapId)
         {
             return _mapHelper.GetMapThings(mapId);
         }

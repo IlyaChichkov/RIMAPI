@@ -35,10 +35,10 @@ namespace RimworldRestApi.Helpers
                 {
                     maps.Add(new MapDto
                     {
-                        ID = map.uniqueID,
+                        Id = map.uniqueID,
                         Index = map.Index,
                         Seed = map.ConstantRandSeed,
-                        FactionID = map.ParentFaction.loadID.ToString(),
+                        FactionId = map.ParentFaction.loadID.ToString(),
                         IsPlayerHome = map.IsPlayerHome,
                         IsPocketMap = map.IsPocketMap,
                         IsTempIncidentMap = map.IsTempIncidentMap,
@@ -215,9 +215,9 @@ namespace RimworldRestApi.Helpers
             }
         }
 
-        public List<MapThingDto> GetMapThings(int mapId)
+        public List<ThingDto> GetMapThings(int mapId)
         {
-            List<MapThingDto> things = new List<MapThingDto>();
+            List<ThingDto> things = new List<ThingDto>();
             try
             {
                 Map map = FindMapByUniqueID(mapId);
@@ -227,14 +227,7 @@ namespace RimworldRestApi.Helpers
                 }
 
                 things = map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver)
-                    .Select(p => new MapThingDto
-                    {
-                        Id = p.thingIDNumber,
-                        Type = p.GetType().FullName,
-                        Def = p.def?.defName,
-                        Position = new PositionDto { X = p.Position.x, Y = p.Position.z },
-                        IsForbidden = p.IsForbidden(Faction.OfPlayer),
-                    })
+                    .Select(p => ResourcesHelper.ThingToDto(p))
                     .ToList();
 
                 return things;
@@ -242,7 +235,7 @@ namespace RimworldRestApi.Helpers
             catch (Exception ex)
             {
                 DebugLogging.Error($"Error - {ex.Message}");
-                return new List<MapThingDto>();
+                return new List<ThingDto>();
             }
         }
 

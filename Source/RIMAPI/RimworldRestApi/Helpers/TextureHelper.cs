@@ -12,31 +12,38 @@ namespace RimworldRestApi.Helpers
 {
     public class TextureHelper
     {
+        public ImageDto GetThingImage(int thingId)
+        {
+            ImageDto image = new ImageDto();
+
+            return image;
+        }
+
         public ImageDto GetItemImageByName(string thingName)
         {
             ImageDto image = new ImageDto();
             try
             {
                 var thingDef = DefDatabase<ThingDef>.GetNamed(thingName);
-                Texture2D icon = null;
+                Texture2D texture = null;
 
                 if (!thingDef.uiIconPath.NullOrEmpty())
                 {
-                    icon = thingDef.uiIcon;
+                    texture = thingDef.uiIcon;
                 }
                 else
                 {
-                    icon = (Texture2D)thingDef.DrawMatSingle.mainTexture;
+                    texture = (Texture2D)thingDef.DrawMatSingle.mainTexture;
                 }
 
-                if (icon == null)
+                if (texture == null)
                 {
-                    image.Result = $"No icon available for item - {thingName}";
+                    image.Result = $"No texture available for item - {thingName}";
                 }
                 else
                 {
                     image.Result = "success";
-                    image.ImageBase64 = TextureToBase64(icon);
+                    image.ImageBase64 = TextureToBase64(texture);
                 }
             }
             catch (Exception ex)
