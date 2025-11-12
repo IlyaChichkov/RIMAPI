@@ -505,5 +505,22 @@ namespace RimworldRestApi.Controllers
                     HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        internal async Task GetTraitDef(HttpListenerContext context)
+        {
+            try
+            {
+                string traitName = GetStringProperty(context, "name");
+
+                object traitDef = _gameDataService.GetTraitDefDto(traitName);
+                HandleFiltering(context, ref traitDef);
+                await ResponseBuilder.Success(context.Response, traitDef);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }

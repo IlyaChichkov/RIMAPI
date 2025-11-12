@@ -23,6 +23,7 @@ namespace RimworldRestApi.Services
         private ColonistsHelper _colonistsHelper;
         private BuildingHelper _buildingHelper;
         private TextureHelper _textureHelper;
+        private DefHelper _defHelper;
         private int _lastCacheTick;
         private int needRefreshCooldownTicks = 60; // Refresh every 60 ticks
         private GameStateDto _cachedGameState;
@@ -40,6 +41,7 @@ namespace RimworldRestApi.Services
             _resourcesHelper = new ResourcesHelper();
             _gameEventsHelper = new GameEventsHelper();
             _buildingHelper = new BuildingHelper();
+            _defHelper = new DefHelper();
         }
 
         public void RefreshCache()
@@ -688,6 +690,12 @@ namespace RimworldRestApi.Services
             }
 
             return workList;
+        }
+
+        public TraitDefDto GetTraitDefDto(string traitName)
+        {
+            TraitDef trait = DefDatabase<TraitDef>.GetNamed(traitName, false);
+            return _defHelper.GetTraitDefDto(trait);
         }
     }
 }

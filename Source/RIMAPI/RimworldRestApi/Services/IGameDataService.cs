@@ -23,6 +23,7 @@ namespace RimworldRestApi.Services
         OpinionAboutPawnDto GetOpinionAboutPawn(int id, int otherId);
         void SetColonistWorkPriority(int pawnId, string workDef, int priority);
         WorkListDto GetWorkList();
+        TraitDefDto GetTraitDefDto(string traitName);
         #endregion
         #region Images
         ImageDto GetItemImage(string name);

@@ -241,6 +241,11 @@ namespace RimworldRestApi.Core
                 {
                     await new GameController(_gameDataService).GetWorkList(context);
                 });
+
+                _router.AddRoute("GET", "/api/v1/trait-def", async context =>
+                {
+                    await new GameController(_gameDataService).GetTraitDef(context);
+                });
                 #endregion
                 #region Image
                 _router.AddRoute("GET", "/api/v1/colonist/body/image", async context =>
