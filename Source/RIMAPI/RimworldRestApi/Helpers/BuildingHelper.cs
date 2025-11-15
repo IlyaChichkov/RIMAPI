@@ -152,8 +152,6 @@ namespace RimworldRestApi.Helpers
 
         public Building FindBuildingByID(int buildingId)
         {
-            // You'll need to implement this based on your architecture
-            // This might search through all maps or use a building manager
             foreach (Map map in Find.Maps)
             {
                 Building building = map.listerBuildings.allBuildingsColonist

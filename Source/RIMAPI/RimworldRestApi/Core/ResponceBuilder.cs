@@ -74,6 +74,8 @@ namespace RimworldRestApi.Core
                 // Serialize the data to a JSON string
                 var json = JsonConvert.SerializeObject(data, settings);
 
+                DebugLogging.Message(json, LoggingLevels.DEBUG);
+
                 // Convert the JSON string to bytes
                 var buffer = Encoding.UTF8.GetBytes(json);
                 response.ContentLength64 = buffer.Length;

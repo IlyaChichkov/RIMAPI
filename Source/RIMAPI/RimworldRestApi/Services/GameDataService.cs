@@ -280,6 +280,8 @@ namespace RimworldRestApi.Services
             List<FactionsDto> factions = new List<FactionsDto>();
             try
             {
+                Faction playerFaction = Find.FactionManager?.OfPlayer;
+
                 if (Current.ProgramState != ProgramState.Playing || Find.FactionManager == null)
                 {
                     return factions;
@@ -288,17 +290,17 @@ namespace RimworldRestApi.Services
                 factions = Find.FactionManager.AllFactionsListForReading
                     .Select(f => new FactionsDto
                     {
-                        Name = f.Name,
                         Def = f.def?.defName,
+                        Name = f.Name,
                         IsPlayer = f.IsPlayer,
                         Relation = f.IsPlayer ? string.Empty :
                             (
-                                Find.FactionManager?.OfPlayer != null
-                                ? Find.FactionManager.OfPlayer.RelationKindWith(f).ToString()
+                                playerFaction != null
+                                ? playerFaction.RelationKindWith(f).ToString()
                                 : string.Empty
                             ),
                         Goodwill = f.IsPlayer ? 0 :
-                            (Find.FactionManager?.OfPlayer?.GoodwillWith(f) ?? 0),
+                            (playerFaction?.GoodwillWith(f) ?? 0),
                     })
                     .ToList();
 
@@ -510,6 +512,19 @@ namespace RimworldRestApi.Services
                 case "combatlog":
                     InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Log));
                     break;
+                case "relations":
+                case "social":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Social));
+                    break;
+                case "prisoner":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Prisoner));
+                    break;
+                case "slave":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Slave));
+                    break;
+                case "guest":
+                    InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Guest));
+                    break;
                 default:
                     throw new Exception($"Tried to open unknown tab menu: {tabName}");
             }
@@ -696,6 +711,39 @@ namespace RimworldRestApi.Services
         {
             TraitDef trait = DefDatabase<TraitDef>.GetNamed(traitName, false);
             return _defHelper.GetTraitDefDto(trait);
+        }
+
+        public List<TimeAssignmentDto> GetTimeAssignmentsList()
+        {
+            return DefDatabase<TimeAssignmentDef>.AllDefs
+            .Select(s => new TimeAssignmentDto
+            {
+                Name = s.defName,
+            })
+            .ToList();
+        }
+
+        public void SetTimeAssignment(int pawnId, int hour, string assignmentName)
+        {
+            Pawn pawn = _colonistsHelper.GetPawnById(pawnId);
+            TimeAssignmentDef assignmentDef = DefDatabase<TimeAssignmentDef>.AllDefs
+            .Where(p => p.defName.ToLower() == assignmentName.ToLower()).FirstOrDefault();
+            if (assignmentDef == null)
+            {
+                throw new Exception($"Failed to find assignment def with {assignmentName} name");
+            }
+            pawn.timetable.SetAssignment(hour, assignmentDef);
+        }
+
+        public List<OutfitDto> GetOutfits()
+        {
+            return _colonistsHelper.GetOutfits();
+        }
+
+        public MapRoomsDto GetMapRooms(int mapId)
+        {
+            Map map = _mapHelper.FindMapByUniqueID(mapId);
+            return _mapHelper.GetRooms(map);
         }
     }
 }

@@ -183,6 +183,22 @@ namespace RimworldRestApi.Controllers
             }
         }
 
+        public async Task GetRooms(HttpListenerContext context)
+        {
+            try
+            {
+                var mapId = GetMapIdProperty(context);
+                object rooms = _gameDataService.GetMapRooms(mapId);
+                HandleFiltering(context, ref rooms);
+                await ResponseBuilder.Success(context.Response, rooms);
+            }
+            catch (Exception ex)
+            {
+                await ResponseBuilder.Error(context.Response,
+                    HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         public async Task GetBuildings(HttpListenerContext context)
         {
             try

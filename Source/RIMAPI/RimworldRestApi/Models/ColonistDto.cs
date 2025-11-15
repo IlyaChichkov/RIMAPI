@@ -237,4 +237,27 @@ namespace RimworldRestApi.Models
         public int Priority { get; set; }
     }
 
+    public class TimeAssignmentDto
+    {
+        public string Name { get; set; }
+    }
+
+    public class OutfitDto
+    {
+        public int Id { get; set; }
+        public string Label { get; set; }
+        public ThingFilterDto Filter { get; set; }
+    }
+
+    public class ThingFilterDto
+    {
+        public List<string> AllowedThingDefNames { get; set; }
+        public List<string> DisallowedSpecialFilterDefNames { get; set; }
+        public float AllowedHitPointsMin { get; set; }
+        public float AllowedHitPointsMax { get; set; }
+        public string AllowedQualityMin { get; set; }
+        public string AllowedQualityMax { get; set; }
+        public bool AllowedHitPointsConfigurable { get; set; }
+        public bool AllowedQualitiesConfigurable { get; set; }
+    }
 }

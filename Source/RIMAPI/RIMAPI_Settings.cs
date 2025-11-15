@@ -48,8 +48,14 @@ namespace RIMAPI
         public override void ExposeData()
         {
             Scribe_Values.Look(ref _enableLogging, "enableLogging", false);
+            Scribe_Values.Look(ref _loggingLevel, "loggingLevel", 1);
             Scribe_Values.Look(ref serverPort, "serverPort", 8765);
             Scribe_Values.Look(ref refreshIntervalTicks, "refreshIntervalTicks", 300);
+
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+            {
+                OnSettingChanged();
+            }
         }
     }
 }

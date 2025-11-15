@@ -15,6 +15,7 @@ namespace RimworldRestApi.Core
         public Router()
         {
             _routes = new List<Route>();
+            _allowedOrigins = null;
         }
 
         public void AddRoute(string method, string path, Func<HttpListenerContext, Task> handler)
