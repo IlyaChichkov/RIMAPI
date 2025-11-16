@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -59,7 +60,7 @@ namespace RimworldRestApi.Core
                 DebugLogging.Info($"SSE connection established. Total clients: {_connectedClients.Count}");
 
                 // Send initial connection message
-                await SendEventToClientInternal(client, "connected", new
+                SendEventToClientInternal(client, "connected", new
                 {
                     message = "SSE connection established",
                     timestamp = DateTime.UtcNow
@@ -67,7 +68,7 @@ namespace RimworldRestApi.Core
 
                 // Send initial game state
                 var gameState = _gameDataService.GetGameState();
-                await SendEventToClientInternal(client, "gameState", gameState);
+                SendEventToClientInternal(client, "gameState", gameState);
 
                 // Keep connection alive with heartbeat
                 var lastHeartbeat = DateTime.UtcNow;
@@ -77,16 +78,9 @@ namespace RimworldRestApi.Core
                 {
                     try
                     {
-                        // Check if client is still connected
-                        if (!await TestClientConnection(client))
+                        if ((DateTime.UtcNow - lastHeartbeat).TotalSeconds >= 30)
                         {
-                            break;
-                        }
-
-                        // Send heartbeat every 30 seconds
-                        if (DateTime.UtcNow - lastHeartbeat >= heartbeatInterval)
-                        {
-                            await SendEventToClientInternal(client, "heartbeat", new
+                            SendEventToClientInternal(client, "heartbeat", new
                             {
                                 timestamp = DateTime.UtcNow
                             });
@@ -101,6 +95,7 @@ namespace RimworldRestApi.Core
                         break;
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -158,7 +153,7 @@ namespace RimworldRestApi.Core
                 // Queue the broadcast instead of awaiting it
                 lock (_queueLock)
                 {
-                    _broadcastQueue.Enqueue(() => _ = BroadcastEventInternal("gameUpdate", gameState));
+                    _broadcastQueue.Enqueue(() => BroadcastEventInternal("gameUpdate", gameState));
                 }
 
                 _lastBroadcastTick = currentTick;
@@ -194,7 +189,7 @@ namespace RimworldRestApi.Core
             }
         }
 
-        private async Task BroadcastEventInternal(string eventType, object data)
+        private void BroadcastEventInternal(string eventType, object data)
         {
             List<SseClient> clientsToRemove = new List<SseClient>();
             List<SseClient> currentClients;
@@ -214,17 +209,16 @@ namespace RimworldRestApi.Core
                         continue;
                     }
 
-                    await SendEventToClientInternal(client, eventType, data);
+                    SendEventToClientInternal(client, eventType, data);
 
                     if (!client.IsConnected)
                     {
-                        // SendEventToClientInternal may have marked it dead
                         clientsToRemove.Add(client);
                     }
                 }
                 catch (Exception ex)
                 {
-                    DebugLogging.Error($"[SSE] Error sending to client for event '{eventType}' - {ex.Message}");
+                    DebugLogging.Info($"[SSE] Error sending to client for event '{eventType}' - {ex.Message}");
                     if (client != null)
                     {
                         client.MarkDisconnected();
@@ -246,7 +240,7 @@ namespace RimworldRestApi.Core
                             client.MarkDisconnected();
                             client.Response?.Close();
                         }
-                        catch { /* ignore */ }
+                        catch { }
                     }
                 }
                 DebugLogging.Info($"[SSE] Removed {clientsToRemove.Count} dead SSE connections");
@@ -259,11 +253,11 @@ namespace RimworldRestApi.Core
 
             lock (_queueLock)
             {
-                _broadcastQueue.Enqueue(() => _ = BroadcastEventInternal(eventType, data));
+                _broadcastQueue.Enqueue(() => BroadcastEventInternal(eventType, data));
             }
         }
 
-        private async Task SendEventToClientInternal(SseClient client, string eventType, object data)
+        private void SendEventToClientInternal(SseClient client, string eventType, object data)
         {
             if (client == null)
             {
@@ -277,16 +271,9 @@ namespace RimworldRestApi.Core
                 return;
             }
 
-            if (client.Response == null)
+            if (client.Response == null || client.Response.OutputStream == null)
             {
-                DebugLogging.Info($"[SSE] Client.Response is null, marking disconnected for event '{eventType}'");
-                client.MarkDisconnected();
-                return;
-            }
-
-            if (client.Response.OutputStream == null)
-            {
-                DebugLogging.Info($"[SSE] Client.OutputStream is null, marking disconnected for event '{eventType}'");
+                DebugLogging.Info($"[SSE] Client response/output is null, marking disconnected for event '{eventType}'");
                 client.MarkDisconnected();
                 return;
             }
@@ -294,7 +281,7 @@ namespace RimworldRestApi.Core
             string json;
             try
             {
-                // If you sometimes pass a JSON string already, avoid double-serializing
+                // If caller already passed JSON string, don't double-serialize
                 if (data is string s)
                 {
                     json = s;
@@ -317,7 +304,6 @@ namespace RimworldRestApi.Core
             string message;
             try
             {
-                // Proper SSE format with id and retry
                 message = $"id: {Guid.NewGuid()}\n" +
                           $"event: {eventType}\n" +
                           $"data: {json}\n" +
@@ -331,29 +317,38 @@ namespace RimworldRestApi.Core
 
             try
             {
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
+                var buffer = System.Text.Encoding.UTF8.GetBytes(message);
 
-                // Extra guard in case the client was closed between checks and write
-                if (!client.IsConnected || client.Response.OutputStream == null)
+                // SERIALIZE WRITES FOR THIS CLIENT
+                lock (client.SendLock)
                 {
-                    DebugLogging.Info($"[SSE] Client disconnected before send for event '{eventType}'");
-                    client.MarkDisconnected();
-                    return;
-                }
+                    if (!client.IsConnected || client.Response?.OutputStream == null)
+                    {
+                        DebugLogging.Info($"[SSE] Client disconnected before send for event '{eventType}'");
+                        client.MarkDisconnected();
+                        return;
+                    }
 
-                await client.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                await client.Response.OutputStream.FlushAsync();
+                    client.Response.OutputStream.Write(buffer, 0, buffer.Length);
+                    client.Response.OutputStream.Flush();
+                }
 
                 DebugLogging.Message($"[SSE] Successfully sent event '{eventType}'", LoggingLevels.DEBUG);
                 client.UpdateLastActivity();
             }
+            catch (IOException ioEx)
+            {
+                // This is the “remote host forcibly closed connection” case — normal when client dies.
+                DebugLogging.Error($"[SSE] IO error sending event '{eventType}' - {ioEx}");
+                client.MarkDisconnected();
+            }
             catch (Exception ex)
             {
-                DebugLogging.Error($"[SSE] Error sending SSE event '{eventType}' - {ex}");
+                DebugLogging.Error($"[SSE] Error sending event '{eventType}' - {ex}");
                 client.MarkDisconnected();
-                // Do NOT rethrow; let BroadcastEventInternal clean up.
             }
         }
+
 
         public void Dispose()
         {
@@ -389,6 +384,7 @@ namespace RimworldRestApi.Core
             public HttpListenerResponse Response { get; }
             public bool IsConnected { get; private set; }
             public DateTime LastActivity { get; private set; }
+            public object SendLock { get; } = new object();
 
             public SseClient(HttpListenerResponse response)
             {
