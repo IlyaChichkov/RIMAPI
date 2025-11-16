@@ -57,7 +57,8 @@ namespace RimworldRestApi.Services
                     ColonyWealth = GetColonyWealth(),
                     ColonistCount = GetColonistCount(),
                     Storyteller = game?.storyteller?.def?.defName ?? "Unknown",
-                    LastUpdate = DateTime.UtcNow
+                    LastUpdate = DateTime.UtcNow,
+                    IsPaused = Find.TickManager.Paused,
                 };
 
                 // Update colonists cache

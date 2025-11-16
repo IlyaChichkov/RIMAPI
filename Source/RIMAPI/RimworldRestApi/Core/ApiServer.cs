@@ -441,7 +441,7 @@ namespace RimworldRestApi.Core
         {
             // Refresh game data cache and notify WebSocket clients
             _gameDataService.RefreshCache();
-            _sseService.BroadcastGameUpdate();
+            //_sseService.BroadcastGameUpdate();
         }
 
         public void ProcessBroadcastQueue()

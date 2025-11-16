@@ -9,6 +9,7 @@ namespace RimworldRestApi.Models
         public int ColonistCount { get; set; }
         public string Storyteller { get; set; }
         public DateTime LastUpdate { get; set; }
+        public bool IsPaused { get; set; }
     }
 
     public class ModInfoDto

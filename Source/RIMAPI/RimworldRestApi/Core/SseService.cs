@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -86,17 +87,7 @@ namespace RimworldRestApi.Core
                             lastHeartbeat = DateTime.UtcNow;
                         }
 
-                        // Check if client is still connected by testing the stream
-                        if (!await TestClientConnection(client))
-                        {
-                            DebugLogging.Info("SSE client connection test failed");
-                            break;
-                        }
-
-                        lastActivity = DateTime.UtcNow;
-
-                        // Small delay to prevent tight looping
-                        await Task.Delay(1000); // 1 second delay
+                        await Task.Delay(1000);
                     }
                     catch (Exception ex)
                     {
@@ -104,6 +95,7 @@ namespace RimworldRestApi.Core
                         break;
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -141,6 +133,11 @@ namespace RimworldRestApi.Core
             {
                 return false;
             }
+        }
+
+        public static SseService GetService()
+        {
+            return RIMAPI.RIMAPI_Mod.SseService;
         }
 
         public void BroadcastGameUpdate()
@@ -203,13 +200,22 @@ namespace RimworldRestApi.Core
                 currentClients = new List<SseClient>(_connectedClients);
             }
 
+            var json = JsonConvert.SerializeObject(data, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.None
+            });
+
+            string debugMessage = $"[SSE] {eventType}, data: {json}";
+            DebugLogging.Message(debugMessage, LoggingLevels.DEBUG);
+
             foreach (var client in currentClients)
             {
                 try
                 {
                     if (client.IsConnected)
                     {
-                        await SendEventToClient(client, eventType, data);
+                        await SendEventToClient(client, eventType, json);
                     }
                     else
                     {
@@ -238,7 +244,7 @@ namespace RimworldRestApi.Core
             }
         }
 
-        private void QueueEventBroadcast(string eventType, object data)
+        public void QueueEventBroadcast(string eventType, object data)
         {
             if (_disposed) return;
 
@@ -248,34 +254,21 @@ namespace RimworldRestApi.Core
             }
         }
 
-        public void BroadcastFoodEvent(Pawn colonist, Thing food, float nutritionWanted, float result)
+        private async Task SendEventToClient(SseClient client, string eventType, object data)
         {
-            if (_disposed || colonist == null || food == null) return;
-            float hungerBefore = colonist.needs?.food?.CurLevelPercentage ?? 0;
-            float hungerAfter = hungerBefore + result;
-
-            var foodEvent = new
+            var json = JsonConvert.SerializeObject(data, new JsonSerializerSettings
             {
-                colonist = new
-                {
-                    name = colonist.Name?.ToStringShort ?? "Unknown",
-                    hungerBefore = hungerBefore,
-                    hungerAfter = hungerAfter > 1f ? 1f : hungerAfter,
-                },
-                food = new
-                {
-                    defName = food.def.defName,
-                    label = food.Label,
-                    nutrition = food.GetStatValue(StatDefOf.Nutrition),
-                    foodType = food.def.ingestible?.foodType.ToString() ?? "Unknown"
-                },
-                ticks = Find.TickManager.TicksGame
-            };
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.None
+            });
 
-            QueueEventBroadcast("colonist_ate", foodEvent);
+            string debugMessage = $"[SSE] {eventType}, data: {json}";
+            DebugLogging.Message(debugMessage, LoggingLevels.DEBUG);
+
+            await SendEventToClient(client, eventType, json);
         }
 
-        private async Task SendEventToClient(SseClient client, string eventType, object data)
+        private async Task SendEventToClient(SseClient client, string eventType, string json)
         {
             if (!client.IsConnected)
             {
@@ -285,12 +278,6 @@ namespace RimworldRestApi.Core
 
             try
             {
-                var json = JsonConvert.SerializeObject(data, new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    Formatting = Formatting.None
-                });
-
                 // Proper SSE format with id and retry
                 var message = $"id: {Guid.NewGuid()}\n";
                 message += $"event: {eventType}\n";
@@ -298,8 +285,6 @@ namespace RimworldRestApi.Core
                 message += $"retry: 3000\n\n"; // 3 second retry
 
                 var buffer = System.Text.Encoding.UTF8.GetBytes(message);
-
-                DebugLogging.Info($"Sending event: {eventType} with {buffer.Length} bytes");
 
                 if (!client.IsConnected || client.Response.OutputStream == null)
                 {
@@ -317,9 +302,8 @@ namespace RimworldRestApi.Core
             }
             catch (Exception ex)
             {
-                DebugLogging.Info($"Error sending SSE event '{eventType}' - {ex.Message}");
+                DebugLogging.Error($"Error sending SSE event '{eventType}' - {ex.Message}");
                 client.MarkDisconnected();
-                throw;
             }
         }
 
