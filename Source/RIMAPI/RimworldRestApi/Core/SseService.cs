@@ -208,34 +208,48 @@ namespace RimworldRestApi.Core
             {
                 try
                 {
-                    if (client.IsConnected)
+                    if (client == null || !client.IsConnected)
                     {
-                        await SendEventToClientInternal(client, eventType, data);
+                        clientsToRemove.Add(client);
+                        continue;
                     }
-                    else
+
+                    await SendEventToClientInternal(client, eventType, data);
+
+                    if (!client.IsConnected)
                     {
+                        // SendEventToClientInternal may have marked it dead
                         clientsToRemove.Add(client);
                     }
                 }
                 catch (Exception ex)
                 {
-                    DebugLogging.Info($"Error sending to SSE client - {ex.Message}");
-                    clientsToRemove.Add(client);
+                    DebugLogging.Error($"[SSE] Error sending to client for event '{eventType}' - {ex.Message}");
+                    if (client != null)
+                    {
+                        client.MarkDisconnected();
+                        clientsToRemove.Add(client);
+                    }
                 }
             }
 
-            // Clean up dead connections
             if (clientsToRemove.Count > 0)
             {
                 lock (_clientsLock)
                 {
                     foreach (var client in clientsToRemove)
                     {
+                        if (client == null) continue;
                         _connectedClients.Remove(client);
-                        client.MarkDisconnected();
+                        try
+                        {
+                            client.MarkDisconnected();
+                            client.Response?.Close();
+                        }
+                        catch { /* ignore */ }
                     }
                 }
-                DebugLogging.Info($"Removed {clientsToRemove.Count} dead SSE connections");
+                DebugLogging.Info($"[SSE] Removed {clientsToRemove.Count} dead SSE connections");
             }
         }
 
@@ -251,46 +265,78 @@ namespace RimworldRestApi.Core
 
         private async Task SendEventToClientInternal(SseClient client, string eventType, object data)
         {
+            if (client == null)
+            {
+                DebugLogging.Warning($"[SSE] SendEventToClientInternal: client is null for event '{eventType}'");
+                return;
+            }
+
             if (!client.IsConnected)
             {
-                DebugLogging.Info($"Client not connected for event: {eventType}");
+                DebugLogging.Info($"[SSE] Client already disconnected, skipping event '{eventType}'");
+                return;
+            }
+
+            if (client.Response == null)
+            {
+                DebugLogging.Info($"[SSE] Client.Response is null, marking disconnected for event '{eventType}'");
+                client.MarkDisconnected();
+                return;
+            }
+
+            if (client.Response.OutputStream == null)
+            {
+                DebugLogging.Info($"[SSE] Client.OutputStream is null, marking disconnected for event '{eventType}'");
+                client.MarkDisconnected();
+                return;
+            }
+
+            string json;
+            try
+            {
+                // If you sometimes pass a JSON string already, avoid double-serializing
+                if (data is string s)
+                {
+                    json = s;
+                }
+                else
+                {
+                    json = JsonConvert.SerializeObject(data, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        Formatting = Formatting.None
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogging.Error($"[SSE] Failed to serialize data for event '{eventType}': {ex}");
+                return;
+            }
+
+            string message;
+            try
+            {
+                // Proper SSE format with id and retry
+                message = $"id: {Guid.NewGuid()}\n" +
+                          $"event: {eventType}\n" +
+                          $"data: {json}\n" +
+                          $"retry: 3000\n\n";
+            }
+            catch (Exception ex)
+            {
+                DebugLogging.Error($"[SSE] Failed to build SSE message for event '{eventType}': {ex}");
                 return;
             }
 
             try
             {
-                var json = JsonConvert.SerializeObject(data, new JsonSerializerSettings
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
+
+                // Extra guard in case the client was closed between checks and write
+                if (!client.IsConnected || client.Response.OutputStream == null)
                 {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    Formatting = Formatting.None
-                });
-
-                // Proper SSE format - each line must be properly terminated
-                var messageBuilder = new System.Text.StringBuilder();
-
-                // Add ID first
-                messageBuilder.Append($"id: {Guid.NewGuid()}\n");
-
-                // Add event type
-                messageBuilder.Append($"event: {eventType}\n");
-
-                // Add data - split into multiple lines if needed for proper SSE format
-                var dataLines = json.Split('\n');
-                foreach (var line in dataLines)
-                {
-                    messageBuilder.Append($"data: {line}\n");
-                }
-
-                // Add retry and final newlines
-                messageBuilder.Append("retry: 3000\n");
-                messageBuilder.Append("\n"); // Final newline to complete the event
-
-                var message = messageBuilder.ToString();
-                var buffer = System.Text.Encoding.UTF8.GetBytes(message);
-
-                if (!client.IsConnected || client.Response?.OutputStream == null)
-                {
-                    DebugLogging.Info($"Client disconnected before sending event: {eventType}");
+                    DebugLogging.Info($"[SSE] Client disconnected before send for event '{eventType}'");
                     client.MarkDisconnected();
                     return;
                 }
@@ -298,18 +344,14 @@ namespace RimworldRestApi.Core
                 await client.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
                 await client.Response.OutputStream.FlushAsync();
 
-                DebugLogging.Message($"[SSE] Successfully sent event: {eventType}", LoggingLevels.DEBUG);
+                DebugLogging.Message($"[SSE] Successfully sent event '{eventType}'", LoggingLevels.DEBUG);
                 client.UpdateLastActivity();
-            }
-            catch (System.IO.IOException ioEx)
-            {
-                DebugLogging.Info($"IO error sending SSE event '{eventType}' - {ioEx.Message}");
-                client.MarkDisconnected();
             }
             catch (Exception ex)
             {
-                DebugLogging.Error($"Error sending SSE event '{eventType}' - {ex.Message}");
+                DebugLogging.Error($"[SSE] Error sending SSE event '{eventType}' - {ex}");
                 client.MarkDisconnected();
+                // Do NOT rethrow; let BroadcastEventInternal clean up.
             }
         }
 

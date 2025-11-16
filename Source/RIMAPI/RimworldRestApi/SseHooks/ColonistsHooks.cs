@@ -68,12 +68,10 @@ namespace RimworldRestApi.Hooks
         {
             try
             {
-                if (worker == null || recipeDef == null || __result == null)
-                    return;
+                if (worker == null || recipeDef == null || __result == null) return;
 
                 var sseService = SseService.GetService();
-                if (sseService == null)
-                    return;
+                if (sseService == null) return;
 
                 var payload = new
                 {
@@ -82,7 +80,7 @@ namespace RimworldRestApi.Hooks
                         id = worker.thingIDNumber,
                         name = worker.Name?.ToStringShort ?? "Unknown",
                     },
-                    result = __result.Select(t => new
+                    result = __result.Where(t => t != null).Select(t => new
                     {
                         thing_id = t.thingIDNumber,
                         def_name = t.def?.defName ?? "Unknown",
@@ -95,7 +93,6 @@ namespace RimworldRestApi.Hooks
                     },
                     ticks = Find.TickManager.TicksGame
                 };
-
 
                 sseService.QueueEventBroadcast("make_recipe_product", payload);
             }
