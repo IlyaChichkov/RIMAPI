@@ -117,4 +117,22 @@ namespace RimworldRestApi.Models
         public string BaseLabel { get; set; }
         public string Type { get; set; }
     }
+
+    public class RoomDto
+    {
+        public int Id { get; set; }
+        public string RoleLabel { get; set; }
+        public float Temperature { get; set; }
+        public int CellsCount { get; set; }
+        public bool TouchesMapEdge { get; set; }
+        public bool IsPrisonCell { get; set; }
+        public bool IsDoorway { get; set; }
+        public int OpenRoofCount { get; set; }
+        public List<int> ContainedBedsIds { get; set; }
+    }
+
+    public class MapRoomsDto
+    {
+        public List<RoomDto> Rooms { get; set; }
+    }
 }

@@ -97,7 +97,7 @@ namespace RimworldRestApi.Core
 
                 _router.AddRoute("POST", "/api/v1/jobs/make/equip", async context =>
                 {
-                    await new GameController(_gameDataService).MakeJobEquip(context);
+                    await new PawnsController(_gameDataService).MakeJobEquip(context);
                 });
                 #endregion
                 #region Map
@@ -144,6 +144,11 @@ namespace RimworldRestApi.Core
                 _router.AddRoute("GET", "/api/v1/map/zones", async context =>
                 {
                     await new MapController(_gameDataService).GetZones(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/map/rooms", async context =>
+                {
+                    await new MapController(_gameDataService).GetRooms(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/map/buildings", async context =>
@@ -199,53 +204,73 @@ namespace RimworldRestApi.Core
                 #region Colonists
                 _router.AddRoute("GET", "/api/v1/colonists", async context =>
                 {
-                    await new GameController(_gameDataService).GetColonists(context);
+                    await new PawnsController(_gameDataService).GetColonists(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/colonist", async context =>
                 {
-                    await new GameController(_gameDataService).GetColonist(context);
+                    await new PawnsController(_gameDataService).GetColonist(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/colonists/detailed", async context =>
                 {
-                    await new GameController(_gameDataService).GetColonistsDetailed(context);
+                    await new PawnsController(_gameDataService).GetColonistsDetailed(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/colonist/detailed", async context =>
                 {
-                    await new GameController(_gameDataService).GetColonistDetailed(context);
+                    await new PawnsController(_gameDataService).GetColonistDetailed(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/colonist/opinion-about", async context =>
                 {
-                    await new GameController(_gameDataService).GetPawnOpinionAboutPawn(context);
+                    await new PawnsController(_gameDataService).GetPawnOpinionAboutPawn(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/colonist/inventory", async context =>
                 {
-                    await new GameController(_gameDataService).GetColonistInventory(context);
+                    await new PawnsController(_gameDataService).GetColonistInventory(context);
                 });
 
                 _router.AddRoute("POST", "/api/v1/colonist/work-priority", async context =>
                 {
-                    await new GameController(_gameDataService).SetColonistWorkPriority(context);
+                    await new PawnsController(_gameDataService).SetColonistWorkPriority(context);
                 });
 
                 _router.AddRoute("POST", "/api/v1/colonists/work-priority", async context =>
                 {
-                    await new GameController(_gameDataService).SetColonistsWorkPriority(context);
+                    await new PawnsController(_gameDataService).SetColonistsWorkPriority(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/work-list", async context =>
                 {
-                    await new GameController(_gameDataService).GetWorkList(context);
+                    await new PawnsController(_gameDataService).GetWorkList(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/trait-def", async context =>
+                {
+                    await new PawnsController(_gameDataService).GetTraitDef(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/time-assignments", async context =>
+                {
+                    await new PawnsController(_gameDataService).GetTimeAssignmentsList(context);
+                });
+
+                _router.AddRoute("POST", "/api/v1/colonist/time-assignment", async context =>
+                {
+                    await new PawnsController(_gameDataService).SetTimeAssignment(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/outfits", async context =>
+                {
+                    await new PawnsController(_gameDataService).GetOutfitsList(context);
                 });
                 #endregion
                 #region Image
                 _router.AddRoute("GET", "/api/v1/colonist/body/image", async context =>
                 {
-                    await new GameController(_gameDataService).GetColonistBody(context);
+                    await new PawnsController(_gameDataService).GetColonistBody(context);
                 });
 
                 _router.AddRoute("GET", "/api/v1/item/image", async context =>
@@ -255,7 +280,7 @@ namespace RimworldRestApi.Core
 
                 _router.AddRoute("GET", "/api/v1/pawn/portrait/image", async context =>
                 {
-                    await new GameController(_gameDataService).GetPawnPortraitImage(context);
+                    await new PawnsController(_gameDataService).GetPawnPortraitImage(context);
                 });
                 #endregion
                 #region Resources & Items
@@ -416,7 +441,7 @@ namespace RimworldRestApi.Core
         {
             // Refresh game data cache and notify WebSocket clients
             _gameDataService.RefreshCache();
-            _sseService.BroadcastGameUpdate();
+            //_sseService.BroadcastGameUpdate();
         }
 
         public void ProcessBroadcastQueue()

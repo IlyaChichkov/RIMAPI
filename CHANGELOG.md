@@ -1,4 +1,27 @@
 # Changelog
+## v0.5.4
+
+Add SSE broadcast:
+- message_received
+- letter_received
+- make_recipe_product
+- unfinished_destroyed
+- date_changed
+
+Updated SSE broadcast:
+- colonist_ate
+
+Add endpoint:
+- /api/v1/map/rooms
+- /api/v1/time-assignments
+- /api/v1/colonist/time-assignment
+- /api/v1/outfits
+
+SSE service refactoring & fixes
+Update debug logging class
+Fix loggingLevel config value wasn't save in Scribe_Values 
+Add example script for colony food analysis 
+
 ## v0.5.3
 
 Add endpoint:

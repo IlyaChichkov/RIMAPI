@@ -171,6 +171,34 @@ namespace RimworldRestApi.Models
         public int DisabledWorkTags { get; set; }
     }
 
+    public class TraitDefDto
+    {
+        public string DefName { get; set; }
+        public string Label { get; set; }
+        public string Description { get; set; }
+        public List<TraitDegreeDto> DegreeDatas { get; set; }
+        public List<string> ConflictingTraits { get; set; }
+        public List<string> DisabledWorkTypes { get; set; }
+        public string DisabledWorkTags { get; set; }
+    }
+
+
+    public class TraitDegreeDto
+    {
+        public string Label { get; set; }
+        public string Description { get; set; }
+        public int Degree { get; set; }
+        public Dictionary<string, int> SkillGains { get; set; }
+        public List<StatModifierDto> StatOffsets { get; set; }
+        public List<StatModifierDto> StatFactors { get; set; }
+    }
+
+    public class StatModifierDto
+    {
+        public string StatDefName { get; set; }
+        public float Value { get; set; }
+    }
+
     public class WorkPriorityDto
     {
         public string WorkType { get; set; }
@@ -209,4 +237,27 @@ namespace RimworldRestApi.Models
         public int Priority { get; set; }
     }
 
+    public class TimeAssignmentDto
+    {
+        public string Name { get; set; }
+    }
+
+    public class OutfitDto
+    {
+        public int Id { get; set; }
+        public string Label { get; set; }
+        public ThingFilterDto Filter { get; set; }
+    }
+
+    public class ThingFilterDto
+    {
+        public List<string> AllowedThingDefNames { get; set; }
+        public List<string> DisallowedSpecialFilterDefNames { get; set; }
+        public float AllowedHitPointsMin { get; set; }
+        public float AllowedHitPointsMax { get; set; }
+        public string AllowedQualityMin { get; set; }
+        public string AllowedQualityMax { get; set; }
+        public bool AllowedHitPointsConfigurable { get; set; }
+        public bool AllowedQualitiesConfigurable { get; set; }
+    }
 }

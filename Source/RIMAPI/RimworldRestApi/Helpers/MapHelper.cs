@@ -329,5 +329,44 @@ namespace RimworldRestApi.Helpers
 
             return buildings;
         }
+
+        public MapRoomsDto GetRooms(Map map)
+        {
+#if RIMWORLD_1_5
+            List<Room> allRooms = map.regionGrid.allRooms;
+            return new MapRoomsDto
+            {
+                Rooms = allRooms.Select(s => new RoomDto
+                {
+                    Id = s.ID,
+                    RoleLabel = s.GetRoomRoleLabel(),
+                    Temperature = s.Temperature,
+                    CellsCount = s.CellCount,
+                    TouchesMapEdge = s.TouchesMapEdge,
+                    IsPrisonCell = s.IsPrisonCell,
+                    IsDoorway = s.IsDoorway,
+                    ContainedBedsIds = s.ContainedBeds.Select(b => b.thingIDNumber).ToList(),
+                    OpenRoofCount = s.OpenRoofCount,
+                }).ToList()
+            };
+#elif RIMWORLD_1_6
+            var allRooms = map.regionGrid.AllRooms;
+            return new MapRoomsDto
+            {
+                Rooms = allRooms.Select(s => new RoomDto
+                {
+                    Id = s.ID,
+                    RoleLabel = s.GetRoomRoleLabel(),
+                    Temperature = s.Temperature,
+                    CellsCount = s.CellCount,
+                    TouchesMapEdge = s.TouchesMapEdge,
+                    IsPrisonCell = s.IsPrisonCell,
+                    IsDoorway = s.IsDoorway,
+                    ContainedBedsIds = s.ContainedBeds.Select(b => b.thingIDNumber).ToList(),
+                    OpenRoofCount = s.OpenRoofCount,
+                }).ToList()
+            };
+#endif
+        }
     }
 }

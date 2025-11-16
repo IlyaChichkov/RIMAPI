@@ -14,7 +14,12 @@ namespace RimworldRestApi.Helpers
     {
         public Pawn GetPawnById(int id)
         {
-            return Find.CurrentMap.mapPawns.AllPawns.Where(p => p.thingIDNumber == id).FirstOrDefault();
+            Pawn pawn = Find.CurrentMap.mapPawns.AllPawns.Where(p => p.thingIDNumber == id).FirstOrDefault();
+            if (pawn == null)
+            {
+                throw new Exception($"Failed to find pawn with id: {id}");
+            }
+            return pawn;
         }
 
         public List<ColonistDto> GetColonists()
@@ -295,6 +300,43 @@ namespace RimworldRestApi.Helpers
                 DebugLogging.Error($"Error getting work priorities for pawn {pawn.thingIDNumber} - {ex.Message}");
                 return priorities;
             }
+        }
+
+        public static ThingFilterDto GetThingFilterDto(ThingFilter filter)
+        {
+            var disallowedFilters = DefDatabase<SpecialThingFilterDef>.AllDefs
+                .Where(sf => !filter.Allows(sf))
+                .Select(sf => sf.defName)
+                .ToList();
+
+            return new ThingFilterDto
+            {
+                AllowedThingDefNames = filter.AllowedThingDefs.Select(d => d.defName).ToList(),
+                DisallowedSpecialFilterDefNames = disallowedFilters,
+                AllowedHitPointsMin = filter.AllowedHitPointsPercents.min,
+                AllowedHitPointsMax = filter.AllowedHitPointsPercents.max,
+                AllowedQualityMin = filter.AllowedQualityLevels.min.ToString(),
+                AllowedQualityMax = filter.AllowedQualityLevels.max.ToString(),
+                AllowedHitPointsConfigurable = filter.allowedHitPointsConfigurable,
+                AllowedQualitiesConfigurable = filter.allowedQualitiesConfigurable,
+            };
+        }
+
+        public List<OutfitDto> GetOutfits()
+        {
+            List<OutfitDto> outfits = new List<OutfitDto>();
+
+            foreach (var policy in Current.Game.outfitDatabase.AllOutfits)
+            {
+                outfits.Add(new OutfitDto
+                {
+                    Id = policy.id,
+                    Label = policy.label,
+                    Filter = GetThingFilterDto(policy.filter),
+                });
+            }
+
+            return outfits;
         }
     }
 }

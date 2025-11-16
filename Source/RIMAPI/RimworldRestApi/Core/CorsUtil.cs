@@ -7,7 +7,6 @@ namespace RimworldRestApi.Core
     {
         public static void WriteCors(HttpListenerRequest req, HttpListenerResponse res, ISet<string> allowedOrigins = null)
         {
-            DebugLogging.Info($"WriteCors");
             var origin = req.Headers["Origin"];
             string allowOrigin = null;
 

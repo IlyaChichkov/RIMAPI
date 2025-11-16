@@ -23,6 +23,10 @@ namespace RimworldRestApi.Services
         OpinionAboutPawnDto GetOpinionAboutPawn(int id, int otherId);
         void SetColonistWorkPriority(int pawnId, string workDef, int priority);
         WorkListDto GetWorkList();
+        TraitDefDto GetTraitDefDto(string traitName);
+        List<TimeAssignmentDto> GetTimeAssignmentsList();
+        void SetTimeAssignment(int pawnId, int hour, string assignmentName);
+        List<OutfitDto> GetOutfits();
         #endregion
         #region Images
         ImageDto GetItemImage(string name);
@@ -49,6 +53,7 @@ namespace RimworldRestApi.Services
         MapFarmSummaryDto GenerateFarmSummary(int mapId);
         GrowingZoneDto GetGrowingZoneById(int mapId, int zoneId);
         MapZonesDto GetMapZones(int mapId);
+        MapRoomsDto GetMapRooms(int mapId);
         List<BuildingDto> GetMapBuildings(int mapId);
         #endregion
         #region Buildings

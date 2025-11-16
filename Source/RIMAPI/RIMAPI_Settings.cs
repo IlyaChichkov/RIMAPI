@@ -5,7 +5,7 @@ namespace RIMAPI
 {
     public class RIMAPI_Settings : ModSettings
     {
-        public string version = "0.5.3";
+        public string version = "0.5.4";
         public string apiVersion = "v1";
         public int serverPort = 8765;
         public int refreshIntervalTicks = 300;
@@ -48,8 +48,14 @@ namespace RIMAPI
         public override void ExposeData()
         {
             Scribe_Values.Look(ref _enableLogging, "enableLogging", false);
+            Scribe_Values.Look(ref _loggingLevel, "loggingLevel", 1);
             Scribe_Values.Look(ref serverPort, "serverPort", 8765);
             Scribe_Values.Look(ref refreshIntervalTicks, "refreshIntervalTicks", 300);
+
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+            {
+                OnSettingChanged();
+            }
         }
     }
 }
