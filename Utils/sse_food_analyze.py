@@ -9,7 +9,6 @@ import requests
 # --- CONFIG ---
 
 SSE_URL = "http://localhost:8765/api/v1/events"
-
 RESOURCES_URL = "http://localhost:8765/api/v1/resources/stored"
 COLONISTS_URL = "http://localhost:8765/api/v1/colonists"
 
@@ -20,21 +19,17 @@ TICKS_PER_DAY = 60000  # RimWorld vanilla
 
 class FoodStats:
     def __init__(self):
-        # day_index -> stats
         self.days = defaultdict(lambda: {
             "nutrition_consumed": 0.0,
             "nutrition_produced": 0.0,
             "consumed_by_food": defaultdict(lambda: {"count": 0, "nutrition": 0.0}),
             "produced_by_food": defaultdict(lambda: {"count": 0, "nutrition": 0.0}),
         })
-        # Learned nutrition per meal def (from events)
-        # def_name -> {"total_nutrition": float, "items": int}
         self.nutrition_per_def = defaultdict(lambda: {"total_nutrition": 0.0, "items": 0})
+        self.previous_day_stats = {}  # Store previous day for comparison
 
     def _day_for_ticks(self, ticks: int) -> int:
         return ticks // TICKS_PER_DAY
-
-    # --- Nutrition learning helpers ---
 
     def get_recent_production_avg(self, days_back=3):
         """Average nutrition produced per day over the last N days (if data)."""
@@ -65,7 +60,7 @@ class FoodStats:
         info = self.nutrition_per_def.get(def_name)
         if info and info["items"] > 0:
             return info["total_nutrition"] / info["items"]
-        # Fallback guesses for common RimWorld meals (rough)
+        # Fallback guesses for common RimWorld meals
         if def_name == "MealSimple":
             return 0.9
         if def_name == "MealFine":
@@ -185,203 +180,219 @@ class FoodStats:
             "by_def": by_def,
         }
 
+    def _get_day_comparison(self, day: int, current_stats: dict, stored_snapshot: dict):
+        """Calculate changes compared to previous day."""
+        if day - 1 not in self.previous_day_stats:
+            return None
+            
+        prev_stats = self.previous_day_stats[day - 1]
+        changes = {}
+        
+        # Storage changes
+        if stored_snapshot and "stored" in prev_stats:
+            current_meals = stored_snapshot.get("total_meals", 0)
+            prev_meals = prev_stats["stored"].get("total_meals", 0)
+            if prev_meals > 0:
+                changes["meals_change"] = current_meals - prev_meals
+                changes["meals_change_pct"] = ((current_meals - prev_meals) / prev_meals) * 100
+        
+        # Production changes
+        current_prod = current_stats.get("nutrition_produced", 0)
+        prev_prod = prev_stats.get("stats", {}).get("nutrition_produced", 0)
+        if prev_prod > 0:
+            changes["prod_change"] = current_prod - prev_prod
+            changes["prod_change_pct"] = ((current_prod - prev_prod) / prev_prod) * 100
+            
+        return changes
+
+    def _get_progress_bar(self, value: float, max_value: float, length: int = 10) -> str:
+        """Create a simple progress bar visualization."""
+        if max_value <= 0:
+            return "[??????????]"
+        filled = int((value / max_value) * length)
+        filled = min(filled, length)
+        return "[" + "■" * filled + "□" * (length - filled) + "]"
+
     def print_day(self, day: int, stored_snapshot: dict | None, colonist_snapshot: dict | None):
         """
-        Print summary for a single in-game day:
-        - production/consumption (if we saw events)
-        - per-food breakdown
-        - stored meals + estimated days of food
-        - deeper analysis: days left, required production, shortfall, hunger state
+        Print summary for a single in-game day with improved formatting.
         """
-
-        # Ensure we always have a stats dict (even if no events)
-        stats = self.days.get(day)
-        if stats is None:
-            stats = {
-                "nutrition_consumed": 0.0,
-                "nutrition_produced": 0.0,
-                "consumed_by_food": defaultdict(lambda: {"count": 0, "nutrition": 0.0}),
-                "produced_by_food": defaultdict(lambda: {"count": 0, "nutrition": 0.0}),
-            }
+        stats = self.days.get(day) or {
+            "nutrition_consumed": 0.0,
+            "nutrition_produced": 0.0,
+            "consumed_by_food": defaultdict(lambda: {"count": 0, "nutrition": 0.0}),
+            "produced_by_food": defaultdict(lambda: {"count": 0, "nutrition": 0.0}),
+        }
 
         consumed = stats["nutrition_consumed"]
         produced = stats["nutrition_produced"]
         net = produced - consumed
 
-        print(f"\n====== Day {day} ======")
+        # Store current state for next day comparison
+        self.previous_day_stats[day] = {
+            "stats": stats,
+            "stored": stored_snapshot,
+            "colonists": colonist_snapshot
+        }
 
-        if consumed == 0 and produced == 0:
-            print("  (no food events recorded for this day while the script was running)")
+        # Calculate comparisons
+        changes = self._get_day_comparison(day, stats, stored_snapshot)
+
+        print(f"\n{'='*10} Day {day} {'='*10}")
+        print("📊 DAILY SUMMARY")
+
+        # Balance status with emoji
+        if net > 0:
+            balance_status = f"🟢 SURPLUS: +{net:.2f}"
+        elif net < 0:
+            balance_status = f"🔴 DEFICIT: {net:.2f}"
         else:
-            print(f"  Nutrition consumed today : {consumed:.2f}")
-            print(f"  Nutrition produced today : {produced:.2f}")
-            print(f"  Net nutrition (prod-cons): {net:+.2f}")
+            balance_status = "🟡 BALANCED"
 
-            # Per-type breakdown
-            if stats["consumed_by_food"]:
-                print("  Consumed by food type:")
-                for def_name, info in sorted(
-                    stats["consumed_by_food"].items(),
-                    key=lambda kv: kv[1]["nutrition"],
-                    reverse=True
-                ):
-                    print(f"    - {def_name}: {info['nutrition']:.2f} (x{info['count']})")
+        print(f"├── Balance: {balance_status}")
+        
+        if changes and changes.get("prod_change") is not None:
+            change_emoji = "📈" if changes["prod_change"] > 0 else "📉"
+            print(f"├── Production Trend: {change_emoji} {changes['prod_change']:+.1f} ({changes['prod_change_pct']:+.1f}%)")
 
-            if stats["produced_by_food"]:
-                print("  Produced by food type:")
-                for def_name, info in sorted(
-                    stats["produced_by_food"].items(),
-                    key=lambda kv: kv[1]["nutrition"],
-                    reverse=True
-                ):
-                    print(f"    - {def_name}: {info['nutrition']:.2f} (x{info['count']})")
+        # Core metrics in compact format
+        print(f"├── Consumption: {consumed:.1f} nutrition ({stats['consumed_by_food'].get('MealSimple', {}).get('count', 0)} meals)")
+        print(f"├── Production:  {produced:.1f} nutrition ({stats['produced_by_food'].get('MealSimple', {}).get('count', 0)} meals)")
 
-        # Colonist snapshot info (count + hunger stats)
-        colonist_count = None
-        avg_hunger = None
-        starving_count = None
-        hungry_count = None
-
-        if colonist_snapshot is not None:
-            colonist_count = colonist_snapshot.get("count")
-            avg_hunger = colonist_snapshot.get("avg_hunger")
-            starving_count = colonist_snapshot.get("starving_count")
-            hungry_count = colonist_snapshot.get("hungry_count")
-
-        # --- Stored meals snapshot ---
-        total_meals = None
-        total_nutrition_est = None
-        per_colonist_today = None
-        days_left_today = None
-        days_left_recent = None
-        days_left_baseline = None
-
+        # Stored meals section
         if stored_snapshot is not None:
             total_meals = stored_snapshot.get("total_meals", 0)
             total_nutrition_est = stored_snapshot.get("total_nutrition_est", 0.0)
+            
+            print(f"├── 📦 STORED: {total_meals} meals ({total_nutrition_est:.1f} nutrition)")
+            
+            if changes and changes.get("meals_change") is not None:
+                change_sign = "+" if changes["meals_change"] > 0 else ""
+                print(f"│   └── Change: {change_sign}{changes['meals_change']} meals ({changes['meals_change_pct']:+.1f}%)")
 
-            print("\n  Stored meals at end of day:")
-            print(f"    Total meals (stacks summed) : {total_meals}")
-            print(f"    Estimated stored nutrition  : {total_nutrition_est:.2f}")
-
-            if colonist_count and colonist_count > 0:
-                # If we saw no consumption today, assume ~0.9 per colonist
-                if consumed == 0:
-                    per_colonist_today = 0.9
-                    print("    (no consumption events seen; assuming ~0.9 nutrition/colonist/day)")
-                else:
-                    per_colonist_today = consumed / colonist_count
-                    print(f"    Nutrition consumed per colonist today: {per_colonist_today:.2f}")
-
-                if per_colonist_today > 0:
-                    colony_need_today = per_colonist_today * colonist_count
-                    days_left_today = total_nutrition_est / colony_need_today
-                    print(f"    ≈ {days_left_today:.1f} days of food at today's consumption")
-                else:
-                    print("    (cannot compute days of food: zero per-colonist consumption)")
-
-                # Hunger diagnostics
-                if avg_hunger is not None:
-                    print(f"    Avg hunger level (0=starving, 1=full): {avg_hunger:.2f}")
-                if starving_count:
-                    print(f"    Pawns starving (hunger < 0.15): {starving_count}")
-                if hungry_count and hungry_count > starving_count:
-                    print(f"    Pawns hungry (hunger < 0.5): {hungry_count}")
-
+            # Detailed stored meals by type
             by_def = stored_snapshot.get("by_def", {})
             if by_def:
-                print("  Stored meals by type:")
-                for def_name, info in sorted(
-                    by_def.items(),
-                    key=lambda kv: kv[1]["count"],
-                    reverse=True
-                ):
+                print(f"│   └── Stored by type:")
+                for def_name, info in sorted(by_def.items(), key=lambda kv: kv[1]["count"], reverse=True):
                     label = info.get("example_label", def_name)
-                    print(f"    - {def_name} ({label}): {info['count']} (stacks: {info['stacks']})")
+                    print(f"│       ├── {def_name}: {info['count']} meals ({info['stacks']} stacks)")
 
-        # --- Deeper analysis: trend & required production ---
+        # Colonist status
+        if colonist_snapshot is not None:
+            colonist_count = colonist_snapshot.get("count")
+            avg_hunger = colonist_snapshot.get("avg_hunger")
+            hungry_count = colonist_snapshot.get("hungry_count", 0)
+            starving_count = colonist_snapshot.get("starving_count", 0)
+            
+            print(f"├── 👥 COLONISTS: {colonist_count} total")
+            
+            if avg_hunger is not None:
+                hunger_bar = self._get_progress_bar(avg_hunger, 1.0, 8)
+                hunger_status = "🟢" if avg_hunger > 0.7 else "🟡" if avg_hunger > 0.4 else "🔴"
+                print(f"│   ├── Avg Hunger: {hunger_bar} {avg_hunger:.2f} {hunger_status}")
+            
+            if hungry_count > 0 or starving_count > 0:
+                print(f"│   └── Hunger Alert: {hungry_count} hungry, {starving_count} starving")
 
-        # Average daily consumption / production over last N days
+        # Food security analysis
         recent_cons = self.get_recent_consumption_avg(days_back=3)
         recent_prod = self.get_recent_production_avg(days_back=3)
+        baseline_demand = 0.9 * colonist_count if colonist_count else None
 
-        print("\n  Food plan & forecast:")
+        print(f"└── 🔮 FOOD SECURITY")
 
+        if stored_snapshot and recent_cons and recent_cons > 0:
+            total_nutrition_est = stored_snapshot.get("total_nutrition_est", 0.0)
+            days_left = total_nutrition_est / recent_cons
+            
+            # Progress bar for food reserves
+            reserve_bar = self._get_progress_bar(days_left, 10.0)  # 10 days = full
+            reserve_status = "🟢" if days_left > 7 else "🟡" if days_left > 3 else "🔴"
+            
+            print(f"    ├── Reserves: {reserve_bar} {days_left:.1f} days {reserve_status}")
+
+        # Production efficiency
+        if recent_prod and recent_cons:
+            efficiency = (recent_prod / recent_cons) * 100 if recent_cons > 0 else 0
+            efficiency_status = "🟢" if efficiency > 120 else "🟡" if efficiency > 80 else "🔴"
+            print(f"    ├── Production: {efficiency:.0f}% of needs {efficiency_status}")
+
+        # Baseline demand comparison
+        if baseline_demand and recent_cons:
+            consumption_ratio = (recent_cons / baseline_demand) * 100 if baseline_demand > 0 else 0
+            consumption_status = "🟢" if consumption_ratio > 90 else "🟡" if consumption_ratio > 70 else "🔴"
+            print(f"    ├── Consumption: {consumption_ratio:.0f}% of baseline {consumption_status}")
+
+        # Critical alerts
+        alerts = []
+        if stored_snapshot and recent_cons and recent_cons > 0:
+            days_left = stored_snapshot.get("total_nutrition_est", 0.0) / recent_cons
+            if days_left < 2:
+                alerts.append("🚨 CRITICAL: Less than 2 days of food")
+            elif days_left < 5:
+                alerts.append("⚠️  WARNING: Less than 5 days of food")
+                
+        if colonist_snapshot and colonist_snapshot.get("starving_count", 0) > 0:
+            alerts.append("🚨 COLONISTS STARVING")
+            
+        if recent_prod and recent_cons and recent_prod < recent_cons * 0.8:
+            alerts.append("⚠️  Production below demand")
+
+        # Check if consumption is significantly below baseline with hungry colonists
+        if (baseline_demand and recent_cons and recent_cons < baseline_demand * 0.8 and 
+            colonist_snapshot and colonist_snapshot.get("hungry_count", 0) > 0):
+            alerts.append("⚠️  Under-reporting: Low consumption but colonists hungry")
+
+        if alerts:
+            print(f"    └── ALERTS:")
+            for alert in alerts:
+                print(f"        {alert}")
+
+        # Food type breakdown (only if we have data)
+        if stats["consumed_by_food"] or stats["produced_by_food"]:
+            print(f"\n🍽️  FOOD BREAKDOWN")
+            
+            if stats["consumed_by_food"]:
+                print("    Consumed:")
+                for def_name, info in sorted(stats["consumed_by_food"].items(), 
+                                           key=lambda kv: kv[1]["nutrition"], reverse=True):
+                    print(f"    ├── {def_name}: {info['nutrition']:.1f} (x{info['count']})")
+                    
+            if stats["produced_by_food"]:
+                print("    Produced:")
+                for def_name, info in sorted(stats["produced_by_food"].items(), 
+                                           key=lambda kv: kv[1]["nutrition"], reverse=True):
+                    print(f"    └── {def_name}: {info['nutrition']:.1f} (x{info['count']})")
+
+        # Detailed analysis section (preserving original calculations)
+        print(f"\n📈 DETAILED ANALYSIS")
+        
+        # Recent averages
         if recent_cons is not None:
-            print(f"    Recent avg daily consumption : {recent_cons:.2f} nutrition/day")
-        else:
-            print("    Recent avg daily consumption : (not enough data)")
-
+            print(f"    Recent avg consumption: {recent_cons:.2f} nutrition/day")
         if recent_prod is not None:
-            print(f"    Recent avg daily production  : {recent_prod:.2f} nutrition/day")
-        else:
-            print("    Recent avg daily production  : (not enough data)")
-
-        # Baseline "true" demand from colonist count (0.9 nutrition per pawn per day)
-        baseline_demand = None
-        if colonist_count and colonist_count > 0:
-            baseline_demand = 0.9 * colonist_count
-            print(f"    Baseline demand (0.9 x {colonist_count} colonists): {baseline_demand:.2f} nutrition/day")
-
-        # Effective demand = max(baseline, observed)
-        effective_demand = None
-        if baseline_demand is not None and recent_cons is not None:
-            effective_demand = max(baseline_demand, recent_cons)
-        elif baseline_demand is not None:
-            effective_demand = baseline_demand
-        elif recent_cons is not None:
-            effective_demand = recent_cons
-
-        # If observed consumption is lower than baseline but pawns are hungry, call it out
-        if (baseline_demand is not None and recent_cons is not None
-                and recent_cons < baseline_demand
-                and (hungry_count or starving_count)):
-            print("    ⚠ Observed consumption is LOWER than expected demand, and some pawns are hungry/starving -> stats likely UNDER-report true need.")
-
-        # Compare production vs required demand
-        if recent_prod is not None and effective_demand is not None:
-            diff = recent_prod - effective_demand
-            if diff >= 0:
-                print(f"    Balance vs required demand   : +{diff:.2f} (you are meeting or exceeding demand)")
-            else:
-                print(f"    Balance vs required demand   : {diff:.2f} (you are BELOW required production)")
-                print(f"    => You need +{-diff:.2f} more nutrition/day to meet demand.")
-        else:
-            print("    => Not enough history yet to judge long-term balance.")
-
-        # If we know stored nutrition and recent consumption, estimate days left at recent usage
-        if stored_snapshot is not None and recent_cons is not None and recent_cons > 0:
-            total_nutrition_est = stored_snapshot.get("total_nutrition_est", 0.0)
-            days_left_recent = total_nutrition_est / recent_cons
-            print(f"    Days of food at recent usage : {days_left_recent:.1f} days")
-
-        # Days of food at baseline demand
-        if stored_snapshot is not None and baseline_demand is not None and baseline_demand > 0:
-            total_nutrition_est = stored_snapshot.get("total_nutrition_est", 0.0)
-            days_left_baseline = total_nutrition_est / baseline_demand
-            print(f"    Days of food at baseline demand : {days_left_baseline:.1f} days")
-
-        # Suggest required production target explicitly
-        if effective_demand is not None:
-            print(f"    Required production to maintain demand: {effective_demand:.2f} nutrition/day")
-            # If your main food is MealSimple, translate to meals/day
+            print(f"    Recent avg production:  {recent_prod:.2f} nutrition/day")
+        
+        # Baseline demand
+        if baseline_demand is not None:
+            print(f"    Baseline demand (0.9 x {colonist_count}): {baseline_demand:.2f} nutrition/day")
+            
+            # Balance calculation
+            if recent_prod is not None:
+                balance = recent_prod - baseline_demand
+                balance_status = "🟢 Meeting demand" if balance >= 0 else "🔴 Below demand"
+                print(f"    Production vs demand: {balance:+.2f} {balance_status}")
+                
+                if balance < 0:
+                    print(f"    Shortfall: {-balance:.2f} nutrition/day needed")
+        
+        # Meal production targets
+        if baseline_demand is not None:
             main_meal_def = "MealSimple"
             avg_meal_nut = self.get_avg_nutrition_for_def(main_meal_def)
-            meals_per_day_needed = effective_demand / avg_meal_nut
-            print(f"    (~{meals_per_day_needed:.1f} {main_meal_def} per day)")
-
-        # Risk warnings
-        if effective_demand is not None and recent_prod is not None and recent_prod < effective_demand:
-            print("    ⚠ You are not producing enough food to meet demand.")
-
-        if stored_snapshot is not None and days_left_recent is not None:
-            if days_left_recent < 3:
-                print("    ⚠ Critical: less than 3 days of food at recent usage.")
-            elif days_left_recent < 7:
-                print("    ℹ Warning: less than a week of food at recent usage.")
-
-        if starving_count:
-            print("    ⚠ There are colonists actively STARVING. Fix food supply immediately.")
+            meals_per_day_needed = baseline_demand / avg_meal_nut
+            print(f"    Required: {meals_per_day_needed:.1f} {main_meal_def}/day")
 
     def print_summary(self):
         if not self.days:
@@ -404,24 +415,9 @@ def fetch_stored_items(map_id=0, category="food_meals", timeout=5.0):
         return []
 
 
-def fetch_colonist_count(timeout=5.0):
-    """Use /colonists?fields=id,age but only care about count."""
-    try:
-        params = {"fields": "id,age"}
-        resp = requests.get(COLONISTS_URL, params=params, timeout=timeout)
-        resp.raise_for_status()
-        colonists = resp.json()
-        return len(colonists or [])
-    except Exception as e:
-        print(f"[WARN] Failed to fetch colonists: {e}", file=sys.stderr)
-        return None
-
 def fetch_colonist_hunger(timeout=5.0):
     """
-    Use /colonists?fields=id,age,hunger to get:
-      - count
-      - hunger distribution (average, starving, hungry)
-    Hunger is assumed to be CurLevelPercentage: 1.0 = full, 0 = starving.
+    Use /colonists?fields=id,age,hunger to get hunger stats.
     """
     try:
         params = {"fields": "id,age,hunger"}
@@ -455,9 +451,8 @@ def fetch_colonist_hunger(timeout=5.0):
         min_hunger = min(hunger_vals)
         max_hunger = max(hunger_vals)
 
-        # thresholds: tweak if you like
-        starving_threshold = 0.15   # < 15% = really bad
-        hungry_threshold = 0.5      # < 50% = noticeable hunger
+        starving_threshold = 0.15
+        hungry_threshold = 0.5
 
         starving_count = sum(1 for h in hunger_vals if h is not None and h < starving_threshold)
         hungry_count = sum(1 for h in hunger_vals if h is not None and h < hungry_threshold)
@@ -480,10 +475,7 @@ def fetch_colonist_hunger(timeout=5.0):
 
 def sse_client(url: str):
     """
-    Minimal SSE client:
-    - reads raw bytes
-    - decodes as UTF-8
-    - yields (event_type, data_dict)
+    Minimal SSE client.
     """
     with requests.get(url, stream=True) as resp:
         resp.raise_for_status()
@@ -498,7 +490,6 @@ def sse_client(url: str):
             line = raw_line.decode("utf-8", errors="replace").rstrip("\r\n")
 
             if not line:
-                # end of event
                 if event_type and data_lines:
                     raw_data = "\n".join(data_lines)
                     try:
@@ -519,7 +510,6 @@ def sse_client(url: str):
                 event_type = line[len("event:"):].strip()
             elif line.startswith("data:"):
                 data_lines.append(line[len("data:"):].strip())
-            # ignore id:, retry:, etc.
 
 
 # --- Main loop ---
@@ -531,61 +521,47 @@ def main():
     while True:
         print(f"Connecting to SSE at {SSE_URL} ...")
         try:
-            # one SSE session
             for event_type, data in sse_client(SSE_URL):
-                # print(f"EVENT: {event_type}, data: {data}")  # debug
-
                 if event_type == "colonist_ate":
                     stats.handle_colonist_ate(data)
-
                 elif event_type == "make_recipe_product":
                     stats.handle_make_recipe_product(data)
-
                 elif event_type == "date_changed":
                     ticks = data.get("ticksGame") or data.get("ticks") or 0
                     current_day = ticks // TICKS_PER_DAY
 
                     if last_day_seen is None:
-                        # First date_changed after startup: we just entered current_day.
                         previous_day = current_day - 1
                         if previous_day >= 0:
                             stored_items = fetch_stored_items(map_id=0, category="food_meals")
                             stored_summary = stats.build_stored_summary(stored_items)
                             colonist_snapshot = fetch_colonist_hunger()
                             stats.print_day(previous_day, stored_summary, colonist_snapshot)
-
                         last_day_seen = current_day
-
                     else:
                         if current_day > last_day_seen:
                             previous_day = last_day_seen
-
                             stored_items = fetch_stored_items(map_id=0, category="food_meals")
                             stored_summary = stats.build_stored_summary(stored_items)
                             colonist_snapshot = fetch_colonist_hunger()
                             stats.print_day(previous_day, stored_summary, colonist_snapshot)
-
                             last_day_seen = current_day
 
                 time.sleep(0.01)
 
-            # If we exit the for-loop normally, the stream ended.
             print("[INFO] SSE stream ended (server closed connection). Reconnecting in 3s...")
             time.sleep(3)
 
         except KeyboardInterrupt:
-            print("\nInterrupted by user. Printing full summary (no snapshots)...")
+            print("\nInterrupted by user. Printing full summary...")
             stats.print_summary()
             return
-
         except requests.RequestException as e:
             print(f"[ERROR] SSE connection error: {e}. Reconnecting in 3s...")
             time.sleep(3)
-
         except Exception as e:
             print(f"[ERROR] Unexpected error in main loop: {e}. Reconnecting in 3s...")
             time.sleep(3)
-
 
 
 if __name__ == "__main__":
