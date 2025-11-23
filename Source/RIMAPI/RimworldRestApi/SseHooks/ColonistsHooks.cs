@@ -20,16 +20,47 @@ namespace RimworldRestApi.Hooks
         {
             try
             {
-                if (ingester == null || !ingester.IsColonist)
+                // Comprehensive null checking
+                if (ingester == null || !ingester.IsColonist || __instance == null)
+                    return;
+
+                if (__instance.def == null)
                     return;
 
                 var sse = SseService.GetService();
                 if (sse == null)
                     return;
 
-                float hungerBefore = ingester.needs?.food?.CurLevelPercentage ?? 0f;
-                float hungerAfter = hungerBefore + __result;
-                if (hungerAfter > 1f) hungerAfter = 1f;
+                // Safe hunger level calculation
+                float hungerBefore = 0f;
+                float hungerAfter = 0f;
+                if (ingester.needs?.food != null)
+                {
+                    hungerBefore = ingester.needs.food.CurLevelPercentage;
+                    hungerAfter = hungerBefore + __result;
+                    if (hungerAfter > 1f) hungerAfter = 1f;
+                    if (hungerAfter < 0f) hungerAfter = 0f;
+                }
+
+                // Safe food type extraction
+                string foodType = "Unknown";
+                var ingestibleProps = __instance.def.ingestible;
+                if (ingestibleProps != null)
+                {
+                    foodType = ingestibleProps.foodType.ToString();
+                }
+
+                // Safe nutrition calculation with error handling
+                float nutrition = 0f;
+                try
+                {
+                    nutrition = __instance.GetStatValue(StatDefOf.Nutrition);
+                }
+                catch (Exception statEx)
+                {
+                    DebugLogging.Warning($"[RimworldRestApi] Error getting nutrition stat: {statEx.Message}");
+                    // Continue with default nutrition value
+                }
 
                 var foodEvent = new
                 {
@@ -41,12 +72,12 @@ namespace RimworldRestApi.Hooks
                     },
                     food = new
                     {
-                        defName = __instance.def?.defName ?? "Unknown",
-                        label = __instance.Label,
-                        nutrition = __instance.GetStatValue(StatDefOf.Nutrition),
-                        foodType = __instance.def?.ingestible?.foodType.ToString() ?? "Unknown"
+                        defName = __instance.def.defName ?? "Unknown",
+                        label = __instance.Label ?? "Unknown",
+                        nutrition = nutrition,
+                        foodType = foodType
                     },
-                    ticks = Find.TickManager.TicksGame
+                    ticks = Find.TickManager?.TicksGame ?? 0
                 };
 
                 sse.QueueEventBroadcast("colonist_ate", foodEvent);

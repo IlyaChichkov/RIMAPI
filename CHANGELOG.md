@@ -1,4 +1,17 @@
 # Changelog
+## v0.5.5
+
+Add endpoint:
+[GET]
+- /api/v1/materials-atlas
+[POST]
+- /api/v1/dev/console
+- /api/v1/materials-atlas/clear
+- /api/v1/stuff/color
+- /api/v1/item/image
+
+Minor fixes
+
 ## v0.5.4
 
 Add SSE broadcast:

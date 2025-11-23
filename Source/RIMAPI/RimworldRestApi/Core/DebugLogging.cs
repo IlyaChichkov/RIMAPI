@@ -97,6 +97,11 @@ namespace RimworldRestApi.Core
             // Severity filter: ignore messages below configured level
             if ((int)messageLevel < (int)LoggingLevel) return;
 
+            if (text.Contains("log_message") && text.Contains("[SSE]"))
+            {
+                return;
+            }
+
             string message = "[RIMAPI | ";
 
             // Build standardized prefix and dispatch based on severity

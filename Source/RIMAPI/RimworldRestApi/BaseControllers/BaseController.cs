@@ -418,6 +418,8 @@ namespace RimworldRestApi.Controllers
 
                 try
                 {
+                    DebugLogging.Message($"ReadJsonBodyAsync: {body}", LoggingLevels.DEBUG);
+
                     // If T is a JToken (JObject/JArray), let JSON.NET parse it dynamically.
                     if (typeof(T) == typeof(JToken) || typeof(T) == typeof(JObject) || typeof(T) == typeof(JArray))
                     {

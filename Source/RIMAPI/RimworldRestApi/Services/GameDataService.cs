@@ -1,8 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using HarmonyLib;
-using Newtonsoft.Json;
+using System.Text;
 using RimWorld;
 using RimworldRestApi.Core;
 using RimworldRestApi.Helpers;
@@ -745,6 +745,153 @@ namespace RimworldRestApi.Services
         {
             Map map = _mapHelper.FindMapByUniqueID(mapId);
             return _mapHelper.GetRooms(map);
+        }
+
+        public class ImageUploadBuffer
+        {
+            private readonly ConcurrentDictionary<string, StringBuilder> _buffers = new ConcurrentDictionary<string, StringBuilder>();
+
+            public void Append(string key, string chunk)
+            {
+                var sb = _buffers.GetOrAdd(key, _ => new StringBuilder());
+                sb.Append(chunk);
+            }
+
+            public string Consume(string key)
+            {
+                if (_buffers.TryRemove(key, out var sb))
+                    return sb.ToString();
+                return null;
+            }
+
+            public void Clear(string key)
+            {
+                _buffers.TryRemove(key, out _);
+            }
+        }
+
+        public void SetItemImageByName(ImageUploadRequest imageUpload)
+        {
+            string imageBase64 = imageUpload.Image;
+            const string dataPrefix = "base64,";
+            var idx = imageBase64.IndexOf(dataPrefix, StringComparison.OrdinalIgnoreCase);
+            if (idx >= 0)
+            {
+                imageBase64 = imageBase64.Substring(idx + dataPrefix.Length);
+            }
+
+            try
+            {
+                _textureHelper.SetItemImageByName(imageUpload, imageBase64);
+            }
+            catch (Exception ex)
+            {
+                DebugLogging.Error($"Failed to process image: {ex}");
+                throw;
+            }
+        }
+
+        public void ConsoleAction(string action, string message = null)
+        {
+            switch (action)
+            {
+                case "clear":
+                    Log.Clear();
+                    break;
+                case "reset_msg_cnt":
+                    Log.ResetMessageCount();
+                    break;
+                case "message":
+                    Log.Message(message);
+                    break;
+                case "warning":
+                    Log.Warning(message);
+                    break;
+                case "error":
+                    Log.Error(message);
+                    break;
+            }
+        }
+
+        public Color HexToColor(string hex)
+        {
+            // Remove # if present and trim whitespace
+            hex = hex.Trim().Replace("#", "");
+
+            // Handle different hex formats
+            if (hex.Length == 3)
+            {
+                // Short format (RGB) - expand to full format
+                hex = string.Format("{0}{0}{1}{1}{2}{2}",
+                    hex[0], hex[1], hex[2]);
+            }
+            else if (hex.Length != 6)
+            {
+                Debug.LogWarning($"Invalid hex color format: {hex}");
+                return Color.white; // Return default color
+            }
+
+            try
+            {
+                // Parse hex components
+                byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+                byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+                byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+
+                // Convert to Unity Color (0-1 range)
+                return new Color(r / 255f, g / 255f, b / 255f);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"Failed to parse hex color: {hex}. Error: {e.Message}");
+                return Color.white; // Return default color
+            }
+        }
+
+        public void SetStuffColor(StuffColorRequest stuffColor)
+        {
+            var modifiedStuff = DefDatabase<ThingDef>.GetNamed(stuffColor.Name);
+            modifiedStuff.stuffProps.color = HexToColor(stuffColor.Hex);
+
+            List<Thing> affectedThings = new List<Thing>();
+            foreach (Thing thing in Find.CurrentMap.listerThings.AllThings)
+            {
+                if (thing.Stuff == modifiedStuff)
+                {
+                    affectedThings.Add(thing);
+                }
+            }
+
+            foreach (Thing thing in affectedThings)
+            {
+                thing.Notify_ColorChanged();
+            }
+        }
+
+        public void MaterialsAtlasPoolClear()
+        {
+            _textureHelper.GetAtlasDictionary().Clear();
+            _textureHelper.RefreshGraphics();
+        }
+
+        public MaterialsAtlasList GetMaterialsAtlasList()
+        {
+            MaterialsAtlasList atlasList = new MaterialsAtlasList
+            {
+                Materials = new List<string>()
+            };
+            try
+            {
+                foreach (var mat in _textureHelper.GetAtlasDictionaryMaterials())
+                {
+                    atlasList.Materials.Add(mat.name);
+                }
+            }
+            catch (System.Exception)
+            {
+                DebugLogging.Error("Failed to get materials from atlas pool");
+            }
+            return atlasList;
         }
     }
 }

@@ -75,6 +75,10 @@ namespace RimworldRestApi.Helpers
                         BuildingUpdateTexture(building, newTexture, imageUpload.Direction);
                     }
                     break;
+                case "linked":
+                    /* Type - Linked */
+                    UpdateTexture_Linked(imageUpload, newTexture);
+                    break;
                 case "item":
                     foreach (var item in Find.CurrentMap.listerThings.AllThings
                         .Where(p => p.def.defName.ToLower() == thingName)
@@ -171,6 +175,7 @@ namespace RimworldRestApi.Helpers
             }
 
         }
+
         private void BuildingUpdateTexture(Building building, Texture2D newTexture, string direction)
         {
             if (building == null)
@@ -251,79 +256,132 @@ namespace RimworldRestApi.Helpers
                     var graphicLinked = building.DefaultGraphic as Graphic_Linked;
                     if (graphicLinked != null)
                     {
-                        DebugLogging.Info($"Setting Graphic_Linked texture");
+                        DebugLogging.Info($"set Graphic_Linked");
+                        var subGraphicsField = typeof(Graphic_Linked).GetField("subGraphic",
+                            BindingFlags.NonPublic | BindingFlags.Instance);
 
-                        try
+                        if (subGraphicsField != null)
                         {
-                            // STEP 1: Get the base material from the linked graphic
-                            var subGraphicsField = typeof(Graphic_Linked).GetField("subGraphic",
-                                BindingFlags.NonPublic | BindingFlags.Instance);
+                            Graphic subGraphic = subGraphicsField.GetValue(graphicLinked) as Graphic;
 
-                            if (subGraphicsField != null)
+                            if (subGraphic?.MatSingle != null)
                             {
-                                Graphic subGraphic = subGraphicsField.GetValue(graphicLinked) as Graphic;
+                                string matName = subGraphic.MatSingle.name;
+                                DebugLogging.Info($"name: {matName}");
+                                subGraphic.MatSingle.mainTexture = newTexture;
+                                DebugLogging.Info($"new name: {matName}");
 
-                                if (subGraphic?.MatSingle != null)
+                                try
                                 {
-                                    Material baseMaterial = subGraphic.MatSingle;
-                                    string matName = baseMaterial.name;
-                                    DebugLogging.Info($"Base material name: {matName}");
-
-                                    // STEP 3: Clear MaterialAtlasPool cache
+                                    // Get the atlasDict field from MaterialAtlasPool
                                     var atlasDictField = typeof(MaterialAtlasPool).GetField("atlasDict",
                                         BindingFlags.NonPublic | BindingFlags.Static);
 
                                     if (atlasDictField != null)
                                     {
                                         var atlasDict = atlasDictField.GetValue(null) as System.Collections.IDictionary;
+
                                         if (atlasDict != null)
                                         {
-                                            atlasDict.Clear();
-                                            DebugLogging.Info("Cleared MaterialAtlasPool cache");
+                                            foreach (System.Collections.DictionaryEntry entry in atlasDict)
+                                            {
+                                                Material keyMaterial = entry.Key as Material;
+                                                DebugLogging.Info($"materials: {keyMaterial.name}");
+
+                                                if (keyMaterial != null && (keyMaterial.name.Contains("Plank") || keyMaterial.name.Contains("plank")))
+                                                {
+                                                    var materialAtlas = entry.Value;
+                                                    var materialAtlasType = materialAtlas.GetType();
+                                                    var subMatsField = materialAtlasType.GetField("subMats",
+                                                        BindingFlags.NonPublic | BindingFlags.Instance);
+
+                                                    if (subMatsField != null)
+                                                    {
+                                                        Material[] subMats = subMatsField.GetValue(materialAtlas) as Material[];
+
+                                                        if (subMats != null)
+                                                        {
+                                                            // Change specific index
+                                                            //int changeIndex = 0; // Set your desired index here
+                                                            //
+                                                            //if (changeIndex >= 0 && changeIndex < subMats.Length)
+                                                            //{
+                                                            //    if (subMats[changeIndex] != null)
+                                                            //    {
+                                                            //        subMats[changeIndex].mainTexture = newTexture;
+                                                            //        DebugLogging.Info($"Updated subMats[{changeIndex}] with new texture");
+                                                            //    }
+                                                            //    else
+                                                            //    {
+                                                            //        DebugLogging.Info($"subMats[{changeIndex}] is null");
+                                                            //    }
+                                                            //}
+                                                            //else
+                                                            //{
+                                                            //    DebugLogging.Info($"Index {changeIndex} is out of range (0-{subMats.Length - 1})");
+                                                            //}
+
+                                                            for (int i = 0; i < subMats.Length; i++)
+                                                            {
+                                                                if (subMats[i] != null)
+                                                                {
+                                                                    subMats[i].mainTexture = newTexture;
+                                                                    DebugLogging.Info($"Updated subMats[{i}] with new texture");
+                                                                }
+                                                                else
+                                                                {
+                                                                    DebugLogging.Info($"subMats[{i}] is null");
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            DebugLogging.Info("subMats array is null");
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        DebugLogging.Info("subMatsField not found");
+                                                    }
+                                                    break; // Found our material, no need to continue looping
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            DebugLogging.Info("atlasDict is null");
                                         }
                                     }
-
-                                    // STEP 4: Clear standard graphic cache
-                                    var cacheField = typeof(Graphic).GetField("replacementInfoCache",
-                                        BindingFlags.NonPublic | BindingFlags.Static);
-                                    if (cacheField != null)
+                                    else
                                     {
-                                        var cache = cacheField.GetValue(null) as IDictionary;
-                                        cache?.Clear();
-                                        DebugLogging.Info("Cleared graphic replacement cache");
+                                        DebugLogging.Info("atlasDictField not found");
                                     }
-
-                                    // STEP 2: Change the base material's texture
-                                    baseMaterial.mainTexture = newTexture;
-                                    DebugLogging.Info($"Updated base material texture");
-
-                                    ThingDef smoothWallDef = DefDatabase<ThingDef>.GetNamed("Wall");
-                                    DebugLogging.Info($"Got def: {smoothWallDef.defName}, {smoothWallDef.description}");
-                                    var graphicLinkedDef = smoothWallDef.graphic as Graphic_Linked;
-                                    Graphic subGraphicDef = subGraphicsField.GetValue(graphicLinkedDef) as Graphic;
-                                    DebugLogging.Info($"subGraphicDef.MatSingle.mainTexture: {subGraphicDef.MatSingle.mainTexture.name}");
-                                    subGraphicDef.MatSingle.mainTexture = newTexture;
-
-                                    MaterialAtlasPool.SubMaterialFromAtlas(subGraphicDef.MatSingle, LinkDirections.None);
-
-                                    // STEP 5: Regenerate map
-                                    if (Find.CurrentMap != null)
-                                    {
-                                        Find.CurrentMap.mapDrawer?.RegenerateEverythingNow();
-                                        DebugLogging.Info("Regenerated map");
-                                    }
-
-                                    DebugLogging.Info($"Successfully updated smooth wall texture");
+                                }
+                                catch (Exception ex)
+                                {
+                                    DebugLogging.Error($"Failed to update subMat texture: {ex.Message}");
+                                    DebugLogging.Error($"Exception type: {ex.GetType().Name}");
                                 }
                             }
-                            else
+
+                            // Clear atlas cache  
+                            var cacheField = typeof(Graphic).GetField("replacementInfoCache",
+                                BindingFlags.NonPublic | BindingFlags.Static);
+                            if (cacheField != null)
                             {
-                                DebugLogging.Info($"subGraphicsField is null for Graphic_Linked");
+                                var cache = cacheField.GetValue(null) as IDictionary;
+                                cache?.Clear();
+                            }
+
+                            // Regenerate map  
+                            if (Find.CurrentMap != null)
+                            {
+                                Find.CurrentMap.mapDrawer?.RegenerateEverythingNow();
                             }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            DebugLogging.Error($"Failed to update Graphic_Linked texture: {ex.Message}");
+                            DebugLogging.Info($"subGraphicsField is null for Graphic_Linked");
                         }
                     }
                     else
@@ -331,6 +389,7 @@ namespace RimworldRestApi.Helpers
                         DebugLogging.Info($"graphicLinked is null");
                     }
                 }
+
 
                 // Handle Graphic_Multi
                 if (building.DefaultGraphic is Graphic_Multi)
@@ -417,6 +476,207 @@ namespace RimworldRestApi.Helpers
             {
                 DebugLogging.Error($"Error in BuildingUpdateTexture: {ex.Message}");
                 DebugLogging.Error($"Stack trace: {ex.StackTrace}");
+            }
+        }
+
+        public IDictionary GetAtlasDictionary()
+        {
+            try
+            {
+                var atlasDictField = typeof(MaterialAtlasPool).GetField("atlasDict",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+
+                if (atlasDictField == null)
+                {
+                    Debug.LogError("atlasDict field not found in MaterialAtlasPool");
+                    return null;
+                }
+
+                var atlasDict = atlasDictField.GetValue(null) as IDictionary;
+
+                if (atlasDict == null)
+                {
+                    Debug.LogWarning("atlasDict is null - no materials loaded yet");
+                    return new Hashtable(); // Return empty dictionary instead of null
+                }
+
+                return atlasDict;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error getting atlas dictionary: {ex.Message}");
+                return new Hashtable(); // Return empty dictionary on error
+            }
+        }
+
+        public List<Material> GetAtlasDictionaryMaterials()
+        {
+            var atlasDict = GetAtlasDictionary();
+            List<Material> materialAtlases = new List<Material>();
+
+            if (atlasDict == null || atlasDict.Count == 0)
+            {
+                Debug.LogWarning("Atlas dictionary is null or empty");
+                return materialAtlases; // Return empty list
+            }
+
+            try
+            {
+                foreach (DictionaryEntry entry in atlasDict)
+                {
+                    Material keyMaterial = entry.Key as Material;
+                    if (keyMaterial != null)
+                    {
+                        materialAtlases.Add(keyMaterial);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Found null material in atlas dictionary");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error processing atlas materials: {ex.Message}");
+            }
+
+            return materialAtlases;
+        }
+
+        public Vector2 StringToVec2(Vector2 origin, string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return origin;
+
+            string[] parts = str.Split(';');
+            if (parts.Length != 2)
+                return origin;
+
+            float x = origin.x;
+            float y = origin.y;
+
+            // Parse X component
+            if (parts[0].ToLower() != "same")
+            {
+                if (float.TryParse(parts[0], out float parsedX))
+                {
+                    x = parsedX;
+                }
+            }
+
+            // Parse Y component
+            if (parts[1].ToLower() != "same")
+            {
+                if (float.TryParse(parts[1], out float parsedY))
+                {
+                    y = parsedY;
+                }
+            }
+
+            return new Vector2(x, y);
+        }
+
+        private void UpdateTexture_Linked(ImageUploadRequest imageUpload, Texture2D newTexture)
+        {
+            try
+            {
+                var atlasDict = GetAtlasDictionary();
+                List<object> materialAtlases = new List<object>();
+
+                foreach (System.Collections.DictionaryEntry entry in atlasDict)
+                {
+                    Material keyMaterial = entry.Key as Material;
+                    DebugLogging.Info($"materials: {keyMaterial.name}");
+
+                    if (keyMaterial != null && keyMaterial.name.ToLower().Contains(imageUpload.Name.ToLower()))
+                    {
+                        materialAtlases.Add(entry.Value);
+                    }
+                }
+
+                DebugLogging.Info($"materialAtlases count: {materialAtlases.Count}");
+                foreach (var atlas in materialAtlases)
+                {
+                    var materialAtlas = atlas;
+                    var materialAtlasType = materialAtlas.GetType();
+                    var subMatsField = materialAtlasType.GetField("subMats",
+                        BindingFlags.NonPublic | BindingFlags.Instance);
+
+                    Material[] subMats = subMatsField.GetValue(materialAtlas) as Material[];
+
+                    if (subMats != null)
+                    {
+                        // Change specific index
+                        if (imageUpload.UpdateItemIndex != -1)
+                        {
+                            int changeIndex = imageUpload.UpdateItemIndex; // Set your desired index here
+
+                            if (changeIndex >= 0 && changeIndex < subMats.Length)
+                            {
+                                if (subMats[changeIndex] != null)
+                                {
+                                    subMats[changeIndex].mainTexture = newTexture;
+                                    DebugLogging.Info($"Updated subMats[{changeIndex}] with new texture");
+                                }
+                                else
+                                {
+                                    DebugLogging.Info($"subMats[{changeIndex}] is null");
+                                }
+                            }
+                            else
+                            {
+                                DebugLogging.Info($"Index {changeIndex} is out of range (0-{subMats.Length - 1})");
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < subMats.Length; i++)
+                            {
+                                if (subMats[i] != null)
+                                {
+                                    subMats[i].mainTexture = newTexture;
+                                    subMats[i].mainTextureOffset = StringToVec2(subMats[i].mainTextureOffset, imageUpload.Offset);
+                                    subMats[i].mainTextureScale = StringToVec2(subMats[i].mainTextureScale, imageUpload.Scale);
+                                    //subMats[i].color = imageUpload.Color;
+                                    DebugLogging.Info($"Updated subMats[{i}] with new texture");
+                                }
+                                else
+                                {
+                                    DebugLogging.Info($"subMats[{i}] is null");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        DebugLogging.Info("subMats array is null");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogging.Error($"Failed to update subMat texture: {ex.Message}");
+                DebugLogging.Error($"Exception type: {ex.GetType().Name}");
+            }
+
+            RefreshGraphics();
+        }
+
+        public void RefreshGraphics()
+        {
+            // Clear atlas cache  
+            var cacheField = typeof(Graphic).GetField("replacementInfoCache",
+                BindingFlags.NonPublic | BindingFlags.Static);
+            if (cacheField != null)
+            {
+                var cache = cacheField.GetValue(null) as IDictionary;
+                cache?.Clear();
+            }
+
+            // Regenerate map  
+            if (Find.CurrentMap != null)
+            {
+                Find.CurrentMap.mapDrawer?.RegenerateEverythingNow();
             }
         }
 
