@@ -45,6 +45,7 @@ Share your projects - send integrations to be featured here
 | Name | Link |
 |---   |---   |
 |Rimworld Dashboard | https://github.com/IlyaChichkov/rimapi-dashboard |
+|Food Analysis Script (Python) | https://gist.github.com/IlyaChichkov/1c4455c9f797a277693ee5a3e016ac3d |
 
 ## 🛠️ Usage
 1. Start RimWorld with the mod enabled. When the main menu loads the API server will begin listening.

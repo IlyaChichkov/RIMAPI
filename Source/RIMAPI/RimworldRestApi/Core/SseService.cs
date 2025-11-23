@@ -48,8 +48,6 @@ namespace RimworldRestApi.Core
                 response.ContentType = "text/event-stream";
                 response.Headers.Add("Cache-Control", "no-cache");
                 response.Headers.Add("Connection", "keep-alive");
-                response.Headers.Add("Access-Control-Allow-Origin", "*");
-                response.Headers.Add("Access-Control-Allow-Methods", "GET");
 
                 // Add client to connected list
                 lock (_clientsLock)

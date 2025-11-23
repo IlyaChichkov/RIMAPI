@@ -282,6 +282,11 @@ namespace RimworldRestApi.Core
                 {
                     await new PawnsController(_gameDataService).GetPawnPortraitImage(context);
                 });
+
+                _router.AddRoute("POST", "/api/v1/item/image", async context =>
+                {
+                    await new DevController(_gameDataService).SetItemImage(context);
+                });
                 #endregion
                 #region Resources & Items
                 _router.AddRoute("GET", "/api/v1/resources/summary", async context =>
@@ -322,6 +327,28 @@ namespace RimworldRestApi.Core
                 _router.AddRoute("GET", "/api/v1/stream/status", async context =>
                 {
                     await _cameraController.GetStreamStatus(context);
+                });
+                #endregion
+
+                #region Dev Tools
+                _router.AddRoute("POST", "/api/v1/dev/console", async context =>
+                {
+                    await new DevController(_gameDataService).ConsoleAction(context);
+                });
+
+                _router.AddRoute("GET", "/api/v1/materials-atlas", async context =>
+                {
+                    await new DevController(_gameDataService).MaterialsAtlasList(context);
+                });
+
+                _router.AddRoute("POST", "/api/v1/materials-atlas/clear", async context =>
+                {
+                    await new DevController(_gameDataService).MaterialsAtlasPoolClear(context);
+                });
+
+                _router.AddRoute("POST", "/api/v1/stuff/color", async context =>
+                {
+                    await new DevController(_gameDataService).SetStuffColor(context);
                 });
                 #endregion
 

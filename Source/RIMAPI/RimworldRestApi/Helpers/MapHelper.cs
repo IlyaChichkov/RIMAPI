@@ -367,6 +367,7 @@ namespace RimworldRestApi.Helpers
                 }).ToList()
             };
 #endif
+            return null;
         }
     }
 }

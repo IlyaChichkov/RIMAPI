@@ -31,6 +31,8 @@ namespace RimworldRestApi.Services
         #region Images
         ImageDto GetItemImage(string name);
         ImageDto GetPawnPortraitImage(int pawnId, int width, int height, string direction);
+        void SetItemImageByName(ImageUploadRequest imageUpload);
+        void SetStuffColor(StuffColorRequest stuffColor);
 
         #endregion
         #region Datetime
@@ -69,6 +71,12 @@ namespace RimworldRestApi.Services
         #endregion
         #region Jobs
         void MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType);
+
+        #endregion
+        #region Dev Tools
+        void ConsoleAction(string action, string message = null);
+        MaterialsAtlasList GetMaterialsAtlasList();
+        void MaterialsAtlasPoolClear();
 
         #endregion
         #region Factions
