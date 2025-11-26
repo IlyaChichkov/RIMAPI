@@ -1,4 +1,8 @@
 # Changelog
+## v0.5.6
+
+Fix /api/v1/resources/stored
+
 ## v0.5.5
 
 Add endpoint:
