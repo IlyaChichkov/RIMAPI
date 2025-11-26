@@ -236,90 +236,82 @@ namespace RimworldRestApi.Helpers
             return new List<ResourceCategoryDto>();
         }
 
-        public List<ISlotGroupParent> GetAllStorageLocations(Map map)
+        public List<Thing> GetItemsFromStorageLocations(Map map)
         {
-            List<ISlotGroupParent> storageLocations = new List<ISlotGroupParent>();
+            List<Thing> things = new List<Thing>();
 
-            // Get all storage buildings  
             List<Building> allBuildings = map.listerBuildings.allBuildingsColonist;
             for (int i = 0; i < allBuildings.Count; i++)
             {
-                Building_Storage storage = allBuildings[i] as Building_Storage;
+                // Add items from ISlotGroupParent  
+                ISlotGroupParent storage = allBuildings[i] as ISlotGroupParent;
                 if (storage != null)
                 {
-                    storageLocations.Add(storage);
+                    var slotGroup = storage.GetSlotGroup();
+                    if (slotGroup == null) continue;
+                    DebugLogging.Info($"add count: {slotGroup.HeldThings.Count()}");
+                    things.AddRange(slotGroup.HeldThings);
+                    continue;
+                }
+
+                // Add items from Bookcases  
+                IThingHolder bookcase = allBuildings[i] as IThingHolder;
+                if (bookcase != null)
+                {
+                    things.AddRange(bookcase.GetDirectlyHeldThings());
+                    continue;
                 }
             }
 
-            // Get all stockpile zones  
             List<Zone> allZones = map.zoneManager.AllZones;
             for (int i = 0; i < allZones.Count; i++)
             {
                 Zone_Stockpile stockpile = allZones[i] as Zone_Stockpile;
                 if (stockpile != null)
                 {
-                    storageLocations.Add(stockpile);
+                    things.AddRange(stockpile.AllContainedThings);
                 }
             }
-
-            return storageLocations;
+            return things;
         }
 
         public Dictionary<string, List<ThingDto>> GetStoredItemsByCategory(
-            List<ISlotGroupParent> storageLocations)
+            List<Thing> items)
         {
-            if (storageLocations == null || storageLocations.Count == 0)
-                return new Dictionary<string, List<ThingDto>>();
-
             var itemsByCategory = new Dictionary<string, List<ThingDto>>();
 
-            foreach (var storage in storageLocations)
+            foreach (var thing in items)
             {
-                var slotGroup = storage.GetSlotGroup();
-                if (slotGroup == null) continue;
+                var category = GetPrimaryCategoryForThing(thing.def);
+                if (category == null) continue;
 
-                foreach (var thing in slotGroup.HeldThings)
+                var categoryLabel = category.defName;
+
+                // Get or create the list for this category
+                if (!itemsByCategory.TryGetValue(categoryLabel, out var categoryList))
                 {
-                    var category = GetPrimaryCategoryForThing(thing.def);
-                    if (category == null) continue;
-
-                    var categoryLabel = category.defName;
-
-                    // Get or create the list for this category
-                    if (!itemsByCategory.TryGetValue(categoryLabel, out var categoryList))
-                    {
-                        categoryList = new List<ThingDto>();
-                        itemsByCategory[categoryLabel] = categoryList;
-                    }
-
-                    categoryList.Add(ThingToDto(thing));
+                    categoryList = new List<ThingDto>();
+                    itemsByCategory[categoryLabel] = categoryList;
                 }
+
+                categoryList.Add(ThingToDto(thing));
             }
 
             return itemsByCategory;
         }
 
         public List<ThingDto> GetStoredItemsListByCategory(
-            List<ISlotGroupParent> storageLocations,
+            List<Thing> items,
             string categoryDef)
         {
-            if (storageLocations == null || storageLocations.Count == 0)
-                return new List<ThingDto>();
-
             var itemsByCategory = new List<ThingDto>();
 
-            foreach (var storage in storageLocations)
+            foreach (var thing in items)
             {
-                var slotGroup = storage.GetSlotGroup();
-                if (slotGroup == null) continue;
+                if (!IsThingInCategory(thing, categoryDef)) continue;
 
-                foreach (var thing in slotGroup.HeldThings)
-                {
-                    if (!IsThingInCategory(thing, categoryDef)) continue;
-
-                    var dto = ThingToDto(thing);
-                    itemsByCategory.Add(dto);
-                }
+                var dto = ThingToDto(thing);
+                itemsByCategory.Add(dto);
             }
 
             return itemsByCategory;
