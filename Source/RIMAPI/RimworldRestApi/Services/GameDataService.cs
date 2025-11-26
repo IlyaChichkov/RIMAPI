@@ -539,16 +539,15 @@ namespace RimworldRestApi.Services
         public Dictionary<string, List<ThingDto>> GetAllStoredResources(int mapId)
         {
             Map map = _mapHelper.FindMapByUniqueID(mapId);
-            var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
-            return _resourcesHelper.GetStoredItemsByCategory(storageLocations);
+            var items = _resourcesHelper.GetItemsFromStorageLocations(map);
+            return _resourcesHelper.GetStoredItemsByCategory(items);
         }
 
         public List<ThingDto> GetAllStoredResourcesByCategory(int mapId, string categoryDef)
         {
             Map map = _mapHelper.FindMapByUniqueID(mapId);
-            var storageLocations = _resourcesHelper.GetAllStorageLocations(map);
-            DebugLogging.Info("categoryDef: " + categoryDef);
-            return _resourcesHelper.GetStoredItemsListByCategory(storageLocations, categoryDef);
+            var items = _resourcesHelper.GetItemsFromStorageLocations(map);
+            return _resourcesHelper.GetStoredItemsListByCategory(items, categoryDef);
         }
 
         public void MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType)
