@@ -1,0 +1,10 @@
+<!-- German -->
+<LanguageData>
+  <RIMAPI.Version>Version:</RIMAPI.Version>
+  <RIMAPI.APIVersion>API-Version:</RIMAPI.APIVersion>
+  <RIMAPI.ServerPortLabel>REST-Server-Port (Neustart erforderlich):</RIMAPI.ServerPortLabel>
+  <RIMAPI.RefreshIntervalLabel>Aktualisierungsintervall (Ticks):</RIMAPI.RefreshIntervalLabel>
+  <RIMAPI.RestartServer>Server neu starten</RIMAPI.RestartServer>
+  <RIMAPI.EnableLogging>Protokollierung aktivieren:</RIMAPI.EnableLogging>
+  <RIMAPI.LoggingLevel>Protokollierungsstufe:</RIMAPI.LoggingLevel>
+</LanguageData>
