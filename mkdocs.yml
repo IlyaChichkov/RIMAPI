@@ -1,37 +1,93 @@
 site_name: RimWorld REST API
 site_description: Auto-generated API documentation
 repo_url: https://github.com/IlyaChichkov/RIMAPI
+repo_name: IlyaChichkov/RIMAPI
 edit_uri: ""
 
-theme: material
+copyright: Copyright &copy; 2025 Ilya Chichkov
+
+theme:
+  name: material
+  palette:
+    # Set dark mode as default
+    - scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+    - scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.expand
+    - search.suggest
+    - search.share
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+    - content.code.select
+    - content.tooltips
 
 nav:
   - Home: index.md
   - Quick Start: quick_start.md
   - API Reference: api.md
   - Developers:
-    - Architecture: developer_guide/architecture.md
+    - Add new extension: developer_guide/creating_extensions.md
+  - Contributors:
+    - Architecture: contributors_guide/architecture.md
+    - Add new endpoint: contributors_guide/creating_endpoints.md
+    - Contribute: contributors_guide/contribute.md
 
 plugins:
-  - offline
   - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;|(?<=\/)(?=\/)|(?<=\w)(?=\/)'
       pipeline:
         - stemmer
         - stopWordFilter
         - trimmer
+      lang: en
+  - offline
   - social
   - tags
   - mermaid2:
       javascript: https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs
+  - minify:
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+          remove_comments: true
+      cache_safe: true
 
 markdown_extensions:
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - tables
   - fenced_code
   - codehilite
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - admonition
+  - attr_list
   - toc:
       permalink: true
+      toc_depth: 2-3
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://ilyachichkov.github.io/RIMAPI
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/Css9b9BgnM
+

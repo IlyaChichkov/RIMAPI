@@ -15,7 +15,7 @@ The API listens on `http://localhost:8765/` by default once the
 game reaches the main menu. The port can be changed in the mod settings.
 
 [  Documentation  ](https://ilyachichkov.github.io/RIMAPI/index.html)|
-[  Discord Server  ](https://discord.gg/Css9b9BgnM)|
+[  Discord Server  ](https://discord.gg/Css9b9BgnM)
 
 ## 🚀 Features
 
