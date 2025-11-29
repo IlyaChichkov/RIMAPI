@@ -1,0 +1,37 @@
+site_name: RimWorld REST API
+site_description: Auto-generated API documentation
+repo_url: https://github.com/IlyaChichkov/RIMAPI
+edit_uri: ""
+
+theme: material
+
+nav:
+  - Home: index.md
+  - Quick Start: quick_start.md
+  - API Reference: api.md
+  - Developers:
+    - Architecture: developer_guide/architecture.md
+
+plugins:
+  - offline
+  - search:
+      pipeline:
+        - stemmer
+        - stopWordFilter
+        - trimmer
+  - social
+  - tags
+  - mermaid2:
+      javascript: https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs
+
+markdown_extensions:
+  - tables
+  - fenced_code
+  - codehilite
+  - toc:
+      permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
