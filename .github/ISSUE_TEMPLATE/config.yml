@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 API Documentation
+    url: https://github.com/IlyaChichkov/RIMAPI/blob/main/Docs/API.md
+    about: Check the API documentation for endpoint details and examples
+  - name: 💻 Developer Guide
+    url: https://github.com/IlyaChichkov/RIMAPI/blob/main/Docs/DEVELOPER.md
+    about: Read the developer guide for contributing and building from source
+  - name: ❓ Discussions
+    url: https://github.com/IlyaChichkov/RIMAPI/discussions
+    about: Ask questions and share ideas in our discussions
