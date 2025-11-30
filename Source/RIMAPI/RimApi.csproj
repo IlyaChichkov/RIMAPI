@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>RIMAPI</RootNamespace>
+    <AssemblyName>RIMAPI</AssemblyName>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <!-- Conditional properties for RimWorld 1.5 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release-1.5'">
+    <OutputPath>..\..\1.5\Assemblies\</OutputPath>
+    <DefineConstants>$(DefineConstants);RIMWORLD_1_5</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Conditional properties for RimWorld 1.6 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release-1.6'">
+    <OutputPath>..\..\1.6\Assemblies\</OutputPath>
+    <DefineConstants>$(DefineConstants);RIMWORLD_1_6</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Default output path for Debug -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- RimWorld 1.5 dependencies -->
+    <PackageReference
+      Include="Krafs.Rimworld.Ref"
+      Version="1.5.4104"
+      Condition="'$(Configuration)' == 'Release-1.5' OR '$(Configuration)' == 'Debug'"
+    />
+
+    <!-- RimWorld 1.6 dependencies -->
+    <PackageReference
+      Include="Krafs.Rimworld.Ref"
+      Version="1.6.4518"
+      Condition="'$(Configuration)' == 'Release-1.6'"
+    />
+
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\Libraries\Newtonsoft.Json.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+</Project>

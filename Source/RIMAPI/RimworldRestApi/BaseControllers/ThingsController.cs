@@ -1,0 +1,45 @@
+using System.Net;
+using System.Threading.Tasks;
+using RIMAPI.Core;
+using RIMAPI.Http;
+using RIMAPI.Models;
+using RIMAPI.Services;
+
+namespace RIMAPI.Controllers
+{
+    public class ThingController : RequestParser
+    {
+        private readonly IResourceService _resourcesService;
+
+        public ThingController(IResourceService resourcesService)
+        {
+            _resourcesService = resourcesService;
+        }
+
+        [Get("/api/v1/resources/summary")]
+        public async Task GetResourcesSummary(HttpListenerContext context)
+        {
+            var mapId = GetMapId(context);
+            var result = _resourcesService.GetResourcesSummary(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/resources/stored")]
+        public async Task GetResourcesStored(HttpListenerContext context)
+        {
+            var mapId = GetMapId(context);
+            var categoryDef = GetStringParameter(context, "category", false);
+
+            if (string.IsNullOrEmpty(categoryDef))
+            {
+                var result = _resourcesService.GetAllStoredResources(mapId);
+                await context.SendJsonResponse(result);
+            }
+            else
+            {
+                var result = _resourcesService.GetAllStoredResourcesByCategory(mapId, categoryDef);
+                await context.SendJsonResponse(result);
+            }
+        }
+    }
+}

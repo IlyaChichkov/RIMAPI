@@ -1,0 +1,12 @@
+.cursor
+.vscode/obj
+.venv
+*/.venv/
+*.cache
+site/
+tmp/
+lib/
+
+Source/RIMAPI/obj/
+1.5/
+1.6/
