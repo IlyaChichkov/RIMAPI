@@ -7,7 +7,7 @@ using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
 {
-    public class ImageController : RequestParser
+    public class ImageController
     {
         private readonly IImageService _imageService;
 
@@ -19,7 +19,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/item/image")]
         public async Task GetItemImage(HttpListenerContext context)
         {
-            var name = GetStringParameter(context, "name");
+            var name = RequestParser.GetStringParameter(context, "name");
             var result = _imageService.GetItemImage(name);
             await context.SendJsonResponse(result);
         }

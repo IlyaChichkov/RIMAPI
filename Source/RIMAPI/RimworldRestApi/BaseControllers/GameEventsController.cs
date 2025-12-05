@@ -6,7 +6,7 @@ using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
 {
-    public class GameEventsController : RequestParser
+    public class GameEventsController
     {
         private readonly IIncidentService _incidentService;
 
@@ -18,7 +18,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/quests")]
         public async Task GetQuestsData(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _incidentService.GetQuestsData(mapId);
             await context.SendJsonResponse(result);
         }
@@ -26,7 +26,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/incidents")]
         public async Task GetIncidentsData(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _incidentService.GetIncidentsData(mapId);
             await context.SendJsonResponse(result);
         }

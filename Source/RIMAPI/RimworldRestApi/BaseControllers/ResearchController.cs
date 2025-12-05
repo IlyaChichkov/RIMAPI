@@ -6,7 +6,7 @@ using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
 {
-    public class ResearchController : RequestParser
+    public class ResearchController
     {
         private readonly IResearchService _researchService;
 
@@ -39,7 +39,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/research/project")]
         public async Task GetResearchProjectByName(HttpListenerContext context)
         {
-            var name = GetStringParameter(context, "name");
+            var name = RequestParser.GetStringParameter(context, "name");
             var result = _researchService.GetResearchProjectByName(name);
             await context.SendJsonResponse(result);
         }

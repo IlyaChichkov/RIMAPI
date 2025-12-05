@@ -9,15 +9,69 @@ using RimWorld;
 
 namespace RIMAPI.Controllers
 {
-    public class GameController : RequestParser
+    public class GameController
     {
         private readonly IGameStateService _gameStateService;
         private readonly RIMAPI_Settings _settings;
+        private readonly ICachingService _cachingService;
 
-        public GameController(IGameStateService gameStateService, RIMAPI_Settings settings)
+        public GameController(
+            IGameStateService gameStateService,
+            RIMAPI_Settings settings,
+            ICachingService cachingService
+        )
         {
             _gameStateService = gameStateService;
             _settings = settings;
+            _cachingService = cachingService;
+        }
+
+        [Post("/api/v1/cache/enable")]
+        public async Task EnableCache(HttpListenerContext context)
+        {
+            _cachingService.SetEnabled(true);
+            await ResponseBuilder.Success(context.Response, new { message = "Cache enabled" });
+        }
+
+        [Post("/api/v1/cache/disable")]
+        public async Task DisableCache(HttpListenerContext context)
+        {
+            _cachingService.SetEnabled(false);
+            await ResponseBuilder.Success(context.Response, new { message = "Cache disabled" });
+        }
+
+        [Get("/api/v1/cache/status")]
+        public async Task GetCacheStatus(HttpListenerContext context)
+        {
+            var stats = _cachingService.GetStatistics();
+            var status = new { enabled = _cachingService.IsEnabled(), statistics = stats };
+
+            await ResponseBuilder.Success(context.Response, status);
+        }
+
+        [Get("/api/v1/cache/stats")]
+        public async Task GetCacheStats(HttpListenerContext context)
+        {
+            var stats = _cachingService.GetStatistics();
+            await ResponseBuilder.Success(
+                context.Response,
+                new
+                {
+                    stats.TotalEntries,
+                    stats.Hits,
+                    stats.Misses,
+                    stats.HitRatio,
+                    MemoryUsageMB = stats.MemoryUsageBytes / 1024 / 1024,
+                    stats.LastCleanup,
+                }
+            );
+        }
+
+        [Post("/api/v1/cache/clear")]
+        public async Task ClearCache(HttpListenerContext context)
+        {
+            _cachingService.Clear();
+            await ResponseBuilder.Success(context.Response, new { message = "Cache cleared" });
         }
 
         [Get("/api/v1/version")]
@@ -63,7 +117,7 @@ namespace RIMAPI.Controllers
         [EndpointDescription("Open interface tab")]
         public async Task OpenTab(HttpListenerContext context)
         {
-            var tabName = GetStringParameter(context, "name");
+            var tabName = RequestParser.GetStringParameter(context, "name");
             var result = _gameStateService.OpenTab(tabName);
             await context.SendJsonResponse(result);
         }
@@ -78,7 +132,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/datetime/tile")]
         public async Task GetWorldTileDatetime(HttpListenerContext context)
         {
-            var tileId = GetIntParameter(context, "tile_id");
+            var tileId = RequestParser.GetIntParameter(context, "tile_id");
             var result = _gameStateService.GetWorldTileDatetime(tileId);
             await context.SendJsonResponse(result);
         }

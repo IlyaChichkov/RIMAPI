@@ -11,7 +11,7 @@ using Verse;
 
 namespace RimworldRestApi.Controllers
 {
-    public class CameraController : RequestParser
+    public class CameraController
     {
         private readonly ICameraStream _cameraStream;
         private readonly ICameraService _cameraService;
@@ -26,7 +26,7 @@ namespace RimworldRestApi.Controllers
         [EndpointDescription("Change game camera zoom")]
         public async Task ChangeZoom(HttpListenerContext context)
         {
-            var zoom = GetIntParameter(context, "zoom");
+            var zoom = RequestParser.GetIntParameter(context, "zoom");
 
             var result = _cameraService.ChangeZoom(zoom);
             await context.SendJsonResponse(result);
@@ -36,8 +36,8 @@ namespace RimworldRestApi.Controllers
         [EndpointDescription("Change game camera position")]
         public async Task MoveToPosition(HttpListenerContext context)
         {
-            var x = GetIntParameter(context, "x");
-            var y = GetIntParameter(context, "y");
+            var x = RequestParser.GetIntParameter(context, "x");
+            var y = RequestParser.GetIntParameter(context, "y");
 
             var result = _cameraService.MoveToPosition(x, y);
             await context.SendJsonResponse(result);

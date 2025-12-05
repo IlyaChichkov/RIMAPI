@@ -7,7 +7,7 @@ using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
 {
-    public class DevToolsController : RequestParser
+    public class DevToolsController
     {
         private readonly IDevToolsService _devToolsService;
 
@@ -20,7 +20,7 @@ namespace RIMAPI.Controllers
         [EndpointDescription("Send message to the debug console")]
         public async Task PostConsoleAction(HttpListenerContext context)
         {
-            var action = GetStringParameter(context, "action");
+            var action = RequestParser.GetStringParameter(context, "action");
             var result = _devToolsService.ConsoleAction(action);
             await context.SendJsonResponse(result);
         }

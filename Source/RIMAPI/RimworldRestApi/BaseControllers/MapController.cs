@@ -8,7 +8,7 @@ using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
 {
-    public class MapController : RequestParser
+    public class MapController
     {
         private readonly IMapService _mapService;
         private readonly IBuildingService _buildingService;
@@ -29,7 +29,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/things")]
         public async Task GetMapThings(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapThings(mapId);
             await context.SendJsonResponse(result);
         }
@@ -37,7 +37,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/weather")]
         public async Task GetMapWeather(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetWeather(mapId);
             await context.SendJsonResponse(result);
         }
@@ -45,7 +45,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/power/info")]
         public async Task GetMapPowerInfo(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapPowerInfo(mapId);
             await context.SendJsonResponse(result);
         }
@@ -53,7 +53,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/animals")]
         public async Task GetMapAnimals(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapAnimals(mapId);
             await context.SendJsonResponse(result);
         }
@@ -61,7 +61,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/creatures/summary")]
         public async Task GetMapCreaturesSummary(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapCreaturesSummary(mapId);
             await context.SendJsonResponse(result);
         }
@@ -69,7 +69,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/farm/summary")]
         public async Task GetMapFarmSummary(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GenerateFarmSummary(mapId);
             await context.SendJsonResponse(result);
         }
@@ -77,8 +77,8 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/zone/growing")]
         public async Task GetMapGrowingZoneById(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
-            var zoneId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
+            var zoneId = RequestParser.GetMapId(context);
             var result = _mapService.GetGrowingZoneById(mapId, zoneId);
             await context.SendJsonResponse(result);
         }
@@ -86,7 +86,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/zones")]
         public async Task GetMapZones(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapZones(mapId);
             await context.SendJsonResponse(result);
         }
@@ -94,7 +94,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/rooms")]
         public async Task GetMapRooms(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapRooms(mapId);
             await context.SendJsonResponse(result);
         }
@@ -102,7 +102,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/map/buildings")]
         public async Task GetMapBuildings(HttpListenerContext context)
         {
-            var mapId = GetMapId(context);
+            var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapBuildings(mapId);
             await context.SendJsonResponse(result);
         }
@@ -110,7 +110,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/building/info")]
         public async Task GetBuildingInfo(HttpListenerContext context)
         {
-            var id = GetIntParameter(context, "id");
+            var id = RequestParser.GetIntParameter(context, "id");
             var result = _buildingService.GetBuildingInfo(id);
             await context.SendJsonResponse(result);
         }
