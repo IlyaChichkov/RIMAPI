@@ -17,7 +17,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/dev/console")]
-        [EndpointDescription("Send message to the debug console")]
+        [EndpointMetadata("Send message to the debug console")]
         public async Task PostConsoleAction(HttpListenerContext context)
         {
             var action = RequestParser.GetStringParameter(context, "action");
@@ -41,7 +41,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/dev/stuff/color")]
-        [EndpointDescription("Change stuff color")]
+        [EndpointMetadata("Change stuff color")]
         public async Task PostStuffColor(HttpListenerContext context)
         {
             var requestData = await context.Request.ReadBodyAsync<StuffColorRequest>();

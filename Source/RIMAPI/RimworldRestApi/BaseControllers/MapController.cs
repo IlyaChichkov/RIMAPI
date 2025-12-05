@@ -20,6 +20,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/maps")]
+        [EndpointMetadata("Get all generated maps list the in game session")]
         public async Task GetGameState(HttpListenerContext context)
         {
             var result = _mapService.GetMaps();
@@ -35,6 +36,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/weather")]
+        [EndpointMetadata("Get weather on the map")]
         public async Task GetMapWeather(HttpListenerContext context)
         {
             var mapId = RequestParser.GetMapId(context);
@@ -51,6 +53,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/animals")]
+        [EndpointMetadata("Get animals on the map")]
         public async Task GetMapAnimals(HttpListenerContext context)
         {
             var mapId = RequestParser.GetMapId(context);
@@ -84,6 +87,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/zones")]
+        [EndpointMetadata("Get zones on the map")]
         public async Task GetMapZones(HttpListenerContext context)
         {
             var mapId = RequestParser.GetMapId(context);
@@ -108,10 +112,21 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/building/info")]
+        [EndpointMetadata("Get building info", new[] { "Unstable" })]
         public async Task GetBuildingInfo(HttpListenerContext context)
         {
-            var id = RequestParser.GetIntParameter(context, "id");
-            var result = _buildingService.GetBuildingInfo(id);
+            var mapId = RequestParser.GetMapId(context);
+            var result = _buildingService.GetBuildingInfo(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/change/weather")]
+        [EndpointMetadata("Set weather on the map")]
+        public async Task SetWeather(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var defName = RequestParser.GetStringParameter(context, "name");
+            var result = _mapService.SetWeather(mapId, defName);
             await context.SendJsonResponse(result);
         }
     }

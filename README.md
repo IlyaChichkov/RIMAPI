@@ -60,6 +60,9 @@ This project is licensed under the GNU GPLv3 License - see the [LICENSE](https:/
 
 Thanks to MasterPNJ and his project for insipiration: [ARROM](https://github.com/MasterPNJ/API-REST-RimwOrld-Mod)
 
+Thanks to @braasdas and his [RatLab](https://github.com/braasdas/ratlab-mod-github)
+for code reference
+
 ## 📋 Changelog
 
 [CHANGELOG](https://github.com/IlyaChichkov/RIMAPI/blob/main/CHANGELOG)

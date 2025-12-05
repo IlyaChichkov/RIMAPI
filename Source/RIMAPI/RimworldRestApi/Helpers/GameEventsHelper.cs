@@ -8,7 +8,7 @@ namespace RIMAPI.Helpers
 {
     class GameEventsHelper
     {
-        public QuestsDto GetQuestsDto(Map map)
+        public static QuestsDto GetQuestsDto(Map map)
         {
             var dto = new QuestsDto();
 
@@ -54,7 +54,7 @@ namespace RIMAPI.Helpers
             return dto;
         }
 
-        private List<string> GetQuestRewardString(Quest quest)
+        public static List<string> GetQuestRewardString(Quest quest)
         {
             return quest
                 .PartsListForReading.OfType<QuestPart_Choice>()
@@ -64,7 +64,7 @@ namespace RIMAPI.Helpers
                 .ToList();
         }
 
-        private string GetIncidentImportance(IncidentDef def)
+        public static string GetIncidentImportance(IncidentDef def)
         {
             if (def.category == IncidentCategoryDefOf.ThreatBig)
                 return "ThreatBig";
@@ -83,7 +83,7 @@ namespace RIMAPI.Helpers
             return "None";
         }
 
-        public List<IncidentDto> GetIncidentsLog(Map map)
+        public static List<IncidentDto> GetIncidentsLog(Map map)
         {
             List<IncidentDto> incidentLog = new List<IncidentDto>();
 

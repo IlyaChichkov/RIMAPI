@@ -16,6 +16,7 @@ namespace RIMAPI.Services
     {
         ApiResult<GameStateDto> GetGameState();
         ApiResult<List<ModInfoDto>> GetModsInfo();
+        ApiResult Select(string objectType, int id);
         ApiResult DeselectAll();
         ApiResult OpenTab(string tabName);
         ApiResult<DefsDto> GetAllDefs();
@@ -36,8 +37,10 @@ namespace RIMAPI.Services
         ApiResult<WorkListDto> GetWorkList();
         ApiResult<List<TimeAssignmentDto>> GetTimeAssignmentsList();
         ApiResult SetColonistWorkPriority(int pawnId, string workDef, int priority);
+        ApiResult SetColonistsWorkPriority(ColonistsWorkPrioritiesRequestDto body);
         ApiResult<TraitDefDto> GetTraitDefDto(string traitName);
         ApiResult SetTimeAssignment(int pawnId, int hour, string assignmentName);
+        ApiResult MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType);
 
         ApiResult<List<OutfitDto>> GetOutfits();
         ApiResult EditPawn(PawnEditRequest request);
@@ -63,6 +66,7 @@ namespace RIMAPI.Services
         ApiResult<MapZonesDto> GetMapZones(int mapId);
         ApiResult<MapRoomsDto> GetMapRooms(int mapId);
         ApiResult<List<BuildingDto>> GetMapBuildings(int mapId);
+        ApiResult SetWeather(int mapId, string defName);
     }
 
     // Building Service
@@ -87,7 +91,7 @@ namespace RIMAPI.Services
         ApiResult<QuestsDto> GetQuestsData(int mapId);
         ApiResult<IncidentsDto> GetIncidentsData(int mapId);
         ApiResult<List<LordDto>> GetLordsData(int mapId);
-        ApiResult TriggerIncident(TriggerIncidentRequest request);
+        ApiResult TriggerIncident(TriggerIncidentRequestDto request);
     }
 
     // Resource Service

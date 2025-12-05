@@ -41,5 +41,13 @@ namespace RIMAPI.Controllers
                 await context.SendJsonResponse(result);
             }
         }
+
+        [Get("/api/v1/resources/storages/summary")]
+        public async Task GetStoragesSummary(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _resourcesService.GetStoragesSummary(mapId);
+            await context.SendJsonResponse(result);
+        }
     }
 }

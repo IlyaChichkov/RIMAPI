@@ -1,4 +1,51 @@
 # Changelog
+## v1.1.0
+
+### Add endpoint:
+[GET]
+- /api/v1/faction/player
+- /api/v1/faction/
+- /api/v1/faction/def
+- /api/v1/faction/relations-with
+- /api/v1/faction/relations
+[POST]
+- /api/v1/faction/change/goodwill
+- /api/v1/change/weather
+
+### Add caching service
+
+Test performance of GET /colonists/detailed endpoint no/with caching, results:
+
+- Speed acceleration of 16-21%
+- Improved stability (0 vs 9 failures)
+- Reduction of peak delays by 72%
+
+### Fix: Add endpoints from v0.5.6
+- /api/v1/resources/storages/summary
+- /api/v1/select
+- /api/v1/trait-def
+- /api/v1/time-assignments
+- /api/v1/colonist/time-assignment
+- /api/v1/outfits
+- /api/v1/work-list
+- /api/v1/colonist/work-priority
+- /api/v1/colonists/work-priority
+- /api/v1/jobs/make/equip
+
+Thanks to @braasdas and his [RatLab](https://github.com/braasdas/ratlab-mod-github) mod
+
+## v1.0.0
+
+Complete architectural rewrite to use dependency injection (DI) container system
+
+Updates:
+- Added automatic service discovery and lifetime management (singleton/transient)
+- Introduced constructor injection for all service dependencies
+- Added automatic extension discovery via reflection scanning
+- Implemented attribute-based routing with automatic controller registration
+- Added support auto-routed controllers
+- Created documentation service with auto-generated API documentation
+
 ## v0.5.6
 
 Fix /api/v1/resources/stored

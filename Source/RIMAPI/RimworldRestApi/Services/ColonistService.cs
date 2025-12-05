@@ -7,6 +7,7 @@ using RIMAPI.Models;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace RIMAPI.Services
 {
@@ -183,63 +184,163 @@ namespace RIMAPI.Services
             return ApiResult<WorkListDto>.Ok(workList);
         }
 
+        public ApiResult MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType)
+        {
+            try
+            {
+                Map map = MapHelper.GetMapByID(mapId);
+                if (map == null)
+                {
+                    throw new Exception($"Map with ID={mapId} not found");
+                }
+                Pawn pawn = map
+                    .listerThings.AllThings.OfType<Pawn>()
+                    .FirstOrDefault(p => p.thingIDNumber == pawnId);
+                if (pawn == null)
+                {
+                    throw new Exception($"Pawn with ID={pawnId} not found");
+                }
+
+                Thing foundThing = map.listerThings.AllThings.FirstOrDefault(t =>
+                    t.thingIDNumber == equipmentId
+                );
+                if (foundThing == null)
+                {
+                    throw new Exception($"Thing with ID={equipmentId} not found");
+                }
+
+                Job job = null;
+                switch (equipmentType)
+                {
+                    case "weapon":
+                        if (EquipmentUtility.CanEquip(foundThing, pawn) == false)
+                        {
+                            throw new Exception($"Can't equip this weapon");
+                        }
+
+                        job = JobMaker.MakeJob(JobDefOf.Equip, foundThing);
+                        break;
+                    case "apparel":
+                        if (ApparelUtility.HasPartsToWear(pawn, foundThing.def) == false)
+                        {
+                            throw new Exception($"Can't equip this apparel");
+                        }
+
+                        job = JobMaker.MakeJob(JobDefOf.Wear, foundThing);
+                        break;
+                }
+
+                if (job == null)
+                {
+                    throw new Exception($"Failed to make a job");
+                }
+
+                bool result = pawn.jobs.TryTakeOrderedJob(job);
+                if (!result)
+                {
+                    throw new Exception($"Failed to assign job to pawn");
+                }
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex.Message);
+            }
+        }
+
+        public ApiResult SetColonistsWorkPriority(ColonistsWorkPrioritiesRequestDto body)
+        {
+            try
+            {
+                foreach (var item in body.Priorities)
+                {
+                    var result = SetColonistWorkPriority(item.Id, item.Work, item.Priority);
+                    if (result.Success == false)
+                    {
+                        return result;
+                    }
+                }
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex.Message);
+            }
+        }
+
         public ApiResult SetColonistWorkPriority(int pawnId, string workDef, int priority)
         {
-            // Find the pawn by thingIDNumber
-            Pawn pawn = ColonistsHelper.GetPawnById(pawnId);
-            if (pawn == null)
+            try
             {
-                throw new Exception($"Could not find pawn with ID {pawnId}");
-            }
+                // Find the pawn by thingIDNumber
+                Pawn pawn = ColonistsHelper.GetPawnById(pawnId);
+                if (pawn == null)
+                {
+                    throw new Exception($"Could not find pawn with ID {pawnId}");
+                }
 
-            // Find the WorkTypeDef by defName
-            WorkTypeDef workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(workDef);
-            if (workTypeDef == null)
+                // Find the WorkTypeDef by defName
+                WorkTypeDef workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(workDef);
+                if (workTypeDef == null)
+                {
+                    throw new Exception($"Could not find WorkTypeDef with defName {workDef}");
+                }
+
+                // Check if pawn has work settings initialized
+                if (pawn.workSettings == null || !pawn.workSettings.EverWork)
+                {
+                    throw new Exception(
+                        $"Pawn {pawn.LabelShort} does not have work settings initialized"
+                    );
+                }
+
+                // Check if the work type is disabled for this pawn
+                if (priority != 0 && pawn.WorkTypeIsDisabled(workTypeDef))
+                {
+                    throw new Exception(
+                        $"Cannot set priority for disabled work type {workTypeDef.defName} on pawn {pawn.LabelShort}"
+                    );
+                }
+
+                // Validate priority range (0-9)
+                if (priority < 0 || priority > 9)
+                {
+                    throw new Exception($"Invalid priority {priority}. Must be between 0 and 4");
+                }
+
+                // Set the priority
+                pawn.workSettings.SetPriority(workTypeDef, priority);
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
             {
-                throw new Exception($"Could not find WorkTypeDef with defName {workDef}");
+                return ApiResult.Fail(ex.Message);
             }
-
-            // Check if pawn has work settings initialized
-            if (pawn.workSettings == null || !pawn.workSettings.EverWork)
-            {
-                throw new Exception(
-                    $"Pawn {pawn.LabelShort} does not have work settings initialized"
-                );
-            }
-
-            // Check if the work type is disabled for this pawn
-            if (priority != 0 && pawn.WorkTypeIsDisabled(workTypeDef))
-            {
-                throw new Exception(
-                    $"Cannot set priority for disabled work type {workTypeDef.defName} on pawn {pawn.LabelShort}"
-                );
-            }
-
-            // Validate priority range (0-9)
-            if (priority < 0 || priority > 9)
-            {
-                throw new Exception($"Invalid priority {priority}. Must be between 0 and 4");
-            }
-
-            // Set the priority
-            pawn.workSettings.SetPriority(workTypeDef, priority);
-
-            return ApiResult.Ok();
         }
 
         public ApiResult SetTimeAssignment(int pawnId, int hour, string assignmentName)
         {
-            Pawn pawn = ColonistsHelper.GetPawnById(pawnId);
-            TimeAssignmentDef assignmentDef = DefDatabase<TimeAssignmentDef>
-                .AllDefs.Where(p => p.defName.ToLower() == assignmentName.ToLower())
-                .FirstOrDefault();
-            if (assignmentDef == null)
+            try
             {
-                throw new Exception($"Failed to find assignment def with {assignmentName} name");
-            }
-            pawn.timetable.SetAssignment(hour, assignmentDef);
+                Pawn pawn = ColonistsHelper.GetPawnById(pawnId);
+                TimeAssignmentDef assignmentDef = DefDatabase<TimeAssignmentDef>
+                    .AllDefs.Where(p => p.defName.ToLower() == assignmentName.ToLower())
+                    .FirstOrDefault();
+                if (assignmentDef == null)
+                {
+                    throw new Exception(
+                        $"Failed to find assignment def with {assignmentName} name"
+                    );
+                }
+                pawn.timetable.SetAssignment(hour, assignmentDef);
 
-            return ApiResult.Ok();
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex.Message);
+            }
         }
     }
 }
