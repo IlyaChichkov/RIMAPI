@@ -114,6 +114,18 @@ namespace RIMAPI.Services
     public interface IFactionService
     {
         ApiResult<List<FactionsDto>> GetFactions();
+        ApiResult<FactionDto> GetFaction(int id);
+        ApiResult<FactionDto> GetPlayerFaction();
+        ApiResult<FactionRelationDto> GetFactionRelationWith(int id, int otherId);
+        ApiResult<FactionRelationsDto> GetFactionRelations(int id);
+        ApiResult<FactionDefDto> GetFactionDef(string defName);
+        ApiResult<FactionChangeRelationResponceDto> ChangeFactionRelationWith(
+            int id,
+            int otherId,
+            int change,
+            bool sendMessage,
+            bool canSendHostilityLetter
+        );
     }
 
     // Dev Tools Service
