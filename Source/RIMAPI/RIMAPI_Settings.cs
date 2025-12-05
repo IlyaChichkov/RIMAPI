@@ -38,6 +38,10 @@ namespace RIMAPI
             }
         }
 
+        public bool EnableCaching = true;
+        public bool CacheLogStatistics = true;
+        public int CacheDefaultExpirationSeconds = 60;
+
         private void OnSettingChanged()
         {
             LogApi.IsLogging = _enableLogging;

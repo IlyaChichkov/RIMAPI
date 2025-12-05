@@ -99,6 +99,8 @@ namespace RIMAPI.Core
                 // Register core services
                 services.AddSingleton<RIMAPI_Settings>(Settings);
 
+                services.AddSingleton<ICachingService, CachingService>();
+
                 // Create and register ExtensionRegistry
                 var extensionRegistry = new ExtensionRegistry();
                 services.AddSingleton<ExtensionRegistry>(extensionRegistry);

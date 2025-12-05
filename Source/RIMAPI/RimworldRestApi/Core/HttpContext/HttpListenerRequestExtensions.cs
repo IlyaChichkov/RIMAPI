@@ -27,7 +27,14 @@ namespace RIMAPI.Core
                     if (string.IsNullOrEmpty(json))
                         return default(T);
 
-                    return JsonConvert.DeserializeObject<T>(json);
+                    LogApi.Message("Reseive body: " + json, LoggingLevels.DEBUG);
+                    var settings = new JsonSerializerSettings
+                    {
+                        ContractResolver = new SnakeCaseContractResolver(),
+                        MissingMemberHandling = MissingMemberHandling.Ignore,
+                        NullValueHandling = NullValueHandling.Ignore,
+                    };
+                    return JsonConvert.DeserializeObject<T>(json, settings);
                 }
             }
             catch (Exception ex)
