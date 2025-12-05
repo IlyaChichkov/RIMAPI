@@ -101,7 +101,7 @@ namespace RIMAPI.Core
             RouteAttribute routeAttr
         )
         {
-            var descriptionAttr = method.GetCustomAttribute<EndpointDescriptionAttribute>();
+            var descriptionAttr = method.GetCustomAttribute<EndpointMetadataAttribute>();
             var responseExampleAttr = method.GetCustomAttribute<ResponseExampleAttribute>();
 
             var className = method.DeclaringType?.Name ?? "General";
@@ -112,25 +112,23 @@ namespace RIMAPI.Core
             string githubLink =
                 $"https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29{declaringType}%5C.cs%24%2F+{methodName}&type=code";
 
-            var toolTip =
-                $"[{method.DeclaringType.Name}.{method.Name}]({githubLink} \"{methodName}\")";
+            var githubLinkTitle = $"{method.DeclaringType.Name}.{method.Name}";
 
-            string description = "";
-            description += string.IsNullOrEmpty(descriptionAttr?.Description)
-                ? ""
-                : descriptionAttr?.Description + "</br>";
-            description += toolTip;
+            string description = descriptionAttr?.Description;
 
             var endpoint = new DocumentedEndpoint
             {
                 Method = routeAttr.Method,
                 Path = routeAttr.Pattern,
                 Description = description,
+                GithubLinkTitle = githubLinkTitle,
+                GithubLink = githubLink,
                 Category = descriptionAttr?.Category ?? className,
                 Notes = descriptionAttr?.Notes,
                 Parameters = ExtractEnhancedParameters(method),
                 RequestExample = GenerateRequestExample(method),
                 ResponseExample = GenerateEnhancedResponseExample(method, responseExampleAttr),
+                Tags = descriptionAttr?.Tags,
             };
 
             return endpoint;
@@ -297,6 +295,163 @@ namespace RIMAPI.Core
             return $"Parameter: {param.Name}";
         }
 
+        private string GetTagCssClass(string tag)
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+                return "default";
+
+            // Convert to lowercase and remove spaces for CSS class
+            var normalizedTag = tag.ToLowerInvariant()
+                .Replace(" ", "-")
+                .Replace("_", "-")
+                .Replace(".", "-");
+
+            // Remove any characters that aren't valid in CSS class names
+            normalizedTag = System.Text.RegularExpressions.Regex.Replace(
+                normalizedTag,
+                "[^a-z0-9-]",
+                ""
+            );
+
+            // Map common tags to specific classes for consistent styling
+            var tagMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "unstable", "unstable" },
+                { "stable", "stable" },
+                { "deprecated", "deprecated" },
+                { "experimental", "experimental" },
+                { "auth-required", "auth-required" },
+                { "authentication-required", "auth-required" },
+                { "authentication required", "auth-required" },
+                { "public", "public" },
+                { "private", "private" },
+                { "beta", "experimental" },
+                { "preview", "experimental" },
+                { "v1", "stable" },
+                { "v2", "stable" },
+                { "internal", "private" },
+                { "admin", "auth-required" },
+                { "user", "auth-required" },
+                { "read-only", "stable" },
+                { "write", "auth-required" },
+            };
+
+            // Try to get mapped class, fall back to normalized tag
+            return tagMap.TryGetValue(tag, out var mappedClass) ? mappedClass : normalizedTag;
+        }
+
+        private void RenderEndpointMarkdown(ref StringBuilder sb, DocumentedEndpoint endpoint)
+        {
+            // Start API container
+            sb.AppendLine("<div class=\"doc-api-container\">");
+
+            // Header row with method and endpoint
+            sb.AppendLine("<div class=\"doc-api-header\">");
+            sb.AppendLine(
+                $"<div class=\"doc-api-method doc-api-method-{endpoint.Method.ToLowerInvariant()}\">{endpoint.Method}</div>"
+            );
+            sb.AppendLine($"<div class=\"doc-api-endpoint\"><code>{endpoint.Path}</code></div>");
+            sb.AppendLine("</div>");
+
+            // Tags row - handle both string and array scenarios
+            if (endpoint.Tags != null && endpoint.Tags.Length > 0)
+            {
+                sb.AppendLine("<div class=\"doc-api-tags\">");
+
+                foreach (var tag in endpoint.Tags)
+                {
+                    if (!string.IsNullOrWhiteSpace(tag))
+                    {
+                        var tagClass = GetTagCssClass(tag);
+                        sb.AppendLine(
+                            $"<span class=\"doc-api-tag doc-api-tag-{tagClass}\"><code>{tag}</code></span>"
+                        );
+                    }
+                }
+
+                sb.AppendLine("</div>");
+            }
+
+            sb.AppendLine("</div>"); // Close doc-api-container
+            sb.AppendLine();
+
+            // Description
+            sb.AppendLine(endpoint.Description);
+            sb.AppendLine();
+
+            // GitHub link (if exists)
+            if (
+                !string.IsNullOrEmpty(endpoint.GithubLink)
+                && !string.IsNullOrEmpty(endpoint.GithubLinkTitle)
+            )
+            {
+                sb.AppendLine("<div class=\"doc-github-container\">");
+                sb.AppendLine($"<a href=\"{endpoint.GithubLink}\" class=\"doc-github-link\">");
+                sb.AppendLine(endpoint.GithubLinkTitle);
+                sb.AppendLine("</a>");
+                sb.AppendLine("</div>");
+                sb.AppendLine();
+            }
+            else if (!string.IsNullOrEmpty(endpoint.GithubLink))
+            {
+                // Fallback if only URL is provided
+                sb.AppendLine("<div class=\"doc-github-container\">");
+                sb.AppendLine($"<a href=\"{endpoint.GithubLink}\" class=\"doc-github-link\">");
+                sb.AppendLine("View source on GitHub");
+                sb.AppendLine("</a>");
+                sb.AppendLine("</div>");
+                sb.AppendLine();
+            }
+
+            if (!string.IsNullOrEmpty(endpoint.Notes))
+            {
+                sb.AppendLine($"> **Notes**: {endpoint.Notes}");
+                sb.AppendLine();
+            }
+
+            if (endpoint.Parameters.Any())
+            {
+                sb.AppendLine("**Parameters:**");
+                sb.AppendLine();
+                sb.AppendLine("| Name | Type | Required | Description | Example |");
+                sb.AppendLine("|------|------|:--------:|-------------|---------|");
+                foreach (var param in endpoint.Parameters)
+                {
+                    var example = string.IsNullOrEmpty(param.Example)
+                        ? "*N/A*"
+                        : $"`{param.Example}`";
+                    var required = param.Required ? "✅" : "❌";
+                    sb.AppendLine(
+                        $"| `{param.Name}` | `{param.Type}` | {required} | {param.Description} | {example} |"
+                    );
+                }
+                sb.AppendLine();
+            }
+
+            if (!string.IsNullOrEmpty(endpoint.RequestExample))
+            {
+                sb.AppendLine("**Request Example:**");
+                sb.AppendLine();
+                sb.AppendLine("```json");
+                sb.AppendLine(endpoint.RequestExample.Trim());
+                sb.AppendLine("```");
+                sb.AppendLine();
+            }
+
+            if (!string.IsNullOrEmpty(endpoint.ResponseExample))
+            {
+                sb.AppendLine("**Response Example:**");
+                sb.AppendLine();
+                sb.AppendLine("```json");
+                sb.AppendLine(endpoint.ResponseExample.Trim());
+                sb.AppendLine("```");
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("---");
+            sb.AppendLine();
+        }
+
         public string GenerateMarkdown()
         {
             var docs = GenerateDocumentation();
@@ -325,58 +480,7 @@ namespace RIMAPI.Core
 
                     foreach (var endpoint in group)
                     {
-                        sb.AppendLine($"#### `{endpoint.Method} {endpoint.Path}`");
-                        sb.AppendLine();
-                        sb.AppendLine(endpoint.Description);
-                        sb.AppendLine();
-
-                        if (!string.IsNullOrEmpty(endpoint.Notes))
-                        {
-                            sb.AppendLine($"> **Notes**: {endpoint.Notes}");
-                            sb.AppendLine();
-                        }
-
-                        if (endpoint.Parameters.Any())
-                        {
-                            sb.AppendLine("**Parameters:**");
-                            sb.AppendLine();
-                            sb.AppendLine("| Name | Type | Required | Description | Example |");
-                            sb.AppendLine("|------|------|:--------:|-------------|---------|");
-                            foreach (var param in endpoint.Parameters)
-                            {
-                                var example = string.IsNullOrEmpty(param.Example)
-                                    ? "*N/A*"
-                                    : $"`{param.Example}`";
-                                var required = param.Required ? "✅" : "❌";
-                                sb.AppendLine(
-                                    $"| `{param.Name}` | `{param.Type}` | {required} | {param.Description} | {example} |"
-                                );
-                            }
-                            sb.AppendLine();
-                        }
-
-                        if (!string.IsNullOrEmpty(endpoint.RequestExample))
-                        {
-                            sb.AppendLine("**Request Example:**");
-                            sb.AppendLine();
-                            sb.AppendLine("```json");
-                            sb.AppendLine(endpoint.RequestExample.Trim());
-                            sb.AppendLine("```");
-                            sb.AppendLine();
-                        }
-
-                        if (!string.IsNullOrEmpty(endpoint.ResponseExample))
-                        {
-                            sb.AppendLine("**Response Example:**");
-                            sb.AppendLine();
-                            sb.AppendLine("```json");
-                            sb.AppendLine(endpoint.ResponseExample.Trim());
-                            sb.AppendLine("```");
-                            sb.AppendLine();
-                        }
-
-                        sb.AppendLine("---");
-                        sb.AppendLine();
+                        RenderEndpointMarkdown(ref sb, endpoint);
                     }
                 }
             }
@@ -503,6 +607,8 @@ namespace RIMAPI.Core
         public string Method { get; set; }
         public string Path { get; set; }
         public string Description { get; set; }
+        public string GithubLinkTitle { get; set; }
+        public string GithubLink { get; set; }
         public string Category { get; set; } = "General";
         public string Notes { get; set; }
         public string RequestExample { get; set; }

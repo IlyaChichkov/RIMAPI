@@ -29,6 +29,9 @@ theme:
     - content.code.select
     - content.tooltips
 
+extra_css:
+  - stylesheets/extra.css
+
 nav:
   - Home: index.md
   - Quick Start: quick_start.md
