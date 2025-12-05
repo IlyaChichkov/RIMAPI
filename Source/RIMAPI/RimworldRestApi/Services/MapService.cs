@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using RIMAPI.Core;
 using RIMAPI.Helpers;
 using RIMAPI.Models;
+using Verse;
 
 namespace RIMAPI.Services
 {
@@ -83,6 +85,29 @@ namespace RIMAPI.Services
                 Temperature = map.mapTemperature?.OutdoorTemp ?? 0f,
             };
             return ApiResult<MapWeatherDto>.Ok(result);
+        }
+
+        public ApiResult SetWeather(int mapId, string weatherDefName)
+        {
+            try
+            {
+                var map = MapHelper.GetMapByID(mapId);
+
+                WeatherDef weatherDef = DefDatabase<WeatherDef>.GetNamed(weatherDefName, false);
+                if (weatherDef == null)
+                {
+                    return ApiResult.Fail(
+                        $"Could not find weather Def with name: {weatherDefName}"
+                    );
+                }
+
+                map.weatherManager.TransitionTo(weatherDef);
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex.Message);
+            }
         }
     }
 }

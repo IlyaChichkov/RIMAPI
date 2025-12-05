@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using Verse.AI.Group;
 
 namespace RIMAPI.Models
 {
@@ -66,7 +68,7 @@ namespace RIMAPI.Models
         public List<string> Reward { get; set; }
     }
 
-    public class TriggerIncidentRequest
+    public class TriggerIncidentRequestDto
     {
         public string Name { get; set; }
         public string MapId { get; set; }
@@ -88,6 +90,26 @@ namespace RIMAPI.Models
         public List<string> QuestTags { get; set; }
         public string InSignalLeave { get; set; }
         public bool AnyActivePawn { get; set; }
+
+        public static LordDto ToDto(Lord lord)
+        {
+            return new LordDto
+            {
+                LoadId = lord.loadID,
+                FactionName = lord.faction?.Name,
+                FactionDefName = lord.faction?.def?.defName,
+                LordJobType = lord.LordJob?.GetType().Name,
+                CurrentToilName = lord.CurLordToil?.GetType().Name,
+                TicksInToil = lord.ticksInToil,
+                NumPawnsLostViolently = lord.numPawnsLostViolently,
+                NumPawnsEverGained = lord.numPawnsEverGained,
+                OwnedPawnIds = lord.ownedPawns.Select(p => p.ThingID).ToList(),
+                OwnedBuildingIds = lord.ownedBuildings.Select(b => b.ThingID).ToList(),
+                QuestTags = lord.questTags?.ToList(),
+                InSignalLeave = lord.inSignalLeave,
+                AnyActivePawn = lord.AnyActivePawn,
+            };
+        }
     }
 
     public class IncidentParmsDto

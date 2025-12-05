@@ -7,7 +7,7 @@ using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
 {
-    public class ImageController : RequestParser
+    public class ImageController
     {
         private readonly IImageService _imageService;
 
@@ -17,14 +17,16 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/item/image")]
+        [EndpointMetadata("Get item's texture image in base64 format")]
         public async Task GetItemImage(HttpListenerContext context)
         {
-            var name = GetStringParameter(context, "name");
+            var name = RequestParser.GetStringParameter(context, "name");
             var result = _imageService.GetItemImage(name);
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/item/image")]
+        [EndpointMetadata("Get item's texture image in base64 format")]
         public async Task SetItemImage(HttpListenerContext context)
         {
             var requestData = await context.Request.ReadBodyAsync<ImageUploadRequest>();

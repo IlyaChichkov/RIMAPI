@@ -3,15 +3,26 @@ using System;
 namespace RIMAPI.Core
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class EndpointDescriptionAttribute : Attribute
+    public class EndpointMetadataAttribute : Attribute
     {
-        public string Description { get; }
-        public string Category { get; set; } = "General";
+        public string Description { get; set; }
         public string Notes { get; set; }
+        public string Category { get; set; } = "General";
+        public string[] Tags { get; set; } = Array.Empty<string>();
+        public bool IsDeprecated { get; set; }
+        public string DeprecationReason { get; set; }
+        public string ExampleRequest { get; set; }
+        public string ExampleResponse { get; set; }
 
-        public EndpointDescriptionAttribute(string description)
+        public EndpointMetadataAttribute(string description)
         {
             Description = description;
+        }
+
+        public EndpointMetadataAttribute(string description, string[] tags)
+        {
+            Description = description;
+            Tags = tags;
         }
     }
 

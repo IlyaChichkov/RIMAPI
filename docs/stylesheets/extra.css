@@ -1,0 +1,293 @@
+/* Custom API documentation styles */
+.doc-api-container {
+    margin: 1.5em 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.doc-api-header {
+    display: flex;
+    align-items: stretch;
+    min-height: 48px;
+    background: var(--md-default-bg-color);
+}
+
+.doc-api-method {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    font-weight: 600;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 80px;
+}
+
+.doc-api-endpoint {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-family: var(--md-code-font-family);
+    font-size: 0.9em;
+    background: var(--md-default-bg-color);
+    border-left: 1px solid var(--md-default-fg-color--lightest);
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.doc-api-endpoint code {
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+}
+
+.doc-api-tags {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--md-default-bg-color--light);
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+    flex-wrap: wrap;
+}
+
+/* Method colors */
+.doc-api-method-post {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+    border-right: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.doc-api-method-get {
+    background-color: rgba(33, 150, 243, 0.15);
+    color: #2196F3;
+    border-right: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.doc-api-method-put {
+    background-color: rgba(255, 152, 0, 0.15);
+    color: #FF9800;
+    border-right: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.doc-api-method-delete {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: #F44336;
+    border-right: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.doc-api-method-patch {
+    background-color: rgba(156, 39, 176, 0.15);
+    color: #9C27B0;
+    border-right: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+/* Tag styles */
+.doc-api-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    font-weight: 500;
+    line-height: 1.4;
+    font-family: var(--md-code-font-family);
+}
+
+.doc-api-tag code {
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+}
+
+.doc-api-tag-unstable {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #FFC107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.doc-api-tag-stable {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.doc-api-tag-deprecated {
+    background-color: rgba(158, 158, 158, 0.15);
+    color: #9E9E9E;
+    border: 1px solid rgba(158, 158, 158, 0.3);
+}
+
+.doc-api-tag-experimental {
+    background-color: rgba(156, 39, 176, 0.15);
+    color: #9C27B0;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.doc-api-tag-auth-required {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: #F44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.doc-api-tag-public {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* For class documentation style */
+.doc-class-container {
+    margin: 1.5em 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.doc-class-header {
+    display: flex;
+    align-items: stretch;
+    min-height: 48px;
+    background: var(--md-default-bg-color);
+}
+
+.doc-class-symbol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    font-weight: 600;
+    font-size: 0.85em;
+    min-width: 80px;
+    background-color: rgba(33, 150, 243, 0.15);
+    color: #2196F3;
+    border-right: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.doc-class-name {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-family: var(--md-code-font-family);
+    font-size: 0.9em;
+    background: var(--md-default-bg-color);
+    border-left: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.doc-class-tags {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--md-default-bg-color--light);
+    border-top: 1px solid var(--md-default-fg-color--lightest);
+    flex-wrap: wrap;
+}
+
+.doc-class-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75em;
+    font-weight: 500;
+    line-height: 1.4;
+    font-family: var(--md-code-font-family);
+}
+
+.doc-class-tag-dataclass {
+    background-color: rgba(156, 39, 176, 0.15);
+    color: #9C27B0;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .doc-api-header {
+        flex-direction: column;
+        min-height: auto;
+    }
+    
+    .doc-api-method {
+        min-height: 40px;
+        border-right: none;
+        border-bottom: 1px solid var(--md-default-fg-color--lightest);
+        justify-content: flex-start;
+    }
+    
+    .doc-api-endpoint {
+        min-height: 40px;
+        border-left: none;
+        border-top: 1px solid var(--md-default-fg-color--lightest);
+    }
+    
+    .doc-class-header {
+        flex-direction: column;
+        min-height: auto;
+    }
+    
+    .doc-class-symbol {
+        min-height: 40px;
+        border-right: none;
+        border-bottom: 1px solid var(--md-default-fg-color--lightest);
+    }
+    
+    .doc-class-name {
+        min-height: 40px;
+        border-left: none;
+        border-top: 1px solid var(--md-default-fg-color--lightest);
+    }
+}
+
+/* GitHub link container */
+.doc-github-container {
+    margin: 1em 0;
+    padding: 12px 16px;
+    background-color: var(--md-default-bg-color);
+    border: 1px solid var(--md-default-fg-color--lightest);
+    border-radius: 6px;
+    font-size: 0.9em;
+    position: relative;
+    padding-left: 40px; /* Space for icon */
+}
+
+.doc-github-link {
+    color: var(--md-typeset-a-color);
+    text-decoration: none;
+    font-family: var(--md-code-font-family);
+    font-size: 0.9em;
+    display: inline-flex;
+    align-items: center;
+}
+
+.doc-github-link:hover {
+    color: var(--md-accent-fg-color);
+    text-decoration: underline;
+}
+
+/* Add GitHub icon using CSS pseudo-element */
+.doc-github-container::before {
+    content: "";
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>');
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>');
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-size: contain;
+    -webkit-mask-size: contain;
+    opacity: 0.7;
+}
+
+.doc-github-container:hover::before {
+    opacity: 1;
+}

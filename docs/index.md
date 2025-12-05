@@ -1,6 +1,6 @@
 ---
 title: RIMAPI
-description: Nullam urna elit, malesuada eget finibus ut, ac tortor.
+description: RIMAPI is a powerful mod that adds a REST API server to RimWorld.
 ---
 
 # RIMAPI - RimWorld REST API

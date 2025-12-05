@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RIMAPI.Core;
+using RIMAPI.Helpers;
 using RIMAPI.Models;
 using RimWorld;
 using Verse;
@@ -169,6 +170,37 @@ namespace RIMAPI.Services
             {
                 LogApi.Error($"Error - {ex.Message}");
                 return mapTimeDto;
+            }
+        }
+
+        public ApiResult Select(string objectType, int id)
+        {
+            try
+            {
+                switch (objectType)
+                {
+                    case "item":
+                        var item = Find
+                            .CurrentMap.listerThings.AllThings.Where(p => p.thingIDNumber == id)
+                            .FirstOrDefault();
+                        Find.Selector.Select(item);
+                        break;
+                    case "pawn":
+                        var pawn = ColonistsHelper.GetPawnById(id);
+                        Find.Selector.Select(pawn);
+                        break;
+                    case "building":
+                        var building = BuildingHelper.FindBuildingByID(id);
+                        Find.Selector.Select(building);
+                        break;
+                    default:
+                        throw new Exception($"Tried to select unknown object type: {objectType}");
+                }
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex.Message);
             }
         }
     }

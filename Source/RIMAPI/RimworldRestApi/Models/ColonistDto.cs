@@ -235,6 +235,11 @@ namespace RIMAPI.Models
         public int Priority { get; set; }
     }
 
+    public class ColonistsWorkPrioritiesRequestDto
+    {
+        public List<WorkPriorityUpdateDto> Priorities { get; set; }
+    }
+
     public class TimeAssignmentDto
     {
         public string Name { get; set; }

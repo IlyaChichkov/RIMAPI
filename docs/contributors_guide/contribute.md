@@ -105,7 +105,7 @@ If your changes affect:
 
 - **Discussions**: Use GitHub Discussions for questions and ideas
 - **Issues**: Open an issue for bugs or feature requests
-- **Discord**: Join the RimWorld Modding Discord for real-time help
+- **Discord**: Join the [RimWorld Modding Discord](https://discord.gg/Css9b9BgnM) for real-time help
 - **Code Review**: Ask for early feedback on incomplete work
 
 ## Recognition

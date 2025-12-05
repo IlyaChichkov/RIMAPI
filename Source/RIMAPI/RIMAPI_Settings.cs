@@ -5,7 +5,7 @@ namespace RIMAPI
 {
     public class RIMAPI_Settings : ModSettings
     {
-        public string version = "1.0.0";
+        public string version = "1.1.0";
         public string apiVersion = "v1";
         public int serverPort = 8765;
         public int refreshIntervalTicks = 300;
@@ -37,6 +37,10 @@ namespace RIMAPI
                 }
             }
         }
+
+        public bool EnableCaching = true;
+        public bool CacheLogStatistics = true;
+        public int CacheDefaultExpirationSeconds = 60;
 
         private void OnSettingChanged()
         {

@@ -7,7 +7,7 @@ using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
 {
-    public class DevToolsController : RequestParser
+    public class DevToolsController
     {
         private readonly IDevToolsService _devToolsService;
 
@@ -17,10 +17,10 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/dev/console")]
-        [EndpointDescription("Send message to the debug console")]
+        [EndpointMetadata("Send message to the debug console")]
         public async Task PostConsoleAction(HttpListenerContext context)
         {
-            var action = GetStringParameter(context, "action");
+            var action = RequestParser.GetStringParameter(context, "action");
             var result = _devToolsService.ConsoleAction(action);
             await context.SendJsonResponse(result);
         }
@@ -41,7 +41,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/dev/stuff/color")]
-        [EndpointDescription("Change stuff color")]
+        [EndpointMetadata("Change stuff color")]
         public async Task PostStuffColor(HttpListenerContext context)
         {
             var requestData = await context.Request.ReadBodyAsync<StuffColorRequest>();

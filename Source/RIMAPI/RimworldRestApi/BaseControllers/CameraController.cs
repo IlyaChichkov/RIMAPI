@@ -11,7 +11,7 @@ using Verse;
 
 namespace RimworldRestApi.Controllers
 {
-    public class CameraController : RequestParser
+    public class CameraController
     {
         private readonly ICameraStream _cameraStream;
         private readonly ICameraService _cameraService;
@@ -23,28 +23,28 @@ namespace RimworldRestApi.Controllers
         }
 
         [Post("/api/v1/camera/change/zoom")]
-        [EndpointDescription("Change game camera zoom")]
+        [EndpointMetadata("Change game camera zoom")]
         public async Task ChangeZoom(HttpListenerContext context)
         {
-            var zoom = GetIntParameter(context, "zoom");
+            var zoom = RequestParser.GetIntParameter(context, "zoom");
 
             var result = _cameraService.ChangeZoom(zoom);
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/camera/change/position")]
-        [EndpointDescription("Change game camera position")]
+        [EndpointMetadata("Change game camera position")]
         public async Task MoveToPosition(HttpListenerContext context)
         {
-            var x = GetIntParameter(context, "x");
-            var y = GetIntParameter(context, "y");
+            var x = RequestParser.GetIntParameter(context, "x");
+            var y = RequestParser.GetIntParameter(context, "y");
 
             var result = _cameraService.MoveToPosition(x, y);
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/stream/start")]
-        [EndpointDescription("Start game camera stream")]
+        [EndpointMetadata("Start game camera stream")]
         public async Task PostStreamStart(HttpListenerContext context)
         {
             var result = _cameraService.StartStream(_cameraStream);
@@ -52,7 +52,7 @@ namespace RimworldRestApi.Controllers
         }
 
         [Post("/api/v1/stream/stop")]
-        [EndpointDescription("Stop game camera stream")]
+        [EndpointMetadata("Stop game camera stream")]
         public async Task PostStreamStop(HttpListenerContext context)
         {
             var result = _cameraService.StopStream(_cameraStream);
@@ -60,7 +60,7 @@ namespace RimworldRestApi.Controllers
         }
 
         [Post("/api/v1/stream/setup")]
-        [EndpointDescription("Set game camera stream configuration")]
+        [EndpointMetadata("Set game camera stream configuration")]
         public async Task PostStreamSetup(HttpListenerContext context)
         {
             var requestData = await context.Request.ReadBodyAsync<StreamConfigDto>();
@@ -69,7 +69,7 @@ namespace RimworldRestApi.Controllers
         }
 
         [Get("/api/v1/stream/status")]
-        [EndpointDescription("Get game camera stream status")]
+        [EndpointMetadata("Get game camera stream status")]
         public async Task GetStreamStatus(HttpListenerContext context)
         {
             var result = _cameraService.GetStreamStatus(_cameraStream);
