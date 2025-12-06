@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>重启服务器</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>启用日志记录：</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>日志级别：</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>启用缓存</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>缓存日志统计</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>缓存默认过期时间（秒）</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

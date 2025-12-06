@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -36,6 +37,10 @@ namespace RIMAPI.Core
         void Clear();
         void SetEnabled(bool value);
 
+        // Property setter cache methods
+        Action<TTarget, TValue> GetPropertySetter<TTarget, TValue>(string propertyName);
+        Func<TTarget, TValue> GetPropertyGetter<TTarget, TValue>(string propertyName);
+
         // Cache-aware response generation
         Task CacheAwareResponseAsync<T>(
             HttpListenerContext context,
@@ -64,5 +69,8 @@ namespace RIMAPI.Core
         public long MemoryUsageBytes { get; set; }
         public DateTime LastCleanup { get; set; }
         public double HitRatio => TotalEntries > 0 ? (double)Hits / (Hits + Misses) : 0;
+        public int CompiledDelegateCount { get; set; }
+        public int CompiledDelegateHits { get; set; }
+        public int CompiledDelegateMisses { get; set; }
     }
 }

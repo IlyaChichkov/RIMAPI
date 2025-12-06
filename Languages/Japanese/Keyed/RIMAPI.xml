@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>サーバー再起動</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>ログ記録を有効化：</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>ログレベル：</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>キャッシュを有効化</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>キャッシュログ統計</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>キャッシュのデフォルト有効期限（秒）</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

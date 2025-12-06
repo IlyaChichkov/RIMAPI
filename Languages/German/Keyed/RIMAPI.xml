@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>Server neu starten</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>Protokollierung aktivieren:</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>Protokollierungsstufe:</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>Caching aktivieren</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>Cache-Protokollstatistiken</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>Standard-Cache-Ablauf (Sekunden)</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

@@ -99,14 +99,15 @@ namespace RIMAPI.Core
                 // Register core services
                 services.AddSingleton<RIMAPI_Settings>(Settings);
 
-                services.AddSingleton<ICachingService, CachingService>();
+                var cachingService = new CachingService(Settings);
+                services.AddSingleton<ICachingService>(cachingService);
 
                 // Create and register ExtensionRegistry
                 var extensionRegistry = new ExtensionRegistry();
                 services.AddSingleton<ExtensionRegistry>(extensionRegistry);
 
                 // Create instances first to avoid any DI issues
-                var gameStateService = new GameStateService();
+                var gameStateService = new GameStateService(cachingService);
                 var sseService = new SseService(gameStateService);
                 var eventRegistry = new EventRegistry(sseService);
 

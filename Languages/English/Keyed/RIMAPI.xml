@@ -6,4 +6,7 @@
   <RIMAPI.RestartServer>Restart Server</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>Enable logging:</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>Logging Level:</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>Enable Caching</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>Cache Log Statistics</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>Cache Default Expiration (Seconds)</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

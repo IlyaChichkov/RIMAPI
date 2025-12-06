@@ -1,4 +1,7 @@
+using System;
+using RimWorld;
 using UnityEngine;
+using Verse;
 
 namespace RIMAPI.Helpers
 {
@@ -50,6 +53,56 @@ namespace RIMAPI.Helpers
                 RIMAPI.Core.LogApi.Warning($"Failed to parse hex color: {hex}. Error: {e.Message}");
                 return Color.white; // Return default color
             }
+        }
+
+        public static LetterDef StringToLetterDef(string def)
+        {
+            switch (def)
+            {
+                case "ThreatBig":
+                    return LetterDefOf.ThreatBig;
+                case "AcceptCreepJoiner":
+                    return LetterDefOf.AcceptCreepJoiner;
+                case "Bossgroup":
+                    return LetterDefOf.Bossgroup;
+                case "ChildBirthday":
+                    return LetterDefOf.ChildBirthday;
+                case "ChildToAdult":
+                    return LetterDefOf.ChildToAdult;
+                case "BabyToChild":
+                    return LetterDefOf.BabyToChild;
+                case "BabyBirth":
+                    return LetterDefOf.BabyBirth;
+                case "RelicHuntInstallationFound":
+                    return LetterDefOf.RelicHuntInstallationFound;
+                case "RitualOutcomePositive":
+                    return LetterDefOf.RitualOutcomePositive;
+                case "EntityDiscovered":
+                    return LetterDefOf.EntityDiscovered;
+                case "RitualOutcomeNegative":
+                    return LetterDefOf.RitualOutcomeNegative;
+                case "GameEnded":
+                    return LetterDefOf.GameEnded;
+                case "AcceptJoiner":
+                    return LetterDefOf.AcceptJoiner;
+                case "AcceptVisitors":
+                    return LetterDefOf.AcceptVisitors;
+                case "Death":
+                    return LetterDefOf.Death;
+                case "PositiveEvent":
+                    return LetterDefOf.PositiveEvent;
+                case "NeutralEvent":
+                    return LetterDefOf.NeutralEvent;
+                case "NegativeEvent":
+                    return LetterDefOf.NegativeEvent;
+                case "ThreatSmall":
+                    return LetterDefOf.ThreatSmall;
+                case "ChoosePawn":
+                    return LetterDefOf.ChoosePawn;
+                case "BundleLetter":
+                    return LetterDefOf.BundleLetter;
+            }
+            throw new Exception($"Failed to find LetterDef by def name: {def}");
         }
     }
 }

@@ -1,4 +1,16 @@
 # Changelog
+## v1.2.0
+
+### Add endpoint:
+[GET]
+- /api/v1/def/all
+[POST]
+- /api/v1/game/send/letter
+
+### Change endpoint path:
+- /api/v1/building/info -> /api/v1/map/building/info
+- /api/v1/change/weather -> /api/v1/map/weather/change
+
 ## v1.1.0
 
 ### Add endpoint:

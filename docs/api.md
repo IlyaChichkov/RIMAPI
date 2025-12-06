@@ -1,7 +1,7 @@
 ﻿# RimWorld REST API Documentation
 
-**Generated**: 2025-12-05 20:14:07 UTC  
-**Version**: 1.1.0  
+**Generated**: 2025-12-06 18:48:47 UTC  
+**Version**: 1.2.0  
 
 ## Core API
 
@@ -491,7 +491,7 @@ MapController.GetMapZones
 <div class="doc-api-container">
 <div class="doc-api-header">
 <div class="doc-api-method doc-api-method-get">GET</div>
-<div class="doc-api-endpoint"><code>/api/v1/building/info</code></div>
+<div class="doc-api-endpoint"><code>/api/v1/map/building/info</code></div>
 </div>
 <div class="doc-api-tags">
 <span class="doc-api-tag doc-api-tag-unstable"><code>Unstable</code></span>
@@ -511,7 +511,7 @@ MapController.GetBuildingInfo
 <div class="doc-api-container">
 <div class="doc-api-header">
 <div class="doc-api-method doc-api-method-post">POST</div>
-<div class="doc-api-endpoint"><code>/api/v1/change/weather</code></div>
+<div class="doc-api-endpoint"><code>/api/v1/map/weather/change</code></div>
 </div>
 </div>
 
@@ -916,6 +916,23 @@ GameController.DisableCache
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GetGameState&type=code" class="doc-github-link">
 GameController.GetGameState
+</a>
+</div>
+
+---
+
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint"><code>/api/v1/game/send/letter</code></div>
+</div>
+</div>
+
+
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+PostLetter&type=code" class="doc-github-link">
+GameController.PostLetter
 </a>
 </div>
 

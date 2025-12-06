@@ -156,7 +156,16 @@ namespace RIMAPI.Controllers
         [EndpointMetadata("Get in-game date and time in global map tile", new[] { "Unstable" })]
         public async Task GetAllDefs(HttpListenerContext context)
         {
-            var result = _gameStateService.GetAllDefs();
+            var body = await context.Request.ReadBodyAsync<AllDefsRequestDto>();
+            var result = _gameStateService.GetAllDefs(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/game/send/letter")]
+        public async Task PostLetter(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<SendLetterRequestDto>();
+            var result = _gameStateService.SendLetterSimple(body);
             await context.SendJsonResponse(result);
         }
     }

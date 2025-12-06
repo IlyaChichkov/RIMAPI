@@ -25,7 +25,7 @@ namespace RIMAPI.Controllers
             await _cachingService.CacheAwareResponseAsync(
                 context,
                 "/api/v1/colonists",
-                dataFactory: async () => _colonistService.GetColonists(),
+                dataFactory: () => Task.FromResult(_colonistService.GetColonists()),
                 expiration: TimeSpan.FromSeconds(30),
                 priority: CachePriority.Normal,
                 expirationType: CacheExpirationType.Sliding
@@ -45,8 +45,8 @@ namespace RIMAPI.Controllers
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
-                "/api/v1/colonists",
-                dataFactory: async () => _colonistService.GetColonistsDetailed(),
+                "/api/v1/colonists/detailed",
+                dataFactory: () => Task.FromResult(_colonistService.GetColonistsDetailed()),
                 expiration: TimeSpan.FromSeconds(30),
                 priority: CachePriority.Normal,
                 expirationType: CacheExpirationType.Sliding

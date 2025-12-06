@@ -166,7 +166,7 @@ namespace RIMAPI.Services
         public ApiResult<TraitDefDto> GetTraitDefDto(string traitName)
         {
             TraitDef trait = DefDatabase<TraitDef>.GetNamed(traitName, false);
-            var result = DefHelper.GetTraitDefDto(trait);
+            var result = DefDatabaseHelper.GetTraitDefDto(trait);
             return ApiResult<TraitDefDto>.Ok(result);
         }
 

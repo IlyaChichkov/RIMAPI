@@ -1,25 +1,19 @@
 using System.Collections.Generic;
 using System.Linq;
+using Verse;
 using Verse.AI.Group;
 
 namespace RIMAPI.Models
 {
     public class QuestsDto
     {
-        public List<ActiveQuestDto> ActiveQuests { get; set; } = new List<ActiveQuestDto>();
-        public List<ActiveQuestDto> HistoricalQuests { get; set; } = new List<ActiveQuestDto>();
+        public List<QuestDto> ActiveQuests { get; set; } = new List<QuestDto>();
+        public List<QuestDto> HistoricalQuests { get; set; } = new List<QuestDto>();
     }
 
     public class IncidentsDto
     {
         public List<IncidentDto> Incidents { get; set; } = new List<IncidentDto>();
-    }
-
-    public class DefsDto
-    {
-        public List<IncidentDefDto> IncidentsDefs { get; set; } = new List<IncidentDefDto>();
-        public List<GameConditionDefDto> ConditionsDefs { get; set; } =
-            new List<GameConditionDefDto>();
     }
 
     public class IncidentDto
@@ -33,7 +27,8 @@ namespace RIMAPI.Models
 
     public class IncidentDefDto
     {
-        public string Name { get; set; }
+        public string DefName { get; set; }
+        public string Label { get; set; }
         public string Description { get; set; }
         public float BaseChance { get; set; }
         public float BaseChanceWithRoyalty { get; set; }
@@ -53,13 +48,19 @@ namespace RIMAPI.Models
 
     public class GameConditionDefDto
     {
-        public string Name { get; set; }
+        public string DefName { get; set; }
+        public string Label { get; set; }
         public string Description { get; set; }
         public string LetterText { get; set; }
+        public bool CanBePermanent { get; set; }
+        public float TemperatureOffset { get; set; }
+        public float SkyTarget { get; set; }
+        public float SkyTargetLerpFactor { get; set; }
     }
 
-    public class ActiveQuestDto
+    public class QuestDto
     {
+        public int Id { get; set; }
         public string QuestDef { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

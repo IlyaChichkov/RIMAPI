@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -24,12 +25,96 @@ namespace RIMAPI.Core
             public int? GameTickExpiration { get; set; }
         }
 
+        // Generic Property Setter Cache
+        private static class PropertySetterCache
+        {
+            private static readonly Dictionary<string, Delegate> _setters =
+                new Dictionary<string, Delegate>();
+            private static readonly object _lock = new object();
+
+            public static Action<TTarget, TValue> GetSetter<TTarget, TValue>(string propertyName)
+            {
+                var cacheKey =
+                    $"{typeof(TTarget).FullName}.{propertyName}<{typeof(TValue).FullName}>";
+
+                lock (_lock)
+                {
+                    if (!_setters.TryGetValue(cacheKey, out var setter))
+                    {
+                        // Create compiled expression for high-performance property setting
+                        var targetParam = Expression.Parameter(typeof(TTarget), "target");
+                        var valueParam = Expression.Parameter(typeof(TValue), "value");
+                        var property = Expression.Property(targetParam, propertyName);
+                        var assign = Expression.Assign(property, valueParam);
+                        var lambda = Expression.Lambda<Action<TTarget, TValue>>(
+                            assign,
+                            targetParam,
+                            valueParam
+                        );
+                        setter = lambda.Compile();
+                        _setters[cacheKey] = setter;
+
+                        LogApi.Message(
+                            $"[PropertySetterCache] Created setter for {cacheKey}",
+                            LoggingLevels.DEBUG
+                        );
+                    }
+
+                    return (Action<TTarget, TValue>)setter;
+                }
+            }
+
+            public static Func<TTarget, TValue> GetGetter<TTarget, TValue>(string propertyName)
+            {
+                var cacheKey =
+                    $"GET_{typeof(TTarget).FullName}.{propertyName}<{typeof(TValue).FullName}>";
+
+                lock (_lock)
+                {
+                    if (!_setters.TryGetValue(cacheKey, out var getter))
+                    {
+                        // Create compiled expression for high-performance property getting
+                        var targetParam = Expression.Parameter(typeof(TTarget), "target");
+                        var property = Expression.Property(targetParam, propertyName);
+                        var lambda = Expression.Lambda<Func<TTarget, TValue>>(
+                            property,
+                            targetParam
+                        );
+                        getter = lambda.Compile();
+                        _setters[cacheKey] = getter;
+
+                        LogApi.Message(
+                            $"[PropertySetterCache] Created getter for {cacheKey}",
+                            LoggingLevels.DEBUG
+                        );
+                    }
+
+                    return (Func<TTarget, TValue>)getter;
+                }
+            }
+
+            public static void Clear()
+            {
+                lock (_lock)
+                {
+                    int count = _setters.Count;
+                    _setters.Clear();
+                    LogApi.Message(
+                        $"[PropertySetterCache] Cleared {count} compiled delegates",
+                        LoggingLevels.DEBUG
+                    );
+                }
+            }
+
+            public static int Count => _setters.Count;
+        }
+
+        // Main Cache Section
         private readonly Dictionary<string, CacheEntry> _cache =
             new Dictionary<string, CacheEntry>();
         private readonly object _cacheLock = new object();
-        private readonly List<string> _expirationQueue = new List<string>();
         private bool _disposed = false;
-        private bool _enabled;
+        private bool _enabled = true; // Enabled by default
 
         public bool IsEnabled() => _enabled;
 
@@ -37,17 +122,65 @@ namespace RIMAPI.Core
         private int _hits = 0;
         private int _misses = 0;
         private DateTime _lastCleanup = DateTime.UtcNow;
-        private readonly TimeSpan _cleanupInterval = TimeSpan.FromSeconds(30);
-
         private int _lastCleanupTick;
+        private int _compiledDelegateHits = 0;
+        private int _compiledDelegateMisses = 0;
+        private readonly RIMAPI_Settings _settings;
 
-        public CachingService()
+        public CachingService(RIMAPI_Settings settings)
         {
-            LogApi.Info("Injected caching service...");
+            LogApi.Info("[CachingService] Initialized");
             _lastCleanupTick = Find.TickManager?.TicksGame ?? 0;
+            _settings = settings;
+
+            _enabled = _settings.EnableCaching;
         }
 
-        // Call this regularly from the main game tick
+        // Public Compiled Delegate Cache API (Generic)
+        public Action<TTarget, TValue> GetPropertySetter<TTarget, TValue>(string propertyName)
+        {
+            try
+            {
+                var setter = PropertySetterCache.GetSetter<TTarget, TValue>(propertyName);
+                _compiledDelegateHits++;
+                return setter;
+            }
+            catch (Exception ex)
+            {
+                _compiledDelegateMisses++;
+                LogApi.Error(
+                    $"[PropertySetterCache] Failed to get setter for {typeof(TTarget).Name}.{propertyName}<{typeof(TValue).Name}>: {ex}"
+                );
+                throw;
+            }
+        }
+
+        public Func<TTarget, TValue> GetPropertyGetter<TTarget, TValue>(string propertyName)
+        {
+            try
+            {
+                var getter = PropertySetterCache.GetGetter<TTarget, TValue>(propertyName);
+                _compiledDelegateHits++;
+                return getter;
+            }
+            catch (Exception ex)
+            {
+                _compiledDelegateMisses++;
+                LogApi.Error(
+                    $"[PropertySetterCache] Failed to get getter for {typeof(TTarget).Name}.{propertyName}<{typeof(TValue).Name}>: {ex}"
+                );
+                throw;
+            }
+        }
+
+        public void ClearCompiledDelegates() => PropertySetterCache.Clear();
+
+        public int CompiledDelegateCount => PropertySetterCache.Count;
+
+        public (int hits, int misses) GetCompiledDelegateStats() =>
+            (_compiledDelegateHits, _compiledDelegateMisses);
+
+        // Main Cache Methods
         public void Update()
         {
             var currentTick = Find.TickManager?.TicksGame ?? 0;
@@ -90,7 +223,6 @@ namespace RIMAPI.Core
                 }
 
                 _lastCleanup = now;
-                UpdateExpirationQueue();
             }
         }
 
@@ -194,7 +326,57 @@ namespace RIMAPI.Core
                 }
 
                 _cache[key] = entry;
-                UpdateExpirationQueue();
+            }
+        }
+
+        public void SetWithExpirationType<T>(
+            string key,
+            T value,
+            CacheExpirationType expirationType = CacheExpirationType.Absolute,
+            TimeSpan? expiration = null,
+            int? gameTicksExpiration = null,
+            CachePriority priority = CachePriority.Normal
+        )
+        {
+            if (!_enabled)
+                return;
+
+            lock (_cacheLock)
+            {
+                var now = DateTime.UtcNow;
+                var entry = new CacheEntry
+                {
+                    Value = value,
+                    Created = now,
+                    LastAccessed = now,
+                    Priority = priority,
+                    ExpirationType = expirationType,
+                    GameTickAdded = Find.TickManager?.TicksGame ?? 0,
+                };
+
+                switch (expirationType)
+                {
+                    case CacheExpirationType.Absolute:
+                        if (expiration.HasValue)
+                            entry.AbsoluteExpiration = now.Add(expiration.Value);
+                        break;
+
+                    case CacheExpirationType.Sliding:
+                        if (expiration.HasValue)
+                            entry.SlidingExpiration = expiration.Value;
+                        break;
+
+                    case CacheExpirationType.GameTick:
+                        if (gameTicksExpiration.HasValue)
+                            entry.GameTickExpiration = gameTicksExpiration.Value;
+                        break;
+
+                    case CacheExpirationType.Never:
+                        // No expiration
+                        break;
+                }
+
+                _cache[key] = entry;
             }
         }
 
@@ -210,8 +392,9 @@ namespace RIMAPI.Core
         {
             lock (_cacheLock)
             {
+                int count = _cache.Count;
                 _cache.Clear();
-                _expirationQueue.Clear();
+                LogApi.Message($"[Cache] Cleared {count} entries", LoggingLevels.DEBUG);
             }
         }
 
@@ -322,6 +505,9 @@ namespace RIMAPI.Core
                     Misses = _misses,
                     MemoryUsageBytes = CalculateMemoryUsage(),
                     LastCleanup = _lastCleanup,
+                    CompiledDelegateCount = CompiledDelegateCount,
+                    CompiledDelegateHits = _compiledDelegateHits,
+                    CompiledDelegateMisses = _compiledDelegateMisses,
                 };
             }
         }
@@ -333,7 +519,8 @@ namespace RIMAPI.Core
                 _enabled = enabled;
                 if (!enabled)
                 {
-                    Clear(); // Clear cache when disabling
+                    Clear();
+                    ClearCompiledDelegates();
                 }
                 LogApi.Info($"[Cache] Caching {(enabled ? "enabled" : "disabled")}");
             }
@@ -373,53 +560,19 @@ namespace RIMAPI.Core
 
                     LogApi.Info($"[Cache] Trimmed {toRemove.Count} oldest entries");
                 }
-
-                UpdateExpirationQueue();
             }
         }
 
         private bool IsExpired(CacheEntry entry)
         {
             var now = DateTime.UtcNow;
-
-            switch (entry.ExpirationType)
-            {
-                case CacheExpirationType.Absolute:
-                    return entry.AbsoluteExpiration.HasValue
-                        && now >= entry.AbsoluteExpiration.Value;
-
-                case CacheExpirationType.Sliding:
-                    if (entry.SlidingExpiration.HasValue)
-                    {
-                        return now >= entry.LastAccessed.Add(entry.SlidingExpiration.Value);
-                    }
-                    return false;
-
-                case CacheExpirationType.GameTick:
-                    if (entry.GameTickExpiration.HasValue && Find.TickManager != null)
-                    {
-                        return Find.TickManager.TicksGame
-                            >= entry.GameTickAdded + entry.GameTickExpiration.Value;
-                    }
-                    return false;
-
-                case CacheExpirationType.Never:
-                    return false;
-
-                default:
-                    return false;
-            }
-        }
-
-        private void UpdateExpirationQueue()
-        {
-            _expirationQueue.Clear();
-            _expirationQueue.AddRange(_cache.Keys);
+            var currentTick = Find.TickManager?.TicksGame ?? 0;
+            return IsExpired(entry, now, currentTick);
         }
 
         private long CalculateMemoryUsage()
         {
-            // Rough estimation - in reality you'd need more sophisticated calculation
+            // Rough estimation
             return _cache.Sum(kvp =>
                 System.Text.Encoding.UTF8.GetByteCount(kvp.Key) + EstimateObjectSize(kvp.Value)
             );
@@ -427,7 +580,6 @@ namespace RIMAPI.Core
 
         private long EstimateObjectSize(object obj)
         {
-            // Very rough estimation
             if (obj == null)
                 return 0;
 
@@ -449,6 +601,8 @@ namespace RIMAPI.Core
 
             _disposed = true;
             Clear();
+            ClearCompiledDelegates();
+            LogApi.Info("[CachingService] Disposed");
         }
     }
 }

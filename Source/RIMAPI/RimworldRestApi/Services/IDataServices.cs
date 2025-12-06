@@ -5,7 +5,7 @@ using RIMAPI.Models;
 
 namespace RIMAPI.Services
 {
-    // Core Infrastructure
+    #region Core Infrastructure
     public interface IGameDataService
     {
         void RefreshCache();
@@ -19,12 +19,14 @@ namespace RIMAPI.Services
         ApiResult Select(string objectType, int id);
         ApiResult DeselectAll();
         ApiResult OpenTab(string tabName);
-        ApiResult<DefsDto> GetAllDefs();
+        ApiResult<DefsDto> GetAllDefs(AllDefsRequestDto body);
         ApiResult<MapTimeDto> GetCurrentMapDatetime();
         ApiResult<MapTimeDto> GetWorldTileDatetime(int tileID);
+        ApiResult SendLetterSimple(SendLetterRequestDto body);
     }
+    #endregion
 
-    // Colonist Service
+    #region Colonists
     public interface IColonistService
     {
         ApiResult<List<ColonistDto>> GetColonists();
@@ -51,8 +53,9 @@ namespace RIMAPI.Services
             string direction
         );
     }
+    #endregion
 
-    // Map Service
+    #region Map Service
     public interface IMapService
     {
         ApiResult<List<MapDto>> GetMaps();
@@ -68,14 +71,16 @@ namespace RIMAPI.Services
         ApiResult<List<BuildingDto>> GetMapBuildings(int mapId);
         ApiResult SetWeather(int mapId, string defName);
     }
+    #endregion
 
-    // Building Service
+    #region Building Service
     public interface IBuildingService
     {
         ApiResult<BuildingDto> GetBuildingInfo(int buildingId);
     }
+    #endregion
 
-    // Research Service
+    #region Research Service
     public interface IResearchService
     {
         ApiResult<ResearchProjectDto> GetResearchProgress();
@@ -84,8 +89,9 @@ namespace RIMAPI.Services
         ApiResult<ResearchProjectDto> GetResearchProjectByName(string name);
         ApiResult<ResearchSummaryDto> GetResearchSummary();
     }
+    #endregion
 
-    // Incident & Quest Service
+    #region Incident & Quest Service
     public interface IIncidentService
     {
         ApiResult<QuestsDto> GetQuestsData(int mapId);
@@ -93,8 +99,9 @@ namespace RIMAPI.Services
         ApiResult<List<LordDto>> GetLordsData(int mapId);
         ApiResult TriggerIncident(TriggerIncidentRequestDto request);
     }
+    #endregion
 
-    // Resource Service
+    #region Resource Service
     public interface IResourceService
     {
         ApiResult<ResourcesSummaryDto> GetResourcesSummary(int mapId);
@@ -102,19 +109,22 @@ namespace RIMAPI.Services
         ApiResult<Dictionary<string, List<ThingDto>>> GetAllStoredResources(int mapId);
         ApiResult<List<ThingDto>> GetAllStoredResourcesByCategory(int mapId, string categoryDef);
     }
+    #endregion
 
-    // Job Service
+    #region Job Service
     public interface IJobService { }
+    #endregion
 
-    // Image Service
+    #region Image Service
     public interface IImageService
     {
         ApiResult<ImageDto> GetItemImage(string name);
         ApiResult SetItemImageByName(ImageUploadRequest request);
         ApiResult SetStuffColor(StuffColorRequest request);
     }
+    #endregion
 
-    // Faction Service
+    #region Faction Service
     public interface IFactionService
     {
         ApiResult<List<FactionsDto>> GetFactions();
@@ -131,8 +141,9 @@ namespace RIMAPI.Services
             bool canSendHostilityLetter
         );
     }
+    #endregion
 
-    // Dev Tools Service
+    #region Dev Tools Service
     public interface IDevToolsService
     {
         ApiResult<MaterialsAtlasList> GetMaterialsAtlasList();
@@ -140,8 +151,9 @@ namespace RIMAPI.Services
         ApiResult ConsoleAction(string action, string message = null);
         ApiResult SetStuffColor(StuffColorRequest stuffColor);
     }
+    #endregion
 
-    // Camera Service
+    #region Camera Service
     public interface ICameraService
     {
         ApiResult ChangeZoom(int zoom);
@@ -151,4 +163,5 @@ namespace RIMAPI.Services
         ApiResult SetupStream(ICameraStream stream, StreamConfigDto config);
         ApiResult<StreamStatusDto> GetStreamStatus(ICameraStream stream);
     }
+    #endregion
 }
