@@ -12,6 +12,10 @@ namespace RIMAPI
         public bool _enableLogging = false;
         public int _loggingLevel = 0;
 
+        public bool EnableCaching = true;
+        public bool CacheLogStatistics = true;
+        public int CacheDefaultExpirationSeconds = 60;
+
         public bool EnableLogging
         {
             get => _enableLogging;
@@ -38,10 +42,6 @@ namespace RIMAPI
             }
         }
 
-        public bool EnableCaching = true;
-        public bool CacheLogStatistics = true;
-        public int CacheDefaultExpirationSeconds = 60;
-
         private void OnSettingChanged()
         {
             LogApi.IsLogging = _enableLogging;
@@ -57,6 +57,13 @@ namespace RIMAPI
             Scribe_Values.Look(ref _loggingLevel, "loggingLevel", 1);
             Scribe_Values.Look(ref serverPort, "serverPort", 8765);
             Scribe_Values.Look(ref refreshIntervalTicks, "refreshIntervalTicks", 300);
+            Scribe_Values.Look(ref EnableCaching, "enableCaching", true);
+            Scribe_Values.Look(ref CacheLogStatistics, "cacheLogStatistics", true);
+            Scribe_Values.Look(
+                ref CacheDefaultExpirationSeconds,
+                "cacheDefaultExpirationSeconds",
+                60
+            );
 
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {

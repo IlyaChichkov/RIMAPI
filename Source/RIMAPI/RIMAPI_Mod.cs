@@ -72,6 +72,26 @@ namespace RIMAPI
             list.TextFieldNumeric(ref tempLoggingLevelValue, ref tempLoggingLevel, 0, 4);
             Settings.LoggingLevel = tempLoggingLevelValue;
 
+            bool tempEnableCaching = Settings.EnableCaching;
+            list.CheckboxLabeled("RIMAPI.EnableCaching".Translate(), ref tempEnableCaching);
+            Settings.EnableCaching = tempEnableCaching;
+
+            bool tempCacheLogStatistics = Settings.CacheLogStatistics;
+            list.CheckboxLabeled(
+                "RIMAPI.CacheLogStatistics".Translate(),
+                ref tempCacheLogStatistics
+            );
+            Settings.CacheLogStatistics = tempCacheLogStatistics;
+
+            list.Label("RIMAPI.CacheDefaultExpirationSeconds".Translate());
+            string bufferCacheDefaultExpirationSeconds =
+                Settings.CacheDefaultExpirationSeconds.ToString();
+            list.TextFieldNumeric(
+                ref Settings.CacheDefaultExpirationSeconds,
+                ref bufferCacheDefaultExpirationSeconds,
+                60
+            );
+
             list.End();
         }
 
