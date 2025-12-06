@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>Redémarrer le serveur</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>Activer la journalisation :</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>Niveau de journalisation :</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>Activer la mise en cache</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>Statistiques du journal de cache</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>Expiration par défaut du cache (secondes)</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

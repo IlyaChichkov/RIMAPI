@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>Uruchom ponownie serwer</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>Włącz rejestrowanie:</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>Poziom rejestrowania:</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>Włącz buforowanie</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>Statystyki dziennika pamięci podręcznej</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>Domyślny czas wygaśnięcia pamięci podręcznej (sekundy)</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>Riavvia server</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>Abilita registrazione:</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>Livello di registrazione:</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>Abilita cache</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>Statistiche registro cache</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>Scadenza predefinita cache (secondi)</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>重啟伺服器</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>啟用日誌記錄：</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>日誌級別：</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>啟用快取</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>快取日誌統計</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>快取預設過期時間（秒）</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

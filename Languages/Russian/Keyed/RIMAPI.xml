@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>Перезапустить сервер</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>Включить логгирование:</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>Уровень логгирования:</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>Включить кэширование</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>Статистика журнала кэша</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>Время жизни кэша по умолчанию (секунды)</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>

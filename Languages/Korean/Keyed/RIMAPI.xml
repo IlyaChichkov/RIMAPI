@@ -7,4 +7,7 @@
   <RIMAPI.RestartServer>서버 재시작</RIMAPI.RestartServer>
   <RIMAPI.EnableLogging>로깅 활성화:</RIMAPI.EnableLogging>
   <RIMAPI.LoggingLevel>로깅 수준:</RIMAPI.LoggingLevel>
+  <RIMAPI.EnableCaching>캐싱 활성화</RIMAPI.EnableCaching>
+  <RIMAPI.CacheLogStatistics>캐시 로그 통계</RIMAPI.CacheLogStatistics>
+  <RIMAPI.CacheDefaultExpirationSeconds>캐시 기본 만료 시간 (초)</RIMAPI.CacheDefaultExpirationSeconds>
 </LanguageData>
