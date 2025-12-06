@@ -6,7 +6,7 @@
     <RootNamespace>RIMAPI</RootNamespace>
     <AssemblyName>RIMAPI</AssemblyName>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <!-- Conditional properties for RimWorld 1.5 -->

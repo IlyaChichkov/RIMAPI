@@ -17,8 +17,9 @@ namespace RIMAPI.Helpers
             dto.HistoricalQuests.AddRange(
                 allQuests
                     .Where(quest => quest.Historical)
-                    .Select(quest => new ActiveQuestDto
+                    .Select(quest => new QuestDto
                     {
+                        Id = quest.id,
                         QuestDef = quest.root?.defName ?? "Unknown",
                         Name = quest.name,
                         Description = quest.description.ToString(),
@@ -36,8 +37,9 @@ namespace RIMAPI.Helpers
             dto.ActiveQuests.AddRange(
                 allQuests
                     .Where(quest => !quest.Historical)
-                    .Select(quest => new ActiveQuestDto
+                    .Select(quest => new QuestDto
                     {
+                        Id = quest.id,
                         QuestDef = quest.root?.defName ?? "Unknown",
                         Name = quest.name,
                         Description = quest.description.ToString(),

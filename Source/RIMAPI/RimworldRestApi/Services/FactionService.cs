@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RIMAPI.Core;
+using RIMAPI.Helpers;
 using RIMAPI.Models;
 using RimWorld;
 using RimWorld.Planet;
@@ -17,7 +18,7 @@ namespace RIMAPI.Services
         {
             try
             {
-                Faction faction = GetFactionById(id);
+                Faction faction = FactionHelper.GetFactionByOrderId(id);
                 return ApiResult<FactionDto>.Ok(FactionDto.ToDto(faction));
             }
             catch (Exception ex)
@@ -30,9 +31,7 @@ namespace RIMAPI.Services
         {
             try
             {
-                var result = FactionDefDto.FromFactionDef(
-                    DefDatabase<FactionDef>.GetNamed(defName)
-                );
+                var result = FactionDefDto.FromFactionDef(FactionHelper.GetFactionDef(defName));
                 return ApiResult<FactionDefDto>.Ok(result);
             }
             catch (Exception ex)
@@ -43,8 +42,8 @@ namespace RIMAPI.Services
 
         private FactionRelationDto GetFactionRelationWithDto(int id, int otherId)
         {
-            Faction faction = GetFactionById(id);
-            Faction otherFaction = GetFactionById(otherId);
+            Faction faction = FactionHelper.GetFactionByOrderId(id);
+            Faction otherFaction = FactionHelper.GetFactionByOrderId(otherId);
             FactionRelation relation = faction.RelationWith(otherFaction);
             string relationKind = "Unknown";
 
@@ -89,8 +88,8 @@ namespace RIMAPI.Services
         {
             try
             {
-                Faction faction = GetFactionById(id);
-                Faction otherFaction = GetFactionById(otherId);
+                Faction faction = FactionHelper.GetFactionByOrderId(id);
+                Faction otherFaction = FactionHelper.GetFactionByOrderId(otherId);
 
                 if (!faction.CanChangeGoodwillFor(otherFaction, goodwillChange))
                 {
@@ -208,13 +207,6 @@ namespace RIMAPI.Services
                 return ApiResult<List<FactionsDto>>.Fail(ex.Message);
             }
             return ApiResult<List<FactionsDto>>.Ok(factions);
-        }
-
-        private Faction GetFactionById(int id)
-        {
-            return Find.FactionManager.AllFactionsListForReading.FirstOrDefault(s =>
-                s.loadID == id
-            );
         }
 
         public ApiResult<FactionRelationsDto> GetFactionRelations(int id)

@@ -111,7 +111,7 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
-        [Get("/api/v1/building/info")]
+        [Get("/api/v1/map/building/info")]
         [EndpointMetadata("Get building info", new[] { "Unstable" })]
         public async Task GetBuildingInfo(HttpListenerContext context)
         {
@@ -120,7 +120,7 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
-        [Post("/api/v1/change/weather")]
+        [Post("/api/v1/map/weather/change")]
         [EndpointMetadata("Set weather on the map")]
         public async Task SetWeather(HttpListenerContext context)
         {

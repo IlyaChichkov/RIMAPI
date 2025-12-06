@@ -10,6 +10,12 @@ namespace RIMAPI.Helpers
 {
     public static class MapHelper
     {
+        public static Thing GetThingOnMapById(int mapId, int id)
+        {
+            Map map = GetMapByID(mapId);
+            return map.listerThings.AllThings.Where(s => s.thingIDNumber == id).FirstOrDefault();
+        }
+
         public static Map GetMapByID(int uniqueID)
         {
             foreach (Map map in Find.Maps)
