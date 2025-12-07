@@ -1,7 +1,7 @@
 ﻿# RimWorld REST API Documentation
 
 **Generated**: 2025-12-06 18:48:47 UTC  
-**Version**: 1.2.0  
+**Version**: 1.2.1  
 
 ## Core API
 

@@ -20,18 +20,5 @@ namespace RIMAPI.Controllers
             _colonistService = colonistService;
             _cachingService = cachingService;
         }
-
-        [Get("/api/v1/pawn/portrait/image")]
-        public async Task GetPawnPortraitImage(HttpListenerContext context)
-        {
-            int pawnId = RequestParser.GetIntParameter(context, "pawn_id");
-            int width = RequestParser.GetIntParameter(context, "width");
-            int height = RequestParser.GetIntParameter(context, "height");
-            string direction = RequestParser.GetStringParameter(context, "direction");
-
-            var result = _colonistService.GetPawnPortraitImage(pawnId, width, height, direction);
-
-            await context.SendJsonResponse(result);
-        }
     }
 }

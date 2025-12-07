@@ -1,4 +1,9 @@
 # Changelog
+## v1.2.1
+
+Remove /api/v1/pawn/portrait/image endpoint duplicate
+Fix screen blinking when get rendered texture
+
 ## v1.2.0
 
 ### Add endpoint:

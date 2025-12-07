@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RIMAPI.Core;
 using RIMAPI.Models;
 using RimWorld;
 using UnityEngine;
@@ -814,6 +815,8 @@ namespace RIMAPI.Helpers
 
                 image.Result = "success";
                 image.ImageBase64 = TextureToBase64(texture);
+
+                renderTexture.Release();
             }
             catch (Exception ex)
             {
@@ -827,46 +830,13 @@ namespace RIMAPI.Helpers
         {
             try
             {
-                // Create a temporary RenderTexture
-                RenderTexture renderTexture = RenderTexture.GetTemporary(
-                    texture.width,
-                    texture.height,
-                    0,
-                    RenderTextureFormat.Default,
-                    RenderTextureReadWrite.Linear
-                );
-
-                // Blit the texture to RenderTexture
-                Graphics.Blit(texture, renderTexture);
-
-                // Set active render texture
-                RenderTexture previous = RenderTexture.active;
-                RenderTexture.active = renderTexture;
-
-                // Create Texture2D to read pixels into
-                Texture2D readableTexture = new Texture2D(texture.width, texture.height);
-                readableTexture.ReadPixels(
-                    new Rect(0, 0, renderTexture.width, renderTexture.height),
-                    0,
-                    0
-                );
-                readableTexture.Apply();
-
-                // Reset active render texture
-                RenderTexture.active = previous;
-                RenderTexture.ReleaseTemporary(renderTexture);
-
                 // Encode to PNG
-                byte[] imageBytes = ImageConversion.EncodeToPNG(readableTexture);
-
-                // Clean up
-                UnityEngine.Object.Destroy(readableTexture);
-
+                byte[] imageBytes = ImageConversion.EncodeToPNG(texture);
                 return Convert.ToBase64String(imageBytes);
             }
             catch (Exception ex)
             {
-                Core.LogApi.Error($"TextureToBase64 error: {ex}");
+                LogApi.Error($"TextureToBase64 error: {ex}");
                 throw;
             }
         }
