@@ -4,7 +4,7 @@
   <description>RIMAPI is a mod that give you an REST API useable for your current game</description>
   <packageId>RedEyeDev.RIMAPI</packageId>
   <author>RedEyeDev</author>
-  <modVersion>1.2.1</modVersion>
+  <modVersion>1.2.2</modVersion>
   <url></url>
   <supportedVersions>
     <li>1.5</li>
