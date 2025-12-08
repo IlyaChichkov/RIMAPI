@@ -1,4 +1,8 @@
 # Changelog
+## v1.2.2
+
+Fix GetItemImageByName
+
 ## v1.2.1
 
 Remove /api/v1/pawn/portrait/image endpoint duplicate
