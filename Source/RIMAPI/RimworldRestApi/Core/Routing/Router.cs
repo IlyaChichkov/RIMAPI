@@ -127,7 +127,7 @@ namespace RIMAPI.Core
 
                 // Ensure CORS is set before responding with error
                 CorsUtil.WriteCors(context.Request, context.Response, _allowedOrigins);
-                await ResponseBuilder.Error(
+                await ResponseBuilder.SendError(
                     context.Response,
                     HttpStatusCode.InternalServerError,
                     $"Handler error: {ex.Message}"
@@ -163,7 +163,7 @@ namespace RIMAPI.Core
             }
 
             CorsUtil.WriteCors(context.Request, context.Response, _allowedOrigins);
-            await ResponseBuilder.Error(
+            await ResponseBuilder.SendError(
                 context.Response,
                 HttpStatusCode.NotFound,
                 $"Endpoint not found: {method} {path}"

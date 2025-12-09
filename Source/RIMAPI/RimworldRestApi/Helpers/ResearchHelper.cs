@@ -18,8 +18,7 @@ namespace RIMAPI.Helpers
             {
                 return ResearchProjectToDto(currentProj);
             }
-
-            return new ResearchProjectDto();
+            return null;
         }
 
         public static ResearchFinishedDto GetResearchFinished()
@@ -92,11 +91,10 @@ namespace RIMAPI.Helpers
             {
                 if (projectDef.defName == name)
                 {
-                    ResearchProjectToDto(projectDef);
+                    return ResearchProjectToDto(projectDef);
                 }
             }
-
-            throw new Exception($"Failed to find project with this name: {name}");
+            return null;
         }
 
         public static ResearchTreeDto GetResearchTree()

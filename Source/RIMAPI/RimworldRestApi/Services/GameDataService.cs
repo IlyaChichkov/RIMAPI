@@ -82,9 +82,47 @@ namespace RIMAPI.Services
         {
             try
             {
-                // Implementation for opening specific tabs
-                // This would depend on your specific tab system
-                LogApi.Message($"Opening tab: {tabName}");
+                switch (tabName.ToLower())
+                {
+                    case "health":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Health));
+                        break;
+                    case "character":
+                    case "backstory":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Character));
+                        break;
+                    case "gear":
+                    case "equipment":
+                    case "inventory":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Gear));
+                        break;
+                    case "needs":
+                    case "mood":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Needs));
+                        break;
+                    case "training":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Training));
+                        break;
+                    case "log":
+                    case "combatlog":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Log));
+                        break;
+                    case "relations":
+                    case "social":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Social));
+                        break;
+                    case "prisoner":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Prisoner));
+                        break;
+                    case "slave":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Slave));
+                        break;
+                    case "guest":
+                        InspectPaneUtility.OpenTab(typeof(ITab_Pawn_Guest));
+                        break;
+                    default:
+                        return ApiResult.Fail($"Tried to open unknown tab menu: {tabName}");
+                }
                 return ApiResult.Ok();
             }
             catch (Exception ex)
@@ -461,7 +499,7 @@ namespace RIMAPI.Services
                     return mapTimeDto;
                 }
 
-                var vector = Find.WorldGrid.LongLatOf(GetMapTileId(Find.CurrentMap));
+                var vector = Find.WorldGrid.LongLatOf(tileID);
                 mapTimeDto.Datetime = GenDate.DateFullStringWithHourAt(
                     Find.TickManager.TicksAbs,
                     vector
@@ -497,7 +535,7 @@ namespace RIMAPI.Services
                         Find.Selector.Select(building);
                         break;
                     default:
-                        throw new Exception($"Tried to select unknown object type: {objectType}");
+                        return ApiResult.Fail($"Tried to select unknown object type: {objectType}");
                 }
                 return ApiResult.Ok();
             }

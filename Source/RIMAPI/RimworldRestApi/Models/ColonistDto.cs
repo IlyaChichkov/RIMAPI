@@ -204,6 +204,13 @@ namespace RIMAPI.Models
         public bool IsTotallyDisabled { get; set; }
     }
 
+    public class PawnTimeAssignmentRequestDto
+    {
+        public int PawnId { get; set; }
+        public int Hour { get; set; }
+        public string Assignment { get; set; }
+    }
+
     public class PawnWorkPrioritiesResponseDto
     {
         public List<PawnWorkPrioritiesDto> Pawns { get; set; } = new List<PawnWorkPrioritiesDto>();
@@ -223,7 +230,7 @@ namespace RIMAPI.Models
         public List<string> Work { get; set; }
     }
 
-    public class WorkPriorityUpdateDto
+    public class WorkPriorityRequestDto
     {
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -237,7 +244,7 @@ namespace RIMAPI.Models
 
     public class ColonistsWorkPrioritiesRequestDto
     {
-        public List<WorkPriorityUpdateDto> Priorities { get; set; }
+        public List<WorkPriorityRequestDto> Priorities { get; set; }
     }
 
     public class TimeAssignmentDto

@@ -30,14 +30,14 @@ namespace RIMAPI.Controllers
         public async Task EnableCache(HttpListenerContext context)
         {
             _cachingService.SetEnabled(true);
-            await ResponseBuilder.Success(context.Response, new { message = "Cache enabled" });
+            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache enabled" });
         }
 
         [Post("/api/v1/cache/disable")]
         public async Task DisableCache(HttpListenerContext context)
         {
             _cachingService.SetEnabled(false);
-            await ResponseBuilder.Success(context.Response, new { message = "Cache disabled" });
+            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache disabled" });
         }
 
         [Get("/api/v1/cache/status")]
@@ -47,26 +47,7 @@ namespace RIMAPI.Controllers
             var stats = _cachingService.GetStatistics();
             var status = new { enabled = _cachingService.IsEnabled(), statistics = stats };
 
-            await ResponseBuilder.Success(context.Response, status);
-        }
-
-        [Get("/api/v1/cache/stats")]
-        [EndpointMetadata("Get cache statistics")]
-        public async Task GetCacheStats(HttpListenerContext context)
-        {
-            var stats = _cachingService.GetStatistics();
-            await ResponseBuilder.Success(
-                context.Response,
-                new
-                {
-                    stats.TotalEntries,
-                    stats.Hits,
-                    stats.Misses,
-                    stats.HitRatio,
-                    MemoryUsageMB = stats.MemoryUsageBytes / 1024 / 1024,
-                    stats.LastCleanup,
-                }
-            );
+            await ResponseBuilder.SendSuccess(context.Response, status);
         }
 
         [Post("/api/v1/cache/clear")]
@@ -74,7 +55,7 @@ namespace RIMAPI.Controllers
         public async Task ClearCache(HttpListenerContext context)
         {
             _cachingService.Clear();
-            await ResponseBuilder.Success(context.Response, new { message = "Cache cleared" });
+            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache cleared" });
         }
 
         [Get("/api/v1/version")]
@@ -153,7 +134,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/def/all")]
-        [EndpointMetadata("Get in-game date and time in global map tile", new[] { "Unstable" })]
+        [EndpointMetadata("Get in-game date and time in global map tile")]
         public async Task GetAllDefs(HttpListenerContext context)
         {
             var body = await context.Request.ReadBodyAsync<AllDefsRequestDto>();

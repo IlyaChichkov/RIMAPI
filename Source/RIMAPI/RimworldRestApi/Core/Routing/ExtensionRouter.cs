@@ -77,7 +77,7 @@ namespace RIMAPI.Core
                     LogApi.Error(
                         $"Error in extension '{_extensionNamespace}' endpoint {path}: {ex}"
                     );
-                    await ResponseBuilder.Error(
+                    await ResponseBuilder.SendError(
                         context.Response,
                         HttpStatusCode.InternalServerError,
                         $"Extension '{_extensionNamespace}' error: {ex.Message}"
@@ -239,7 +239,7 @@ namespace RIMAPI.Core
                         LogApi.Error(
                             $"Failed to create controller instance: {controllerType.Name}"
                         );
-                        await ResponseBuilder.Error(
+                        await ResponseBuilder.SendError(
                             context.Response,
                             HttpStatusCode.InternalServerError,
                             $"Extension service unavailable: {controllerType.Name}"
@@ -260,7 +260,7 @@ namespace RIMAPI.Core
                     LogApi.Error(
                         $"Error in extension controller {controllerType.Name}.{method.Name}: {innerEx}"
                     );
-                    await ResponseBuilder.Error(
+                    await ResponseBuilder.SendError(
                         context.Response,
                         HttpStatusCode.InternalServerError,
                         $"Extension error: {innerEx.Message}"
@@ -271,7 +271,7 @@ namespace RIMAPI.Core
                     LogApi.Error(
                         $"Error in extension controller {controllerType.Name}.{method.Name}: {ex}"
                     );
-                    await ResponseBuilder.Error(
+                    await ResponseBuilder.SendError(
                         context.Response,
                         HttpStatusCode.InternalServerError,
                         $"Extension error: {ex.Message}"
@@ -296,7 +296,7 @@ namespace RIMAPI.Core
                     {
                         if (_docExportService == null)
                         {
-                            await ResponseBuilder.Error(
+                            await ResponseBuilder.SendError(
                                 context.Response,
                                 HttpStatusCode.ServiceUnavailable,
                                 "Documentation export service not available for this extension"
@@ -312,7 +312,7 @@ namespace RIMAPI.Core
 
                         if (success)
                         {
-                            await ResponseBuilder.Success(
+                            await ResponseBuilder.SendSuccess(
                                 context.Response,
                                 new
                                 {
@@ -325,7 +325,7 @@ namespace RIMAPI.Core
                         }
                         else
                         {
-                            await ResponseBuilder.Error(
+                            await ResponseBuilder.SendError(
                                 context.Response,
                                 HttpStatusCode.InternalServerError,
                                 $"Failed to export documentation for extension '{_extensionNamespace}'"
@@ -337,7 +337,7 @@ namespace RIMAPI.Core
                         LogApi.Error(
                             $"Error in documentation export for {_extensionNamespace}: {ex}"
                         );
-                        await ResponseBuilder.Error(
+                        await ResponseBuilder.SendError(
                             context.Response,
                             HttpStatusCode.InternalServerError,
                             $"Export failed: {ex.Message}"

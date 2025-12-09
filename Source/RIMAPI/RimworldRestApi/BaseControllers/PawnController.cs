@@ -82,7 +82,7 @@ namespace RIMAPI.Controllers
         public async Task GetPawnBodyImage(HttpListenerContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "id");
-            var result = _colonistService.GetColonistInventory(pawnId);
+            var result = _colonistService.GetColonistBodyParts(pawnId);
             await context.SendJsonResponse(result);
         }
 
@@ -118,10 +118,23 @@ namespace RIMAPI.Controllers
         [EndpointMetadata("Schedule pawn assignment during provided hour")]
         public async Task SetTimeAssignment(HttpListenerContext context)
         {
-            var pawnId = RequestParser.GetIntParameter(context, "pawn_id");
-            var hour = RequestParser.GetIntParameter(context, "hour");
-            var assignment = RequestParser.GetStringParameter(context, "assignment");
-            var result = _colonistService.SetTimeAssignment(pawnId, hour, assignment);
+            PawnTimeAssignmentRequestDto body;
+
+            if (context.Request.HasEntityBody)
+            {
+                body = await context.Request.ReadBodyAsync<PawnTimeAssignmentRequestDto>();
+            }
+            else
+            {
+                body = new PawnTimeAssignmentRequestDto
+                {
+                    PawnId = RequestParser.GetIntParameter(context, "pawn_id"),
+                    Hour = RequestParser.GetIntParameter(context, "hour"),
+                    Assignment = RequestParser.GetStringParameter(context, "assignment")
+                };
+            }
+
+            var result = _colonistService.SetTimeAssignment(body);
             await context.SendJsonResponse(result);
         }
 
@@ -143,10 +156,8 @@ namespace RIMAPI.Controllers
         [EndpointMetadata("Set pawn work priorities")]
         public async Task SetColonistWorkPriority(HttpListenerContext context)
         {
-            var pawnId = RequestParser.GetIntParameter(context, "id");
-            var workDef = RequestParser.GetStringParameter(context, "work");
-            var priority = RequestParser.GetIntParameter(context, "priority");
-            var result = _colonistService.SetColonistWorkPriority(pawnId, workDef, priority);
+            var body = await context.Request.ReadBodyAsync<WorkPriorityRequestDto>();
+            var result = _colonistService.SetColonistWorkPriority(body);
             await context.SendJsonResponse(result);
         }
 
@@ -154,8 +165,8 @@ namespace RIMAPI.Controllers
         [EndpointMetadata("Set multiple work priorities to several pawns")]
         public async Task SetColonistsWorkPriority(HttpListenerContext context)
         {
-            var postData = await context.Request.ReadBodyAsync<ColonistsWorkPrioritiesRequestDto>();
-            var result = _colonistService.SetColonistsWorkPriority(postData);
+            var body = await context.Request.ReadBodyAsync<ColonistsWorkPrioritiesRequestDto>();
+            var result = _colonistService.SetColonistsWorkPriority(body);
             await context.SendJsonResponse(result);
         }
 
@@ -166,8 +177,7 @@ namespace RIMAPI.Controllers
             var mapId = RequestParser.GetMapId(context);
             var pawnId = RequestParser.GetIntParameter(context, "pawn_id");
             var itemId = RequestParser.GetIntParameter(context, "item_id");
-            var itemType = RequestParser.GetStringParameter(context, "item_type");
-            var result = _colonistService.MakeJobEquip(mapId, pawnId, itemId, itemType);
+            var result = _colonistService.MakeJobEquip(mapId, pawnId, itemId);
             await context.SendJsonResponse(result);
         }
     }
