@@ -29,7 +29,7 @@
     flex: 1;
     display: flex;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 0;
     font-family: var(--md-code-font-family);
     font-size: 0.9em;
     background: var(--md-default-bg-color);
@@ -38,11 +38,24 @@
     white-space: nowrap;
 }
 
-.doc-api-endpoint code {
-    background: transparent;
+.doc-api-endpoint > .headerlink {
+    min-width: 28px;
+}
+
+.doc-api-endpoint > code {
+    display: inline;
     padding: 0;
     font-size: inherit;
     color: inherit;
+    flex-grow: 1;
+}
+
+.doc-api-endpoint pre {
+    margin: auto 0;
+}
+
+.doc-api-endpoint pre>code {
+    padding: 0.6 1.2;
 }
 
 .doc-api-tags {
@@ -52,6 +65,14 @@
     background: var(--md-default-bg-color--light);
     border-top: 1px solid var(--md-default-fg-color--lightest);
     flex-wrap: wrap;
+}
+
+.doc-api-endpoint code {
+    background: none;
+}
+
+.doc-api-endpoint code div pre code {
+    background: none;
 }
 
 /* Method colors */
