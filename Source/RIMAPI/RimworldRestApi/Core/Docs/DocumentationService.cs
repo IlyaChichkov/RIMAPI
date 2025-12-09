@@ -340,9 +340,17 @@ namespace RIMAPI.Core
             return tagMap.TryGetValue(tag, out var mappedClass) ? mappedClass : normalizedTag;
         }
 
-        private void RenderEndpointMarkdown(ref StringBuilder sb, DocumentedEndpoint endpoint)
+        private void AppendExampleMacros(ref StringBuilder sb, string controller, string path, string example)
         {
+            sb.AppendLine($"{{{{ api.controllers.get(\"{controller}\", {{}}).get(\"{path}\", {{'desc': 'Failed to load {path}'}}).get('{example}', '') }}}}");
+        }
+
+        private void RenderEndpointMarkdown(ref StringBuilder sb, string controller, DocumentedEndpoint endpoint)
+        {
+            string endpointId = endpoint.Path.Replace("/", "");
+
             // Start API container
+            sb.AppendLine($"<h4 id=\"{endpointId}\">");
             sb.AppendLine("<div class=\"doc-api-container\">");
 
             // Header row with method and endpoint
@@ -350,7 +358,14 @@ namespace RIMAPI.Core
             sb.AppendLine(
                 $"<div class=\"doc-api-method doc-api-method-{endpoint.Method.ToLowerInvariant()}\">{endpoint.Method}</div>"
             );
-            sb.AppendLine($"<div class=\"doc-api-endpoint\"><code>{endpoint.Path}</code></div>");
+            sb.AppendLine("<div class=\"doc-api-endpoint\">");
+            sb.AppendLine("<code>");
+            sb.AppendLine("```");
+            sb.AppendLine(endpoint.Path);
+            sb.AppendLine("```");
+            sb.AppendLine("</code>");
+            sb.AppendLine($"<a class=\"headerlink\" href=\"#{endpointId}\" title=\"Permanent link\">¶</a>");
+            sb.AppendLine("</div>");
             sb.AppendLine("</div>");
 
             // Tags row - handle both string and array scenarios
@@ -373,10 +388,23 @@ namespace RIMAPI.Core
             }
 
             sb.AppendLine("</div>"); // Close doc-api-container
+            sb.AppendLine("</h4>");
             sb.AppendLine();
 
-            // Description
-            sb.AppendLine(endpoint.Description);
+            AppendExampleMacros(ref sb, controller, endpoint.Path, "desc");
+            sb.AppendLine();
+
+            if (!string.IsNullOrEmpty(endpoint.Notes))
+            {
+                sb.AppendLine($"> **Notes**: {endpoint.Notes}");
+                sb.AppendLine();
+            }
+
+            AppendExampleMacros(ref sb, controller, endpoint.Path, "curl");
+            sb.AppendLine();
+            AppendExampleMacros(ref sb, controller, endpoint.Path, "request");
+            sb.AppendLine();
+            AppendExampleMacros(ref sb, controller, endpoint.Path, "response");
             sb.AppendLine();
 
             // GitHub link (if exists)
@@ -403,52 +431,22 @@ namespace RIMAPI.Core
                 sb.AppendLine();
             }
 
-            if (!string.IsNullOrEmpty(endpoint.Notes))
-            {
-                sb.AppendLine($"> **Notes**: {endpoint.Notes}");
-                sb.AppendLine();
-            }
-
-            if (endpoint.Parameters.Any())
-            {
-                sb.AppendLine("**Parameters:**");
-                sb.AppendLine();
-                sb.AppendLine("| Name | Type | Required | Description | Example |");
-                sb.AppendLine("|------|------|:--------:|-------------|---------|");
-                foreach (var param in endpoint.Parameters)
-                {
-                    var example = string.IsNullOrEmpty(param.Example)
-                        ? "*N/A*"
-                        : $"`{param.Example}`";
-                    var required = param.Required ? "✅" : "❌";
-                    sb.AppendLine(
-                        $"| `{param.Name}` | `{param.Type}` | {required} | {param.Description} | {example} |"
-                    );
-                }
-                sb.AppendLine();
-            }
-
-            if (!string.IsNullOrEmpty(endpoint.RequestExample))
-            {
-                sb.AppendLine("**Request Example:**");
-                sb.AppendLine();
-                sb.AppendLine("```json");
-                sb.AppendLine(endpoint.RequestExample.Trim());
-                sb.AppendLine("```");
-                sb.AppendLine();
-            }
-
-            if (!string.IsNullOrEmpty(endpoint.ResponseExample))
-            {
-                sb.AppendLine("**Response Example:**");
-                sb.AppendLine();
-                sb.AppendLine("```json");
-                sb.AppendLine(endpoint.ResponseExample.Trim());
-                sb.AppendLine("```");
-                sb.AppendLine();
-            }
-
             sb.AppendLine("---");
+            sb.AppendLine();
+        }
+
+        private void AppendSectionMacros(ref StringBuilder sb, string section)
+        {
+            section = section.Replace(" ", "_");
+            sb.AppendLine($"{{{{ api.section.get(\"{section}\", {{}}).get('title', '') }}}}");
+            sb.AppendLine($"{{{{ api.section.get(\"{section}\", {{}}).get('desc', '') }}}}");
+            sb.AppendLine();
+        }
+
+        private void AppendControllerMacros(ref StringBuilder sb, string controller)
+        {
+            sb.AppendLine($"{{{{ api.controllers.get(\"{controller}\", {{}}).get('title', '') }}}}");
+            sb.AppendLine($"{{{{ api.controllers.get(\"{controller}\", {{}}).get('desc', '') }}}}");
             sb.AppendLine();
         }
 
@@ -457,30 +455,27 @@ namespace RIMAPI.Core
             var docs = GenerateDocumentation();
             var sb = new StringBuilder();
 
+            var totalEndpointsCount = docs.Sections.SelectMany(s => s.Endpoints).Count();
+
             // Enhanced markdown generation with better formatting
-            sb.AppendLine("# RimWorld REST API Documentation");
+            sb.AppendLine($"{{{{ api.get('page_title', '# RimAPI Documentation') }}}}");
             sb.AppendLine();
-            sb.AppendLine($"**Generated**: {docs.GeneratedAt:yyyy-MM-dd HH:mm:ss} UTC  ");
             sb.AppendLine($"**Version**: {docs.Version}  ");
             sb.AppendLine();
 
             foreach (var section in docs.Sections)
             {
-                sb.AppendLine($"## {section.Name}");
-                sb.AppendLine();
-                sb.AppendLine(section.Description);
-                sb.AppendLine();
+                AppendSectionMacros(ref sb, section.Name);
 
                 var groupedEndpoints = section.Endpoints.GroupBy(e => e.Category);
 
                 foreach (var group in groupedEndpoints)
                 {
-                    sb.AppendLine($"### {group.Key}");
-                    sb.AppendLine();
+                    AppendControllerMacros(ref sb, group.Key);
 
                     foreach (var endpoint in group)
                     {
-                        RenderEndpointMarkdown(ref sb, endpoint);
+                        RenderEndpointMarkdown(ref sb, group.Key, endpoint);
                     }
                 }
             }
