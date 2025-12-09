@@ -2,6 +2,7 @@ site_name: RimWorld REST API
 site_description: Auto-generated API documentation
 repo_url: https://github.com/IlyaChichkov/RIMAPI
 repo_name: IlyaChichkov/RIMAPI
+site_url: https://ilyachichkov.github.io/RIMAPI/
 edit_uri: ""
 
 copyright: Copyright &copy; 2025 Ilya Chichkov
@@ -51,6 +52,10 @@ plugins:
         - stopWordFilter
         - trimmer
       lang: en
+  - macros:
+      include_yaml: [docs/_api_macroses/api.yml]
+      on_error_fail: false
+      on_undefined: lax
   - offline
   - social
   - tags
@@ -62,6 +67,16 @@ plugins:
       htmlmin_opts:
           remove_comments: true
       cache_safe: true
+  - llmstxt:
+      full_output: llms-full.txt
+      sections:
+        API documentation:
+        - index.md
+        - api/*.md
+        Developers documentation:
+        - developer_guide/*.md
+        Contributors documentation:
+        - contributors_guide/*.md
 
 markdown_extensions:
   - pymdownx.details

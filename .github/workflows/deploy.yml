@@ -35,6 +35,8 @@ jobs:
           pip install mkdocs-material
           pip install mkdocs-mermaid2-plugin
           pip install mkdocs-minify-plugin
+          pip install mkdocs-macros-plugin
+          pip install mkdocs-llmstxt
 
       - name: Build site
         run: mkdocs build --site-dir public
