@@ -223,8 +223,8 @@ namespace RIMAPI.Core
 
                 if (saveFile)
                 {
-                    // Save to mod folder
-                    var filePath = Path.Combine(_modFolderPath, fileName);
+                    // Save to mod docs folder
+                    var filePath = Path.Combine(_modFolderPath, "docs", fileName);
                     SaveToFile(filePath, content);
                     LogApi.Info($"Documentation exported to: {filePath}");
                 }
