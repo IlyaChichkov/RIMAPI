@@ -1,4 +1,31 @@
 # Changelog
+## v1.3.0
+
+Add examples and description for endpoints in documentation
+
+Insert them into auto generated api.md by macroses from api.yml
+
+Add option to use json body for endpoints that accept parameters:
+- /api/v1/dev/console
+- /api/v1/colonist/time-assignment
+
+Add new endpoints:
+[GET]
+
+- /api/v1/world/caravans
+- /api/v1/world/settlements
+- /api/v1/world/caravans
+- /api/v1/world/tile
+
+[POST]
+- /api/v1/pawn/edit
+
+Fixes:
+- TraitDefDto empty label, description
+- /api/v1/colonist/body/image returned GetColonistInventory
+- change "throw new Exception" to "return ApiResult.Fail"
+- /api/v1/dev/console didn't have message parameter
+
 ## v1.2.2
 
 Fix GetItemImageByName
