@@ -15,11 +15,6 @@ namespace RIMAPI.Services
     {
         public ColonistService() { }
 
-        public ApiResult EditPawn(PawnEditRequest request)
-        {
-            return ApiResult.Unimplemented();
-        }
-
         public ApiResult<ColonistDto> GetColonist(int pawnId)
         {
             var result = ColonistsHelper.GetColonists().FirstOrDefault(c => c.Id == pawnId);

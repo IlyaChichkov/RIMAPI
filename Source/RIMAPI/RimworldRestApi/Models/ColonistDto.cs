@@ -271,9 +271,9 @@ namespace RIMAPI.Models
         public bool AllowedQualitiesConfigurable { get; set; }
     }
 
-    public class PawnEditRequest
+    public class PawnEditRequestDto
     {
-        public string PawnId { get; set; }
+        public int PawnId { get; set; }
 
         // Basic properties
         public string Name { get; set; }
@@ -309,7 +309,8 @@ namespace RIMAPI.Models
         public bool? Resurrect { get; set; }
 
         // Position
-        public string Position { get; set; }
+        public bool ChangePosition { get; set; }
+        public PositionDto Position { get; set; }
         public string MapId { get; set; }
 
         // Faction & Relations
