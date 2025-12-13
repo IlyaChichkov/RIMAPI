@@ -109,5 +109,41 @@ namespace RIMAPI.Services
                 return ApiResult.Fail(ex.Message);
             }
         }
+
+        public ApiResult<List<ThingDto>> GetThingsAtCell(int mapId, PositionDto position)
+        {
+            try
+            {
+                var map = MapHelper.GetMapByID(mapId);
+                if (map == null)
+                {
+                    return ApiResult<List<ThingDto>>.Fail($"Map with ID {mapId} not found.");
+                }
+
+                if (position == null)
+                {
+                    return ApiResult<List<ThingDto>>.Fail("Position cannot be null.");
+                }
+
+                IntVec3 cellPosition = new IntVec3(position.X, position.Y, position.Z);
+
+                List<Thing> things = cellPosition.GetThingList(map);
+                List<ThingDto> thingDtos = new List<ThingDto>();
+
+                foreach (Thing thing in things)
+                {
+                    thingDtos.Add(ResourcesHelper.ThingToDto(thing));
+                }
+
+                return ApiResult<List<ThingDto>>.Ok(thingDtos);
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error getting things at cell: {ex}");
+                return ApiResult<List<ThingDto>>.Fail(
+                    $"Failed to get things at cell: {ex.Message}"
+                );
+            }
+        }
     }
 }

@@ -622,39 +622,7 @@ namespace RIMAPI.Helpers
         {
             return DefDatabase<ThingDef>
                 .AllDefsListForReading.Where(t => t != null && !string.IsNullOrEmpty(t.defName))
-                .Select(t => new ThingDefDto
-                {
-                    DefName = t.defName,
-                    Label = t.label,
-                    Description = t.description,
-                    Category = t.category.ToString(),
-                    ThingClass = t.thingClass?.Name,
-                    StatBase = t.statBases?.ToDictionary(s => s.stat?.defName, s => s.value),
-                    CostList = t
-                        .costList?.Select(c => new ThingCostDto
-                        {
-                            ThingDef = c.thingDef?.defName,
-                            Count = c.count,
-                        })
-                        .ToList(),
-                    IsWeapon = t.IsWeapon,
-                    IsApparel = t.IsApparel,
-                    IsItem = t.category == ThingCategory.Item,
-                    IsPawn = t.category == ThingCategory.Pawn,
-                    IsPlant = t.category == ThingCategory.Plant,
-                    IsBuilding = t.category == ThingCategory.Building,
-                    IsMedicine = t.IsMedicine,
-                    IsDrug = t.IsDrug,
-                    MarketValue = t.BaseMarketValue,
-                    Mass = t.GetStatValueAbstract(StatDefOf.Mass),
-                    MaxHitPoints = t.GetStatValueAbstract(StatDefOf.MaxHitPoints),
-                    Flammability = t.GetStatValueAbstract(StatDefOf.Flammability),
-                    StackLimit = t.stackLimit,
-                    Nutrition = t.GetStatValueAbstract(StatDefOf.Nutrition),
-                    WorkToMake = t.GetStatValueAbstract(StatDefOf.WorkToMake),
-                    WorkToBuild = t.GetStatValueAbstract(StatDefOf.WorkToBuild),
-                    Beauty = t.GetStatValueAbstract(StatDefOf.Beauty),
-                })
+                .Select(t => ThingDefDto.ToDto(t))
                 .ToList();
         }
 

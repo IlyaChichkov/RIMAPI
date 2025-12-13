@@ -16,6 +16,7 @@ namespace RIMAPI.Services
     {
         ApiResult<GameStateDto> GetGameState();
         ApiResult<List<ModInfoDto>> GetModsInfo();
+        ApiResult SelectArea(SelectAreaRequestDto body);
         ApiResult Select(string objectType, int id);
         ApiResult DeselectAll();
         ApiResult OpenTab(string tabName);
@@ -23,6 +24,7 @@ namespace RIMAPI.Services
         ApiResult<MapTimeDto> GetCurrentMapDatetime();
         ApiResult<MapTimeDto> GetWorldTileDatetime(int tileID);
         ApiResult SendLetterSimple(SendLetterRequestDto body);
+        ApiResult SetGameSpeed(int speed);
     }
     #endregion
 
@@ -69,6 +71,7 @@ namespace RIMAPI.Services
         ApiResult<MapRoomsDto> GetMapRooms(int mapId);
         ApiResult<List<BuildingDto>> GetMapBuildings(int mapId);
         ApiResult SetWeather(int mapId, string defName);
+        ApiResult<List<ThingDto>> GetThingsAtCell(int mapId, PositionDto position);
     }
     #endregion
 
