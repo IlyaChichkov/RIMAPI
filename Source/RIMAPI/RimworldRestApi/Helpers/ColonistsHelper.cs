@@ -352,7 +352,7 @@ namespace RIMAPI.Helpers
             return outfits;
         }
 
-        public static void EditPawn(PawnEditRequest request)
+        public static void EditPawn(PawnEditRequestDto request)
         {
             try
             {
@@ -362,15 +362,9 @@ namespace RIMAPI.Helpers
                     return;
                 }
 
-                if (string.IsNullOrEmpty(request.PawnId))
-                {
-                    Core.LogApi.Error("EditPawn: PawnId is null or empty");
-                    return;
-                }
-
                 Core.LogApi.Message($"EditPawn: Looking for pawn with ID: {request.PawnId}");
 
-                var pawn = FindPawnById(request.PawnId);
+                var pawn = FindPawnById(request.PawnId.ToString());
 
                 if (pawn == null)
                 {
@@ -483,7 +477,7 @@ namespace RIMAPI.Helpers
             }
         }
 
-        public static void ApplyPawnEdits(Pawn pawn, PawnEditRequest request)
+        public static void ApplyPawnEdits(Pawn pawn, PawnEditRequestDto request)
         {
             if (pawn == null)
             {
