@@ -72,7 +72,7 @@ plugins:
       sections:
         API documentation:
         - index.md
-        - api/*.md
+        - api.md
         Developers documentation:
         - developer_guide/*.md
         Contributors documentation:
