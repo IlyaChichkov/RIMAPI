@@ -384,7 +384,7 @@ namespace RIMAPI.Core
             catch (Exception ex)
             {
                 LogApi.Error($"Error processing request - {ex.Message}");
-                await ResponseBuilder.Error(
+                await ResponseBuilder.SendError(
                     context.Response,
                     System.Net.HttpStatusCode.InternalServerError,
                     "Internal server error"

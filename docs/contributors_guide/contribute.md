@@ -1,120 +1,97 @@
 # Contributing to RIMAPI
 
-Thank you for your interest in contributing to RIMAPI! This guide will help you get started with contributing code, documentation, or ideas to the project.
+Thank you for your interest in contributing to RIMAPI! This guide provides everything you need to know to contribute code, documentation, or ideas to the project. Your contributions help make RIMAPI a more powerful tool for the RimWorld community.
 
 ## Ways to Contribute
 
-There are many ways to contribute, even if you're not a C# expert:
+- **Code**: Implement new features, fix bugs, or improve performance.
+- **Documentation**: Enrich our guides, add examples, or fix typos. Every clarification helps.
+- **Testing**: Help us find and squash bugs by testing new features in-game.
+- **Feature Ideas**: Suggest new functionality or improvements by opening an issue.
+- **Community Support**: Assist other users in GitHub Discussions or on Discord.
 
-- **Code Contributions**: Bug fixes, new features, performance improvements
-- **Documentation**: Improving guides, adding examples, fixing typos
-- **Testing**: Testing in game new features, reporting bugs
-- **Feature Ideas**: Suggesting new functionality or improvements
-- **Community Support**: Helping other users in discussions and issues
-
-## Getting Started
+## Getting Started: Your First Contribution
 
 ### Prerequisites
 
-- RimWorld 1.5 or later
-- .NET Framework 4.7.2
-- Git
-- IDE
-
-??? note "VSCode Extensions"
-
-    C# Dev Kit: ms-dotnettools.csdevkit
-    CSharpier - Code formatter: csharpier.csharpier-vscode
+- A licensed copy of RimWorld (1.5 or later).
+- An IDE for .NET development:
+    - **Visual Studio**: Install the `.NET desktop development` workload.
+    - **VSCode**: Install the `C# Dev Kit` extension (`ms-dotnettools.csdevkit`).
+- The **.NET Framework 4.8** Developer Pack (or the version targeted by the project).
+- **Git** for version control.
 
 ### Development Setup
 
-1. **Clone the repository** locally:
+1.  **Fork & Clone**:
+    -   **Fork** the repository on GitHub to create your own copy.
+    -   **Clone** your fork to your local machine:
+        ```bash
+        git clone https://github.com/Your-Username/RIMAPI.git
+        cd RIMAPI
+        ```
 
-    ```bash
-    git clone https://github.com/your-username/RIMAPI.git
-    cd RIMAPI
-    ```
+2.  **Configure RimWorld Path**:
+    -   The project needs to know where your RimWorld installation is to reference its assemblies.
+    -   Locate the `Source/Directory.Build.props` file.
+    -   Update the `<RimWorldPath>` property to point to your RimWorld installation directory.
 
-2. **Create a feature branch**:
+3.  **Build the Project**:
+    -   Open the `Source/RimApi.sln` solution in your IDE.
+    -   Build the solution to ensure all dependencies are resolved and the project compiles correctly.
 
-    ```bash
-    git checkout -b feature/your-feature-name
-    ```
+4.  **Create a Feature Branch**:
+    -   Create a new branch for your changes. This keeps the `main` branch clean.
+        ```bash
+        git checkout -b feature/your-awesome-feature
+        ```
+
+## Creating a New Endpoint
+
+Adding a new endpoint is a great way to start contributing. We have a detailed, step-by-step guide for this.
+
+- **Read the [Creating Endpoints](./creating_endpoints.md) guide** to learn about the architecture and the process from DTO creation to controller implementation.
 
 ## Development Workflow
 
-### Coding Standards
+### Coding & Architecture Standards
 
-- Follow the existing code style and patterns
-- Use meaningful variable and method names
-- Keep methods focused and single-purpose
-- Try to document large functions with comments
+-   **Follow Existing Patterns**: Strive for consistency with the existing codebase.
+-   **Controllers are Thin**: Controllers should only parse requests and return responses. All business logic belongs in the **service layer**.
+-   **Services Coordinate, Helpers Execute**: Services orchestrate the workflow, while **helpers** mostly contain reusable code.
+-   **Use DTOs**: Never expose RimWorld's internal types in an API response. Map all data to Data Transfer Objects (DTOs) in the `Models` directory.
 
-### Architecture Guidelines
+### Testing Your Changes
 
-- **Controllers should be thin** - delegate logic to services
-- **Use dependency injection** for all service dependencies
-- **Keep RimWorld API calls isolated** in service layer
-- **Use DTOs for API responses** - don't expose RimWorld types directly
+Before submitting your contribution, please test it thoroughly:
 
-### Testing
+1.  The mod loads in RimWorld without errors.
+2.  The API server starts up correctly.
+3.  Your new endpoint responds with the correct data and status codes.
+4.  Run a quick check on a few existing endpoints to ensure you haven't introduced any regressions.
+5.  Error handling works as expected (e.g., providing an invalid ID).
 
-#### Testing Checklist
+### Updating Documentation
 
-- [x] Mod loads without errors in RimWorld
-- [x] API server starts correctly
-- [x] New endpoints respond as expected
-- [x] Existing endpoints still work
-- [x] SSE events fire correctly
-- [x] Error handling works properly
-- [x] No performance regressions
+Accurate documentation is as important as the code itself.
 
-### Update Documentation
+-   If you add or modify an endpoint, you **must** update the documentation in `docs/_endpoints_examples/examples.yml`.
+-   If you add a major new feature, create or update a corresponding guide in the `docs/` directory.
 
-If your changes affect:
+## Submitting a Pull Request
 
-- **API endpoints**: Update the auto-generated API docs if needed
-- **Configuration**: Update configuration guides
-- **Extension system**: Update developer documentation
-- **New features**: Add usage examples and guides
+-  **Push to Your Fork**:
+    ```bash
+    git push origin feature/your-awesome-feature
+    ```
 
-## Areas Needing Contribution
-
-### Beginner-Friendly
-
-- Documentation improvements and examples
-- Additional API endpoint examples
-- Test case development
-- Code comments and documentation
-
-### Intermediate
-
-- New service implementations (IInventoryService, IResearchService)
-- Additional controller endpoints
-- SSE event implementations
-- Error handling improvements
-
-### Advanced
-
-- Performance optimizations
-- Authentication system
-- Advanced extension system features
-- Protocol enhancements
+-  **Open a Pull Request**:
+    -   Go to the original RIMAPI repository on GitHub.
+    -   Click "New Pull Request" and select your feature branch.
+    -   Fill out the pull request template, explaining what your PR does and how you tested it.
 
 ## Getting Help
 
-- **Discussions**: Use GitHub Discussions for questions and ideas
-- **Issues**: Open an issue for bugs or feature requests
-- **Discord**: Join the [RimWorld Modding Discord](https://discord.gg/Css9b9BgnM) for real-time help
-- **Code Review**: Ask for early feedback on incomplete work
-
-## Recognition
-
-All contributors are recognized in:
-
-- GitHub contributor graph
-- Release notes
-- Project documentation
-- Community acknowledgements
-
-Thank you for contributing to RIMAPI and helping build a better modding ecosystem for RimWorld!
+-   **GitHub Discussions**: For questions, ideas, and general feedback.
+-   **GitHub Issues**: To report a bug or request a specific feature.
+-   **Discord**: Join the official [RimWorld Modding Discord](https://discord.gg/Css9b9BgnM) for real-time help in the `#rimapi` channel.

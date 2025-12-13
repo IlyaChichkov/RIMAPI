@@ -15,14 +15,13 @@ namespace RIMAPI.Services
     {
         public ColonistService() { }
 
-        public ApiResult EditPawn(PawnEditRequest request)
-        {
-            return ApiResult.Unimplemented();
-        }
-
         public ApiResult<ColonistDto> GetColonist(int pawnId)
         {
             var result = ColonistsHelper.GetColonists().FirstOrDefault(c => c.Id == pawnId);
+            if (result == null)
+            {
+                return ApiResult<ColonistDto>.Fail($"Failed to find pawn with id={pawnId}");
+            }
             return ApiResult<ColonistDto>.Ok(result);
         }
 
@@ -184,21 +183,21 @@ namespace RIMAPI.Services
             return ApiResult<WorkListDto>.Ok(workList);
         }
 
-        public ApiResult MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType)
+        public ApiResult MakeJobEquip(int mapId, int pawnId, int equipmentId)
         {
             try
             {
                 Map map = MapHelper.GetMapByID(mapId);
                 if (map == null)
                 {
-                    throw new Exception($"Map with ID={mapId} not found");
+                    return ApiResult.Fail($"Map with ID={mapId} not found");
                 }
                 Pawn pawn = map
                     .listerThings.AllThings.OfType<Pawn>()
                     .FirstOrDefault(p => p.thingIDNumber == pawnId);
                 if (pawn == null)
                 {
-                    throw new Exception($"Pawn with ID={pawnId} not found");
+                    return ApiResult.Fail($"Pawn with ID={pawnId} not found");
                 }
 
                 Thing foundThing = map.listerThings.AllThings.FirstOrDefault(t =>
@@ -206,39 +205,36 @@ namespace RIMAPI.Services
                 );
                 if (foundThing == null)
                 {
-                    throw new Exception($"Thing with ID={equipmentId} not found");
+                    return ApiResult.Fail($"Thing with ID={equipmentId} not found");
                 }
 
                 Job job = null;
-                switch (equipmentType)
+                try
                 {
-                    case "weapon":
-                        if (EquipmentUtility.CanEquip(foundThing, pawn) == false)
-                        {
-                            throw new Exception($"Can't equip this weapon");
-                        }
-
+                    if (EquipmentUtility.CanEquip(foundThing, pawn) == true)
+                    {
                         job = JobMaker.MakeJob(JobDefOf.Equip, foundThing);
-                        break;
-                    case "apparel":
-                        if (ApparelUtility.HasPartsToWear(pawn, foundThing.def) == false)
-                        {
-                            throw new Exception($"Can't equip this apparel");
-                        }
+                    }
 
+                    if (ApparelUtility.HasPartsToWear(pawn, foundThing.def) == true)
+                    {
                         job = JobMaker.MakeJob(JobDefOf.Wear, foundThing);
-                        break;
+                    }
+                }
+                catch
+                {
+                    return ApiResult.Fail($"Failed to determine equip job for item: {foundThing.def.defName}");
                 }
 
                 if (job == null)
                 {
-                    throw new Exception($"Failed to make a job");
+                    return ApiResult.Fail($"Failed to make a job for item: {foundThing.def.defName}");
                 }
 
                 bool result = pawn.jobs.TryTakeOrderedJob(job);
                 if (!result)
                 {
-                    throw new Exception($"Failed to assign job to pawn");
+                    return ApiResult.Fail($"Failed to assign job to pawn: {pawn.thingIDNumber}");
                 }
                 return ApiResult.Ok();
             }
@@ -252,13 +248,23 @@ namespace RIMAPI.Services
         {
             try
             {
-                foreach (var item in body.Priorities)
+                var warnings = new List<string>();
+                foreach (var colonistPriorityUpdate in body.Priorities)
                 {
-                    var result = SetColonistWorkPriority(item.Id, item.Work, item.Priority);
+                    var result = SetColonistWorkPriority(colonistPriorityUpdate);
                     if (result.Success == false)
                     {
-                        return result;
+                        warnings.Add(result.Errors.ToString());
                     }
+                }
+
+                if (warnings.Count > 0)
+                {
+                    if (warnings.Count == body.Priorities.Count)
+                    {
+                        return ApiResult.Fail(warnings.ToString());
+                    }
+                    return ApiResult.Partial(warnings);
                 }
                 return ApiResult.Ok();
             }
@@ -268,48 +274,48 @@ namespace RIMAPI.Services
             }
         }
 
-        public ApiResult SetColonistWorkPriority(int pawnId, string workDef, int priority)
+        public ApiResult SetColonistWorkPriority(WorkPriorityRequestDto body)
         {
             try
             {
                 // Find the pawn by thingIDNumber
-                Pawn pawn = ColonistsHelper.GetPawnById(pawnId);
+                Pawn pawn = ColonistsHelper.GetPawnById(body.Id);
                 if (pawn == null)
                 {
-                    throw new Exception($"Could not find pawn with ID {pawnId}");
+                    return ApiResult.Fail($"Could not find pawn with ID {body.Id}");
                 }
 
                 // Find the WorkTypeDef by defName
-                WorkTypeDef workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(workDef);
+                WorkTypeDef workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(body.Work);
                 if (workTypeDef == null)
                 {
-                    throw new Exception($"Could not find WorkTypeDef with defName {workDef}");
+                    return ApiResult.Fail($"Could not find WorkTypeDef with defName {body.Work}");
                 }
 
                 // Check if pawn has work settings initialized
                 if (pawn.workSettings == null || !pawn.workSettings.EverWork)
                 {
-                    throw new Exception(
+                    return ApiResult.Fail(
                         $"Pawn {pawn.LabelShort} does not have work settings initialized"
                     );
                 }
 
                 // Check if the work type is disabled for this pawn
-                if (priority != 0 && pawn.WorkTypeIsDisabled(workTypeDef))
+                if (body.Priority != 0 && pawn.WorkTypeIsDisabled(workTypeDef))
                 {
-                    throw new Exception(
+                    return ApiResult.Fail(
                         $"Cannot set priority for disabled work type {workTypeDef.defName} on pawn {pawn.LabelShort}"
                     );
                 }
 
                 // Validate priority range (0-9)
-                if (priority < 0 || priority > 9)
+                if (body.Priority < 0 || body.Priority > 9)
                 {
-                    throw new Exception($"Invalid priority {priority}. Must be between 0 and 4");
+                    return ApiResult.Fail($"Invalid priority {body.Priority}. Must be between 0 and 4");
                 }
 
                 // Set the priority
-                pawn.workSettings.SetPriority(workTypeDef, priority);
+                pawn.workSettings.SetPriority(workTypeDef, body.Priority);
 
                 return ApiResult.Ok();
             }
@@ -319,21 +325,21 @@ namespace RIMAPI.Services
             }
         }
 
-        public ApiResult SetTimeAssignment(int pawnId, int hour, string assignmentName)
+        public ApiResult SetTimeAssignment(PawnTimeAssignmentRequestDto body)
         {
             try
             {
-                Pawn pawn = ColonistsHelper.GetPawnById(pawnId);
+                Pawn pawn = ColonistsHelper.GetPawnById(body.PawnId);
                 TimeAssignmentDef assignmentDef = DefDatabase<TimeAssignmentDef>
-                    .AllDefs.Where(p => p.defName.ToLower() == assignmentName.ToLower())
+                    .AllDefs.Where(p => p.defName.ToLower() == body.Assignment.ToLower())
                     .FirstOrDefault();
                 if (assignmentDef == null)
                 {
-                    throw new Exception(
-                        $"Failed to find assignment def with {assignmentName} name"
+                    return ApiResult.Fail(
+                        $"Failed to find assignment def with {body.Assignment} name"
                     );
                 }
-                pawn.timetable.SetAssignment(hour, assignmentDef);
+                pawn.timetable.SetAssignment(body.Hour, assignmentDef);
 
                 return ApiResult.Ok();
             }

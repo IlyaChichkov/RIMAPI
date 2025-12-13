@@ -17,8 +17,8 @@ namespace RIMAPI.Helpers
             TraitDefDto dto = new TraitDefDto
             {
                 DefName = traitDef.defName,
-                Label = traitDef.label,
-                Description = traitDef.description,
+                Label = string.IsNullOrEmpty(traitDef.label) ? "" : traitDef.label,
+                Description = string.IsNullOrEmpty(traitDef.description) ? "" : traitDef.description,
                 DegreeDatas = new List<TraitDegreeDto>(),
                 ConflictingTraits = new List<string>(),
                 DisabledWorkTypes = new List<string>(),

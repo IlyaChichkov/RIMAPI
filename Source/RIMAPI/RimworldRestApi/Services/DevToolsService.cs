@@ -12,11 +12,11 @@ namespace RIMAPI.Services
     {
         public DevToolsService() { }
 
-        public ApiResult ConsoleAction(string action, string message = null)
+        public ApiResult ConsoleAction(DebugConsoleRequest body)
         {
             try
             {
-                switch (action)
+                switch (body.Action)
                 {
                     case "clear":
                         Log.Clear();
@@ -25,13 +25,13 @@ namespace RIMAPI.Services
                         Log.ResetMessageCount();
                         break;
                     case "message":
-                        Log.Message(message);
+                        Log.Message(body.Message);
                         break;
                     case "warning":
-                        Log.Warning(message);
+                        Log.Warning(body.Message);
                         break;
                     case "error":
-                        Log.Error(message);
+                        Log.Error(body.Message);
                         break;
                 }
                 return ApiResult.Ok();

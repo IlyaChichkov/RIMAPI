@@ -16,9 +16,13 @@ RIMAPI is a powerful mod that adds a REST API server to RimWorld, allowing you t
 
 ### Key Features
 
-- **📡 RESTful API** - Standard HTTP endpoints for all game data
+- **📡 RESTful API** - Standard HTTP endpoints for game data
 - **🔔 Real-time Events** - Server-Sent Events (SSE) for live updates
 - **🔌 Extensible Architecture** - Other mods can add their own endpoints
 - **🛡️ Safe & Non-blocking** - Runs on main thread with request queuing
 - **📚 Auto-documentation** - Self-documenting API with multiple formats
 
+### Next Steps
+
+- [API Documentation](https://ilyachichkov.github.io/RIMAPI/api.html)
+- [LLM Format](https://ilyachichkov.github.io/RIMAPI/llms-full.txt)

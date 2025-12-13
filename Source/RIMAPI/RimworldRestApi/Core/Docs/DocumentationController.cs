@@ -38,7 +38,7 @@ namespace RIMAPI.Core
                 {
                     case "json":
                         var docs = _docService.GenerateDocumentation();
-                        await ResponseBuilder.Success(context.Response, docs);
+                        await ResponseBuilder.SendSuccess(context.Response, docs);
                         break;
 
                     case "markdown":
@@ -55,7 +55,7 @@ namespace RIMAPI.Core
             catch (Exception ex)
             {
                 LogApi.Error($"Error generating documentation: {ex}");
-                await ResponseBuilder.Error(
+                await ResponseBuilder.SendError(
                     context.Response,
                     HttpStatusCode.InternalServerError,
                     "Failed to generate documentation"
@@ -145,7 +145,7 @@ namespace RIMAPI.Core
 
                 if (extensionSection == null)
                 {
-                    await ResponseBuilder.Error(
+                    await ResponseBuilder.SendError(
                         context.Response,
                         HttpStatusCode.NotFound,
                         $"Extension '{extensionId}' not found"
@@ -153,12 +153,12 @@ namespace RIMAPI.Core
                     return;
                 }
 
-                await ResponseBuilder.Success(context.Response, extensionSection);
+                await ResponseBuilder.SendSuccess(context.Response, extensionSection);
             }
             catch (Exception ex)
             {
                 LogApi.Error($"Error generating extension documentation: {ex}");
-                await ResponseBuilder.Error(
+                await ResponseBuilder.SendError(
                     context.Response,
                     HttpStatusCode.InternalServerError,
                     "Failed to generate extension documentation"
@@ -182,11 +182,11 @@ namespace RIMAPI.Core
                     sections = docs.Sections.Select(s => s.Name),
                 };
 
-                await ResponseBuilder.Success(context.Response, healthInfo);
+                await ResponseBuilder.SendSuccess(context.Response, healthInfo);
             }
             catch (Exception ex)
             {
-                await ResponseBuilder.Error(
+                await ResponseBuilder.SendError(
                     context.Response,
                     HttpStatusCode.InternalServerError,
                     $"Documentation service unhealthy: {ex.Message}"
@@ -223,8 +223,8 @@ namespace RIMAPI.Core
 
                 if (saveFile)
                 {
-                    // Save to mod folder
-                    var filePath = Path.Combine(_modFolderPath, fileName);
+                    // Save to mod docs folder
+                    var filePath = Path.Combine(_modFolderPath, "docs", fileName);
                     SaveToFile(filePath, content);
                     LogApi.Info($"Documentation exported to: {filePath}");
                 }
@@ -235,7 +235,7 @@ namespace RIMAPI.Core
             catch (Exception ex)
             {
                 LogApi.Error($"Error exporting documentation: {ex}");
-                await ResponseBuilder.Error(
+                await ResponseBuilder.SendError(
                     context.Response,
                     HttpStatusCode.InternalServerError,
                     $"Failed to export documentation: {ex.Message}"

@@ -20,8 +20,21 @@ namespace RIMAPI.Controllers
         [EndpointMetadata("Send message to the debug console")]
         public async Task PostConsoleAction(HttpListenerContext context)
         {
-            var action = RequestParser.GetStringParameter(context, "action");
-            var result = _devToolsService.ConsoleAction(action);
+            DebugConsoleRequest body;
+            if (context.Request.HasEntityBody)
+            {
+                body = await context.Request.ReadBodyAsync<DebugConsoleRequest>();
+            }
+            else
+            {
+                body = new DebugConsoleRequest
+                {
+                    Action = RequestParser.GetStringParameter(context, "action"),
+                    Message = RequestParser.GetStringParameter(context, "message"),
+                };
+            }
+
+            var result = _devToolsService.ConsoleAction(body);
             await context.SendJsonResponse(result);
         }
 
@@ -44,8 +57,8 @@ namespace RIMAPI.Controllers
         [EndpointMetadata("Change stuff color")]
         public async Task PostStuffColor(HttpListenerContext context)
         {
-            var requestData = await context.Request.ReadBodyAsync<StuffColorRequest>();
-            var result = _devToolsService.SetStuffColor(requestData);
+            var body = await context.Request.ReadBodyAsync<StuffColorRequest>();
+            var result = _devToolsService.SetStuffColor(body);
             await context.SendJsonResponse(result);
         }
     }

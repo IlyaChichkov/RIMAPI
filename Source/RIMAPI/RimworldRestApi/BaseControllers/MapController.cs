@@ -112,7 +112,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/building/info")]
-        [EndpointMetadata("Get building info", new[] { "Unstable" })]
+        [EndpointMetadata("Get building info")]
         public async Task GetBuildingInfo(HttpListenerContext context)
         {
             var mapId = RequestParser.GetMapId(context);

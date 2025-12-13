@@ -17,12 +17,22 @@ namespace RIMAPI.Services
         public ApiResult<ResearchProjectDto> GetResearchProgress()
         {
             var result = ResearchHelper.GetResearchProgress();
+            if (result == null)
+            {
+                return ApiResult<ResearchProjectDto>
+                    .Fail($"No research project in progress");
+            }
             return ApiResult<ResearchProjectDto>.Ok(result);
         }
 
         public ApiResult<ResearchProjectDto> GetResearchProjectByName(string name)
         {
             var result = ResearchHelper.GetResearchProjectByName(name);
+            if (result == null)
+            {
+                return ApiResult<ResearchProjectDto>
+                    .Fail($"Couldn't find research project with name: {name}");
+            }
             return ApiResult<ResearchProjectDto>.Ok(result);
         }
 

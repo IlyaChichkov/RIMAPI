@@ -38,14 +38,13 @@ namespace RIMAPI.Services
         ApiResult<OpinionAboutPawnDto> GetOpinionAboutPawn(int pawnId, int otherPawnId);
         ApiResult<WorkListDto> GetWorkList();
         ApiResult<List<TimeAssignmentDto>> GetTimeAssignmentsList();
-        ApiResult SetColonistWorkPriority(int pawnId, string workDef, int priority);
+        ApiResult SetColonistWorkPriority(WorkPriorityRequestDto body);
         ApiResult SetColonistsWorkPriority(ColonistsWorkPrioritiesRequestDto body);
         ApiResult<TraitDefDto> GetTraitDefDto(string traitName);
-        ApiResult SetTimeAssignment(int pawnId, int hour, string assignmentName);
-        ApiResult MakeJobEquip(int mapId, int pawnId, int equipmentId, string equipmentType);
+        ApiResult SetTimeAssignment(PawnTimeAssignmentRequestDto body);
+        ApiResult MakeJobEquip(int mapId, int pawnId, int equipmentId);
 
         ApiResult<List<OutfitDto>> GetOutfits();
-        ApiResult EditPawn(PawnEditRequest request);
         ApiResult<ImageDto> GetPawnPortraitImage(
             int pawnId,
             int width,
@@ -148,7 +147,7 @@ namespace RIMAPI.Services
     {
         ApiResult<MaterialsAtlasList> GetMaterialsAtlasList();
         ApiResult MaterialsAtlasPoolClear();
-        ApiResult ConsoleAction(string action, string message = null);
+        ApiResult ConsoleAction(DebugConsoleRequest body);
         ApiResult SetStuffColor(StuffColorRequest stuffColor);
     }
     #endregion
