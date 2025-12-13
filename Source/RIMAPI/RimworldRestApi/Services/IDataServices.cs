@@ -45,7 +45,6 @@ namespace RIMAPI.Services
         ApiResult MakeJobEquip(int mapId, int pawnId, int equipmentId);
 
         ApiResult<List<OutfitDto>> GetOutfits();
-        ApiResult EditPawn(PawnEditRequest request);
         ApiResult<ImageDto> GetPawnPortraitImage(
             int pawnId,
             int width,

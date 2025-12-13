@@ -461,6 +461,7 @@ namespace RIMAPI.Core
             sb.AppendLine($"{{{{ api.get('page_title', '# RimAPI Documentation') }}}}");
             sb.AppendLine();
             sb.AppendLine($"**Version**: {docs.Version}  ");
+            sb.AppendLine($"**Endpoints total count**: {totalEndpointsCount}  ");
             sb.AppendLine();
 
             foreach (var section in docs.Sections)
