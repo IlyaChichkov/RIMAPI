@@ -86,6 +86,8 @@ namespace RIMAPI.Models
         public string Label { get; set; }
         public List<string> Categories { get; set; }
         public PositionDto Position { get; set; }
+        public int Rotation { get; set; }
+        public PositionDto Size { get; set; }
         public int StackCount { get; set; }
         public double MarketValue { get; set; }
         public bool IsForbidden { get; set; }

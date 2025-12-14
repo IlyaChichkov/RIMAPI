@@ -362,6 +362,13 @@ namespace RIMAPI.Helpers
                     Y = thing.Position.y,
                     Z = thing.Position.z,
                 },
+                Rotation = thing.Rotation.AsInt,
+                Size = new PositionDto
+                {
+                    X = thing.def.size.x,
+                    Y = 0,
+                    Z = thing.def.size.z
+                },
                 StackCount = thing.stackCount,
                 MarketValue = thing.MarketValue,
                 IsForbidden = thing.IsForbidden(Faction.OfPlayer),

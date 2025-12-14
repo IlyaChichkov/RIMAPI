@@ -56,6 +56,12 @@ namespace RIMAPI.Services
             return ApiResult<MapRoomsDto>.Ok(result);
         }
 
+        public ApiResult<MapTerrainDto> GetMapTerrain(int mapId)
+        {
+            var result = MapHelper.GetMapTerrain(mapId);
+            return ApiResult<MapTerrainDto>.Ok(result);
+        }
+
         public ApiResult<List<MapDto>> GetMaps()
         {
             var result = MapHelper.GetMaps();
@@ -65,6 +71,18 @@ namespace RIMAPI.Services
         public ApiResult<List<ThingDto>> GetMapThings(int mapId)
         {
             var result = MapHelper.GetMapThings(mapId);
+            return ApiResult<List<ThingDto>>.Ok(result);
+        }
+
+        public ApiResult<List<ThingDto>> GetMapThingsInRadius(int mapId, int x, int z, int radius)
+        {
+            var result = MapHelper.GetMapThingsInRadius(mapId, x, z, radius);
+            return ApiResult<List<ThingDto>>.Ok(result);
+        }
+
+        public ApiResult<List<ThingDto>> GetMapPlants(int mapId)
+        {
+            var result = MapHelper.GetMapPlants(mapId);
             return ApiResult<List<ThingDto>>.Ok(result);
         }
 

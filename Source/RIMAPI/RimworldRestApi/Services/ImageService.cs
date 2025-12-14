@@ -17,6 +17,12 @@ namespace RIMAPI.Services
             return ApiResult<ImageDto>.Ok(result);
         }
 
+        public ApiResult<ImageDto> GetTerrainImage(string name)
+        {
+            var result = TextureHelper.GetTerrainImageByName(name);
+            return ApiResult<ImageDto>.Ok(result);
+        }
+
         public ApiResult SetItemImageByName(ImageUploadRequest imageUpload)
         {
             string imageBase64 = imageUpload.Image;

@@ -52,6 +52,42 @@ namespace RIMAPI.Helpers
             return colonists;
         }
 
+        public static List<PawnPositionDto> GetColonistPositions()
+        {
+            var positions = new List<PawnPositionDto>();
+
+            try
+            {
+                var map = Find.CurrentMap;
+                if (map == null)
+                    return positions;
+
+                var freeColonists = map.mapPawns?.FreeColonists;
+                if (freeColonists == null)
+                    return positions;
+
+                foreach (var pawn in freeColonists)
+                {
+                    if (pawn == null || !pawn.Spawned)
+                        continue;
+
+                    positions.Add(new PawnPositionDto
+                    {
+                        Id = pawn.thingIDNumber,
+                        MapId = map.uniqueID,
+                        X = pawn.Position.x,
+                        Z = pawn.Position.z
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Core.LogApi.Error($"Error getting colonist positions - {ex.Message}");
+            }
+
+            return positions;
+        }
+
         public static ColonistDto CreateColonistDto(Pawn pawn)
         {
             return new ColonistDto
