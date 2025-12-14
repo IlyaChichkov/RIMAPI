@@ -89,6 +89,15 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
+        [Post("/api/v1/game/select-area")]
+        [EndpointMetadata("Select an area on the map")]
+        public async Task SelectArea(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<SelectAreaRequestDto>();
+            var result = _gameStateService.SelectArea(body);
+            await context.SendJsonResponse(result);
+        }
+
         [Post("/api/v1/select")]
         [EndpointMetadata("Select game object")]
         public async Task Select(HttpListenerContext context)
@@ -147,6 +156,14 @@ namespace RIMAPI.Controllers
         {
             var body = await context.Request.ReadBodyAsync<SendLetterRequestDto>();
             var result = _gameStateService.SendLetterSimple(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/game/speed")]
+        public async Task SetGameSpeed(HttpListenerContext context)
+        {
+            var speed = RequestParser.GetIntParameter(context, "speed");
+            var result = _gameStateService.SetGameSpeed(speed);
             await context.SendJsonResponse(result);
         }
     }

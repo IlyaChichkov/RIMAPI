@@ -16,6 +16,7 @@ namespace RIMAPI.Services
     {
         ApiResult<GameStateDto> GetGameState();
         ApiResult<List<ModInfoDto>> GetModsInfo();
+        ApiResult SelectArea(SelectAreaRequestDto body);
         ApiResult Select(string objectType, int id);
         ApiResult DeselectAll();
         ApiResult OpenTab(string tabName);
@@ -23,6 +24,7 @@ namespace RIMAPI.Services
         ApiResult<MapTimeDto> GetCurrentMapDatetime();
         ApiResult<MapTimeDto> GetWorldTileDatetime(int tileID);
         ApiResult SendLetterSimple(SendLetterRequestDto body);
+        ApiResult SetGameSpeed(int speed);
     }
     #endregion
 
@@ -30,6 +32,7 @@ namespace RIMAPI.Services
     public interface IColonistService
     {
         ApiResult<List<ColonistDto>> GetColonists();
+        ApiResult<List<PawnPositionDto>> GetColonistPositions();
         ApiResult<ColonistDto> GetColonist(int pawnId);
         ApiResult<List<ColonistDetailedDto>> GetColonistsDetailed();
         ApiResult<ColonistDetailedDto> GetColonistDetailed(int pawnId);
@@ -62,13 +65,17 @@ namespace RIMAPI.Services
         ApiResult<MapWeatherDto> GetWeather(int mapId);
         ApiResult<List<AnimalDto>> GetMapAnimals(int mapId);
         ApiResult<List<ThingDto>> GetMapThings(int mapId);
+        ApiResult<List<ThingDto>> GetMapPlants(int mapId);
         ApiResult<MapCreaturesSummaryDto> GetMapCreaturesSummary(int mapId);
         ApiResult<MapFarmSummaryDto> GenerateFarmSummary(int mapId);
         ApiResult<GrowingZoneDto> GetGrowingZoneById(int mapId, int zoneId);
         ApiResult<MapZonesDto> GetMapZones(int mapId);
         ApiResult<MapRoomsDto> GetMapRooms(int mapId);
         ApiResult<List<BuildingDto>> GetMapBuildings(int mapId);
+        ApiResult<MapTerrainDto> GetMapTerrain(int mapId);
+        ApiResult<List<ThingDto>> GetMapThingsInRadius(int mapId, int x, int z, int radius);
         ApiResult SetWeather(int mapId, string defName);
+        ApiResult<List<ThingDto>> GetThingsAtCell(ThingsAtCellRequestDto body);
     }
     #endregion
 
@@ -118,6 +125,7 @@ namespace RIMAPI.Services
     public interface IImageService
     {
         ApiResult<ImageDto> GetItemImage(string name);
+        ApiResult<ImageDto> GetTerrainImage(string name);
         ApiResult SetItemImageByName(ImageUploadRequest request);
         ApiResult SetStuffColor(StuffColorRequest request);
     }

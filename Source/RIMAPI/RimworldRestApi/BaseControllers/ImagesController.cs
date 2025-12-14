@@ -25,6 +25,15 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
+        [Get("/api/v1/terrain/image")]
+        [EndpointMetadata("Get terrain's texture image in base64 format")]
+        public async Task GetTerrainImage(HttpListenerContext context)
+        {
+            var name = RequestParser.GetStringParameter(context, "name");
+            var result = _imageService.GetTerrainImage(name);
+            await context.SendJsonResponse(result);
+        }
+
         [Post("/api/v1/item/image")]
         [EndpointMetadata("Get item's texture image in base64 format")]
         public async Task SetItemImage(HttpListenerContext context)

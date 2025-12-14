@@ -35,6 +35,35 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
+        [Get("/api/v1/map/things-at")]
+        public async Task GetThingsAtCell(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<ThingsAtCellRequestDto>();
+            var result = _mapService.GetThingsAtCell(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/map/things/radius")]
+        public async Task GetMapThingsInRadius(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var x = RequestParser.GetIntParameter(context, "x");
+            var z = RequestParser.GetIntParameter(context, "z");
+            var radius = RequestParser.GetIntParameter(context, "radius");
+
+            var result = _mapService.GetMapThingsInRadius(mapId, x, z, radius);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/map/plants")]
+        [EndpointMetadata("Get all plants (trees, bushes, crops) on the map")]
+        public async Task GetMapPlants(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.GetMapPlants(mapId);
+            await context.SendJsonResponse(result);
+        }
+
         [Get("/api/v1/map/weather")]
         [EndpointMetadata("Get weather on the map")]
         public async Task GetMapWeather(HttpListenerContext context)
@@ -100,6 +129,14 @@ namespace RIMAPI.Controllers
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapRooms(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/map/terrain")]
+        public async Task GetMapTerrain(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.GetMapTerrain(mapId);
             await context.SendJsonResponse(result);
         }
 

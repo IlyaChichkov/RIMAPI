@@ -26,12 +26,7 @@ game reaches the main menu. The port can be changed in the mod settings.
 - **Research progress** - Check current projects and completed research
 - **Quests & incidents** - Get list of quests and incidents
 
-### Game world manipulation
-
-- **Camera Controls** - Set position, zoom, stream output
-- **Interface Controls** - Select objects, open tabs
-- **In development**</br>
-  *item spawning, event triggering, zone management*
+[  API Reference  ](https://ilyachichkov.github.io/RIMAPI/api.html)
 
 ### Performance optimizations
 - **Caching** - Efficient data updates without game lag
@@ -61,7 +56,7 @@ This project is licensed under the GNU GPLv3 License - see the [LICENSE](https:/
 Thanks to MasterPNJ and his project for insipiration: [ARROM](https://github.com/MasterPNJ/API-REST-RimwOrld-Mod)
 
 Thanks to @braasdas and his [RatLab](https://github.com/braasdas/ratlab-mod-github)
-for code reference
+for code reference and contributions
 
 ## 📋 Changelog
 
@@ -70,3 +65,5 @@ for code reference
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+
+[  Contributing  ](https://ilyachichkov.github.io/RIMAPI/contributors_guide/contribute.html)

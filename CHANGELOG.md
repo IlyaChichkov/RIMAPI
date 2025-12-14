@@ -1,4 +1,60 @@
 # Changelog
+## v1.4.0
+
+Author: IlyaChichkov
+
+Add new endpoints:
+
+[POST] /api/v1/game/speed
+[POST] /api/v1/game/select-area
+[GET] /api/v1/map/things-at
+
+Author: braasdas
+
+This patch implements high-performance endpoints and data optimizations required for a real-time "Live Optical View" web interface. The primary goals were reducing network bandwidth (via RLE compression) and minimizing game thread impact (via caching).
+
+1. NEW API ENDPOINTS
+--------------------
+[GET] /api/v1/map/terrain
+- Purpose: Fetches the entire map's terrain and floor grid.
+- Optimization: Uses custom Run-Length Encoding (RLE) to compress the grid data. This reduces payload size by ~90% for typical maps, making full map transmission viable over the network.
+
+[GET] /api/v1/colonists/positions
+- Purpose: A lightweight endpoint returning only Pawn ID, MapID, X, and Z coordinates.
+- Optimization: Designed for high-frequency polling (e.g., 10-60Hz). Implements 0.1s server-side caching to prevent flooding the main game thread.
+
+[GET] /api/v1/terrain/image
+- Purpose: Fetches the texture/icon for specific terrain or floor defs (e.g., "SandstoneTile", "CarpetRed").
+- Why: Required for the client to reconstruct the map visually.
+
+[GET] /api/v1/map/plants
+- Purpose: Fast retrieval of all vegetation (trees, crops). separated from general "things" to allow different polling rates.
+
+[GET] /api/v1/map/things/radius
+- Purpose: Efficiently queries items/buildings only within a specific circle. Useful for culling or "fog of war" logic.
+
+2. LOGIC & HELPER IMPROVEMENTS
+------------------------------
+TextureHelper.cs (Major Fixes)
+- Problem: Many buildings (Walls, Vents, Coolers) do not have a standard `uiIcon`.
+- Fix: Added deep lookup logic to check `graphicData`, `graphic.MatSingle`, and `graphic.MatSouth`. This ensures almost all buildings now return a valid base64 image.
+- Added fallback case-insensitive search for DefNames to handle minor typo/mod inconsistencies.
+
+MapHelper.cs
+- Added the RLE compression logic for the Terrain/Floor grids.
+- Separated "Natural Terrain" (soil, stone) from "Constructed Floors" (wood, tile) into two distinct layers for better rendering control.
+
+ResourcesHelper.cs
+- Updated `BuildingDto` and `ItemsDto` to include `Rotation` and `Size` (x, z).
+- Why: Critical for the client to correctly orient non-square objects (e.g., Beds, Tables) which were previously rendering as 1x1 squares or unrotated images.
+
+3. NEW DATA MODELS
+------------------
+- MapTerrainDto: Handles the compressed grid arrays and palette lookups.
+- PawnPositionDto: Minimalist structure for the fast position endpoint.
+
+These changes are largely additive and designed to run alongside existing logic without breaking current endpoints. The modifications to `TextureHelper` are strictly improvements to robustness and should benefit the entire API.
+
 ## v1.3.0
 
 Add examples and description for endpoints in documentation

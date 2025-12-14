@@ -56,6 +56,12 @@ namespace RIMAPI.Services
             return ApiResult<MapRoomsDto>.Ok(result);
         }
 
+        public ApiResult<MapTerrainDto> GetMapTerrain(int mapId)
+        {
+            var result = MapHelper.GetMapTerrain(mapId);
+            return ApiResult<MapTerrainDto>.Ok(result);
+        }
+
         public ApiResult<List<MapDto>> GetMaps()
         {
             var result = MapHelper.GetMaps();
@@ -65,6 +71,18 @@ namespace RIMAPI.Services
         public ApiResult<List<ThingDto>> GetMapThings(int mapId)
         {
             var result = MapHelper.GetMapThings(mapId);
+            return ApiResult<List<ThingDto>>.Ok(result);
+        }
+
+        public ApiResult<List<ThingDto>> GetMapThingsInRadius(int mapId, int x, int z, int radius)
+        {
+            var result = MapHelper.GetMapThingsInRadius(mapId, x, z, radius);
+            return ApiResult<List<ThingDto>>.Ok(result);
+        }
+
+        public ApiResult<List<ThingDto>> GetMapPlants(int mapId)
+        {
+            var result = MapHelper.GetMapPlants(mapId);
             return ApiResult<List<ThingDto>>.Ok(result);
         }
 
@@ -107,6 +125,47 @@ namespace RIMAPI.Services
             catch (Exception ex)
             {
                 return ApiResult.Fail(ex.Message);
+            }
+        }
+
+        public ApiResult<List<ThingDto>> GetThingsAtCell(ThingsAtCellRequestDto body)
+        {
+            try
+            {
+                if (body == null)
+                {
+                    return ApiResult<List<ThingDto>>.Fail("Request body is null");
+                }
+
+                var map = MapHelper.GetMapByID(body.MapId);
+                if (map == null)
+                {
+                    return ApiResult<List<ThingDto>>.Fail($"Map with ID {body.MapId} not found.");
+                }
+
+                if (body.Position == null)
+                {
+                    return ApiResult<List<ThingDto>>.Fail("Position cannot be null.");
+                }
+
+                IntVec3 cellPosition = new IntVec3(body.Position.X, body.Position.Y, body.Position.Z);
+
+                List<Thing> things = cellPosition.GetThingList(map);
+                List<ThingDto> thingDtos = new List<ThingDto>();
+
+                foreach (Thing thing in things)
+                {
+                    thingDtos.Add(ResourcesHelper.ThingToDto(thing));
+                }
+
+                return ApiResult<List<ThingDto>>.Ok(thingDtos);
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error getting things at cell: {ex}");
+                return ApiResult<List<ThingDto>>.Fail(
+                    $"Failed to get things at cell: {ex.Message}"
+                );
             }
         }
     }

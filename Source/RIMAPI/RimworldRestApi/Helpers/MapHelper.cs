@@ -257,6 +257,32 @@ namespace RIMAPI.Helpers
             }
         }
 
+        public static List<ThingDto> GetMapPlants(int mapId)
+        {
+            List<ThingDto> plants = new List<ThingDto>();
+            try
+            {
+                Map map = GetMapByID(mapId);
+                if (map == null)
+                {
+                    return plants;
+                }
+
+                // Get all plants (trees, bushes, crops, etc.)
+                plants = map
+                    .listerThings.ThingsInGroup(ThingRequestGroup.Plant)
+                    .Select(p => ResourcesHelper.ThingToDto(p))
+                    .ToList();
+
+                return plants;
+            }
+            catch (Exception ex)
+            {
+                Core.LogApi.Error($"Error - {ex.Message}");
+                return new List<ThingDto>();
+            }
+        }
+
         public static List<ZoneDto> GetMapZones(int mapId)
         {
             List<ZoneDto> zones = new List<ZoneDto>();
@@ -346,6 +372,13 @@ namespace RIMAPI.Helpers
                             Y = building.Position.y,
                             Z = building.Position.z,
                         },
+                        Rotation = building.Rotation.AsInt,
+                        Size = new PositionDto
+                        {
+                            X = building.def.size.x,
+                            Y = 0,
+                            Z = building.def.size.z
+                        },
                         Type = building.GetType().Name,
                     }
                 );
@@ -397,6 +430,186 @@ namespace RIMAPI.Helpers
             };
 #endif
             return mapRooms;
+        }
+
+        public static MapTerrainDto GetMapTerrain(int mapId)
+        {
+            var map = GetMapByID(mapId);
+            if (map == null) return new MapTerrainDto();
+
+            var terrainGrid = map.terrainGrid;
+            var size = map.Size;
+            int width = size.x;
+            int height = size.z;
+
+            // 1. Build Palette and Raw Index Grid
+            var palette = new List<string>();
+            var paletteLookup = new Dictionary<TerrainDef, int>();
+            var rawIndices = new int[width * height];
+
+            int cellIndex = 0;
+            // Iterate Z then X (Standard loop order)
+            for (int z = 0; z < height; z++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    TerrainDef def = terrainGrid.TerrainAt(new IntVec3(x, 0, z));
+
+                    if (!paletteLookup.TryGetValue(def, out int pIndex))
+                    {
+                        pIndex = palette.Count;
+                        palette.Add(def.defName);
+                        paletteLookup[def] = pIndex;
+                    }
+
+                    rawIndices[cellIndex++] = pIndex;
+                }
+            }
+
+            // 2. Run-Length Encoding (RLE)
+            var compressedGrid = new List<int>();
+            if (rawIndices.Length > 0)
+            {
+                int currentVal = rawIndices[0];
+                int count = 1;
+
+                for (int i = 1; i < rawIndices.Length; i++)
+                {
+                    if (rawIndices[i] == currentVal)
+                    {
+                        count++;
+                    }
+                    else
+                    {
+                        compressedGrid.Add(count);
+                        compressedGrid.Add(currentVal);
+                        currentVal = rawIndices[i];
+                        count = 1;
+                    }
+                }
+                // Add final run
+                compressedGrid.Add(count);
+                compressedGrid.Add(currentVal);
+            }
+
+            // 3. Build Floor Palette and Grid (for constructed floors)
+            var floorPalette = new List<string>();
+            var floorPaletteLookup = new Dictionary<string, int>();
+            var rawFloorIndices = new int[width * height];
+
+            cellIndex = 0;
+            for (int z = 0; z < height; z++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    var cell = new IntVec3(x, 0, z);
+                    var building = map.edificeGrid.InnerArray[cellIndex];
+
+                    // Check if this is a floor (constructed floor blueprint)
+                    // Floors in RimWorld are Buildings that have a graphic but no altitude (they're on the ground)
+                    string floorDefName = null;
+                    if (building != null && building.def.building != null)
+                    {
+                        // Floors typically have graphicData and no altitudeLayer set
+                        // Or check if the defName contains "Floor"
+                        if (building.def.graphicData != null && building.def.altitudeLayer == Verse.AltitudeLayer.Floor)
+                        {
+                            floorDefName = building.def.defName;
+                        }
+                    }
+
+                    int fIndex = 0; // 0 = no floor (null)
+                    if (floorDefName != null)
+                    {
+                        if (!floorPaletteLookup.TryGetValue(floorDefName, out fIndex))
+                        {
+                            fIndex = floorPalette.Count + 1; // +1 because 0 is reserved for null
+                            floorPalette.Add(floorDefName);
+                            floorPaletteLookup[floorDefName] = fIndex;
+                        }
+                    }
+
+                    rawFloorIndices[cellIndex++] = fIndex;
+                }
+            }
+
+            // 4. Run-Length Encoding for Floors
+            var compressedFloorGrid = new List<int>();
+            if (rawFloorIndices.Length > 0)
+            {
+                int currentVal = rawFloorIndices[0];
+                int count = 1;
+
+                for (int i = 1; i < rawFloorIndices.Length; i++)
+                {
+                    if (rawFloorIndices[i] == currentVal)
+                    {
+                        count++;
+                    }
+                    else
+                    {
+                        compressedFloorGrid.Add(count);
+                        compressedFloorGrid.Add(currentVal);
+                        currentVal = rawFloorIndices[i];
+                        count = 1;
+                    }
+                }
+                // Add final run
+                compressedFloorGrid.Add(count);
+                compressedFloorGrid.Add(currentVal);
+            }
+
+            return new MapTerrainDto
+            {
+                Width = width,
+                Height = height,
+                Palette = palette,
+                Grid = compressedGrid,
+                FloorPalette = floorPalette,
+                FloorGrid = compressedFloorGrid
+            };
+        }
+
+        public static List<ThingDto> GetMapThingsInRadius(int mapId, int centerX, int centerZ, int radius)
+        {
+            var results = new List<ThingDto>();
+            Map map = GetMapByID(mapId);
+            if (map == null) return results;
+
+            IntVec3 center = new IntVec3(centerX, 0, centerZ);
+            var processedIds = new HashSet<int>();
+
+            foreach (IntVec3 cell in GenRadial.RadialCellsAround(center, radius, true))
+            {
+                if (!cell.InBounds(map)) continue;
+                List<Thing> thingsAtCell = map.thingGrid.ThingsListAt(cell);
+
+                for (int i = 0; i < thingsAtCell.Count; i++)
+                {
+                    Thing t = thingsAtCell[i];
+                    if (processedIds.Contains(t.thingIDNumber)) continue;
+
+                    // Filter: Items, Buildings, Plants
+                    if (t.def.category == ThingCategory.Item ||
+                        t.def.category == ThingCategory.Building ||
+                        t.def.category == ThingCategory.Plant)
+                    {
+                        // Skip invisible things
+                        if (t.def.drawerType == DrawerType.None) continue;
+
+                        // Convert to DTO
+                        // Use existing helper but ensure we capture building-specifics if needed
+                        var dto = ResourcesHelper.ThingToDto(t);
+
+                        // Correction for Buildings: Size/Rotation logic in ThingToDto is generic
+                        // Ensure it matches what we need
+
+                        results.Add(dto);
+                        processedIds.Add(t.thingIDNumber);
+                    }
+                }
+            }
+            return results;
         }
     }
 }

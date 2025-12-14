@@ -108,6 +108,12 @@ namespace RIMAPI.Services
             return ApiResult<List<ColonistDto>>.Ok(result);
         }
 
+        public ApiResult<List<PawnPositionDto>> GetColonistPositions()
+        {
+            var result = ColonistsHelper.GetColonistPositions();
+            return ApiResult<List<PawnPositionDto>>.Ok(result);
+        }
+
         public ApiResult<List<ColonistDetailedDto>> GetColonistsDetailed()
         {
             var result = ColonistsHelper.GetColonistsDetailed();

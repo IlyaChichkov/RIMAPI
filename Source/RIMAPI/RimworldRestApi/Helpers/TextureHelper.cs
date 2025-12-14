@@ -20,26 +20,56 @@ namespace RIMAPI.Helpers
             return image;
         }
 
-        public static ImageDto GetItemImageByName(string thingName)
+        public static ImageDto GetTerrainImageByName(string terrainName)
         {
             ImageDto image = new ImageDto();
             try
             {
-                var thingDef = DefDatabase<ThingDef>.GetNamed(thingName);
                 Texture2D texture = null;
 
-                if (!thingDef.uiIconPath.NullOrEmpty())
+                // First try TerrainDef (natural terrain like soil, sand, stone)
+                var terrainDef = DefDatabase<TerrainDef>.GetNamedSilentFail(terrainName);
+                if (terrainDef != null)
                 {
-                    texture = thingDef.uiIcon;
+                    if (terrainDef.uiIcon != null)
+                    {
+                        texture = terrainDef.uiIcon;
+                    }
+                    else if (terrainDef.graphic != null && terrainDef.graphic.MatSingle != null)
+                    {
+                        texture = (Texture2D)terrainDef.graphic.MatSingle.mainTexture;
+                    }
                 }
-                else
+
+                // If not found, try ThingDef (constructed floors like TileSandstone, FloorWood)
+                if (texture == null)
                 {
-                    texture = (Texture2D)thingDef.DrawMatSingle.mainTexture;
+                    var thingDef = DefDatabase<ThingDef>.GetNamedSilentFail(terrainName);
+                    if (thingDef != null)
+                    {
+                        if (thingDef.uiIcon != null)
+                        {
+                            texture = thingDef.uiIcon;
+                        }
+                        else if (thingDef.graphic != null && thingDef.graphic.MatSingle != null)
+                        {
+                            texture = (Texture2D)thingDef.graphic.MatSingle.mainTexture;
+                        }
+                        else if (thingDef.graphicData != null)
+                        {
+                            // Force graphic initialization if needed
+                            var graphic = thingDef.graphic ?? thingDef.graphicData.Graphic;
+                            if (graphic != null && graphic.MatSingle != null)
+                            {
+                                texture = (Texture2D)graphic.MatSingle.mainTexture;
+                            }
+                        }
+                    }
                 }
 
                 if (texture == null)
                 {
-                    image.Result = $"No texture available for item - {thingName}";
+                    image.Result = $"No texture available for terrain/floor - {terrainName}";
                 }
                 else
                 {
@@ -52,7 +82,81 @@ namespace RIMAPI.Helpers
             catch (Exception ex)
             {
                 image.Result = ex.Message;
-                throw;
+            }
+            return image;
+        }
+
+        public static ImageDto GetItemImageByName(string thingName)
+        {
+            ImageDto image = new ImageDto();
+            try
+            {
+                // Robust Lookup
+                var thingDef = DefDatabase<ThingDef>.GetNamedSilentFail(thingName);
+                if (thingDef == null)
+                {
+                    // Fallback to case-insensitive search
+                    thingDef = DefDatabase<ThingDef>.AllDefsListForReading.FirstOrDefault(d =>
+                        d.defName.Equals(thingName, StringComparison.OrdinalIgnoreCase));
+                }
+
+                if (thingDef == null)
+                {
+                    image.Result = $"ThingDef not found: {thingName}";
+                    return image;
+                }
+
+                Texture2D texture = null;
+
+                // 1. Try UI Icon
+                if (!thingDef.uiIconPath.NullOrEmpty())
+                {
+                    texture = thingDef.uiIcon;
+                }
+
+                // 2. Try Graphic Data (Vital for Buildings without UI icons)
+                if (texture == null && thingDef.graphicData != null)
+                {
+                    var graphic = thingDef.graphic ?? thingDef.graphicData.Graphic;
+                    if (graphic != null)
+                    {
+                        // Try single material first
+                        if (graphic.MatSingle != null)
+                            texture = (Texture2D)graphic.MatSingle.mainTexture;
+
+                        // Fallback to South material (common for buildings)
+                        if (texture == null && graphic.MatSouth != null)
+                            texture = (Texture2D)graphic.MatSouth.mainTexture;
+                    }
+                }
+
+                // 3. Fallback to DrawMatSingle (can fail for complex graphics)
+                if (texture == null)
+                {
+                    try
+                    {
+                        if (thingDef.DrawMatSingle != null)
+                            texture = (Texture2D)thingDef.DrawMatSingle.mainTexture;
+                    }
+                    catch { }
+                }
+
+                if (texture == null)
+                {
+                    image.Result = $"No texture available for - {thingName}";
+                }
+                else
+                {
+                    image.Result = "success";
+                    var readableTexture = GetReadableTexture(texture);
+                    image.ImageBase64 = TextureToBase64(readableTexture);
+                    UnityEngine.Object.Destroy(readableTexture);
+                }
+            }
+            catch (Exception ex)
+            {
+                image.Result = ex.Message;
+                // LogApi.Error($"Texture extract error for {thingName}: {ex}");
             }
             return image;
         }

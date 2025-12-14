@@ -625,5 +625,43 @@ namespace RIMAPI.Services
                 return ApiResult.Fail(ex.Message);
             }
         }
+
+        public ApiResult SetGameSpeed(int speed)
+        {
+            try
+            {
+                Find.TickManager.CurTimeSpeed = (TimeSpeed)speed;
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error setting game speed: {ex}");
+                return ApiResult.Fail($"Failed to set game speed: {ex.Message}");
+            }
+        }
+
+        public ApiResult SelectArea(SelectAreaRequestDto body)
+        {
+            try
+            {
+                if (body.PositionA == null || body.PositionB == null)
+                {
+                    return ApiResult.Fail("PositionA and PositionB cannot be null.");
+                }
+
+                IntVec3 posA = new IntVec3(body.PositionA.X, body.PositionA.Y, body.PositionA.Z);
+                IntVec3 posB = new IntVec3(body.PositionB.X, body.PositionB.Y, body.PositionB.Z);
+
+                CellRect rect = CellRect.FromLimits(posA, posB);
+                Find.Selector.Select(rect);
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error selecting area: {ex}");
+                return ApiResult.Fail($"Failed to select area: {ex.Message}");
+            }
+        }
     }
 }

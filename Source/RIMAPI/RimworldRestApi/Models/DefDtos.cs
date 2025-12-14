@@ -47,43 +47,6 @@ namespace RIMAPI.Models
         public List<AnimalDefDto> AnimalDefs { get; set; }
     }
 
-    public class ThingDefDto
-    {
-        public string DefName { get; set; }
-        public string Label { get; set; }
-        public string Description { get; set; }
-        public string Category { get; set; }
-        public string ThingClass { get; set; }
-        public Dictionary<string, float> StatBase { get; set; }
-        public List<ThingCostDto> CostList { get; set; }
-        public bool IsWeapon { get; set; }
-        public bool IsApparel { get; set; }
-        public bool IsItem { get; set; }
-        public bool IsPawn { get; set; }
-        public bool IsPlant { get; set; }
-        public bool IsBuilding { get; set; }
-        public bool IsMedicine { get; set; }
-        public bool IsDrug { get; set; }
-        public float MarketValue { get; set; }
-        public float Mass { get; set; }
-        public float MaxHitPoints { get; set; }
-        public float Flammability { get; set; }
-        public int StackLimit { get; set; }
-        public float Nutrition { get; set; }
-        public float WorkToMake { get; set; }
-        public float WorkToBuild { get; set; }
-        public float Beauty { get; set; }
-        public string TechLevel { get; set; }
-        public List<string> TradeTags { get; set; }
-        public List<string> StuffCategories { get; set; }
-        public float MaxHealth { get; set; }
-        public float ArmorRating_Sharp { get; set; }
-        public float ArmorRating_Blunt { get; set; }
-        public float ArmorRating_Heat { get; set; }
-        public float Insulation_Cold { get; set; }
-        public float Insulation_Heat { get; set; }
-    }
-
     public class ThingCostDto
     {
         public string ThingDef { get; set; }

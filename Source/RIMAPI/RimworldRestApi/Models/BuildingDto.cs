@@ -26,6 +26,8 @@ namespace RIMAPI.Models
         public string Def { get; set; }
         public string Label { get; set; }
         public PositionDto Position { get; set; }
+        public int Rotation { get; set; }
+        public PositionDto Size { get; set; }
         public string Type { get; set; }
     }
 

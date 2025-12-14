@@ -32,6 +32,19 @@ namespace RIMAPI.Controllers
             );
         }
 
+        [Get("/api/v1/colonists/positions")]
+        public async Task GetColonistPositions(HttpListenerContext context)
+        {
+             await _cachingService.CacheAwareResponseAsync(
+                context,
+                "/api/v1/colonists/positions",
+                dataFactory: () => Task.FromResult(_colonistService.GetColonistPositions()),
+                expiration: TimeSpan.FromSeconds(0.1),
+                priority: CachePriority.High,
+                expirationType: CacheExpirationType.Absolute
+            );
+        }
+
         [Get("/api/v1/colonist")]
         public async Task GetColonist(HttpListenerContext context)
         {

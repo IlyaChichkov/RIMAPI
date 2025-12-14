@@ -19,1168 +19,6 @@ api:
                     *   **UI Management**: Toggle interface visibility or open specific menus.
                     *   **Time Control**: Adjust game speed multiplier.
 
-            "/api/v1/camera/change/zoom":
-                desc: |
-                    Adjusts the in-game camera's zoom level to a specified value, 
-                    instantly changing the field of view. This allows for precise 
-                    control over how close or far the camera is on the game map.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/camera/change/zoom?zoom=15'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                    "success": true,
-                    "errors": [],
-                    "warnings": [],
-                    "timestamp": "2025-12-09T19:16:06.4839322Z"
-                    }
-                    ```
-
-            "/api/v1/camera/change/position":
-                desc: |
-                    Instantly moves the in-game camera to the specified world coordinates on the current map.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/camera/change/position?x=50&y=50'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/stream/start":
-                desc: |
-                    Starts a live video stream of the game's current camera view. 
-                    This endpoint initiates a real-time broadcast of the rendered gameplay, 
-                    capturing exactly what is visible in the player's main viewport.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/stream/start'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/stream/stop":
-                desc: |
-                    Gracefully stops the active live video stream of the game's camera view.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/stream/stop'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/stream/setup":
-                desc: |
-                    Configures the parameters and settings for the live video stream of 
-                    the game's camera view before starting it. 
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30'
-                    ```
-                request: |
-                    **Request:**
-                    ```json
-                    {
-                        "port": 8080,
-                        "address": "127.0.0.1",
-                        "frame_width": 1280,
-                        "frame_height": 720,
-                        "target_fps": 30,
-                        "jpeg_quality": 85
-                    }
-                    ```
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/stream/status":
-                desc: |
-                    Gracefully stops the active live video stream of the game's camera view.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/stream/stop'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                    "success": true,
-                    "data": {
-                        "is_streaming": false,
-                        "config": {
-                        "port": 5007,
-                        "address": "127.0.0.1",
-                        "frame_width": 1280,
-                        "frame_height": 720,
-                        "target_fps": 15,
-                        "jpeg_quality": 50
-                        }
-                    },
-                    "errors": [],
-                    "warnings": [],
-                    "timestamp": "2025-12-09T19:31:56.8297247Z"
-                    }
-                    ```
-
-            "/api/v1/dev/console":
-                desc: |
-                    A development and debugging endpoint that allows interaction with the 
-                    game's internal logging system. This provides programmatic control over 
-                    the developer console, allowing sending log messages, clearing console.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/stream/stop'
-                    ```
-                request: |
-                    **Request:**
-                    ```json
-                    {
-                    "action": "message",
-                    "message": "hello_world"
-                    }
-                    ```
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/dev/stuff/color":
-                desc: |
-                    A development tool endpoint that modifies the visual color 
-                    properties of a specific "stuff" material in-game. "Stuff" 
-                    in RimWorld refers to the base materials that items and 
-                    structures are made from (e.g., wood, steel, cloth, plasteel). 
-                    This endpoint allows for real-time adjustment of a material's 
-                    displayed color, primarily used for visual customization, 
-                    debugging, or mod development testing.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/dev/stuff/color \
-                    --header 'content-type: application/json' \
-                    --data '{
-                        "name": "WoodLog",
-                        "hex": "aa00ff"
-                    }'
-                    ```
-                request: |
-                    **Request:**
-                    ```json
-                    {
-                        "name": "WoodLog",
-                        "hex": "aa00ff"
-                    }
-                    ```
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/cache/status":
-                desc: |
-                    Retrieves the current status and performance statistics 
-                    of the API's internal caching system. This endpoint provides 
-                    visibility into cache utilization, effectiveness, and 
-                    memory footprint, useful for monitoring and debugging API 
-                    performance and optimization.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url http://localhost:8765/api/v1/cache/status
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "enabled": true,
-                        "statistics": {
-                            "total_entries": 0,
-                            "hits": 0,
-                            "misses": 0,
-                            "memory_usage_bytes": 0,
-                            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
-                            "hit_ratio": 0.0,
-                            "compiled_delegate_count": 0,
-                            "compiled_delegate_hits": 0,
-                            "compiled_delegate_misses": 0
-                        }
-                    }
-                    ```
-
-            "/api/v1/cache/clear":
-                desc: |
-                    Manually triggers a complete flush of the API's internal caching system.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/cache/clear
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "enabled": true,
-                        "statistics": {
-                            "total_entries": 0,
-                            "hits": 0,
-                            "misses": 0,
-                            "memory_usage_bytes": 0,
-                            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
-                            "hit_ratio": 0.0,
-                            "compiled_delegate_count": 0,
-                            "compiled_delegate_hits": 0,
-                            "compiled_delegate_misses": 0
-                        }
-                    }
-                    ```
-
-            "/api/v1/version":
-                desc: |
-                    Retrieves version information for the game, the REST API mod, 
-                    and the API itself. This endpoint provides essential identification 
-                    metadata that can be used for compatibility checks, debugging, 
-                    and system documentation.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url http://localhost:8765/api/v1/version
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "rim_world_version": "1.5.4243",
-                            "mod_version": "1.2.0",
-                            "api_version": "v1"
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T18:52:09.0916968Z"
-                    }
-                    ```
-
-
-            "/api/v1/mods/info":
-                desc: |
-                    Manually triggers a complete flush of the API's internal caching system.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/mods/info
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": [
-                            {
-                            "name": "Core",
-                            "package_id": "ludeon.rimworld",
-                            "load_order": 0
-                            },
-                            {
-                            "name": "Royalty",
-                            "package_id": "ludeon.rimworld.royalty",
-                            "load_order": 1
-                            },
-                            {
-                            "name": "Ideology",
-                            "package_id": "ludeon.rimworld.ideology",
-                            "load_order": 2
-                            },
-                            {
-                            "name": "Biotech",
-                            "package_id": "ludeon.rimworld.biotech",
-                            "load_order": 3
-                            },
-                            {
-                            "name": "Anomaly",
-                            "package_id": "ludeon.rimworld.anomaly",
-                            "load_order": 4
-                            },
-                            {
-                            "name": "RIMAPI",
-                            "package_id": "redeyedev.rimapi",
-                            "load_order": 5
-                            }
-                        ],
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T18:53:40.5041431Z"
-                    }
-                    ```
-
-            "/api/v1/select":
-                desc: |
-                    Selects a specific in-game object (pawn, building, item, etc.) 
-                    based on its type and unique identifier.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/select?type=pawn&id=443'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/deselect":
-                desc: |
-                    Clears the current in-game selection, removing any highlighted 
-                    objects and returning the interface to a neutral state.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/deselect
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/open-tab":
-                desc: |
-                    Opens a specific information panel (tab) for the currently selected 
-                    pawn in the game's inspection pane. This endpoint allows external 
-                    control to view detailed information about a pawn's health, equipment, 
-                    needs, relationships, and other attributes—mirroring the tab interface 
-                    available when manually inspecting a character in-game.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/open-tab?name=health'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/datetime":
-                desc: |
-                    Retrieves the current in-game date and time according to the RimWorld world calendar.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/datetime
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "datetime": "12th of Aprimay, 5500, 17h"
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:05:35.3244951Z"
-                    }
-                    ```
-
-            "/api/v1/datetime/tile":
-                desc: |
-                    Retrieves the current in-game date and time according to the RimWorld world calendar.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/datetime
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "datetime": "12th of Aprimay, 5500, 17h"
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:05:35.3244951Z"
-                    }
-                    ```
-
-            "/api/v1/def/all":
-                desc: |
-                    Retrieves comprehensive information about all game definition 
-                    entries (defs) from RimWorld's data system. Definitions are the core 
-                    data structures that define nearly every element in the game, including 
-                    items, buildings, creatures, terrain, research projects, and more.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url http://localhost:8765/api/v1/def/all
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "things_defs": [
-                                {
-                                    "def_name": "TextBook",
-                                    "label": "textbook",
-                                    "description": "A book which focuses on teaching skills.",
-                                    "category": "Item",
-                                    "thing_class": "Book",
-                                    "stat_base": {
-                                    "max_hit_points": 60.0,
-                                    "deterioration_rate": 5.0,
-                                    "mass": 0.5,
-                                    "flammability": 1.0,
-                                    "beauty": 1.0,
-                                    "market_value": 160.0
-                                    },
-                                    "is_weapon": false,
-                                    "is_apparel": false,
-                                    "is_item": true,
-                                    "is_pawn": false,
-                                    "is_plant": false,
-                                    "is_building": false,
-                                    "is_medicine": false,
-                                    "is_drug": false,
-                                    "market_value": 160.0,
-                                    "mass": 0.5,
-                                    "max_hit_points": 60.0,
-                                    "flammability": 1.0,
-                                    "stack_limit": 1,
-                                    "nutrition": 0.0,
-                                    "work_to_make": 1.0,
-                                    "work_to_build": 1.0,
-                                    "beauty": 1.0,
-                                    "max_health": 0.0,
-                                    "armor_rating__sharp": 0.0,
-                                    "armor_rating__blunt": 0.0,
-                                    "armor_rating__heat": 0.0,
-                                    "insulation__cold": 0.0,
-                                    "insulation__heat": 0.0
-                                },
-                                {
-                                    <...>
-                                }
-                            ],
-                            "incidents_defs": [],
-                            "conditions_defs": [],
-                            "pawn_kind_defs": [],
-                            "trait_defs": [],
-                            "research_defs": [],
-                            "hediff_defs": [],
-                            "skill_defs": [],
-                            "work_type_defs": [],
-                            "need_defs": [],
-                            "stat_defs": [],
-                            "world_object_defs": [],
-                            "biome_defs": [],
-                            "terrain_defs": [],
-                            "recipe_defs": [],
-                            "body_defs": [],
-                            "body_part_defs": [],
-                            "faction_defs": [],
-                            "sound_defs": [],
-                            "designation_category_defs": [],
-                            "joy_kind_defs": [],
-                            "meme_defs": [],
-                            "precept_defs": [],
-                            "ability_defs": [],
-                            "gene_defs": [],
-                            "weather_defs": [],
-                            "room_role_defs": [],
-                            "room_stat_defs": [],
-                            "mental_state_defs": [],
-                            "drug_policy_defs": [],
-                            "plant_defs": [],
-                            "animal_defs": []
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:09:46.047553Z"
-                    }
-                    ```
-
-            "/api/v1/incidents":
-                desc: "Description"
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/incidents?map_id=0'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "incidents": [
-                                {
-                                    "incident_def": "VisitorGroup",
-                                    "label": "visitor group",
-                                    "category": "None",
-                                    "incident_hour": 60.0,
-                                    "days_since_occurred": 0.1068
-                                },
-                                {
-                                    "incident_def": "GiveQuest_Beggars",
-                                    "label": "beggars arrive",
-                                    "category": "GiveQuest",
-                                    "incident_hour": 8.8,
-                                    "days_since_occurred": 2.24013329
-                                }
-                            ]
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:24:31.91622Z"
-                    }
-                    ```
-
-            "/api/v1/lords":
-                desc: |
-                    Retrieves detailed information about all active "Lord" processes on 
-                    a specified map. In RimWorld, a Lord represents a high-level AI 
-                    manager that coordinates groups of pawns toward a common objective—such 
-                    as raiding, visiting or trading.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/lords?map_id=0'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": [
-                            {
-                                "load_id": 2,
-                                "faction_name": "Nation of Iralaguaro",
-                                "faction_def_name": "TribeCivil",
-                                "lord_job_type": "LordJob_VisitColony",
-                                "current_toil_name": "LordToil_DefendPoint",
-                                "ticks_in_toil": 2231,
-                                "num_pawns_lost_violently": 0,
-                                "num_pawns_ever_gained": 1,
-                                "owned_pawn_ids": [
-                                    "Human8834"
-                                ],
-                                "owned_building_ids": [],
-                                "any_active_pawn": true
-                            },
-                            {
-                                "load_id": 3,
-                                "faction_name": "Cancer Unit",
-                                "faction_def_name": "PirateWaster",
-                                "lord_job_type": "LordJob_StageThenAttack",
-                                "current_toil_name": "LordToil_Stage",
-                                "ticks_in_toil": 0,
-                                "num_pawns_lost_violently": 0,
-                                "num_pawns_ever_gained": 1,
-                                "owned_pawn_ids": [
-                                    "Human8861"
-                                ],
-                                "owned_building_ids": [],
-                                "any_active_pawn": true
-                            }
-                        ],
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:26:22.0370532Z"
-                    }
-                    ```
-
-            "/api/v1/incident/trigger":
-                desc: |
-                    Manually triggers a specific in-game incident (event) immediately. 
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/incident/trigger \
-                    --header 'content-type: application/json' \
-                    --data '{
-                        "name": "RaidEnemy",
-                        "map_id": "0", 
-                        "incident_parms": {
-                            "points": 300.0,
-                            "forced": true,
-                            "faction": "Pirate",
-                            "send_letter": true,
-                            "custom_letter_label": "API Raid Test",
-                            "custom_letter_text": "Test raid triggered via API"
-                        }
-                    }'
-                    ```
-                request: |
-                    **Request:**
-                    ```json
-                    {
-                        "name": "RaidEnemy",
-                        "map_id": "0", 
-                        "incident_parms": {
-                            "points": 300.0,
-                            "forced": true,
-                            "faction": "Pirate",
-                            "send_letter": true,
-                            "custom_letter_label": "API Raid Test",
-                            "custom_letter_text": "Test raid triggered via API"
-                        }
-                    }
-                    ```
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/item/image":
-                desc: |
-                    Retrieves a base64-encoded image of a specific in-game item.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/item/image?name=ComponentIndustrial'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "result": "success",
-                            "image_base64": "..."
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:31:48.7480326Z"
-                    }
-                    ```
-
-            "/api/v1/item/image":
-                desc: |
-                    Retrieves a base64-encoded image of a specific in-game item.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/item/image?name=ComponentIndustrial'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "result": "success",
-                            "image_base64": "..."
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:31:48.7480326Z"
-                    }
-                    ```
-
-            "/api/v1/item/image":
-                desc: |
-                    Uploads or updates a custom image for an in-game item, building, plant,
-                    or other entity. This endpoint allows external tools or mods to 
-                    dynamically replace or modify the visual representation of game 
-                    objects, enabling real-time customization, mod prototyping, or visual 
-                    overrides without rebuilding game assets.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/item/image'
-                    ```
-                request: |
-                    **Request:**
-                    ```json
-                    {
-                        "Name": "ComponentIndustrial",
-                        "Image": "iVBORw0KGgoAAAANSUhHL...",
-                        "ThingType": "item",
-                    }
-                    ```
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-08T19:13:29.997162Z"
-                    }
-                    ```
-
-            "/api/v1/maps":
-                desc: |
-                    Retrieves a list of all currently loaded maps in the game session.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url http://localhost:8765/api/v1/maps
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": [
-                            {
-                            "id": 0,
-                            "index": 0,
-                            "seed": 16622162,
-                            "faction_id": "14",
-                            "is_player_home": true,
-                            "is_pocket_map": false,
-                            "is_temp_incident_map": false,
-                            "size": "(150, 1, 150)"
-                            }
-                        ],
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:38:45.9289233Z"
-                    }
-                    ```
-
-            "/api/v1/map/weather":
-                desc: |
-                    Retrieves the current weather conditions and temperature for 
-                    the currently active map (the map the player is viewing).
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/map/weather?map_id=0'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "weather": "Rain",
-                            "temperature": 19.7876511
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:39:54.5380426Z"
-                    }
-                    ```
-
-            "/api/v1/map/animals":
-                desc: |
-                    Retrieves a list of all animals currently present on the active map. 
-                    This includes both wild animals and tamed/owned animals 
-                    (pets, livestock, caravan animals).
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/map/animals?map_id=0'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": [
-                            {
-                            "id": 3633,
-                            "name": "Colin",
-                            "def": "Yak",
-                            "faction": "PlayerColony",
-                            "position": {
-                                "x": 67,
-                                "y": 119,
-                                "z": 0
-                            },
-                            "pregnant": false
-                            },
-                            {
-                            "id": 8547,
-                            "name": "Hare",
-                            "def": "Hare",
-                            "position": {
-                                "x": 50,
-                                "y": 40,
-                                "z": 0
-                            },
-                            "pregnant": false
-                            }
-                        ],
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:41:34.3358819Z"
-                    }
-                    ```
-
-            "/api/v1/map/zones":
-                desc: |
-                    Retrieves a list of all defined zones and areas on the active map.
-                    Zones are player-designated and areas are specific purposes layouts, 
-                    such as roof build, clear pollution, etc.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/map/zones?map_id=0'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "data": {
-                            "zones": [],
-                            "areas": [
-                                {
-                                    "id": 0,
-                                    "cells_count": 0,
-                                    "label": "Home",
-                                    "base_label": "Home",
-                                    "type": "Area_Home"
-                                },
-                                {
-                                    "id": 1,
-                                    "cells_count": 0,
-                                    "label": "Build roof",
-                                    "base_label": "Build roof",
-                                    "type": "Area_BuildRoof"
-                                },
-                                {
-                                    "id": 2,
-                                    "cells_count": 0,
-                                    "label": "No roof",
-                                    "base_label": "No roof",
-                                    "type": "Area_NoRoof"
-                                },
-                                {
-                                    "id": 3,
-                                    "cells_count": 0,
-                                    "label": "Snow clear",
-                                    "base_label": "Snow clear",
-                                    "type": "Area_SnowClear"
-                                },
-                                {
-                                    "id": 4,
-                                    "cells_count": 0,
-                                    "label": "Pollution clear",
-                                    "base_label": "Pollution clear",
-                                    "type": "Area_PollutionClear"
-                                },
-                                {
-                                    "id": 5,
-                                    "cells_count": 0,
-                                    "label": "Area 1",
-                                    "base_label": "Area 1",
-                                    "type": "Area_Allowed"
-                                }
-                            ]
-                        },
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:42:50.3515476Z"
-                    }
-                    ```
-
-            "/api/v1/map/building/info":
-                desc: |
-                    Retrieves detailed information about a specific building on the active map, given its unique identifier.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request GET \
-                    --url 'http://localhost:8765/api/v1/building/info?id=51058'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:53:16.733319Z"
-                    }
-                    ```
-
-            "/api/v1/map/weather/change":
-                desc: |
-                    Manually changes the current weather conditions on the active map.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/map/weather/change?map_id=0&name=Clear'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:53:16.733319Z"
-                    }
-                    ```
-
-            "/api/v1/colonist/time-assignment":
-                desc: |
-                    Sets or modifies the time assignment (schedule) for one or more colonists. 
-                    Time assignments in RimWorld define the daily schedule for each colonist, 
-                    determining when they sleep, work, have recreation, or anything else.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/colonist/time-assignment \
-                    --header 'content-type: application/json' \
-                    --data '{
-                        "pawn_id": 99,
-                        "hour": 14,
-                        "assignment": "Joy"
-                    }'
-                    ```
-                request: |
-                    **Request:**
-                    ```json
-                    {
-                        "pawn_id": 99,
-                        "hour": 14,
-                        "assignment": "Joy"
-                    }
-                    ```
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:53:16.733319Z"
-                    }
-                    ```
-
-            "/api/v1/colonist/work-priority":
-                desc: |
-                    Sets or adjusts the work-type priorities for one or more colonists. Work priorities 
-                    determine which tasks a colonist will perform during their work hours, with each 
-                    work type (e.g., Firefighting, Construction, Growing, Crafting) assigned a priority 
-                    level from 1 (highest) to 4 (lowest) or disabled (0).
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/colonist/work-priority \
-                    --header 'content-type: application/json' \
-                    --data '{
-                        "id": 99,
-                        "work": "Cooking",
-                        "priority": 1
-                    }'
-                    ```
-                request: |
-                    **Request:**
-                    ```json
-                    {
-                        "id": 99,
-                        "work": "Cooking",
-                        "priority": 1
-                    }
-                    ```
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:53:16.733319Z"
-                    }
-                    ```
-
-            "/api/v1/colonists/work-priority":
-                desc: |
-                    Sets or adjusts work-type priorities for multiple colonists in a single request.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url http://localhost:8765/api/v1/colonists/work-priority \
-                    --header 'content-type: application/json' \
-                    --data '[
-                        { "id": 37586, "work": "Patient", "priority": 5 },
-                        { "id": 67969, "work": "Hauling", "priority": 1 }
-                    ]'
-                    ```
-                request: |
-                    **Request:**
-                    ```json
-                    [
-                        { "id": 37586, "work": "Patient", "priority": 5 },
-                        { "id": 67969, "work": "Hauling", "priority": 1 }
-                    ]
-                    ```
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:53:16.733319Z"
-                    }
-                    ```
-
-            "/api/v1/jobs/make/equip":
-                desc: |
-                    Creates a job for a colonist to equip a specific item from available 
-                    inventory or the surrounding area. This endpoint queues an immediate 
-                    "equip" task, instructing the colonist to pick up and wear/wield the 
-                    designated apparel or weapon.
-                curl: |
-                    **Example:**
-                    ```bash
-                    curl --request POST \
-                    --url 'http://localhost:8765/api/v1/jobs/make/equip?map_id=0&pawn_id=1011&item_id=4849' \
-                    --header 'content-type: application/json'
-                    ```
-                request: ""
-                response: |
-                    **Response:**
-                    ```json
-                    {
-                        "success": true,
-                        "errors": [],
-                        "warnings": [],
-                        "timestamp": "2025-12-10T19:53:16.733319Z"
-                    }
-                    ```
-
         DocumentationController:
             title: |
                 ### :material-book-open-page-variant: Documentation Controller
@@ -1316,6 +154,75 @@ api:
                         "errors": [],
                         "warnings": [],
                         "timestamp": "2025-12-11T19:15:20.9851409Z"
+                    }
+                    ```
+
+            "/api/v1/dev/console":
+                desc: |
+                    A development and debugging endpoint that allows interaction with the 
+                    game's internal logging system. This provides programmatic control over 
+                    the developer console, allowing sending log messages, clearing console.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/dev/console'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                    "action": "message",
+                    "message": "hello_world"
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
+                    }
+                    ```
+
+            "/api/v1/dev/stuff/color":
+                desc: |
+                    A development tool endpoint that modifies the visual color 
+                    properties of a specific "stuff" material in-game. "Stuff" 
+                    in RimWorld refers to the base materials that items and 
+                    structures are made from (e.g., wood, steel, cloth, plasteel). 
+                    This endpoint allows for real-time adjustment of a material's 
+                    displayed color, primarily used for visual customization, 
+                    debugging, or mod development testing.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/dev/stuff/color \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "name": "WoodLog",
+                        "hex": "aa00ff"
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "name": "WoodLog",
+                        "hex": "aa00ff"
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
                     }
                     ```
 
@@ -1600,6 +507,166 @@ api:
                     }
                     ```
 
+        CameraController:
+            title: |
+                ### :material-camera: Camera Controller
+            desc: |
+                Provides endpoints for controlling the user's view in the game. 
+                Allows external tools to pan the camera to specific coordinates or adjust the zoom level programmatically.
+
+            "/api/v1/camera/change/zoom":
+                desc: |
+                    Adjusts the in-game camera's zoom level to a specified value, 
+                    instantly changing the field of view. This allows for precise 
+                    control over how close or far the camera is on the game map.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/camera/change/zoom?zoom=15'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                    "success": true,
+                    "errors": [],
+                    "warnings": [],
+                    "timestamp": "2025-12-09T19:16:06.4839322Z"
+                    }
+                    ```
+
+            "/api/v1/camera/change/position":
+                desc: |
+                    Instantly moves the in-game camera to the specified world coordinates on the current map.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/camera/change/position?x=50&y=50'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
+                    }
+                    ```
+
+            "/api/v1/stream/start":
+                desc: |
+                    Starts a live video stream of the game's current camera view. 
+                    This endpoint initiates a real-time broadcast of the rendered gameplay, 
+                    capturing exactly what is visible in the player's main viewport.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/stream/start'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
+                    }
+                    ```
+
+            "/api/v1/stream/stop":
+                desc: |
+                    Gracefully stops the active live video stream of the game's camera view.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/stream/stop'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
+                    }
+                    ```
+
+            "/api/v1/stream/setup":
+                desc: |
+                    Configures the parameters and settings for the live video stream of 
+                    the game's camera view before starting it. 
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "port": 8080,
+                        "address": "127.0.0.1",
+                        "frame_width": 1280,
+                        "frame_height": 720,
+                        "target_fps": 30,
+                        "jpeg_quality": 85
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
+                    }
+                    ```
+
+            "/api/v1/stream/status":
+                desc: |
+                    Gracefully stops the active live video stream of the game's camera view.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/stream/status'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                    "success": true,
+                    "data": {
+                        "is_streaming": false,
+                        "config": {
+                        "port": 5007,
+                        "address": "127.0.0.1",
+                        "frame_width": 1280,
+                        "frame_height": 720,
+                        "target_fps": 15,
+                        "jpeg_quality": 50
+                        }
+                    },
+                    "errors": [],
+                    "warnings": [],
+                    "timestamp": "2025-12-09T19:31:56.8297247Z"
+                    }
+                    ```
+
         GameController:
             title: |
                 ### :material-gamepad-variant: Game Controller
@@ -1675,6 +742,432 @@ api:
                         "timestamp": "2025-12-11T19:39:28.6476222Z"
                     }
                     ```
+
+            "/api/v1/game/speed":
+                    desc: |
+                        Sets the current game time speed.
+                        
+                        **Speed Values:**
+                        - `0`: Paused
+                        - `1`: Normal Speed
+                        - `2`: Fast Speed
+                        - `3`: Super Fast Speed
+                        - `4`: Ultra Fast (Dev Mode only)
+                    curl: |
+                        **Example:**
+                        ```bash
+                        curl --request POST \
+                        --url "http://localhost:8765/api/v1/game/speed?speed=3"
+                        ```
+                    request: ""
+                    response: |
+                        **Response:**
+                        ```json
+                        {
+                            "success": true,
+                            "data": "Game speed set to 3",
+                            "errors": [],
+                            "warnings": [],
+                            "timestamp": "2025-12-14T14:10:05.123Z"
+                        }
+                        ```
+
+            "/api/v1/cache/status":
+                desc: |
+                    Retrieves the current status and performance statistics 
+                    of the API's internal caching system. This endpoint provides 
+                    visibility into cache utilization, effectiveness, and 
+                    memory footprint, useful for monitoring and debugging API 
+                    performance and optimization.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/cache/status
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "enabled": true,
+                        "statistics": {
+                            "total_entries": 0,
+                            "hits": 0,
+                            "misses": 0,
+                            "memory_usage_bytes": 0,
+                            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
+                            "hit_ratio": 0.0,
+                            "compiled_delegate_count": 0,
+                            "compiled_delegate_hits": 0,
+                            "compiled_delegate_misses": 0
+                        }
+                    }
+                    ```
+
+            "/api/v1/cache/clear":
+                desc: |
+                    Manually triggers a complete flush of the API's internal caching system.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/cache/clear
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "enabled": true,
+                        "statistics": {
+                            "total_entries": 0,
+                            "hits": 0,
+                            "misses": 0,
+                            "memory_usage_bytes": 0,
+                            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
+                            "hit_ratio": 0.0,
+                            "compiled_delegate_count": 0,
+                            "compiled_delegate_hits": 0,
+                            "compiled_delegate_misses": 0
+                        }
+                    }
+                    ```
+
+            "/api/v1/version":
+                desc: |
+                    Retrieves version information for the game, the REST API mod, 
+                    and the API itself. This endpoint provides essential identification 
+                    metadata that can be used for compatibility checks, debugging, 
+                    and system documentation.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/version
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "rim_world_version": "1.5.4243",
+                            "mod_version": "1.2.0",
+                            "api_version": "v1"
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T18:52:09.0916968Z"
+                    }
+                    ```
+
+
+            "/api/v1/mods/info":
+                desc: |
+                    Manually triggers a complete flush of the API's internal caching system.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/mods/info
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                            "name": "Core",
+                            "package_id": "ludeon.rimworld",
+                            "load_order": 0
+                            },
+                            {
+                            "name": "Royalty",
+                            "package_id": "ludeon.rimworld.royalty",
+                            "load_order": 1
+                            },
+                            {
+                            "name": "Ideology",
+                            "package_id": "ludeon.rimworld.ideology",
+                            "load_order": 2
+                            },
+                            {
+                            "name": "Biotech",
+                            "package_id": "ludeon.rimworld.biotech",
+                            "load_order": 3
+                            },
+                            {
+                            "name": "Anomaly",
+                            "package_id": "ludeon.rimworld.anomaly",
+                            "load_order": 4
+                            },
+                            {
+                            "name": "RIMAPI",
+                            "package_id": "redeyedev.rimapi",
+                            "load_order": 5
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T18:53:40.5041431Z"
+                    }
+                    ```
+
+            "/api/v1/select":
+                desc: |
+                    Selects a specific in-game object (pawn, building, item, etc.) 
+                    based on its type and unique identifier.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/select?type=pawn&id=443'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
+                    }
+                    ```
+
+            "/api/v1/deselect":
+                desc: |
+                    Clears the current in-game selection, removing any highlighted 
+                    objects and returning the interface to a neutral state.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/deselect
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
+                    }
+                    ```
+
+            "/api/v1/open-tab":
+                desc: |
+                    Opens a specific information panel (tab) for the currently selected 
+                    pawn in the game's inspection pane. This endpoint allows external 
+                    control to view detailed information about a pawn's health, equipment, 
+                    needs, relationships, and other attributes—mirroring the tab interface 
+                    available when manually inspecting a character in-game.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/open-tab?name=health'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
+                    }
+                    ```
+
+            "/api/v1/def/all":
+                desc: |
+                    Retrieves comprehensive information about all game definition 
+                    entries (defs) from RimWorld's data system. Definitions are the core 
+                    data structures that define nearly every element in the game, including 
+                    items, buildings, creatures, terrain, research projects, and more.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/def/all
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "things_defs": [
+                                {
+                                    "def_name": "TextBook",
+                                    "label": "textbook",
+                                    "description": "A book which focuses on teaching skills.",
+                                    "category": "Item",
+                                    "thing_class": "Book",
+                                    "stat_base": {
+                                    "max_hit_points": 60.0,
+                                    "deterioration_rate": 5.0,
+                                    "mass": 0.5,
+                                    "flammability": 1.0,
+                                    "beauty": 1.0,
+                                    "market_value": 160.0
+                                    },
+                                    "is_weapon": false,
+                                    "is_apparel": false,
+                                    "is_item": true,
+                                    "is_pawn": false,
+                                    "is_plant": false,
+                                    "is_building": false,
+                                    "is_medicine": false,
+                                    "is_drug": false,
+                                    "market_value": 160.0,
+                                    "mass": 0.5,
+                                    "max_hit_points": 60.0,
+                                    "flammability": 1.0,
+                                    "stack_limit": 1,
+                                    "nutrition": 0.0,
+                                    "work_to_make": 1.0,
+                                    "work_to_build": 1.0,
+                                    "beauty": 1.0,
+                                    "max_health": 0.0,
+                                    "armor_rating__sharp": 0.0,
+                                    "armor_rating__blunt": 0.0,
+                                    "armor_rating__heat": 0.0,
+                                    "insulation__cold": 0.0,
+                                    "insulation__heat": 0.0
+                                },
+                                {
+                                    <...>
+                                }
+                            ],
+                            "incidents_defs": [],
+                            "conditions_defs": [],
+                            "pawn_kind_defs": [],
+                            "trait_defs": [],
+                            "research_defs": [],
+                            "hediff_defs": [],
+                            "skill_defs": [],
+                            "work_type_defs": [],
+                            "need_defs": [],
+                            "stat_defs": [],
+                            "world_object_defs": [],
+                            "biome_defs": [],
+                            "terrain_defs": [],
+                            "recipe_defs": [],
+                            "body_defs": [],
+                            "body_part_defs": [],
+                            "faction_defs": [],
+                            "sound_defs": [],
+                            "designation_category_defs": [],
+                            "joy_kind_defs": [],
+                            "meme_defs": [],
+                            "precept_defs": [],
+                            "ability_defs": [],
+                            "gene_defs": [],
+                            "weather_defs": [],
+                            "room_role_defs": [],
+                            "room_stat_defs": [],
+                            "mental_state_defs": [],
+                            "drug_policy_defs": [],
+                            "plant_defs": [],
+                            "animal_defs": []
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:09:46.047553Z"
+                    }
+                    ```
+
+            "/api/v1/datetime":
+                desc: |
+                    Retrieves the current in-game date and time according to the RimWorld world calendar.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/datetime
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "datetime": "12th of Aprimay, 5500, 17h"
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:05:35.3244951Z"
+                    }
+                    ```
+
+            "/api/v1/datetime/tile":
+                desc: |
+                    Retrieves the current in-game date and time according to the RimWorld world calendar.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/datetime
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "datetime": "12th of Aprimay, 5500, 17h"
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:05:35.3244951Z"
+                    }
+                    ```
+
+            "/api/v1/game/select-area":
+                desc: |
+                    Simulates a drag-select action in the game world (UI).
+                    Selects all selectable objects (colonists, items, etc.) within the rectangle defined by PositionA and PositionB.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/game/select-area \
+                    --header 'Content-Type: application/json' \
+                    --data '{
+                        "position_a": { "x": 10, "y": 0, "z": 10 },
+                        "position_b": { "x": 20, "y": 0, "z": 20 }
+                    }'
+                    ```
+                request: |
+                    **Request Body:**
+                    ```json
+                    {
+                        "position_a": { "x": 10, "y": 0, "z": 10 },
+                        "position_b": { "x": 20, "y": 0, "z": 20 }
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": "Area selected from (10, 0, 10) to (20, 0, 20). 5 objects selected.",
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-14T14:18:10.000Z"
+                    }
+                    ```    
 
             "/api/v1/game/send/letter":
                 desc: |
@@ -1765,6 +1258,149 @@ api:
                         "errors": [],
                         "warnings": [],
                         "timestamp": "2025-12-11T19:43:32.2659508Z"
+                    }
+                    ```
+
+            "/api/v1/incidents":
+                desc: "Description"
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/incidents?map_id=0'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "incidents": [
+                                {
+                                    "incident_def": "VisitorGroup",
+                                    "label": "visitor group",
+                                    "category": "None",
+                                    "incident_hour": 60.0,
+                                    "days_since_occurred": 0.1068
+                                },
+                                {
+                                    "incident_def": "GiveQuest_Beggars",
+                                    "label": "beggars arrive",
+                                    "category": "GiveQuest",
+                                    "incident_hour": 8.8,
+                                    "days_since_occurred": 2.24013329
+                                }
+                            ]
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:24:31.91622Z"
+                    }
+                    ```
+
+            "/api/v1/lords":
+                desc: |
+                    Retrieves detailed information about all active "Lord" processes on 
+                    a specified map. In RimWorld, a Lord represents a high-level AI 
+                    manager that coordinates groups of pawns toward a common objective—such 
+                    as raiding, visiting or trading.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/lords?map_id=0'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "load_id": 2,
+                                "faction_name": "Nation of Iralaguaro",
+                                "faction_def_name": "TribeCivil",
+                                "lord_job_type": "LordJob_VisitColony",
+                                "current_toil_name": "LordToil_DefendPoint",
+                                "ticks_in_toil": 2231,
+                                "num_pawns_lost_violently": 0,
+                                "num_pawns_ever_gained": 1,
+                                "owned_pawn_ids": [
+                                    "Human8834"
+                                ],
+                                "owned_building_ids": [],
+                                "any_active_pawn": true
+                            },
+                            {
+                                "load_id": 3,
+                                "faction_name": "Cancer Unit",
+                                "faction_def_name": "PirateWaster",
+                                "lord_job_type": "LordJob_StageThenAttack",
+                                "current_toil_name": "LordToil_Stage",
+                                "ticks_in_toil": 0,
+                                "num_pawns_lost_violently": 0,
+                                "num_pawns_ever_gained": 1,
+                                "owned_pawn_ids": [
+                                    "Human8861"
+                                ],
+                                "owned_building_ids": [],
+                                "any_active_pawn": true
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:26:22.0370532Z"
+                    }
+                    ```
+
+            "/api/v1/incident/trigger":
+                desc: |
+                    Manually triggers a specific in-game incident (event) immediately. 
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/incident/trigger \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "name": "RaidEnemy",
+                        "map_id": "0", 
+                        "incident_parms": {
+                            "points": 300.0,
+                            "forced": true,
+                            "faction": "Pirate",
+                            "send_letter": true,
+                            "custom_letter_label": "API Raid Test",
+                            "custom_letter_text": "Test raid triggered via API"
+                        }
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "name": "RaidEnemy",
+                        "map_id": "0", 
+                        "incident_parms": {
+                            "points": 300.0,
+                            "forced": true,
+                            "faction": "Pirate",
+                            "send_letter": true,
+                            "custom_letter_label": "API Raid Test",
+                            "custom_letter_text": "Test raid triggered via API"
+                        }
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
                     }
                     ```
 
@@ -2001,6 +1637,65 @@ api:
                     }
                     ```
 
+        ImageController:
+            title: |
+                ### :material-image: Image Controller
+            desc: |
+                Provides endpoints for extracting visual assets and textures from the game. 
+                This is essential for external tools that need to render game maps or items 
+                visually by retrieving the actual textures used by RimWorld.
+
+            "/api/v1/terrain/image":
+                desc: |
+                    Retrieves the texture image for a specific terrain definition in Base64 format.
+                    The `name` parameter corresponds to the `defName` of the terrain (e.g., `Soil`, `WaterDeep`, `Sand`).
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/terrain/image?name=Soil"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "name": "Soil",
+                            "image_base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0..."
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-14T14:15:30.000Z"
+                    }
+                    ```
+
+            "/api/v1/item/image":
+                desc: |
+                    Retrieves a base64-encoded image of a specific in-game item.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/item/image?name=ComponentIndustrial'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "result": "success",
+                            "image_base64": "..."
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:31:48.7480326Z"
+                    }
+                    ```
+
         MapController:
             title: |
                 ### :material-map-legend: Map Controller
@@ -2075,6 +1770,411 @@ api:
                         "errors": [],
                         "warnings": [],
                         "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
+            "/api/v1/maps":
+                desc: |
+                    Retrieves a list of all currently loaded maps in the game session.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/maps
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                            "id": 0,
+                            "index": 0,
+                            "seed": 16622162,
+                            "faction_id": "14",
+                            "is_player_home": true,
+                            "is_pocket_map": false,
+                            "is_temp_incident_map": false,
+                            "size": "(150, 1, 150)"
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:38:45.9289233Z"
+                    }
+                    ```
+
+            "/api/v1/map/terrain":
+                desc: |
+                    Returns the full terrain and floor grid data for the specified map. 
+                    
+                    **Note on Data Format:** To optimize bandwidth, this endpoint uses **Run-Length 
+                    Encoding (RLE)** and **Palette Mapping**. 
+
+                    - `palette`: A list of unique terrain definitions (e.g., "Soil", "WaterDeep").
+                    - `grid`: A compressed list of integers representing the map cells. Format is pairs of `[count, palette_index]`.
+                    
+                    Example decoding: A grid `[10, 0, 5, 2]` means "10 cells of palette[0], followed by 5 cells of palette[2]".
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/map/terrain?map_id=0
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "width": 250,
+                            "height": 250,
+                            "palette": [
+                                "Soil",
+                                "Gravel",
+                                "SoilRich",
+                                "WaterDeep"
+                            ],
+                            "grid": [
+                                22,
+                                0,
+                                5,
+                                1,
+                                500,
+                                0,
+                                10,
+                                3
+                            ],
+                            "floor_palette": [
+                                "WoodPlankFloor",
+                                "TileSandstone"
+                            ],
+                            "floor_grid": [
+                                62400,
+                                0,
+                                50,
+                                1,
+                                50,
+                                2
+                            ]
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-14T13:12:28.8217513Z"
+                    }
+                    ```
+            
+            "/api/v1/map/things-at":
+                desc: |
+                    Returns a list of things located at a specific single cell coordinate.
+                    
+                    **Note:** Unlike standard GET requests, this endpoint requires a JSON body containing the coordinates.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/map/things-at \
+                    --header 'Content-Type: application/json' \
+                    --data '{
+                        "map_id": 0,
+                        "position": { "x": 15, "y": 0, "z": 25 }
+                    }'
+                    ```
+                request: |
+                    **Request Body:**
+                    ```json
+                    {
+                        "map_id": 0,
+                        "position": {
+                            "x": 15,
+                            "y": 0, 
+                            "z": 25
+                        }
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "thing_id": 4895,
+                                "def_name": "MealSurvivalPack",
+                                "label": "packaged survival meal",
+                                "position": { "x": 15, "y": 0, "z": 25 },
+                                "stack_count": 10
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-14T13:40:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/map/things/radius":
+                desc: |
+                    Returns a list of all things found within a specified radius around a center point.
+                    Useful for finding nearby resources or enemies.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/map/things/radius?map_id=0&x=120&z=120&radius=10"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "thing_id": 2328,
+                                "def_name": "ChunkGranite",
+                                "label": "granite chunk",
+                                "position": { "x": 121, "y": 0, "z": 119 },
+                                "stack_count": 1
+                            },
+                            {
+                                "thing_id": 5012,
+                                "def_name": "Steel",
+                                "label": "steel",
+                                "position": { "x": 118, "y": 0, "z": 122 },
+                                "stack_count": 35
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-14T13:42:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/map/plants":
+                    desc: |
+                        Returns a list of all plants located on the specified map. 
+                        This includes wild plants (trees, bushes, grass) and sown crops.
+                    curl: |
+                        **Example:**
+                        ```bash
+                        curl --request GET \
+                        --url "http://localhost:8765/api/v1/map/plants?map_id=0"
+                        ```
+                    request: ""
+                    response: |
+                        **Response:**
+                        ```json
+                        {
+                            "success": true,
+                            "data": [
+                                {
+                                    "thing_id": 1024,
+                                    "def_name": "Plant_TreeOak",
+                                    "label": "oak tree",
+                                    "position": { "x": 45, "y": 0, "z": 88 },
+                                    "growth": 0.85
+                                },
+                                {
+                                    "thing_id": 1025,
+                                    "def_name": "Plant_Potato",
+                                    "label": "potato plant",
+                                    "position": { "x": 50, "y": 0, "z": 50 },
+                                    "growth": 0.45
+                                }
+                            ],
+                            "errors": [],
+                            "warnings": [],
+                            "timestamp": "2025-12-14T14:12:00.000Z"
+                        }
+                        ```
+
+
+            "/api/v1/map/weather":
+                desc: |
+                    Retrieves the current weather conditions and temperature for 
+                    the currently active map (the map the player is viewing).
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/map/weather?map_id=0'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "weather": "Rain",
+                            "temperature": 19.7876511
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:39:54.5380426Z"
+                    }
+                    ```
+
+            "/api/v1/map/animals":
+                desc: |
+                    Retrieves a list of all animals currently present on the active map. 
+                    This includes both wild animals and tamed/owned animals 
+                    (pets, livestock, caravan animals).
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/map/animals?map_id=0'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                            "id": 3633,
+                            "name": "Colin",
+                            "def": "Yak",
+                            "faction": "PlayerColony",
+                            "position": {
+                                "x": 67,
+                                "y": 119,
+                                "z": 0
+                            },
+                            "pregnant": false
+                            },
+                            {
+                            "id": 8547,
+                            "name": "Hare",
+                            "def": "Hare",
+                            "position": {
+                                "x": 50,
+                                "y": 40,
+                                "z": 0
+                            },
+                            "pregnant": false
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:41:34.3358819Z"
+                    }
+                    ```
+
+            "/api/v1/map/zones":
+                desc: |
+                    Retrieves a list of all defined zones and areas on the active map.
+                    Zones are player-designated and areas are specific purposes layouts, 
+                    such as roof build, clear pollution, etc.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/map/zones?map_id=0'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "zones": [],
+                            "areas": [
+                                {
+                                    "id": 0,
+                                    "cells_count": 0,
+                                    "label": "Home",
+                                    "base_label": "Home",
+                                    "type": "Area_Home"
+                                },
+                                {
+                                    "id": 1,
+                                    "cells_count": 0,
+                                    "label": "Build roof",
+                                    "base_label": "Build roof",
+                                    "type": "Area_BuildRoof"
+                                },
+                                {
+                                    "id": 2,
+                                    "cells_count": 0,
+                                    "label": "No roof",
+                                    "base_label": "No roof",
+                                    "type": "Area_NoRoof"
+                                },
+                                {
+                                    "id": 3,
+                                    "cells_count": 0,
+                                    "label": "Snow clear",
+                                    "base_label": "Snow clear",
+                                    "type": "Area_SnowClear"
+                                },
+                                {
+                                    "id": 4,
+                                    "cells_count": 0,
+                                    "label": "Pollution clear",
+                                    "base_label": "Pollution clear",
+                                    "type": "Area_PollutionClear"
+                                },
+                                {
+                                    "id": 5,
+                                    "cells_count": 0,
+                                    "label": "Area 1",
+                                    "base_label": "Area 1",
+                                    "type": "Area_Allowed"
+                                }
+                            ]
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:42:50.3515476Z"
+                    }
+                    ```
+
+            "/api/v1/map/building/info":
+                desc: |
+                    Retrieves detailed information about a specific building on the active map, given its unique identifier.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/building/info?id=51058'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
+                    }
+                    ```
+
+            "/api/v1/map/weather/change":
+                desc: |
+                    Manually changes the current weather conditions on the active map.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/map/weather/change?map_id=0&name=Clear'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
                     }
                     ```
 
@@ -2470,6 +2570,86 @@ api:
                     }
                     ```
 
+            "/api/v1/colonist/time-assignment":
+                desc: |
+                    Sets or modifies the time assignment (schedule) for one or more colonists. 
+                    Time assignments in RimWorld define the daily schedule for each colonist, 
+                    determining when they sleep, work, have recreation, or anything else.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/colonist/time-assignment \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 99,
+                        "hour": 14,
+                        "assignment": "Joy"
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 99,
+                        "hour": 14,
+                        "assignment": "Joy"
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
+                    }
+                    ```
+
+            "/api/v1/colonists/positions":
+                    desc: |
+                        Retrieves the real-time coordinates of all colonists across all maps.
+                        
+                        **Performance Note:** This endpoint is heavily cached (100ms TTL) and optimized for high-frequency polling. It returns a lightweight DTO containing only essential location data, making it ideal for updating minimaps or live trackers.
+                    curl: |
+                        **Example:**
+                        ```bash
+                        curl --request GET \
+                        --url http://localhost:8765/api/v1/colonists/positions
+                        ```
+                    request: ""
+                    response: |
+                        **Response:**
+                        ```json
+                        {
+                            "success": true,
+                            "data": [
+                                {
+                                    "id": 5612,
+                                    "map_id": 0,
+                                    "x": 125,
+                                    "z": 110
+                                },
+                                {
+                                    "id": 5613,
+                                    "map_id": 0,
+                                    "x": 128,
+                                    "z": 112
+                                },
+                                {
+                                    "id": 8901,
+                                    "map_id": 1,
+                                    "x": 45,
+                                    "z": 200
+                                }
+                            ],
+                            "errors": [],
+                            "warnings": [],
+                            "timestamp": "2025-12-14T14:22:15.500Z"
+                        }
+                        ```
+                        
             "/api/v1/colonist/inventory":
                 desc: |
                     Retrieves a detailed list of all items, apparel, and equipment currently 
@@ -2566,6 +2746,102 @@ api:
                         "errors": [],
                         "warnings": [],
                         "timestamp": "2025-12-12T10:00:00.0000000Z"
+                    }
+                    ```
+
+            "/api/v1/colonist/work-priority":
+                desc: |
+                    Sets or adjusts the work-type priorities for one or more colonists. Work priorities 
+                    determine which tasks a colonist will perform during their work hours, with each 
+                    work type (e.g., Firefighting, Construction, Growing, Crafting) assigned a priority 
+                    level from 1 (highest) to 4 (lowest) or disabled (0).
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/colonist/work-priority \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "id": 99,
+                        "work": "Cooking",
+                        "priority": 1
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "id": 99,
+                        "work": "Cooking",
+                        "priority": 1
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
+                    }
+                    ```
+
+            "/api/v1/colonists/work-priority":
+                desc: |
+                    Sets or adjusts work-type priorities for multiple colonists in a single request.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/colonists/work-priority \
+                    --header 'content-type: application/json' \
+                    --data '[
+                        { "id": 37586, "work": "Patient", "priority": 5 },
+                        { "id": 67969, "work": "Hauling", "priority": 1 }
+                    ]'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    [
+                        { "id": 37586, "work": "Patient", "priority": 5 },
+                        { "id": 67969, "work": "Hauling", "priority": 1 }
+                    ]
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
+                    }
+                    ```
+
+            "/api/v1/jobs/make/equip":
+                desc: |
+                    Creates a job for a colonist to equip a specific item from available 
+                    inventory or the surrounding area. This endpoint queues an immediate 
+                    "equip" task, instructing the colonist to pick up and wear/wield the 
+                    designated apparel or weapon.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/jobs/make/equip?map_id=0&pawn_id=1011&item_id=4849' \
+                    --header 'content-type: application/json'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
                     }
                     ```
 
