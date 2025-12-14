@@ -128,22 +128,27 @@ namespace RIMAPI.Services
             }
         }
 
-        public ApiResult<List<ThingDto>> GetThingsAtCell(int mapId, PositionDto position)
+        public ApiResult<List<ThingDto>> GetThingsAtCell(ThingsAtCellRequestDto body)
         {
             try
             {
-                var map = MapHelper.GetMapByID(mapId);
-                if (map == null)
+                if (body == null)
                 {
-                    return ApiResult<List<ThingDto>>.Fail($"Map with ID {mapId} not found.");
+                    return ApiResult<List<ThingDto>>.Fail("Request body is null");
                 }
 
-                if (position == null)
+                var map = MapHelper.GetMapByID(body.MapId);
+                if (map == null)
+                {
+                    return ApiResult<List<ThingDto>>.Fail($"Map with ID {body.MapId} not found.");
+                }
+
+                if (body.Position == null)
                 {
                     return ApiResult<List<ThingDto>>.Fail("Position cannot be null.");
                 }
 
-                IntVec3 cellPosition = new IntVec3(position.X, position.Y, position.Z);
+                IntVec3 cellPosition = new IntVec3(body.Position.X, body.Position.Y, body.Position.Z);
 
                 List<Thing> things = cellPosition.GetThingList(map);
                 List<ThingDto> thingDtos = new List<ThingDto>();

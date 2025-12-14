@@ -35,6 +35,14 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
+        [Get("/api/v1/map/things-at")]
+        public async Task GetThingsAtCell(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<ThingsAtCellRequestDto>();
+            var result = _mapService.GetThingsAtCell(body);
+            await context.SendJsonResponse(result);
+        }
+
         [Get("/api/v1/map/things/radius")]
         public async Task GetMapThingsInRadius(HttpListenerContext context)
         {
@@ -156,14 +164,6 @@ namespace RIMAPI.Controllers
             var mapId = RequestParser.GetMapId(context);
             var defName = RequestParser.GetStringParameter(context, "name");
             var result = _mapService.SetWeather(mapId, defName);
-            await context.SendJsonResponse(result);
-        }
-
-        [Get("/api/v1/map/cell/things")]
-        public async Task GetThingsAtCell(HttpListenerContext context)
-        {
-            var body = await context.Request.ReadBodyAsync<ThingsAtCellRequestDto>();
-            var result = _mapService.GetThingsAtCell(body.MapId, body.Position);
             await context.SendJsonResponse(result);
         }
     }

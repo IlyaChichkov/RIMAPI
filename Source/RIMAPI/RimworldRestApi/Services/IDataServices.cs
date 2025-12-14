@@ -75,7 +75,7 @@ namespace RIMAPI.Services
         ApiResult<MapTerrainDto> GetMapTerrain(int mapId);
         ApiResult<List<ThingDto>> GetMapThingsInRadius(int mapId, int x, int z, int radius);
         ApiResult SetWeather(int mapId, string defName);
-        ApiResult<List<ThingDto>> GetThingsAtCell(int mapId, PositionDto position);
+        ApiResult<List<ThingDto>> GetThingsAtCell(ThingsAtCellRequestDto body);
     }
     #endregion
 
