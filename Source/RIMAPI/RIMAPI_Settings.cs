@@ -5,7 +5,7 @@ namespace RIMAPI
 {
     public class RIMAPI_Settings : ModSettings
     {
-        public string version = "1.3.0";
+        public string version = "1.4.0";
         public string apiVersion = "v1";
         public int serverPort = 8765;
         public int refreshIntervalTicks = 300;
