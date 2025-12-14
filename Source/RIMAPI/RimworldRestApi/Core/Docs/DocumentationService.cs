@@ -123,7 +123,7 @@ namespace RIMAPI.Core
                 Description = description,
                 GithubLinkTitle = githubLinkTitle,
                 GithubLink = githubLink,
-                Category = descriptionAttr?.Category ?? className,
+                Category = className,
                 Notes = descriptionAttr?.Notes,
                 Parameters = ExtractEnhancedParameters(method),
                 RequestExample = GenerateRequestExample(method),
