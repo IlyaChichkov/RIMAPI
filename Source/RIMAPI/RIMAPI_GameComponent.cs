@@ -1,5 +1,6 @@
 ﻿using System;
 using RIMAPI.Core;
+using UnityEngine;
 using Verse;
 
 namespace RIMAPI
@@ -18,6 +19,10 @@ namespace RIMAPI
         {
             base.FinalizeInit();
             StartServer();
+
+            GameObject go = new GameObject("MyTextureExporter");
+            go.AddComponent<TextureExportManager>();
+            UnityEngine.Object.DontDestroyOnLoad(go);
         }
 
         public void StartServer()

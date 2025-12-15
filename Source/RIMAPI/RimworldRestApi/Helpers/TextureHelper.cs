@@ -73,10 +73,11 @@ namespace RIMAPI.Helpers
                 }
                 else
                 {
+                    TextureExportManager.Instance.QueueExtract(terrainName, texture, (base64Result) =>
+                    {
+                        image.ImageBase64 = base64Result;
+                    });
                     image.Result = "success";
-                    var readableTexture = GetReadableTexture(texture);
-                    image.ImageBase64 = TextureToBase64(readableTexture);
-                    UnityEngine.Object.Destroy(readableTexture);
                 }
             }
             catch (Exception ex)
@@ -147,10 +148,11 @@ namespace RIMAPI.Helpers
                 }
                 else
                 {
+                    TextureExportManager.Instance.QueueExtract(thingDef?.defName, texture, (base64Result) =>
+                    {
+                        image.ImageBase64 = base64Result;
+                    });
                     image.Result = "success";
-                    var readableTexture = GetReadableTexture(texture);
-                    image.ImageBase64 = TextureToBase64(readableTexture);
-                    UnityEngine.Object.Destroy(readableTexture);
                 }
             }
             catch (Exception ex)
@@ -931,47 +933,6 @@ namespace RIMAPI.Helpers
                 throw;
             }
             return image;
-        }
-        private static Texture2D GetReadableTexture(Texture2D texture)
-        {
-            try
-            {
-                // Create a temporary RenderTexture
-                RenderTexture renderTexture = RenderTexture.GetTemporary(
-                    texture.width,
-                    texture.height,
-                    0,
-                    RenderTextureFormat.Default,
-                    RenderTextureReadWrite.Linear
-                );
-
-                // Blit the texture to RenderTexture
-                Graphics.Blit(texture, renderTexture);
-
-                // Set active render texture
-                RenderTexture previous = RenderTexture.active;
-                RenderTexture.active = renderTexture;
-
-                // Create Texture2D to read pixels into
-                Texture2D readableTexture = new Texture2D(texture.width, texture.height);
-                readableTexture.ReadPixels(
-                    new Rect(0, 0, renderTexture.width, renderTexture.height),
-                    0,
-                    0
-                );
-                readableTexture.Apply();
-
-                // Reset active render texture
-                RenderTexture.active = previous;
-                RenderTexture.ReleaseTemporary(renderTexture);
-
-                return readableTexture;
-            }
-            catch (Exception ex)
-            {
-                LogApi.Error(ex.Message);
-                throw;
-            }
         }
 
         public static string TextureToBase64(Texture2D texture)
