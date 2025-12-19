@@ -663,5 +663,29 @@ namespace RIMAPI.Services
                 return ApiResult.Fail($"Failed to select area: {ex.Message}");
             }
         }
+
+        public ApiResult GameSave(string name)
+        {
+            var saveName = GenFile.SanitizedFileName(name);
+
+            if (GameDataSaveLoader.SavingIsTemporarilyDisabled)
+            {
+                return ApiResult.Fail("Cannot save game - saving is temporarily disabled");
+            }
+
+            LongEventHandler.QueueLongEvent(delegate
+            {
+                GameDataSaveLoader.SaveGame(saveName);
+            }, "SavingLongEvent", doAsynchronously: false, null);
+
+            Messages.Message("Game saved as: " + saveName, MessageTypeDefOf.SilentInput);
+            return ApiResult.Ok();
+        }
+
+        public ApiResult GameLoad(string name)
+        {
+            GameDataSaveLoader.CheckVersionAndLoadGame(name);
+            return ApiResult.Ok();
+        }
     }
 }
