@@ -49,5 +49,13 @@ namespace RIMAPI.Controllers
             var result = _resourcesService.GetStoragesSummary(mapId);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/item/spawn")]
+        public async Task SpawnItem(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<SpawnItemRequestDto>();
+            var result = _resourcesService.SpawnItem(body);
+            await context.SendJsonResponse(result);
+        }
     }
 }

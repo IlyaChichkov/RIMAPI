@@ -117,4 +117,14 @@ namespace RIMAPI.Models
             };
         }
     }
+
+    public class SpawnItemRequestDto
+    {
+        public string defName;      // "Gun_Revolver"
+        public string stuffDefName; // "Steel" (Optional, can be null)
+        public string quality;      // "Normal", "Good", "Legendary" (Optional)
+        public int amount;
+        public int x;
+        public int z;
+    }
 }
