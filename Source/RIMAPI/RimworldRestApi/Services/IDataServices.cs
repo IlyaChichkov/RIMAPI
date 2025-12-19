@@ -25,6 +25,8 @@ namespace RIMAPI.Services
         ApiResult<MapTimeDto> GetWorldTileDatetime(int tileID);
         ApiResult SendLetterSimple(SendLetterRequestDto body);
         ApiResult SetGameSpeed(int speed);
+        ApiResult GameSave(string name);
+        ApiResult GameLoad(string name);
     }
     #endregion
 
@@ -114,6 +116,7 @@ namespace RIMAPI.Services
         ApiResult<StoragesSummaryDto> GetStoragesSummary(int mapId);
         ApiResult<Dictionary<string, List<ThingDto>>> GetAllStoredResources(int mapId);
         ApiResult<List<ThingDto>> GetAllStoredResourcesByCategory(int mapId, string categoryDef);
+        ApiResult SpawnItem(SpawnItemRequestDto body);
     }
     #endregion
 
