@@ -96,43 +96,31 @@ namespace RIMAPI.Core
 
                 var services = new ServiceCollection();
 
-                // Register core services
+                // Register core services that are safe for startup
                 services.AddSingleton<RIMAPI_Settings>(Settings);
-
-                var cachingService = new CachingService(Settings);
-                services.AddSingleton<ICachingService>(cachingService);
-
-                // Create and register ExtensionRegistry
-                var extensionRegistry = new ExtensionRegistry();
-                services.AddSingleton<ExtensionRegistry>(extensionRegistry);
-
-                // Create instances first to avoid any DI issues
-                var gameStateService = new GameStateService(cachingService);
-                var sseService = new SseService(gameStateService);
-                var eventRegistry = new EventRegistry(sseService);
-
+                services.AddSingleton<ICachingService, CachingService>();
+                services.AddSingleton<ExtensionRegistry>();
                 services.AddSingleton<ICameraStream, UdpCameraStream>();
-
-                // Register the instances
-                services.AddSingleton<SseService>(sseService);
-                services.AddSingleton<IEventRegistry>(eventRegistry);
                 services.AddSingleton<IEventPublisher, EventPublisher>();
                 services.AddSingleton<ExtensionDocumentationService>();
-
-                // Create DocumentationService
                 services.AddSingleton<IDocumentationService, DocumentationService>();
+                
+                // Register services that depend on a running game as Transient
+                services.AddTransient<IGameStateService, GameStateService>();
+                services.AddTransient<SseService>(); 
+                services.AddTransient<IEventRegistry, EventRegistry>();
 
-                // Auto-discover and register all controllers and services
+                // Auto-discover and register all controllers and other services
                 RegisterDiscoveredComponents(services);
 
                 // Register extension services
                 RegisterExtensionServices(services);
-
+                
                 // Register controllers
                 services.AddTransient<DocumentationController>();
                 services.AddTransient<GameController>();
                 services.AddTransient<MapController>();
-
+                
                 var serviceProvider = services.BuildServiceProvider();
                 LogApi.Info("Default service provider created successfully");
                 return serviceProvider;
@@ -179,7 +167,7 @@ namespace RIMAPI.Core
                     && serviceInterface.IsAssignableFrom(implementationType)
                 )
                 {
-                    services.AddSingleton(serviceInterface, implementationType); // Use the non-generic overload
+                    services.AddTransient(serviceInterface, implementationType); // Use the non-generic overload
                     LogApi.Message(
                         $"Registered service: {serviceInterface.Name} -> {implementationType.Name}"
                     );
