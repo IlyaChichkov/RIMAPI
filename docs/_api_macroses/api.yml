@@ -1199,6 +1199,187 @@ api:
                     }
                     ```
 
+            "/api/v1/game/save":
+                desc: |
+                    Saves the current game state to a file with the specified name.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url "http://localhost:8765/api/v1/game/save?name=MyApiSave"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-20T10:00:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/game/load":
+                desc: |
+                    Loads a game state from a save file with the specified name. This can be used from the main menu or in-game.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/game/load?name=MyApiSave"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-20T10:01:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/game/start/devquick":
+                desc: |
+                    Starts a new game immediately using the developer 'quick start' configuration, bypassing character selection and landing site choice. This is useful for rapid testing.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/game/start/devquick
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-20T10:02:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/game/start":
+                desc: |
+                    Starts a new, fully configurable game. This endpoint allows for detailed specification of the storyteller, world seed, and other parameters.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/game/start \
+                    --header 'Content-Type: application/json' \
+                    --data '{
+                        "storyteller_name": "Randy",
+                        "difficulty_name": "Peaceful",
+                        "map_size": 120,
+                        "permadeath": false,
+                        "planet_coverage": 0.1,
+                        "world_seed": "rickroll",
+                        "starting_tile": "7298",
+                        "starting_season": "2",
+                        "overall_rainfall": 2,
+                        "overall_temperature": 2,
+                        "overall_population": 2,
+                        "landmark_density": 2
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "storyteller_name": "Randy",
+                        "difficulty_name": "Peaceful",
+                        "map_size": 120,
+                        "permadeath": false,
+                        "planet_coverage": 0.1,
+                        "world_seed": "rickroll",
+                        "starting_tile": "7298",
+                        "starting_season": "2",
+                        "overall_rainfall": 2,
+                        "overall_temperature": 2,
+                        "overall_population": 2,
+                        "landmark_density": 2
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-20T10:03:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/game/settings":
+                desc: |
+                    Modifies the current game settings. Only include the settings you wish to change in the request body. This endpoint uses the `GameSettingsDto` model.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/game/settings \
+                    --header 'Content-Type: application/json' \
+                    --data '{
+                        "run_in_background": true,
+                        "user_interface_scale": 1.25,
+                        "volume_music": 0.5
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "run_in_background": true,
+                        "user_interface_scale": 1.25,
+                        "volume_music": 0.5
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "language": "English",
+                            "run_in_background": true,
+                            "development_mode": true,
+                            "log_verbose": false,
+                            "temperature_mode": "Celsius",
+                            "autosave_interval": true,
+                            "resolution": "1024x768",
+                            "fullscreen": false,
+                            "user_interface_scale": 1.0,
+                            "custom_cursor_enabled": true,
+                            "hats_only_on_map": false,
+                            "plant_wind_sway": true,
+                            "max_number_of_player_settlements": 1,
+                            "volume_master": 0.6375921,
+                            "volume_game": 0.7051597,
+                            "volume_music": 0.0,
+                            "volume_ambient": 0.6007371,
+                            "pause_on_load": false,
+                            "pause_on_urgent_letter": "MajorThreat",
+                            "automatic_pause_on_letter": false,
+                            "edge_screen_scroll": true,
+                            "map_drag_sensitivity": 1.3,
+                            "zoom_to_mouse": false,
+                            "show_realtime_clock": true,
+                            "resource_readout_categorized": false,
+                            "show_animal_names": false,
+                            "reset_mods_config_on_crash": false,
+                            "texture_compression": 0
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-20T12:30:35.4174593Z"
+                    }
+                    ```
+
         GameEventsController:
             title: |
                 ### :material-flash: Game Events Controller
