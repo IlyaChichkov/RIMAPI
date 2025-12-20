@@ -17,12 +17,20 @@ namespace RIMAPI.Services
 
         public ApiResult<ColonistDto> GetColonist(int pawnId)
         {
-            var result = ColonistsHelper.GetColonists().FirstOrDefault(c => c.Id == pawnId);
-            if (result == null)
+            var allColonists = ColonistsHelper
+                .GetColonists();
+
+            try
             {
-                return ApiResult<ColonistDto>.Fail($"Failed to find pawn with id={pawnId}");
+                var result = allColonists
+                    .First(c => c.Id == pawnId);
+                return ApiResult<ColonistDto>.Ok(result);
             }
-            return ApiResult<ColonistDto>.Ok(result);
+            catch (Exception ex)
+            {
+                return ApiResult<ColonistDto>
+                    .Fail($"Failed to find pawn with id: {pawnId} - {ex.Message}");
+            }
         }
 
         public ApiResult<BodyPartsDto> GetColonistBodyParts(int pawnId)
@@ -55,10 +63,20 @@ namespace RIMAPI.Services
 
         public ApiResult<ColonistDetailedDto> GetColonistDetailed(int pawnId)
         {
-            var result = ColonistsHelper
-                .GetColonistsDetailed()
-                .FirstOrDefault(c => c.Colonist.Id == pawnId);
-            return ApiResult<ColonistDetailedDto>.Ok(result);
+            var allColonists = ColonistsHelper
+                .GetColonistsDetailed();
+
+            try
+            {
+                var result = allColonists
+                    .First(c => c.Colonist.Id == pawnId);
+                return ApiResult<ColonistDetailedDto>.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult<ColonistDetailedDto>
+                    .Fail($"Failed to find pawn with id: {pawnId} - {ex.Message}");
+            }
         }
 
         public ApiResult<ColonistInventoryDto> GetColonistInventory(int pawnId)
