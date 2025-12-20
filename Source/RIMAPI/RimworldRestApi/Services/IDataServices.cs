@@ -27,6 +27,9 @@ namespace RIMAPI.Services
         ApiResult SetGameSpeed(int speed);
         ApiResult GameSave(string name);
         ApiResult GameLoad(string name);
+        ApiResult GameDevQuickStart();
+        ApiResult GameStart(NewGameStartRequestDto body);
+        ApiResult<GameSettingsDto> GetCurrentSettings();
     }
     #endregion
 
