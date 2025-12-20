@@ -1,4 +1,4 @@
-![alt text](About/preview.png)
+![alt text](../media/media/banner_title.jpg)
 
 ![Status](https://img.shields.io/badge/Status-In_Progress-blue.svg)
 ![RimWorld Version](https://img.shields.io/badge/RimWorld-v1.5+-blue.svg)
@@ -6,16 +6,28 @@
 ![Build](https://github.com/IlyaChichkov/RIMAPI/actions/workflows/release_build.yml/badge.svg)
 ![Release](https://img.shields.io/github/v/release/IlyaChichkov/RIMAPI)
 
-# RIMAPI
+# RimAPI
 
-RIMAPI is a RimWorld mod that gives you an API Server to interact with your current game.
+It's a RimWorld mod that gives you an API Server to interact with the game.
 
-RIMAPI exposes a comprehensive REST API from inside RimWorld.
+RimAPI exposes a comprehensive REST API from inside RimWorld.
 The API listens on `http://localhost:8765/` by default once the
-game reaches the main menu. The port can be changed in the mod settings.
+game reaches the main menu.
 
-[  Documentation  ](https://ilyachichkov.github.io/RIMAPI/index.html)|
-[  Discord Server  ](https://discord.gg/Css9b9BgnM)
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://ilyachichkov.github.io/RIMAPI/index.html" target="_blank">
+        <img src="../media/media/banner_documentation.jpg" alt="Documentation" width="520"/>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://discord.gg/Css9b9BgnM" target="_blank">
+        <img src="../media/media/banner_discord.jpg" alt="Discord Server" width="520"/>
+      </a>
+    </td>
+  </tr>
+</table>
 
 ## 🚀 Features
 
@@ -34,19 +46,21 @@ game reaches the main menu. The port can be changed in the mod settings.
 - **ETag support** - Intelligent caching with 304 Not Modified responses
 - **Non-blocking operations** - Game non-blocking API operations
 
+![alt text](../media/media/banner_get_colonist.jpg)
+
 ## 🔍 Integrations
 
-Share your projects - send integrations to be featured here
-
-| Name | Link |
-|---   |---   |
-|Rimworld Dashboard | https://github.com/IlyaChichkov/rimapi-dashboard |
-|Food Analysis Script (Python) | https://gist.github.com/IlyaChichkov/1c4455c9f797a277693ee5a3e016ac3d |
+Share your projects - send integrations on discord server
 
 ## 🛠️ Usage
+
 1. Start new RimWorld game or load one from saves with the mod enabled. When game map is loaded the API server will begin listening.
 2. The default address is `http://localhost:8765/`. You can change the port from the RIMAPI mod settings.
 3. Use any HTTP client (curl, Postman, etc.) to call the endpoints.
+
+> More information in the documentation.
+
+![alt text](../media/media/banner_post_edit_pawn.jpg)
 
 ## 📄 License
 This project is licensed under the GNU GPLv3 License - see the [LICENSE](https://github.com/IlyaChichkov/RIMAPI/blob/main/LICENSE) file for details.
