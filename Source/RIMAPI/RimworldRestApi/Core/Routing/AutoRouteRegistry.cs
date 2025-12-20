@@ -139,6 +139,7 @@ namespace RIMAPI.Core
 
                 LogApi.Message(
                     $"Auto-registered: {routeAttr.Method} {routeAttr.Pattern} -> {controllerType.Name}.{method.Name}"
+                    , LoggingLevels.DEBUG
                 );
             }
             catch (Exception ex)
