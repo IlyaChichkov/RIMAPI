@@ -130,7 +130,14 @@ namespace RIMAPI.Core
         public CachingService(RIMAPI_Settings settings)
         {
             LogApi.Info("[CachingService] Initialized");
-            _lastCleanupTick = Find.TickManager?.TicksGame ?? 0;
+            if (Current.ProgramState == ProgramState.Playing)
+            {
+                _lastCleanupTick = Find.TickManager.TicksGame;
+            }
+            else
+            {
+                _lastCleanupTick = 0;
+            }
             _settings = settings;
 
             _enabled = _settings.EnableCaching;

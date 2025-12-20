@@ -28,7 +28,6 @@ namespace RIMAPI.Core
         public void AddRoute(string method, string path, Func<HttpListenerContext, Task> handler)
         {
             _routes.Add(new Route(method, path, handler));
-            LogApi.Message($"Registered route: {method} {path}");
         }
 
         public void ClearRoutes()

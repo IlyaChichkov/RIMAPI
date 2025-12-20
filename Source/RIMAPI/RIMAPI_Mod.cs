@@ -55,11 +55,7 @@ namespace RIMAPI
 
             if (list.ButtonText("RIMAPI.RestartServer".Translate()))
             {
-                RIMAPI_GameComponent component = Current.Game.GetComponent<RIMAPI_GameComponent>();
-                if (component != null)
-                {
-                    component.RestartServer();
-                }
+                RIMAPI_GameComponent.RestartServer();
             }
 
             bool tempEnableLogging = Settings.EnableLogging;
