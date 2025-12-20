@@ -24,15 +24,7 @@ namespace RIMAPI.Services
         {
             try
             {
-                var state = new GameStateDto
-                {
-                    GameTick = Find.TickManager?.TicksGame ?? 0,
-                    ColonyWealth = 4,
-                    ColonistCount = 3,
-                    Storyteller = Current.Game?.storyteller?.def?.defName ?? "Unknown",
-                    IsPaused = Find.TickManager.Paused,
-                };
-
+                var state = GamePlayHelper.GetGameStateDto();
                 return ApiResult<GameStateDto>.Ok(state);
             }
             catch (Exception ex)
@@ -406,6 +398,20 @@ namespace RIMAPI.Services
                             warnings,
                             "AnimalDefs"
                         ),
+                    ["StorytellerDefs"] = () =>
+                        SetProperty(
+                            defs,
+                            DefDatabaseHelper.GetStorytellerDefDtoList,
+                            warnings,
+                            "StorytellerDefs"
+                        ),
+                    ["DifficultyDefs"] = () =>
+                        SetProperty(
+                            defs,
+                            DefDatabaseHelper.GetDifficultyDefDtoList,
+                            warnings,
+                            "DifficultyDefs"
+                        ),
                 };
 
                 // Execute only the requested properties
@@ -666,26 +672,80 @@ namespace RIMAPI.Services
 
         public ApiResult GameSave(string name)
         {
-            var saveName = GenFile.SanitizedFileName(name);
-
-            if (GameDataSaveLoader.SavingIsTemporarilyDisabled)
+            try
             {
-                return ApiResult.Fail("Cannot save game - saving is temporarily disabled");
+                var saveName = GenFile.SanitizedFileName(name);
+
+                if (GameDataSaveLoader.SavingIsTemporarilyDisabled)
+                {
+                    return ApiResult.Fail("Cannot save game - saving is temporarily disabled");
+                }
+
+                LongEventHandler.QueueLongEvent(delegate
+                {
+                    GameDataSaveLoader.SaveGame(saveName);
+                }, "SavingLongEvent", doAsynchronously: false, null);
+
+                Messages.Message("Game saved as: " + saveName, MessageTypeDefOf.SilentInput);
             }
-
-            LongEventHandler.QueueLongEvent(delegate
+            catch (Exception ex)
             {
-                GameDataSaveLoader.SaveGame(saveName);
-            }, "SavingLongEvent", doAsynchronously: false, null);
-
-            Messages.Message("Game saved as: " + saveName, MessageTypeDefOf.SilentInput);
+                return ApiResult.Fail($"Failed to load game: {ex.Message}");
+            }
             return ApiResult.Ok();
         }
 
         public ApiResult GameLoad(string name)
         {
-            GameDataSaveLoader.CheckVersionAndLoadGame(name);
+            try
+            {
+                GameDataSaveLoader.CheckVersionAndLoadGame(name);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail($"Failed to load game: {ex.Message}");
+            }
             return ApiResult.Ok();
+        }
+
+        public ApiResult GameDevQuickStart()
+        {
+            try
+            {
+                LongEventHandler.QueueLongEvent(delegate
+                {
+                    Root_Play.SetupForQuickTestPlay();
+                    PageUtility.InitGameStart();
+                }, "GeneratingMap", doAsynchronously: true, GameAndMapInitExceptionHandlers.ErrorWhileGeneratingMap);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail($"Failed to start quick dev game: {ex.Message}");
+            }
+            return ApiResult.Ok();
+        }
+
+        public ApiResult GameStart(NewGameStartRequestDto request)
+        {
+            try
+            {
+                LongEventHandler.QueueLongEvent(delegate
+                {
+                    GamePlayHelper.InitGameFromConfiguration(request);
+                    PageUtility.InitGameStart();
+                }, "GeneratingMap", doAsynchronously: true, GameAndMapInitExceptionHandlers.ErrorWhileGeneratingMap);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail($"Failed to start game from configuration: {ex.Message}");
+            }
+            return ApiResult.Ok();
+        }
+
+        public ApiResult<GameSettingsDto> GetCurrentSettings()
+        {
+            var result = GamePlayHelper.GetCurrentSettings();
+            return ApiResult<GameSettingsDto>.Ok(result);
         }
     }
 }
