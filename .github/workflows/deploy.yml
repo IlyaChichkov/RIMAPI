@@ -28,15 +28,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install libcairo2-dev pkg-config python3-dev
-          pip install cairosvg
-          pip install pycairo
-          pip install mkdocs
-          pip install mkdocs-material
-          pip install mkdocs-mermaid2-plugin
-          pip install mkdocs-minify-plugin
-          pip install mkdocs-macros-plugin
-          pip install mkdocs-llmstxt
+          sudo apt-get update
+          sudo apt-get install -y libcairo2-dev pkg-config python3-dev
+          pip install cairosvg pycairo mkdocs mkdocs-material mkdocs-mermaid2-plugin mkdocs-minify-plugin mkdocs-macros-plugin mkdocs-llmstxt
 
       - name: Build site
         run: mkdocs build --site-dir public
