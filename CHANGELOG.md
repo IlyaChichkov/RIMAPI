@@ -1,4 +1,25 @@
 # Changelog
+## v1.5.0
+
+Impliment API server launch at game menu screen (previously lauched when game map loaded).
+
+Fix GetColonist, GetColonistDetailed output when colonist with Id not found to display error.
+
+Add new endpoints:
+
+[POST] /api/v1/item/spawn
+[POST] /api/v1/game/save
+[POST] /api/v1/game/load
+[POST] /api/v1/game/start/devquick
+[POST] /api/v1/game/start
+[GET] /api/v1/game/settings
+
+Update README.
+
+## v1.4.1
+
+Fix UI blinking during texture make readable
+
 ## v1.4.0
 
 Author: IlyaChichkov
