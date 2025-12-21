@@ -45,6 +45,8 @@ namespace RIMAPI.Models
         public List<DrugPolicyDefDto> DrugPolicyDefs { get; set; }
         public List<PlantDefDto> PlantDefs { get; set; }
         public List<AnimalDefDto> AnimalDefs { get; set; }
+        public List<StorytellerDefDto> StorytellerDefs { get; set; }
+        public List<DifficultyDefDto> DifficultyDefs { get; set; }
     }
 
     public class ThingCostDto
@@ -465,6 +467,16 @@ namespace RIMAPI.Models
         public bool PackAnimal { get; set; }
         public float Petness { get; set; }
         public List<LifeStageAgeDto> LifeStages { get; set; }
+    }
+
+    public class DifficultyDefDto
+    {
+        public string DefName { get; set; }
+    }
+
+    public class StorytellerDefDto
+    {
+        public string DefName { get; set; }
     }
 
     public class LifeStageAgeDto

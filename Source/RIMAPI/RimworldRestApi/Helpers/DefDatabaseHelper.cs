@@ -442,6 +442,28 @@ namespace RIMAPI.Helpers
                 .ToList();
         }
 
+        public static List<DifficultyDefDto> GetDifficultyDefDtoList()
+        {
+            return DefDatabase<DifficultyDef>
+                .AllDefsListForReading
+                .Select(a => new DifficultyDefDto
+                {
+                    DefName = a.defName,
+                })
+                .ToList();
+        }
+
+        public static List<StorytellerDefDto> GetStorytellerDefDtoList()
+        {
+            return DefDatabase<StorytellerDef>
+                .AllDefsListForReading
+                .Select(a => new StorytellerDefDto
+                {
+                    DefName = a.defName,
+                })
+                .ToList();
+        }
+
         public static List<AnimalDefDto> GetAnimalDefDtoList()
         {
             return DefDatabase<ThingDef>

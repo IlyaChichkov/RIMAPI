@@ -1,7 +1,7 @@
 ﻿{{ api.get('page_title', '# RimAPI Documentation') }}
 
-**Version**: 1.4.1  
-**Endpoints total count**: 92  
+**Version**: 1.5.0  
+**Endpoints total count**: 98  
 
 {{ api.section.get("Core_API", {}).get('title', '') }}
 {{ api.section.get("Core_API", {}).get('desc', '') }}
@@ -1232,6 +1232,166 @@ GameController.PostLetter
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+SetGameSpeed&type=code" class="doc-github-link">
 GameController.SetGameSpeed
+</a>
+</div>
+
+---
+
+<h4 id="apiv1gamesave">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/game/save
+```
+</code>
+<a class="headerlink" href="#apiv1gamesave" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/save", {'desc': 'Failed to load /api/v1/game/save'}).get('desc', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/save", {'desc': 'Failed to load /api/v1/game/save'}).get('curl', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/save", {'desc': 'Failed to load /api/v1/game/save'}).get('request', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/save", {'desc': 'Failed to load /api/v1/game/save'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GameSave&type=code" class="doc-github-link">
+GameController.GameSave
+</a>
+</div>
+
+---
+
+<h4 id="apiv1gameload">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/game/load
+```
+</code>
+<a class="headerlink" href="#apiv1gameload" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/load", {'desc': 'Failed to load /api/v1/game/load'}).get('desc', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/load", {'desc': 'Failed to load /api/v1/game/load'}).get('curl', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/load", {'desc': 'Failed to load /api/v1/game/load'}).get('request', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/load", {'desc': 'Failed to load /api/v1/game/load'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GameLoad&type=code" class="doc-github-link">
+GameController.GameLoad
+</a>
+</div>
+
+---
+
+<h4 id="apiv1gamestartdevquick">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/game/start/devquick
+```
+</code>
+<a class="headerlink" href="#apiv1gamestartdevquick" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/start/devquick", {'desc': 'Failed to load /api/v1/game/start/devquick'}).get('desc', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/start/devquick", {'desc': 'Failed to load /api/v1/game/start/devquick'}).get('curl', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/start/devquick", {'desc': 'Failed to load /api/v1/game/start/devquick'}).get('request', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/start/devquick", {'desc': 'Failed to load /api/v1/game/start/devquick'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GameDevQuickStart&type=code" class="doc-github-link">
+GameController.GameDevQuickStart
+</a>
+</div>
+
+---
+
+<h4 id="apiv1gamestart">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/game/start
+```
+</code>
+<a class="headerlink" href="#apiv1gamestart" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/start", {'desc': 'Failed to load /api/v1/game/start'}).get('desc', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/start", {'desc': 'Failed to load /api/v1/game/start'}).get('curl', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/start", {'desc': 'Failed to load /api/v1/game/start'}).get('request', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/start", {'desc': 'Failed to load /api/v1/game/start'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GameStart&type=code" class="doc-github-link">
+GameController.GameStart
+</a>
+</div>
+
+---
+
+<h4 id="apiv1gamesettings">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/game/settings
+```
+</code>
+<a class="headerlink" href="#apiv1gamesettings" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings", {'desc': 'Failed to load /api/v1/game/settings'}).get('desc', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings", {'desc': 'Failed to load /api/v1/game/settings'}).get('curl', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings", {'desc': 'Failed to load /api/v1/game/settings'}).get('request', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings", {'desc': 'Failed to load /api/v1/game/settings'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GetGameSettings&type=code" class="doc-github-link">
+GameController.GetGameSettings
 </a>
 </div>
 
@@ -2984,6 +3144,38 @@ ThingController.GetResourcesStored
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ThingController%5C.cs%24%2F+GetStoragesSummary&type=code" class="doc-github-link">
 ThingController.GetStoragesSummary
+</a>
+</div>
+
+---
+
+<h4 id="apiv1itemspawn">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/item/spawn
+```
+</code>
+<a class="headerlink" href="#apiv1itemspawn" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/spawn", {'desc': 'Failed to load /api/v1/item/spawn'}).get('desc', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/spawn", {'desc': 'Failed to load /api/v1/item/spawn'}).get('curl', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/spawn", {'desc': 'Failed to load /api/v1/item/spawn'}).get('request', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/spawn", {'desc': 'Failed to load /api/v1/item/spawn'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ThingController%5C.cs%24%2F+SpawnItem&type=code" class="doc-github-link">
+ThingController.SpawnItem
 </a>
 </div>
 

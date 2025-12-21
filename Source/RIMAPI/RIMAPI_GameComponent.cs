@@ -18,14 +18,13 @@ namespace RIMAPI
         public override void FinalizeInit()
         {
             base.FinalizeInit();
-            StartServer();
 
             GameObject go = new GameObject("MyTextureExporter");
             go.AddComponent<TextureExportManager>();
             UnityEngine.Object.DontDestroyOnLoad(go);
         }
 
-        public void StartServer()
+        public static void StartServer()
         {
             lock (_serverLock)
             {
@@ -84,11 +83,20 @@ namespace RIMAPI
             return _serverInitialized ? _apiServer?.GetExtension(extensionId) : null;
         }
 
-        public void RestartServer()
+        public static void RestartServer()
         {
             Log.Message("Restarting API server...");
             Shutdown();
             StartServer();
+        }
+
+        public static void ProcessServerQueues()
+        {
+            if (!_serverInitialized || _apiServer == null)
+                return;
+
+            _apiServer.ProcessQueuedRequests();
+            _apiServer.ProcessBroadcastQueue();
         }
 
         public override void GameComponentTick()

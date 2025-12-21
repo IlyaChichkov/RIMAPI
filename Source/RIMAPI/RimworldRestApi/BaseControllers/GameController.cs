@@ -166,5 +166,43 @@ namespace RIMAPI.Controllers
             var result = _gameStateService.SetGameSpeed(speed);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/game/save")]
+        public async Task GameSave(HttpListenerContext context)
+        {
+            var saveName = RequestParser.GetStringParameter(context, "name");
+            var result = _gameStateService.GameSave(saveName);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/game/load")]
+        public async Task GameLoad(HttpListenerContext context)
+        {
+            var loadName = RequestParser.GetStringParameter(context, "name");
+            var result = _gameStateService.GameLoad(loadName);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/game/start/devquick")]
+        public async Task GameDevQuickStart(HttpListenerContext context)
+        {
+            var result = _gameStateService.GameDevQuickStart();
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/game/start")]
+        public async Task GameStart(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<NewGameStartRequestDto>();
+            var result = _gameStateService.GameStart(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/game/settings")]
+        public async Task GetGameSettings(HttpListenerContext context)
+        {
+            var result = _gameStateService.GetCurrentSettings();
+            await context.SendJsonResponse(result);
+        }
     }
 }

@@ -26,7 +26,14 @@ namespace RIMAPI.Core
             _connectedClients = new List<SseClient>();
             _broadcastQueue = new Queue<SseEvent>();
             _registeredEventTypes = new HashSet<string>();
-            _lastBroadcastTick = Find.TickManager?.TicksGame ?? 0;
+            if (Current.ProgramState == ProgramState.Playing)
+            {
+                _lastBroadcastTick = Find.TickManager.TicksGame;
+            }
+            else
+            {
+                _lastBroadcastTick = 0;
+            }
 
             RegisterCoreEventTypes();
         }
