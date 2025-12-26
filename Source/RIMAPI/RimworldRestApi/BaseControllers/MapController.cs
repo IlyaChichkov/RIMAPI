@@ -166,5 +166,45 @@ namespace RIMAPI.Controllers
             var result = _mapService.SetWeather(mapId, defName);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/map/destroy/corpses")]
+        public async Task DestroyCorpses(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.DestroyCorpses(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/destroy/forbidden")]
+        public async Task DestroyForbiddenItems(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.DestroyForbiddenItems(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/destroy/rect")]
+        public async Task DestroyThingsInRect(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<DestroyRectRequestDto>();
+            var result = _mapService.DestroyThingsInRect(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/repair/positions")]
+        public async Task RepairAtPositions(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<RepairPositionsRequestDto>();
+            var result = _mapService.RepairThingsAtPositions(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/repair/rect")]
+        public async Task RepairInRect(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<RepairRectRequestDto>();
+            var result = _mapService.RepairThingsInRect(body);
+            await context.SendJsonResponse(result);
+        }
     }
 }
