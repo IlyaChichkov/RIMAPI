@@ -249,5 +249,23 @@ namespace RIMAPI.Services
                 return ApiResult<FactionDto>.Fail(ex.Message);
             }
         }
+
+        public ApiResult<FactionChangeRelationResponceDto> SetFactionGoodwill(int id, int otherId, int goodwill, bool sendMessage, bool canSendHostilityLetter)
+        {
+            try
+            {
+                Faction faction = FactionHelper.GetFactionByOrderId(id);
+                Faction otherFaction = FactionHelper.GetFactionByOrderId(otherId);
+
+                int currentGoodwill = faction.GoodwillWith(otherFaction);
+                int goodwillChange = goodwill - currentGoodwill;
+
+                return ChangeFactionRelationWith(id, otherId, goodwillChange, sendMessage, canSendHostilityLetter);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult<FactionChangeRelationResponceDto>.Fail(ex.Message);
+            }
+        }
     }
 }

@@ -153,6 +153,13 @@ namespace RIMAPI.Services
             bool sendMessage,
             bool canSendHostilityLetter
         );
+        ApiResult<FactionChangeRelationResponceDto> SetFactionGoodwill(
+            int id,
+            int otherId,
+            int goodwill,
+            bool sendMessage,
+            bool canSendHostilityLetter
+        );
     }
     #endregion
 
