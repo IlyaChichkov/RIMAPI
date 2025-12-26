@@ -96,6 +96,13 @@ namespace RIMAPI.Models
 
     public class ColonistMedicalInfoDto
     {
+        public bool IsDead { get; set; }
+        public bool IsDowned { get; set; } // True if crawling or incapacitated
+
+        // Capacities (0.0 to 1.0+)
+        public float Consciousness { get; set; }
+        public float Moving { get; set; }
+
         public float Health { get; set; }
         public List<HediffDto> Hediffs { get; set; }
         public int MedicalPolicyId { get; set; }
