@@ -165,5 +165,73 @@ namespace RIMAPI.Services
                 return ApiResult.Fail(ex.Message);
             }
         }
+
+        public ApiResult PlaceBlueprints(PasteAreaRequestDto request)
+        {
+            try
+            {
+                if (request.Blueprint == null) return ApiResult.Fail("Blueprint is null");
+
+                var map = MapHelper.GetMapByID(request.MapId);
+                if (map == null) return ApiResult.Fail($"Map {request.MapId} not found.");
+
+                int anchorX = request.Position.X;
+                int anchorZ = request.Position.Z;
+                int count = 0;
+
+                // 1. Place Floor Blueprints
+                foreach (var floorDto in request.Blueprint.Floors)
+                {
+                    IntVec3 pos = new IntVec3(anchorX + floorDto.RelX, 0, anchorZ + floorDto.RelZ);
+                    if (pos.InBounds(map))
+                    {
+                        TerrainDef terrainDef = DefDatabase<TerrainDef>.GetNamedSilentFail(floorDto.DefName);
+                        if (terrainDef != null)
+                        {
+                            // PlaceBlueprintForBuild works for TerrainDefs too
+                            GenConstruct.PlaceBlueprintForBuild(terrainDef, pos, map, Rot4.North, Faction.OfPlayer, null);
+                            count++;
+                        }
+                    }
+                }
+
+                // 2. Place Building Blueprints
+                foreach (var buildDto in request.Blueprint.Buildings)
+                {
+                    IntVec3 pos = new IntVec3(anchorX + buildDto.RelX, 0, anchorZ + buildDto.RelZ);
+
+                    if (!pos.InBounds(map)) continue;
+
+                    // Resolve Definitions
+                    ThingDef thingDef = DefDatabase<ThingDef>.GetNamedSilentFail(buildDto.DefName);
+                    if (thingDef == null) continue;
+
+                    ThingDef stuffDef = null;
+                    if (!string.IsNullOrEmpty(buildDto.StuffDefName))
+                    {
+                        stuffDef = DefDatabase<ThingDef>.GetNamedSilentFail(buildDto.StuffDefName);
+                    }
+
+                    // Create Blueprint
+                    // Note: GenConstruct handles checking if it can be placed, checking affordance, etc.
+                    GenConstruct.PlaceBlueprintForBuild(
+                        thingDef,
+                        pos,
+                        map,
+                        new Rot4(buildDto.Rotation),
+                        Faction.OfPlayer,
+                        stuffDef
+                    );
+                    count++;
+                }
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Blueprint Error: {ex}");
+                return ApiResult.Fail(ex.Message);
+            }
+        }
     }
 }

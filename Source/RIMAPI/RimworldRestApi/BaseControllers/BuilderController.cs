@@ -30,5 +30,13 @@ namespace RIMAPI.Controllers
             var result = _builderService.PasteArea(body);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/builder/blueprint")]
+        public async Task PlaceBlueprints(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<PasteAreaRequestDto>();
+            var result = _builderService.PlaceBlueprints(body);
+            await context.SendJsonResponse(result);
+        }
     }
 }

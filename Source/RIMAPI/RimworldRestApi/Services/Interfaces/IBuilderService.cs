@@ -7,5 +7,6 @@ namespace RIMAPI.Services
     {
         ApiResult<BlueprintDto> CopyArea(CopyAreaRequestDto request);
         ApiResult PasteArea(PasteAreaRequestDto request);
+        ApiResult PlaceBlueprints(PasteAreaRequestDto request);
     }
 }
