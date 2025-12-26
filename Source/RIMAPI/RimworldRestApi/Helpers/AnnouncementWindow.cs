@@ -11,8 +11,8 @@ namespace RIMAPI.UI
         private readonly float _scale;
         private readonly float _startTime;
 
-        // FIX 1: Explicitly use 'Verse.UI' to avoid conflict with your namespace 'RIMAPI.UI'
         public override Vector2 InitialSize => new Vector2(Verse.UI.screenWidth, Verse.UI.screenHeight);
+        protected override float Margin => 0f;
 
         public AnnouncementWindow(string text, float duration, string colorHex, float scale)
         {
@@ -21,55 +21,55 @@ namespace RIMAPI.UI
             _scale = scale;
             _startTime = Time.realtimeSinceStartup;
 
-            // Parse Color
             if (!ColorUtility.TryParseHtmlString(colorHex, out _color))
                 _color = Color.white;
 
-            // Window Properties
             this.layer = WindowLayer.Super;
-            this.absorbInputAroundWindow = false;
             this.closeOnClickedOutside = false;
             this.doCloseButton = false;
             this.doCloseX = false;
-
-            // FIX 2: Remove 'backgroundColor' (it doesn't exist). 
-            // Setting shadowAlpha to 0 removes the dark overlay.
-            // By default, a Window is transparent unless you draw a background in DoWindowContents.
+            this.absorbInputAroundWindow = false;
             this.shadowAlpha = 0f;
-
-            // Ensure the game doesn't pause when this text pops up
             this.forcePause = false;
             this.preventCameraMotion = false;
         }
 
+        // --- THE FIX ---
+        // By overriding this and NOT calling base.WindowOnGUI(), 
+        // we skip the default background texture drawing entirely.
+        public override void WindowOnGUI()
+        {
+            // Just call our contents method directly
+            this.DoWindowContents(this.windowRect);
+        }
+
         public override void DoWindowContents(Rect inRect)
         {
-            // 1. Check Timeout
             if (Time.realtimeSinceStartup - _startTime > _duration)
             {
                 this.Close();
                 return;
             }
 
-            // 2. Setup Text Style
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleCenter;
-            GUI.color = _color;
 
-            // 3. Draw Scaled Text
+            // Save state
+            Color oldColor = GUI.color;
             Matrix4x4 oldMatrix = GUI.matrix;
 
-            // FIX 3: Explicitly use Verse.UI again here
+            // Apply style
+            GUI.color = _color;
             Vector2 pivot = new Vector2(Verse.UI.screenWidth / 2f, Verse.UI.screenHeight / 2f);
             GUIUtility.ScaleAroundPivot(new Vector2(_scale, _scale), pivot);
 
-            // Draw Label
+            // Draw
             Widgets.Label(inRect, _text);
 
-            // 4. Restore
+            // Restore state
             GUI.matrix = oldMatrix;
+            GUI.color = oldColor;
             Text.Anchor = TextAnchor.UpperLeft;
-            GUI.color = Color.white;
         }
     }
 }
