@@ -1,123 +1,183 @@
 import requests
 import sys
+import time
 
 # --- CONFIGURATION ---
 BASE_URL = "http://localhost:8765/api/v1"
 
 # Endpoints
-URL_GET_FACTIONS = f"{BASE_URL}/factions"
-URL_SET_GOODWILL = f"{BASE_URL}/faction/goodwill"
-URL_SPAWN_PAWN   = f"{BASE_URL}/pawn/spawn"
+URL_GET_FACTIONS   = f"{BASE_URL}/factions"
+URL_SET_GOODWILL   = f"{BASE_URL}/faction/goodwill"
+URL_SPAWN_PAWN     = f"{BASE_URL}/pawn/spawn"
+URL_CLEAR_RECT     = f"{BASE_URL}/map/destroy/rect"
+URL_REPAIR_RECT     = f"{BASE_URL}/map/repair/rect"
+URL_PAWN_DETAILS   = f"{BASE_URL}/pawns/details"
+URL_CREATE_LORD    = f"{BASE_URL}/lords/create"
+URL_ANNOUNCE = f"{BASE_URL}/ui/announce"
 
-def get_factions():
-    """
-    Fetches all factions to find the Player's ID and a suitable Enemy ID/Name.
-    """
-    print(f"[-] Fetching factions from {URL_GET_FACTIONS}...")
+# Battle Settings
+CHECK_INTERVAL = 2.0  # Seconds between checks
+CRITICAL_HEALTH = 0.15 # 15% health (Assumed downed/dying threshold)
 
-    return 4, 5
-
-def set_hostile(player_id, enemy_id):
-    """
-    Sets goodwill to -100 to ensure they fight.
-    """
-    print(f"[-] Setting goodwill between ID {player_id} and {enemy_id} to -100...")
+def announce_winner(text, color_hex):
+    print(f"[-] Announcing: {text}")
     payload = {
-        "id": player_id,
-        "other_id": enemy_id,
-        "value": -100,
-        "send_message": False,
-        "can_send_hostility_letter": False
+        "text": text,
+        "duration": 5.0,
+        "color": color_hex,
+        "scale": 3.0
     }
-    
     try:
-        resp = requests.post(URL_SET_GOODWILL, json=payload)
-        resp.raise_for_status()
-        print("[+] Factions are now hostile.")
-    except Exception as e:
-        print(f"[!] Failed to set hostility: {e}")
+        requests.post(URL_ANNOUNCE, json=payload)
+    except:
+        pass
 
-def create_lord(faction_name, pawn_ids, job_type="AssaultColony", target_ids=None):
-    print(f"[-] Creating Lord '{job_type}' for {len(pawn_ids)} pawns of {faction_name}...")
-    payload = {
-        "faction": faction_name,
-        "pawn_ids": pawn_ids,
-        "job_type": job_type,
-        "target_ids": target_ids
-    }
-    resp = requests.post(f"{BASE_URL}/lords/create", json=payload)
-    print(f"    Result: {resp.text}")
-
-def spawn_pawn(x, z, faction_name, pawn_kind="Colonist"):
-    """
-    Spawns a pawn at a specific location for a specific faction.
-    """
-    print(f"[-] Spawning '{pawn_kind}' for faction '{faction_name}' at ({x}, 0, {z})...")
+def repair_arena():
     
+    print("[-] Repairing arena...")
     payload = {
-        "pawn_kind": pawn_kind,
-        "faction": faction_name,
-        "position": {
-            "x": x,
-            "y": 0,
-            "z": z
-        },
-        # Optional: Give them weapons/skills so the fight is interesting
+        "map_id": 0,
+        "point_a": {"x": 7, "y": 0, "z": 7},
+        "point_b": {"x": 32, "y": 0, "z": 32}
+    }
+    try:
+        requests.post(URL_REPAIR_RECT, json=payload)
+    except Exception as e:
+        print(f"[!] Error repairing arena: {e}")
+
+def clear_arena():
+    """Destroys all items, pawns, and filth in the battle area."""
+    print("[-] Clearing arena...")
+    payload = {
+        "map_id": 0,
+        "point_a": {"x": 10, "y": 0, "z": 10},
+        "point_b": {"x": 29, "y": 0, "z": 29}
+    }
+    try:
+        requests.post(URL_CLEAR_RECT, json=payload)
+    except Exception as e:
+        print(f"[!] Error clearing arena: {e}")
+
+def get_pawn_status(pawn_id):
+    """
+    Returns a dictionary with status flags.
+    """
+    try:
+        resp = requests.get(f"{URL_PAWN_DETAILS}?id={pawn_id}")
+        if resp.status_code != 200:
+            return {"dead": True, "downed": True, "hp": 0}
+        
+        data = resp.json().get("data", {})
+        med_info = data.get("colonist_medical_info", {})
+        
+        return {
+            "name": data.get("colonist", {}).get('name'),
+            "dead": med_info.get("is_dead", False),
+            "downed": med_info.get("is_downed", False),
+            "moving": med_info.get("moving", 1.0),
+            "consciousness": med_info.get("consciousness", 1.0),
+            "hp": med_info.get("health", 0.0)
+        }
+    except Exception as e:
+        print(f"[!] Error checking pawn {pawn_id}: {e}")
+        return {"dead": True, "downed": True, "hp": 0}
+
+def spawn_pawn(x, z, faction, kind):
+    payload = {
+        "pawn_kind": kind,
+        "faction": faction,
+        "position": {"x": x, "y": 0, "z": z},
         "biological_age": 25
     }
-
     try:
         resp = requests.post(URL_SPAWN_PAWN, json=payload)
-        resp.raise_for_status()
-        result = resp.json()
-        print(f"[+] Spawned successfully! Response: {result}")
-
-        return result.get("data", {}).get("pawn_id") or result.get("pawn_id")
+        if resp.status_code == 200:
+            data = resp.json()
+            # Handle different casing from API (Pascal vs Snake)
+            return data.get("data", {}).get("pawn_id") or data.get("pawn_id")
     except Exception as e:
         print(f"[!] Spawn failed: {e}")
-        if hasattr(e, 'response') and e.response:
-             print(f"    Server said: {e.response.text}")
+    return None
 
-if __name__ == "__main__":
-    # 1. Get Faction Info
-    p_id, e_id = get_factions()
+def setup_battle(p_faction, e_faction):
+    """Spawns units and sets up AI."""
+    print("\n--- NEW ROUND STARTING ---")
     
-    # Use Name or DefName for the spawn string
+    # 1. Spawn Units
+    def_id = spawn_pawn(11, 11, p_faction, "Mercenary_Gunner")
+    att_id = spawn_pawn(28, 28, e_faction, "Mercenary_Gunner")
+
+    if not def_id or not att_id:
+        print("[!] Failed to spawn one or both pawns.")
+        return None, None
+
+    print(f"[+] Spawned Defender ({def_id}) vs Attacker ({att_id})")
+
+    # 2. Assign Lords (AI)
+    # Force them to target each other specifically
+    create_lord(e_faction, [att_id], "AssaultThings", [def_id])
+    create_lord(p_faction, [def_id], "AssaultThings", [att_id])
+
+    return def_id, att_id
+
+def create_lord(faction, pawns, job, targets):
+    payload = {
+        "faction": faction,
+        "pawn_ids": pawns,
+        "job_type": job,
+        "target_ids": targets
+    }
+    requests.post(URL_CREATE_LORD, json=payload)
+
+def monitor_battle(id_a, id_b):
+    """Loops until one pawn is incapacitated."""
+    print("[-] Monitoring battle...")
+    
+    while True:
+        time.sleep(1.0) # Check every second
+
+        stat_a = get_pawn_status(id_a)
+        stat_b = get_pawn_status(id_b)
+
+        # Log detailed status
+        print(f"    A: {int(stat_a['hp']*100)}% HP (Mov: {int(stat_a['moving']*100)}%) | "
+              f"B: {int(stat_b['hp']*100)}% HP (Mov: {int(stat_b['moving']*100)}%)")
+
+        # WIN CONDITION: Enemy is Dead OR Downed
+        if stat_a['dead'] or stat_a['downed']:
+            print(f"[!] Defender ({id_a}) lost! (Dead: {stat_a['dead']}, Downed: {stat_a['downed']})")
+            msg = f"Attacker ({stat_b['name']}) WINS!"
+            announce_winner(msg, "#00FF00") # Green
+            return "B_WINS"
+            
+        if stat_b['dead'] or stat_b['downed']:
+            print(f"[!] Attacker ({id_b}) lost! (Dead: {stat_b['dead']}, Downed: {stat_b['downed']})")
+            msg = f"Defender ({stat_a['name']}) WINS!"
+            announce_winner(msg, "#00FF00") # Green
+            return "A_WINS"
+
+# --- MAIN EXECUTION ---
+if __name__ == "__main__":
+    # Settings
     p_name = "OutlanderCivil"
-    e_name = "AncientsHostile"
+    e_name = "AncientsHostile" # Ensure this faction exists, or use 'Pirate'
 
-    print(f"[*] Player Faction: {p_name} (ID: {p_id})")
-    print(f"[*] Enemy Faction:  {e_name} (ID: {e_id})")
+    print(f"[*] Starting Auto-Battle Loop: {p_name} vs {e_name}")
 
-    # 3. Spawn Player Pawn at (11, 0, 11)
-    defender_id = spawn_pawn(11, 11, p_name, pawn_kind="Mercenary_Gunner")
-
-    # 4. Spawn Enemy Pawn at (28, 0, 28)
-    # Using 'Mercenary' or 'Pirate' kind usually gives them a weapon automatically
-    attacker_id = spawn_pawn(28, 28, e_name, pawn_kind="Mercenary_Gunner")
-
-    print(f"[*] A: {defender_id}")
-    print(f"[*] B:  {attacker_id}")
-
-    if defender_id and attacker_id:
-        # 4. Create AI Lord for the Attacker
-        # "AssaultThings" will make the attacker specifically hunt the defender
-        create_lord(
-            e_name,
-            [attacker_id],
-            job_type="AssaultThings",
-            target_ids=[defender_id]
-        )
-        create_lord(
-            p_name,
-            [defender_id],
-            job_type="AssaultThings",
-            target_ids=[attacker_id]
-        )
+    while True:
+        # 1. Clean up previous mess
+        repair_arena()
+        clear_arena()
         
-        # Alternatively, use "AssaultColony" for general raiding behavior:
-        # create_lord(enemy_fac, [attacker_id], job_type="AssaultColony")
+        # 2. Setup new fight
+        id_1, id_2 = setup_battle(p_name, e_name)
         
-        print("[+] Battle Initiated!")
-    else:
-        print("[!] Failed to spawn pawns.")
+        if id_1 and id_2:
+            # 3. Wait for result
+            monitor_battle(id_1, id_2)
+            
+            print("[-] Round over. Restarting in 3 seconds...")
+            time.sleep(3)
+        else:
+            print("[!] Setup failed. Retrying in 5 seconds...")
+            time.sleep(5)
