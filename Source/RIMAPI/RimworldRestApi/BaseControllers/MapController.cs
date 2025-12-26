@@ -12,11 +12,14 @@ namespace RIMAPI.Controllers
     {
         private readonly IMapService _mapService;
         private readonly IBuildingService _buildingService;
+        private readonly IPawnInfoService _pawnInfoService;
 
-        public MapController(IMapService mapService, IBuildingService buildingService)
+        public MapController(IMapService mapService, IBuildingService buildingService,
+                             IPawnInfoService pawnInfoService)
         {
             _mapService = mapService;
             _buildingService = buildingService;
+            _pawnInfoService = pawnInfoService;
         }
 
         [Get("/api/v1/maps")]
@@ -204,6 +207,22 @@ namespace RIMAPI.Controllers
         {
             var body = await context.Request.ReadBodyAsync<RepairRectRequestDto>();
             var result = _mapService.RepairThingsInRect(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/droppod")]
+        public async Task SpawnDropPod(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<SpawnDropPodRequestDto>();
+            var result = _mapService.SpawnDropPod(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/map/pawns")]
+        public async Task GetPawnsOnMap(HttpListenerContext context)
+        {
+            int mapId = RequestParser.GetMapId(context);
+            var result = _pawnInfoService.GetPawnsOnMap(mapId);
             await context.SendJsonResponse(result);
         }
     }
