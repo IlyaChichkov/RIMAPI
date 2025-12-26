@@ -134,4 +134,24 @@ namespace RIMAPI.Models
     {
         public List<RoomDto> Rooms { get; set; }
     }
+
+    public class DestroyRectRequestDto
+    {
+        public int MapId { get; set; }
+        public PositionDto PointA { get; set; }
+        public PositionDto PointB { get; set; }
+    }
+
+    public class RepairPositionsRequestDto
+    {
+        public int MapId { get; set; }
+        public List<PositionDto> Positions { get; set; }
+    }
+
+    public class RepairRectRequestDto
+    {
+        public int MapId { get; set; }
+        public PositionDto PointA { get; set; }
+        public PositionDto PointB { get; set; }
+    }
 }
