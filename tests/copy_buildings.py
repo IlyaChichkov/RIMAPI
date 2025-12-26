@@ -32,6 +32,17 @@ def copy_and_paste():
 
     resp = requests.post(f"{BASE_URL}/builder/paste", json=paste_payload)
     print(f"[+] Paste Result: {resp.text}")
+    
+    print("[-] Placing Blueprints at (80, 80)...")
+    payload = {
+        "map_id": 0,
+        "position": {"x": 80, "y": 0, "z": 80},
+        "blueprint": blueprint_data
+    }
+
+    # Note the different endpoint: /builder/blueprint
+    resp = requests.post(f"{BASE_URL}/builder/blueprint", json=payload)
+    print(f"[+] Result: {resp.text}")
 
 if __name__ == "__main__":
     copy_and_paste()
