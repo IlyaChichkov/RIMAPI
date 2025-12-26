@@ -13,287 +13,312 @@ namespace RIMAPI.Services
 {
     public class PawnEditService : IPawnEditService
     {
-        public PawnEditService() { }
-        public ApiResult EditPawn(PawnEditRequestDto request)
+        private Pawn GetPawn(int id)
+        {
+            var pawn = ColonistsHelper.FindPawnById(id.ToString());
+            if (pawn == null) throw new ArgumentException($"Pawn with ID {id} not found.");
+            return pawn;
+        }
+
+        public ApiResult UpdateBasicInfo(PawnBasicRequest request)
         {
             try
             {
-                LogApi.Info("[EditPawn] GetPawnById");
-                Pawn pawn = ColonistsHelper.FindPawnById(request.PawnId.ToString());
-                if (pawn == null)
-                {
-                    return ApiResult.Fail($"Pawn with ID {request.PawnId} not found.");
-                }
+                Pawn pawn = GetPawn(request.PawnId);
 
-                LogApi.Info("[EditPawn] Name");
-                // --- Basic properties ---
                 if (!string.IsNullOrEmpty(request.Name))
                 {
-                    // Ensure we handle different name types correctly
                     if (pawn.Name is NameTriple triple)
-                        pawn.Name = new NameTriple(triple.First, request.Name, triple.Last);
+                    {
+                        string first = !string.IsNullOrEmpty(request.FirstName) ? request.FirstName : triple.First;
+                        string last = !string.IsNullOrEmpty(request.LastName) ? request.LastName : triple.Last;
+                        string nick = !string.IsNullOrEmpty(request.NickName) ? request.NickName : request.Name;
+                        pawn.Name = new NameTriple(first, nick, last);
+                    }
                     else
+                    {
                         pawn.Name = new NameSingle(request.Name);
+                    }
                 }
 
-                LogApi.Info("[EditPawn] Gender");
-                if (!string.IsNullOrEmpty(request.Gender))
+                if (!string.IsNullOrEmpty(request.Gender) && Enum.TryParse(request.Gender, true, out Gender g))
                 {
-                    if (Enum.TryParse<Gender>(request.Gender, true, out Gender newGender))
-                    {
-                        pawn.gender = newGender;
-                    }
-                    else
-                    {
-                        return ApiResult.Fail($"Invalid gender: {request.Gender}");
-                    }
+                    pawn.gender = g;
                 }
 
-                LogApi.Info("[EditPawn] ageTracker");
                 if (pawn.ageTracker != null)
                 {
                     if (request.BiologicalAge.HasValue)
                         pawn.ageTracker.AgeBiologicalTicks = (long)request.BiologicalAge.Value * 3600000L;
-
                     if (request.ChronologicalAge.HasValue)
                         pawn.ageTracker.AgeChronologicalTicks = (long)request.ChronologicalAge.Value * 3600000L;
                 }
 
+                return ApiResult.Ok();
+            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
 
-                LogApi.Info("[EditPawn] Health");
-                // --- Health ---
-                if (request.HealAllInjuries.HasValue && request.HealAllInjuries.Value)
+        public ApiResult UpdateHealth(PawnHealthRequest request)
+        {
+            try
+            {
+                Pawn pawn = GetPawn(request.PawnId);
+
+                if (request.HealAllInjuries)
                 {
                     HealthUtility.HealNonPermanentInjuriesAndRestoreLegs(pawn);
                 }
 
-                if (request.RemoveAllDiseases.HasValue && request.RemoveAllDiseases.Value && pawn.health?.hediffSet != null)
+                if (request.RestoreBodyParts)
+                {
+                    // Advanced: Restore missing parts
+                    pawn.health.RestorePart(null); // Null restores whole body
+                }
+
+                if (request.RemoveAllDiseases && pawn.health?.hediffSet != null)
                 {
                     foreach (var hediff in pawn.health.hediffSet.hediffs.ToList())
                     {
                         if (hediff.def != null && hediff.def.HasComp(typeof(HediffComp_Immunizable)))
-                        {
                             pawn.health.RemoveHediff(hediff);
-                        }
-                    }
-                }
-
-
-                LogApi.Info("[EditPawn] Needs");
-                // --- Needs (Check if needs tracker exists) ---
-                if (pawn.needs != null)
-                {
-                    if (request.Hunger.HasValue)
-                    {
-                        var food = pawn.needs.food;
-                        if (food != null) food.CurLevelPercentage = Mathf.Clamp01(request.Hunger.Value);
-                    }
-
-                    if (request.Rest.HasValue)
-                    {
-                        var rest = pawn.needs.rest;
-                        if (rest != null) rest.CurLevelPercentage = Mathf.Clamp01(request.Rest.Value);
-                    }
-
-                    if (request.Mood.HasValue)
-                    {
-                        // Try setting mood directly if possible, otherwise fall back to Joy
-                        var mood = pawn.needs.mood;
-                        if (mood != null)
-                        {
-                            mood.CurLevelPercentage = Mathf.Clamp01(request.Mood.Value);
-                        }
-
-                        var joy = pawn.needs.joy;
-                        if (joy != null) joy.CurLevelPercentage = Mathf.Clamp01(request.Mood.Value);
-                    }
-                }
-
-                LogApi.Info("[EditPawn] Skills");
-                // --- Skills (Check if skills tracker exists - animals/mechs don't have this) ---
-                if (request.Skills != null && pawn.skills != null)
-                {
-                    foreach (var skillEntry in request.Skills)
-                    {
-                        var skillDef = DefDatabase<SkillDef>.GetNamedSilentFail(skillEntry.Key);
-                        if (skillDef != null && skillEntry.Value.HasValue)
-                        {
-                            SkillRecord skill = pawn.skills.GetSkill(skillDef);
-                            if (skill != null)
-                            {
-                                skill.Level = skillEntry.Value.Value;
-                                skill.xpSinceLastLevel = skill.XpRequiredForLevelUp / 2f;
-                            }
-                        }
-                    }
-                }
-
-                LogApi.Info("[EditPawn] Traits");
-                // --- Traits (Check if story tracker exists - animals/mechs don't have this) ---
-                if (pawn.story != null && pawn.story.traits != null)
-                {
-                    if (request.RemoveTraits != null)
-                    {
-                        foreach (var traitName in request.RemoveTraits)
-                        {
-                            var traitDef = DefDatabase<TraitDef>.GetNamedSilentFail(traitName);
-                            if (traitDef != null)
-                            {
-                                Trait traitToRemove = pawn.story.traits.GetTrait(traitDef);
-                                if (traitToRemove != null)
-                                {
-                                    pawn.story.traits.RemoveTrait(traitToRemove);
-                                }
-                            }
-                        }
-                    }
-
-                    if (request.AddTraits != null)
-                    {
-                        foreach (var traitName in request.AddTraits)
-                        {
-                            var traitDef = DefDatabase<TraitDef>.GetNamedSilentFail(traitName);
-                            if (traitDef != null)
-                            {
-                                if (!pawn.story.traits.HasTrait(traitDef))
-                                {
-                                    Trait traitToAdd = new Trait(traitDef);
-                                    pawn.story.traits.GainTrait(traitToAdd);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                LogApi.Info("[EditPawn] Equipment");
-                // --- Equipment & Inventory ---
-                if (request.DropAllEquipment.HasValue && request.DropAllEquipment.Value && pawn.equipment != null)
-                {
-                    pawn.equipment.DropAllEquipment(pawn.Position);
-                }
-
-                if (request.DropAllInventory.HasValue && request.DropAllInventory.Value && pawn.inventory != null)
-                {
-                    pawn.inventory.DropAllNearPawn(pawn.Position);
-                }
-
-                LogApi.Info("[EditPawn] Status");
-                // --- Status (Drafting) ---
-                if (pawn.drafter != null)
-                {
-                    if (request.Draft.HasValue)
-                    {
-                        pawn.drafter.Drafted = request.Draft.Value;
-                    }
-                    if (request.Undraft.HasValue)
-                    {
-                        pawn.drafter.Drafted = !request.Undraft.Value;
-                    }
-                }
-
-                LogApi.Info("[EditPawn] Kill");
-                if (request.Kill.HasValue && request.Kill.Value && !pawn.Dead)
-                {
-                    pawn.Kill(null);
-                }
-
-                if (request.Resurrect.HasValue && request.Resurrect.Value && pawn.Dead)
-                {
-                    ResurrectionUtility.TryResurrect(pawn);
-                }
-
-                LogApi.Info("[EditPawn] Position");
-                // --- Position ---
-                if (request.ChangePosition && request.Position != null)
-                {
-                    Map targetMap = pawn.Map; // Default to current map
-                    LogApi.Info("[EditPawn] newPos");
-                    IntVec3 newPos = new IntVec3(request.Position.X, request.Position.Y, request.Position.Z);
-
-                    if (!string.IsNullOrEmpty(request.MapId))
-                    {
-                        LogApi.Info("[EditPawn] MapId");
-                        if (int.TryParse(request.MapId, out int mapId))
-                        {
-                            var foundMap = MapHelper.GetMapByID(mapId);
-                            if (foundMap != null) targetMap = foundMap;
-                        }
-                    }
-
-                    LogApi.Info("[EditPawn] targetMap");
-                    // Only teleport if we have a valid map
-                    if (targetMap != null)
-                    {
-                        TeleportPawn(pawn, newPos, targetMap);
-                    }
-                }
-
-                LogApi.Info("[EditPawn] Faction");
-                // --- Faction & Relations ---
-                if (!string.IsNullOrEmpty(request.Faction))
-                {
-                    Faction newFaction = Find.FactionManager.AllFactionsListForReading.FirstOrDefault(f => f.def.defName == request.Faction || f.Name == request.Faction);
-                    if (newFaction != null)
-                    {
-                        pawn.SetFaction(newFaction);
-                    }
-                    // If faction not found, we log but continue
-                }
-
-                LogApi.Info("[EditPawn] Faction");
-                // Handle Guest/Prisoner status (Check guest tracker)
-                if (pawn.guest != null)
-                {
-                    if (request.MakeColonist.HasValue && request.MakeColonist.Value)
-                    {
-                        if (pawn.Faction != Faction.OfPlayer)
-                        {
-                            pawn.SetFaction(Faction.OfPlayer);
-                        }
-                        RecruitUtility.Recruit(pawn, Faction.OfPlayer);
-                    }
-
-                    if (request.MakePrisoner.HasValue && request.MakePrisoner.Value)
-                    {
-                        pawn.guest.SetGuestStatus(Faction.OfPlayer, GuestStatus.Prisoner);
-                    }
-
-                    if (request.ReleasePrisoner.HasValue && request.ReleasePrisoner.Value && pawn.IsPrisoner)
-                    {
-                        pawn.guest.SetGuestStatus(null, GuestStatus.Guest);
-                        // Usually requires additional logic to actually "release" them to walk off map, 
-                        // but this resets their status.
                     }
                 }
 
                 return ApiResult.Ok();
             }
-            catch (Exception ex)
-            {
-                LogApi.Error($"Error editing pawn: {ex}"); // Log full stack trace
-                return ApiResult.Fail($"Failed to edit pawn: {ex.Message}");
-            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
         }
 
-        public static bool TeleportPawn(Pawn pawn, IntVec3 newPosition, Map map = null)
+        public ApiResult UpdateNeeds(PawnNeedsRequest request)
         {
-            if (map == null)
-                map = pawn.Map;
-
-            // Ensure position is valid  
-            newPosition = newPosition.ClampInsideMap(map);
-
-            if (!newPosition.Standable(map))
+            try
             {
-                // Find nearest standable cell if target is blocked  
-                CellFinder.TryFindRandomCellNear(newPosition, map, 5,
-                    (IntVec3 c) => c.Standable(map), out newPosition);
+                if (request == null) return ApiResult.Fail("Invalid JSON request body.");
+
+                Pawn pawn = GetPawn(request.PawnId);
+                if (pawn.needs == null) return ApiResult.Fail("Pawn has no needs tracker.");
+
+                if (request.Food.HasValue && pawn.needs.food != null)
+                    pawn.needs.food.CurLevelPercentage = Mathf.Clamp01(request.Food.Value);
+
+                if (request.Rest.HasValue && pawn.needs.rest != null)
+                    pawn.needs.rest.CurLevelPercentage = Mathf.Clamp01(request.Rest.Value);
+
+                if (request.Mood.HasValue)
+                {
+                    if (pawn.needs.mood != null) pawn.needs.mood.CurLevelPercentage = Mathf.Clamp01(request.Mood.Value);
+                    // Joy is often linked to mood, but usually handled separately in API. 
+                    // Ensure this is intended behavior.
+                    if (pawn.needs.joy != null) pawn.needs.joy.CurLevelPercentage = Mathf.Clamp01(request.Mood.Value);
+                }
+
+                return ApiResult.Ok();
             }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
+
+        public ApiResult UpdateSkills(PawnSkillsRequest request)
+        {
+            try
+            {
+                Pawn pawn = GetPawn(request.PawnId);
+                if (pawn.skills == null) return ApiResult.Fail("Pawn has no skills.");
+
+                foreach (var skillDto in request.Skills)
+                {
+                    var skillDef = DefDatabase<SkillDef>.GetNamedSilentFail(skillDto.SkillName);
+                    if (skillDef == null) continue;
+
+                    var record = pawn.skills.GetSkill(skillDef);
+                    if (record == null) continue;
+
+                    if (skillDto.Level.HasValue)
+                    {
+                        record.Level = skillDto.Level.Value;
+                        record.xpSinceLastLevel = record.XpRequiredForLevelUp / 2f;
+                    }
+
+                    if (skillDto.Passion.HasValue)
+                    {
+                        record.passion = (Passion)skillDto.Passion;
+                    }
+                }
+                return ApiResult.Ok();
+            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
+
+        public ApiResult UpdateTraits(PawnTraitsRequest request)
+        {
+            try
+            {
+                Pawn pawn = GetPawn(request.PawnId);
+                if (pawn.story?.traits == null) return ApiResult.Fail("Pawn has no traits tracker.");
+
+                // Remove
+                if (request.RemoveTraits != null)
+                {
+                    foreach (var tName in request.RemoveTraits)
+                    {
+                        var def = DefDatabase<TraitDef>.GetNamedSilentFail(tName);
+                        if (def == null) continue;
+                        var existing = pawn.story.traits.GetTrait(def);
+                        if (existing != null) pawn.story.traits.RemoveTrait(existing);
+                    }
+                }
+
+                // Add
+                if (request.AddTraits != null)
+                {
+                    foreach (var tDto in request.AddTraits)
+                    {
+                        var def = DefDatabase<TraitDef>.GetNamedSilentFail(tDto.TraitName);
+                        if (def == null) continue;
+                        if (!pawn.story.traits.HasTrait(def))
+                        {
+                            pawn.story.traits.GainTrait(new Trait(def, tDto.Degree ?? 0));
+                        }
+                    }
+                }
+                return ApiResult.Ok();
+            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
+
+        public ApiResult UpdateInventory(PawnInventoryRequest request)
+        {
+            try
+            {
+                Pawn pawn = GetPawn(request.PawnId);
+                if (pawn.inventory == null) return ApiResult.Fail("Pawn has no inventory.");
+
+                if (request.ClearInventory)
+                    pawn.inventory.DestroyAll();
+                else if (request.DropInventory)
+                    pawn.inventory.DropAllNearPawn(pawn.Position);
+
+                if (request.AddItems != null)
+                {
+                    foreach (var item in request.AddItems)
+                    {
+                        var def = DefDatabase<ThingDef>.GetNamedSilentFail(item.DefName);
+                        if (def != null)
+                        {
+                            Thing thing = ThingMaker.MakeThing(def);
+                            thing.stackCount = item.Count > 0 ? item.Count : 1;
+                            pawn.inventory.TryAddItemNotForSale(thing);
+                        }
+                    }
+                }
+                return ApiResult.Ok();
+            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
+
+        public ApiResult UpdateApparel(PawnApparelRequest request)
+        {
+            try
+            {
+                Pawn pawn = GetPawn(request.PawnId);
+
+                // Equipment (Weapons)
+                if (request.DropWeapons && pawn.equipment != null)
+                    pawn.equipment.DropAllEquipment(pawn.Position, false);
+
+                // Apparel (Clothes)
+                if (request.DropApparel && pawn.apparel != null)
+                    pawn.apparel.DropAll(pawn.Position);
+
+                // Note: Adding specific equipped items is complex because of layers/slots, 
+                // sticking to Drop/Clear for now unless specific logic requested.
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
+
+        public ApiResult UpdateStatus(PawnStatusRequest request)
+        {
+            try
+            {
+                Pawn pawn = GetPawn(request.PawnId);
+
+                if (request.Kill && !pawn.Dead) pawn.Kill(null);
+                if (request.Resurrect && pawn.Dead) ResurrectionUtility.TryResurrect(pawn);
+
+                if (pawn.drafter != null && request.IsDrafted.HasValue)
+                {
+                    pawn.drafter.Drafted = request.IsDrafted.Value;
+                }
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
+
+        public ApiResult UpdatePosition(PawnPositionRequest request)
+        {
+            try
+            {
+                Pawn pawn = GetPawn(request.PawnId);
+                Map map = pawn.Map;
+
+                if (!string.IsNullOrEmpty(request.MapId) && int.TryParse(request.MapId, out int mid))
+                {
+                    var found = MapHelper.GetMapByID(mid);
+                    if (found != null) map = found;
+                }
+
+                if (request.Position != null && map != null)
+                {
+                    IntVec3 pos = new IntVec3(request.Position.X, request.Position.Y, request.Position.Z);
+                    TeleportPawn(pawn, pos, map);
+                }
+                return ApiResult.Ok();
+            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
+
+        public ApiResult UpdateFaction(PawnFactionRequest request)
+        {
+            try
+            {
+                Pawn pawn = GetPawn(request.PawnId);
+
+                if (!string.IsNullOrEmpty(request.SetFaction))
+                {
+                    Faction f = Find.FactionManager.AllFactionsListForReading
+                       .FirstOrDefault(x => x.def.defName == request.SetFaction || x.Name == request.SetFaction);
+                    if (f != null) pawn.SetFaction(f);
+                }
+
+                if (request.MakeColonist && pawn.Faction != Faction.OfPlayer)
+                {
+                    pawn.SetFaction(Faction.OfPlayer);
+                    RecruitUtility.Recruit(pawn, Faction.OfPlayer);
+                }
+
+                if (pawn.guest != null)
+                {
+                    if (request.MakePrisoner) pawn.guest.SetGuestStatus(Faction.OfPlayer, GuestStatus.Prisoner);
+                    if (request.ReleasePrisoner && pawn.IsPrisoner) pawn.guest.SetGuestStatus(null, GuestStatus.Guest);
+                }
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex) { return ApiResult.Fail(ex.Message); }
+        }
+
+        // Reuse existing teleport logic
+        private static void TeleportPawn(Pawn pawn, IntVec3 newPosition, Map map)
+        {
+            newPosition = newPosition.ClampInsideMap(map);
+            if (!newPosition.Standable(map))
+                CellFinder.TryFindRandomCellNear(newPosition, map, 5, c => c.Standable(map), out newPosition);
 
             pawn.Position = newPosition;
-            pawn.Notify_Teleported(endCurrentJob: true, resetTweenedPos: false);
-
-            return true;
+            pawn.Notify_Teleported(true, false);
         }
     }
 }
