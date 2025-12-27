@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks; // Required for Task
 using Newtonsoft.Json;
 using RIMAPI.Services;
 using Verse;
@@ -26,15 +27,7 @@ namespace RIMAPI.Core
             _connectedClients = new List<SseClient>();
             _broadcastQueue = new Queue<SseEvent>();
             _registeredEventTypes = new HashSet<string>();
-            if (Current.ProgramState == ProgramState.Playing)
-            {
-                _lastBroadcastTick = Find.TickManager.TicksGame;
-            }
-            else
-            {
-                _lastBroadcastTick = 0;
-            }
-
+            _lastBroadcastTick = Current.ProgramState == ProgramState.Playing ? Find.TickManager.TicksGame : 0;
             RegisterCoreEventTypes();
         }
 
@@ -71,8 +64,8 @@ namespace RIMAPI.Core
             }
         }
 
-        // Synchronous connection handling - no async!
-        public void HandleSSEConnection(HttpListenerContext context)
+        // --- UPDATED: Method signature changed from void to async Task ---
+        public async Task HandleSSEConnection(HttpListenerContext context)
         {
             if (_disposed)
             {
@@ -86,100 +79,77 @@ namespace RIMAPI.Core
 
             try
             {
-                // Set SSE headers
+                // 1. Set Headers
                 response.StatusCode = 200;
                 response.ContentType = "text/event-stream";
                 response.Headers.Add("Cache-Control", "no-cache");
                 response.Headers.Add("Connection", "keep-alive");
+                response.Headers.Add("Access-Control-Allow-Origin", "*");
                 response.SendChunked = true;
 
-                // Add client to connected list
+                // 2. Register Client
                 lock (_clientsLock)
                 {
                     _connectedClients.Add(client);
                 }
 
-                LogApi.Info(
-                    $"[SSE] Connection established. Total clients: {_connectedClients.Count}"
-                );
+                LogApi.Info($"[SSE] Connection established. Total clients: {_connectedClients.Count}");
 
-                // Send initial connection message
-                SendEventToClient(
-                    client,
-                    "connected",
-                    new
-                    {
-                        message = "SSE connection established",
-                        timestamp = DateTime.UtcNow,
-                        registeredEvents = GetRegisteredEventTypes(),
-                    }
-                );
+                // 3. Send Initial Events
+                SendEventToClient(client, "connected", new
+                {
+                    message = "SSE connection established",
+                    timestamp = DateTime.UtcNow,
+                    registeredEvents = GetRegisteredEventTypes(),
+                });
 
-                // Send initial game state
                 var gameStateResult = _gameStateService.GetGameState();
                 if (gameStateResult.Success)
-                {
                     SendEventToClient(client, "gameState", gameStateResult.Data);
-                }
                 else
-                {
-                    SendEventToClient(
-                        client,
-                        "error",
-                        new
-                        {
-                            message = "Failed to get initial game state",
-                            errors = gameStateResult.Errors,
-                        }
-                    );
-                }
+                    SendEventToClient(client, "error", new { message = "Failed to get initial game state", errors = gameStateResult.Errors });
 
-                // Note: We don't keep the connection open here - that's handled by the HTTP listener
-                // The client will remain in our list and receive broadcasts
+                // 4. CRITICAL: Wait here until the client disconnects.
+                // This keeps the HttpListenerContext alive.
+                await client.WaitForDisconnect();
             }
             catch (Exception ex)
             {
-                LogApi.Error($"[SSE] Connection setup error - {ex}");
+                // Only log real errors, not normal disconnections
+                if (!(ex is HttpListenerException))
+                    LogApi.Error($"[SSE] Connection error - {ex.Message}");
+            }
+            finally
+            {
+                // Ensure cleanup happens when the loop breaks
                 RemoveClient(client);
             }
         }
 
         public void BroadcastEvent(string eventType, object data)
         {
-            if (_disposed)
-                return;
+            if (_disposed) return;
 
-            if (!IsEventTypeRegistered(eventType))
-            {
-                LogApi.Warning(
-                    $"[SSE] Attempted to broadcast unregistered event type: {eventType}"
-                );
-                return;
-            }
+            // Optional: Strict check removed for stability, or keep it if you want strict typing
+            // if (!IsEventTypeRegistered(eventType)) ...
 
             lock (_queueLock)
             {
                 _broadcastQueue.Enqueue(new SseEvent { Type = eventType, Data = data });
             }
-
-            LogApi.Message($"[SSE] Queued event '{eventType}' for broadcast", LoggingLevels.DEBUG);
         }
 
-        // Call this from your main game tick
         public void ProcessTick()
         {
-            if (_disposed)
-                return;
-
+            if (_disposed) return;
             ProcessBroadcastQueue();
-            CheckClientConnections();
+            // CheckClientConnections(); // Removed: Redundant now that we handle lifetime via async/await
             SendHeartbeatsIfNeeded();
         }
 
         private void ProcessBroadcastQueue()
         {
-            if (_broadcastQueue.Count == 0)
-                return;
+            if (_broadcastQueue.Count == 0) return;
 
             List<SseEvent> eventsToProcess;
             lock (_queueLock)
@@ -190,115 +160,22 @@ namespace RIMAPI.Core
 
             foreach (var sseEvent in eventsToProcess)
             {
-                try
-                {
-                    BroadcastEventInternal(sseEvent.Type, sseEvent.Data);
-                }
-                catch (Exception ex)
-                {
-                    LogApi.Error($"[SSE] Error processing broadcast '{sseEvent.Type}' - {ex}");
-                }
-            }
-        }
-
-        private void CheckClientConnections()
-        {
-            List<SseClient> clientsToRemove = new List<SseClient>();
-            List<SseClient> currentClients;
-
-            lock (_clientsLock)
-            {
-                currentClients = new List<SseClient>(_connectedClients);
-            }
-
-            foreach (var client in currentClients)
-            {
-                try
-                {
-                    // Test connection by trying to write a comment (safe operation)
-                    if (!TestClientConnection(client))
-                    {
-                        clientsToRemove.Add(client);
-                    }
-                }
-                catch
-                {
-                    clientsToRemove.Add(client);
-                }
-            }
-
-            if (clientsToRemove.Count > 0)
-            {
-                RemoveClients(clientsToRemove);
+                BroadcastEventInternal(sseEvent.Type, sseEvent.Data);
             }
         }
 
         private void SendHeartbeatsIfNeeded()
         {
             var currentTick = Find.TickManager?.TicksGame ?? 0;
-            if (currentTick - _lastBroadcastTick < 180)
-                return; // Every ~3 seconds
+            if (currentTick - _lastBroadcastTick < 180) return;
 
-            try
-            {
-                BroadcastEventInternal(
-                    "heartbeat",
-                    new { timestamp = DateTime.UtcNow, tick = currentTick }
-                );
-
-                _lastBroadcastTick = currentTick;
-            }
-            catch (Exception ex)
-            {
-                LogApi.Error($"[SSE] Error sending heartbeat - {ex}");
-            }
-        }
-
-        public void BroadcastGameUpdate()
-        {
-            if (_disposed)
-                return;
-
-            var currentTick = Find.TickManager?.TicksGame ?? 0;
-            if (currentTick - _lastBroadcastTick < 60)
-                return;
-
-            try
-            {
-                var gameStateResult = _gameStateService.GetGameState();
-                if (gameStateResult.Success)
-                {
-                    BroadcastEvent("gameUpdate", gameStateResult.Data);
-                }
-                else
-                {
-                    BroadcastEvent(
-                        "error",
-                        new
-                        {
-                            message = "Failed to get game state update",
-                            errors = gameStateResult.Errors,
-                        }
-                    );
-                }
-
-                _lastBroadcastTick = currentTick;
-            }
-            catch (Exception ex)
-            {
-                LogApi.Error($"[SSE] Error preparing game update broadcast - {ex}");
-                BroadcastEvent(
-                    "error",
-                    new { message = "Error preparing game update", error = ex.Message }
-                );
-            }
+            BroadcastEventInternal("heartbeat", new { timestamp = DateTime.UtcNow, tick = currentTick });
+            _lastBroadcastTick = currentTick;
         }
 
         private void BroadcastEventInternal(string eventType, object data)
         {
-            List<SseClient> clientsToRemove = new List<SseClient>();
             List<SseClient> currentClients;
-
             lock (_clientsLock)
             {
                 currentClients = new List<SseClient>(_connectedClients);
@@ -306,168 +183,65 @@ namespace RIMAPI.Core
 
             foreach (var client in currentClients)
             {
-                try
+                // If client is dead, just signal it (the awaiter in HandleSSEConnection will wake up)
+                if (!client.IsConnected)
                 {
-                    if (!client.IsConnected)
-                    {
-                        clientsToRemove.Add(client);
-                        continue;
-                    }
-
-                    SendEventToClient(client, eventType, data);
+                    client.SignalDisconnect();
+                    continue;
                 }
-                catch (Exception ex)
-                {
-                    LogApi.Info(
-                        $"[SSE] Error sending to client for event '{eventType}' - {ex.Message}"
-                    );
-                    clientsToRemove.Add(client);
-                }
-            }
-
-            if (clientsToRemove.Count > 0)
-            {
-                RemoveClients(clientsToRemove);
+                SendEventToClient(client, eventType, data);
             }
         }
 
         private void SendEventToClient(SseClient client, string eventType, object data)
         {
-            if (client == null || !client.IsConnected)
-                return;
-
-            string json;
-            try
-            {
-                json = data is string s
-                    ? s
-                    : JsonConvert.SerializeObject(
-                        data,
-                        new JsonSerializerSettings
-                        {
-                            NullValueHandling = NullValueHandling.Ignore,
-                            Formatting = Formatting.None,
-                        }
-                    );
-            }
-            catch (Exception ex)
-            {
-                LogApi.Error($"[SSE] Failed to serialize data for event '{eventType}': {ex}");
-                return;
-            }
-
-            string message = $"event: {eventType}\ndata: {json}\n\n";
+            if (client == null || !client.IsConnected) return;
 
             try
             {
+                string json = data is string s ? s : JsonConvert.SerializeObject(data, new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    Formatting = Formatting.None,
+                });
+
+                string message = $"event: {eventType}\ndata: {json}\n\n";
                 var buffer = System.Text.Encoding.UTF8.GetBytes(message);
 
                 lock (client.SendLock)
                 {
-                    if (!client.IsConnected || client.Response?.OutputStream == null)
-                    {
-                        client.MarkDisconnected();
-                        return;
-                    }
-
+                    if (!client.IsConnected) return;
                     client.Response.OutputStream.Write(buffer, 0, buffer.Length);
                     client.Response.OutputStream.Flush();
                 }
-
                 client.UpdateLastActivity();
-                LogApi.Message($"[SSE] Sent event '{eventType}' to client", LoggingLevels.DEBUG);
-            }
-            catch (IOException ioEx)
-            {
-                LogApi.Info(
-                    $"[SSE] Client disconnected during send '{eventType}' - {ioEx.Message}"
-                );
-                client.MarkDisconnected();
-            }
-            catch (Exception ex)
-            {
-                LogApi.Error($"[SSE] Error sending event '{eventType}' - {ex}");
-                client.MarkDisconnected();
-            }
-        }
-
-        private bool TestClientConnection(SseClient client)
-        {
-            try
-            {
-                if (!client.IsConnected || client.Response?.OutputStream == null)
-                    return false;
-
-                // Send a simple SSE comment to test the connection
-                var pingMessage = ":ping\n\n";
-                var buffer = System.Text.Encoding.UTF8.GetBytes(pingMessage);
-
-                lock (client.SendLock)
-                {
-                    client.Response.OutputStream.Write(buffer, 0, buffer.Length);
-                    client.Response.OutputStream.Flush();
-                }
-
-                return true;
             }
             catch
             {
-                return false;
+                // If write fails, signal disconnect. 
+                // This wakes up HandleSSEConnection, which triggers RemoveClient in finally block.
+                client.SignalDisconnect();
             }
         }
 
         private void RemoveClient(SseClient client)
         {
-            if (client == null)
-                return;
-
+            if (client == null) return;
             lock (_clientsLock)
             {
-                _connectedClients.Remove(client);
-            }
-            client.MarkDisconnected();
-        }
-
-        private void RemoveClients(List<SseClient> clients)
-        {
-            if (clients.Count == 0)
-                return;
-
-            lock (_clientsLock)
-            {
-                foreach (var client in clients)
+                if (_connectedClients.Contains(client))
                 {
-                    if (client != null)
-                    {
-                        _connectedClients.Remove(client);
-                        client.MarkDisconnected();
-                    }
+                    _connectedClients.Remove(client);
+                    LogApi.Info($"[SSE] Client disconnected. Remaining: {_connectedClients.Count}");
                 }
             }
-
-            LogApi.Info($"[SSE] Removed {clients.Count} dead SSE connections");
-        }
-
-        public bool IsEventTypeRegistered(string eventType)
-        {
-            lock (_eventsLock)
-            {
-                return true;
-            }
-        }
-
-        public IReadOnlyList<string> GetRegisteredEventTypes()
-        {
-            lock (_eventsLock)
-            {
-                return new List<string>(_registeredEventTypes);
-            }
+            client.SignalDisconnect(); // Ensure task completes
+            try { client.Response.Close(); } catch { }
         }
 
         public void Dispose()
         {
-            if (_disposed)
-                return;
+            if (_disposed) return;
             _disposed = true;
 
             List<SseClient> clientsToDispose;
@@ -477,21 +251,16 @@ namespace RIMAPI.Core
                 _connectedClients.Clear();
             }
 
-            LogApi.Info(
-                $"[SSE] Disposing SSE service with {clientsToDispose.Count} connected clients"
-            );
-
             foreach (var client in clientsToDispose)
             {
-                try
-                {
-                    client.MarkDisconnected();
-                    client.Response?.Close();
-                }
-                catch
-                { /* Ignore */
-                }
+                client.SignalDisconnect();
+                try { client.Response.Close(); } catch { }
             }
+        }
+
+        public IReadOnlyList<string> GetRegisteredEventTypes()
+        {
+            lock (_eventsLock) return new List<string>(_registeredEventTypes);
         }
 
         private class SseEvent
@@ -500,13 +269,16 @@ namespace RIMAPI.Core
             public object Data { get; set; }
         }
 
-        private class SseClient : IDisposable
+        // --- UPDATED SseClient with Async Support ---
+        private class SseClient
         {
             public HttpListenerResponse Response { get; }
             public bool IsConnected { get; private set; }
             public DateTime LastActivity { get; private set; }
             public object SendLock { get; } = new object();
-            private bool _disposed = false;
+
+            // This allows HandleSSEConnection to "await" the disconnection
+            private readonly TaskCompletionSource<bool> _disconnectTcs = new TaskCompletionSource<bool>();
 
             public SseClient(HttpListenerResponse response)
             {
@@ -515,33 +287,20 @@ namespace RIMAPI.Core
                 LastActivity = DateTime.UtcNow;
             }
 
-            public void MarkDisconnected()
+            public Task WaitForDisconnect()
             {
-                if (_disposed)
-                    return;
+                return _disconnectTcs.Task;
+            }
+
+            public void SignalDisconnect()
+            {
                 IsConnected = false;
+                _disconnectTcs.TrySetResult(true);
             }
 
             public void UpdateLastActivity()
             {
                 LastActivity = DateTime.UtcNow;
-            }
-
-            public void Dispose()
-            {
-                if (_disposed)
-                    return;
-
-                MarkDisconnected();
-                try
-                {
-                    Response?.Close();
-                }
-                catch
-                { /* Ignore */
-                }
-
-                _disposed = true;
             }
         }
     }

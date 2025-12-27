@@ -279,11 +279,10 @@ namespace RIMAPI.Core
             _router.AddRoute(
                 "GET",
                 "/api/v1/events",
-                context =>
+                async context =>
                 {
                     LogApi.Info("Handling /api/v1/events");
-                    _sseService.HandleSSEConnection(context);
-                    return null;
+                    await _sseService.HandleSSEConnection(context);
                 }
             );
         }
