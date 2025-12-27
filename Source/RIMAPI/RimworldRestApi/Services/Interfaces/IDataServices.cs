@@ -86,6 +86,7 @@ namespace RIMAPI.Services
         ApiResult DestroyThingsInRect(DestroyRectRequestDto request);
         ApiResult RepairThingsAtPositions(RepairPositionsRequestDto request);
         ApiResult RepairThingsInRect(RepairRectRequestDto request);
+        ApiResult SpawnDropPod(SpawnDropPodRequestDto request);
     }
     #endregion
 
