@@ -206,5 +206,13 @@ namespace RIMAPI.Controllers
             var result = _mapService.RepairThingsInRect(body);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/map/droppod")]
+        public async Task SpawnDropPod(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<SpawnDropPodRequestDto>();
+            var result = _mapService.SpawnDropPod(body);
+            await context.SendJsonResponse(result);
+        }
     }
 }

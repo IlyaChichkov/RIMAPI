@@ -357,5 +357,85 @@ namespace RIMAPI.Services
             }
             return repaired;
         }
+
+        public ApiResult SpawnDropPod(SpawnDropPodRequestDto request)
+        {
+            try
+            {
+                var map = MapHelper.GetMapByID(request.MapId);
+                if (map == null) return ApiResult.Fail($"Map {request.MapId} not found.");
+
+                IntVec3 pos = new IntVec3(request.Position.X, 0, request.Position.Z);
+                if (!pos.InBounds(map)) return ApiResult.Fail("Position out of bounds.");
+
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    try
+                    {
+#if RIMWORLD_1_5
+                    ActiveDropPodInfo podInfo = new ActiveDropPodInfo();
+#elif RIMWORLD_1_6
+                    ActiveTransporterInfo podInfo = new ActiveTransporterInfo();
+#else
+                        ActiveTransporterInfo podInfo = new ActiveTransporterInfo();
+#endif
+                        podInfo.openDelay = request.OpenDelay ? 110 : 0;
+                        podInfo.leaveSlag = true;
+
+                        // 2. Create and Add Items
+                        foreach (var itemDto in request.Items)
+                        {
+                            if (string.IsNullOrEmpty(itemDto.DefName))
+                            {
+                                LogApi.Warning("[MapService] Skipping item with missing DefName.");
+                                continue;
+                            }
+
+                            ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(itemDto.DefName);
+                            if (def == null)
+                            {
+                                LogApi.Warning($"[MapService] Failed to get item {itemDto.DefName} from DefDatabase. Skipping item.");
+                                continue;
+                            }
+
+                            Thing thing = ThingMaker.MakeThing(def, null);
+                            thing.stackCount = itemDto.StackCount > 0 ? itemDto.StackCount : 1;
+
+                            // FIX: Check if the item actually SUPPORTS quality before setting it
+                            var comp = thing.TryGetComp<CompQuality>();
+                            if (comp != null)
+                            {
+                                // Only apply quality if the item has the component (e.g. Gun, Bed)
+                                // Ensure itemDto.Quality matches the expected type (int or enum)
+                                comp.SetQuality((QualityCategory)itemDto.Quality, ArtGenerationContext.Outsider);
+                            }
+
+                            podInfo.innerContainer.TryAdd(thing);
+                        }
+
+                        // 3. Resolve Faction
+                        Faction faction = Faction.OfPlayer;
+                        if (!string.IsNullOrEmpty(request.Faction))
+                        {
+                            faction = Find.FactionManager.FirstFactionOfDef(FactionDef.Named(request.Faction)) ?? Faction.OfPlayer;
+                        }
+
+                        // 4. Launch
+                        DropPodUtility.MakeDropPodAt(pos, map, podInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogApi.Error($"[MapService] MainThread Error: {ex}");
+                    }
+                });
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Drop Pod Error: {ex}");
+                return ApiResult.Fail(ex.Message);
+            }
+        }
     }
 }
