@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build and Deploy 1.5",
+      "label": "[1.5] Build and Deploy",
       "command": "dotnet",
       "type": "process",
       "args": [
@@ -24,7 +24,7 @@
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Build and Deploy 1.6",
+      "label": "[1.6] Build and Deploy",
       "command": "dotnet",
       "type": "process",
       "args": [
@@ -55,33 +55,73 @@
       ],
       "group": "build"
     },
-        {
-            "label": "Launch RimWorld",
-            "type": "shell",
-            "command": "cmd",
-            "args": [
-                "/c",
-                "start",
-                "\"E:\\Games\\RimWorld\\RimWorldWin64.exe\""
-            ],
-            "group": "build",
-            "presentation": {
-                "echo": false,
-                "reveal": "silent"
-            }
-        },
-        {
-            "label": "Build, Deploy and Launch",
-            "dependsOrder": "sequence",
-            "dependsOn": ["Build and Deploy 1.5", "Launch RimWorld"],
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "clear": true
-            }
+    {
+        "label": "[1.5] Launch RimWorld",
+        "type": "shell",
+        "command": "cmd",
+        "args": [
+            "/c",
+            "start",
+            "\"E:\\Games\\RimWorld\\RimWorldWin64.exe\""
+        ],
+        "group": "build",
+        "presentation": {
+            "echo": false,
+            "reveal": "silent"
         }
+    },
+    {
+        "label": "[1.6] Launch RimWorld",
+        "type": "process",
+        "command": "E:\\Program Files\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64.exe",
+        "group": "build",
+        "presentation": {
+            "echo": false,
+            "reveal": "silent"
+        }
+    },
+    {
+        "label": "[1.5] Build and Launch",
+        "dependsOrder": "sequence",
+        "dependsOn": ["[1.5] Build and Deploy", "[1.5] Launch RimWorld"],
+        "group": "build",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "clear": true
+        }
+    },
+    {
+        "label": "[1.6] Copy To Mods",
+        "type": "shell",
+        "command": "xcopy",
+        "args": [
+            "/Y",
+            "/E",
+            "/I",
+            "${workspaceFolder}\\1.6\\Assemblies\\*",
+            "E:\\Program Files\\Steam\\steamapps\\common\\RimWorld\\Mods\\3593423732\\1.6\\Assemblies\\"
+        ],
+        "group": "build",
+        "presentation": {
+            "echo": false,
+            "reveal": "silent"
+        }
+    },
+    {
+        "label": "[1.6] Build and Launch",
+        "dependsOrder": "sequence",
+        "dependsOn": ["[1.6] Build and Deploy", "[1.6] Copy To Mods", "[1.6] Launch RimWorld"],
+        "group": "build",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "clear": true
+        }
+    }
   ]
 }
