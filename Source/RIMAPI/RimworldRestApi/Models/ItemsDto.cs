@@ -92,19 +92,18 @@ namespace RIMAPI.Models
         public double MarketValue { get; set; }
         public bool IsForbidden { get; set; }
         public int Quality { get; set; }
+        public string StuffDefName { get; set; }
         public int HitPoints { get; set; }
         public int MaxHitPoints { get; set; }
 
         public static ThingDto ToDto(Thing thing)
         {
-            return new ThingDto
+            var dto = new ThingDto
             {
                 ThingId = thing.thingIDNumber,
                 DefName = thing.def.defName,
                 Label = thing.Label,
-                Categories =
-                    thing.def.thingCategories?.Select(c => c.defName).ToList()
-                    ?? new List<string>(),
+                Categories = thing.def.thingCategories?.Select(c => c.defName).ToList() ?? new List<string>(),
                 Position = new PositionDto
                 {
                     X = thing.Position.x,
@@ -114,7 +113,22 @@ namespace RIMAPI.Models
                 StackCount = thing.stackCount,
                 MarketValue = thing.MarketValue,
                 IsForbidden = thing.IsForbidden(Faction.OfPlayer),
+                HitPoints = thing.HitPoints,
+                MaxHitPoints = thing.MaxHitPoints,
+                Rotation = thing.Rotation.AsInt,
+
+                // Map the new fields
+                StuffDefName = thing.Stuff?.defName
             };
+
+            // Safely get Quality
+            var qualityComp = thing.TryGetComp<CompQuality>();
+            if (qualityComp != null)
+            {
+                dto.Quality = (int)qualityComp.Quality;
+            }
+
+            return dto;
         }
     }
 
