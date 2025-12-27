@@ -25,14 +25,11 @@ namespace RIMAPI.Services
                 {
                     map = MapHelper.GetMapByID(mapId);
                 }
-
-                // Fallback to current map if not specified
                 if (map == null) map = Find.CurrentMap;
-
                 if (map == null) return ApiResult<PawnSpawnDto>.Fail("No valid map found to spawn pawn.");
 
                 // 2. Resolve PawnKindDef
-                PawnKindDef kindDef = PawnKindDefOf.Colonist; // Default
+                PawnKindDef kindDef = PawnKindDefOf.Colonist;
                 if (!string.IsNullOrEmpty(request.PawnKind))
                 {
                     kindDef = DefDatabase<PawnKindDef>.GetNamedSilentFail(request.PawnKind);
@@ -57,19 +54,18 @@ namespace RIMAPI.Services
                         faction = Find.FactionManager.AllFactionsListForReading
                             .FirstOrDefault(f => f.def.defName == request.Faction || f.Name == request.Faction);
 
-                        // If spawning a non-player faction, switch context so they generate with correct gear
                         context = PawnGenerationContext.NonPlayer;
                     }
                 }
 
-                // 4. Resolve Xenotype (Biotech DLC check)
+                // 4. Resolve Xenotype
                 XenotypeDef xenotype = null;
                 if (ModsConfig.BiotechActive && !string.IsNullOrEmpty(request.Xenotype))
                 {
                     xenotype = DefDatabase<XenotypeDef>.GetNamedSilentFail(request.Xenotype);
                 }
 
-                // 5. Build the Generation Request
+                // 5. Build Generation Request
                 PawnGenerationRequest genRequest = new PawnGenerationRequest(
                     kind: kindDef,
                     faction: faction,
@@ -99,8 +95,8 @@ namespace RIMAPI.Services
                     forcedTraits: null,
                     prohibitedTraits: null,
                     minChanceToRedressWorldPawn: null,
-                    fixedBiologicalAge: request.BiologicalAge,
-                    fixedChronologicalAge: request.ChronologicalAge,
+                    fixedBiologicalAge: request.BiologicalAge > 0 ? request.BiologicalAge : (float?)null,
+                    fixedChronologicalAge: request.ChronologicalAge > 0 ? request.ChronologicalAge : (float?)null,
                     fixedGender: ParseGender(request.Gender),
                     fixedLastName: null,
                     fixedBirthName: null,
@@ -108,13 +104,16 @@ namespace RIMAPI.Services
                     forcedXenotype: xenotype
                 );
 
-                // 6. Generate the Pawn
+                // 6. Generate
                 Pawn pawn = PawnGenerator.GeneratePawn(genRequest);
 
-                // 7. Apply Name Overrides (if requested)
+                // 7. Apply Name Overrides (SAFE VERSION)
                 if (!string.IsNullOrEmpty(request.FirstName) || !string.IsNullOrEmpty(request.NickName) || !string.IsNullOrEmpty(request.LastName))
                 {
-                    string first = !string.IsNullOrEmpty(request.FirstName) ? request.FirstName : pawn.Name.ToStringShort;
+                    // FIX: Handle case where pawn.Name is null (Mechanoids) to avoid crash
+                    string currentName = pawn.Name?.ToStringShort ?? pawn.Label;
+
+                    string first = !string.IsNullOrEmpty(request.FirstName) ? request.FirstName : currentName;
                     string last = !string.IsNullOrEmpty(request.LastName) ? request.LastName : "";
                     string nick = !string.IsNullOrEmpty(request.NickName) ? request.NickName : first;
 
@@ -126,31 +125,30 @@ namespace RIMAPI.Services
                 if (request.Position != null)
                 {
                     spawnPos = new IntVec3(request.Position.X, request.Position.Y, request.Position.Z);
-                    // Validate position is inside map
                     spawnPos = spawnPos.ClampInsideMap(map);
                 }
                 else
                 {
-                    // Find a safe spot near the center or colony
                     RCellFinder.TryFindRandomPawnEntryCell(out spawnPos, map, 0.5f);
                 }
 
-                // Ensure the cell is standable (don't spawn in walls)
                 if (!spawnPos.Standable(map))
                 {
                     CellFinder.TryFindRandomCellNear(spawnPos, map, 5, (IntVec3 c) => c.Standable(map), out spawnPos);
                 }
 
                 // 9. Spawn
-                GenSpawn.Spawn(pawn, spawnPos, map);
+                GenSpawn.Spawn(pawn, spawnPos, map, WipeMode.Vanish);
 
-                LogApi.Info($"[SpawnPawn] Successfully spawned {pawn.Name} (ID: {pawn.ThingID}) at {spawnPos}");
+                // FIX: Log using Label, not Name (Name can be null)
+                LogApi.Info($"[SpawnPawn] Successfully spawned {pawn.Label} (ID: {pawn.thingIDNumber}) at {spawnPos}");
 
                 var result = new PawnSpawnDto
                 {
                     PawnId = pawn.thingIDNumber,
-                    Name = pawn.Name.ToStringShort
+                    Name = pawn.Name != null ? pawn.Name.ToStringShort : pawn.Label,
                 };
+
                 return ApiResult<PawnSpawnDto>.Ok(result);
             }
             catch (Exception ex)
