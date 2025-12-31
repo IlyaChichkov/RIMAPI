@@ -96,6 +96,13 @@ namespace RIMAPI.Models
 
     public class ColonistMedicalInfoDto
     {
+        public bool IsDead { get; set; }
+        public bool IsDowned { get; set; } // True if crawling or incapacitated
+
+        // Capacities (0.0 to 1.0+)
+        public float Consciousness { get; set; }
+        public float Moving { get; set; }
+
         public float Health { get; set; }
         public List<HediffDto> Hediffs { get; set; }
         public int MedicalPolicyId { get; set; }
@@ -269,54 +276,5 @@ namespace RIMAPI.Models
         public string AllowedQualityMax { get; set; }
         public bool AllowedHitPointsConfigurable { get; set; }
         public bool AllowedQualitiesConfigurable { get; set; }
-    }
-
-    public class PawnEditRequestDto
-    {
-        public int PawnId { get; set; }
-
-        // Basic properties
-        public string Name { get; set; }
-        public string Gender { get; set; }
-        public int? BiologicalAge { get; set; }
-        public int? ChronologicalAge { get; set; }
-
-        // Health
-        public float? Health { get; set; }
-        public bool? HealAllInjuries { get; set; }
-        public bool? RemoveAllDiseases { get; set; }
-
-        // Needs
-        public float? Hunger { get; set; }
-        public float? Rest { get; set; }
-        public float? Mood { get; set; }
-
-        // Skills
-        public Dictionary<string, int?> Skills { get; set; }
-
-        // Traits
-        public List<string> AddTraits { get; set; }
-        public List<string> RemoveTraits { get; set; }
-
-        // Equipment & Inventory
-        public bool? DropAllEquipment { get; set; }
-        public bool? DropAllInventory { get; set; }
-
-        // Status
-        public bool? Draft { get; set; }
-        public bool? Undraft { get; set; }
-        public bool? Kill { get; set; }
-        public bool? Resurrect { get; set; }
-
-        // Position
-        public bool ChangePosition { get; set; }
-        public PositionDto Position { get; set; }
-        public string MapId { get; set; }
-
-        // Faction & Relations
-        public string Faction { get; set; }
-        public bool? MakeColonist { get; set; }
-        public bool? MakePrisoner { get; set; }
-        public bool? ReleasePrisoner { get; set; }
     }
 }

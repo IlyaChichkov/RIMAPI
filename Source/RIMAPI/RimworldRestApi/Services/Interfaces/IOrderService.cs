@@ -1,11 +1,12 @@
+
 using System.Collections.Generic;
 using RIMAPI.Core;
 using RIMAPI.Models;
 
 namespace RIMAPI.Services
 {
-    public interface IPawnEditService
+    public interface IOrderService
     {
-        ApiResult EditPawn(PawnEditRequestDto request);
+        ApiResult DesignateArea(DesignateRequestDto request);
     }
 }

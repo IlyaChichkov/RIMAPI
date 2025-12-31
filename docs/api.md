@@ -1,7 +1,7 @@
 ﻿{{ api.get('page_title', '# RimAPI Documentation') }}
 
-**Version**: 1.5.0  
-**Endpoints total count**: 98  
+**Version**: 1.6.0  
+**Endpoints total count**: 126  
 
 {{ api.section.get("Core_API", {}).get('title', '') }}
 {{ api.section.get("Core_API", {}).get('desc', '') }}
@@ -364,6 +364,105 @@ DocumentationController.ExportDocumentation
 
 ---
 
+{{ api.controllers.get("BuilderController", {}).get('title', '') }}
+{{ api.controllers.get("BuilderController", {}).get('desc', '') }}
+
+<h4 id="apiv1buildercopy">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/builder/copy
+```
+</code>
+<a class="headerlink" href="#apiv1buildercopy" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/copy", {'desc': 'Failed to load /api/v1/builder/copy'}).get('desc', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/copy", {'desc': 'Failed to load /api/v1/builder/copy'}).get('curl', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/copy", {'desc': 'Failed to load /api/v1/builder/copy'}).get('request', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/copy", {'desc': 'Failed to load /api/v1/builder/copy'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29BuilderController%5C.cs%24%2F+CopyArea&type=code" class="doc-github-link">
+BuilderController.CopyArea
+</a>
+</div>
+
+---
+
+<h4 id="apiv1builderpaste">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/builder/paste
+```
+</code>
+<a class="headerlink" href="#apiv1builderpaste" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/paste", {'desc': 'Failed to load /api/v1/builder/paste'}).get('desc', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/paste", {'desc': 'Failed to load /api/v1/builder/paste'}).get('curl', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/paste", {'desc': 'Failed to load /api/v1/builder/paste'}).get('request', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/paste", {'desc': 'Failed to load /api/v1/builder/paste'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29BuilderController%5C.cs%24%2F+PasteArea&type=code" class="doc-github-link">
+BuilderController.PasteArea
+</a>
+</div>
+
+---
+
+<h4 id="apiv1builderblueprint">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/builder/blueprint
+```
+</code>
+<a class="headerlink" href="#apiv1builderblueprint" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/blueprint", {'desc': 'Failed to load /api/v1/builder/blueprint'}).get('desc', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/blueprint", {'desc': 'Failed to load /api/v1/builder/blueprint'}).get('curl', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/blueprint", {'desc': 'Failed to load /api/v1/builder/blueprint'}).get('request', '') }}
+
+{{ api.controllers.get("BuilderController", {}).get("/api/v1/builder/blueprint", {'desc': 'Failed to load /api/v1/builder/blueprint'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29BuilderController%5C.cs%24%2F+PlaceBlueprints&type=code" class="doc-github-link">
+BuilderController.PlaceBlueprints
+</a>
+</div>
+
+---
+
 {{ api.controllers.get("DevToolsController", {}).get('title', '') }}
 {{ api.controllers.get("DevToolsController", {}).get('desc', '') }}
 
@@ -717,6 +816,38 @@ FactionController.GetFactionDef
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29FactionController%5C.cs%24%2F+ChangeFactionRelationWith&type=code" class="doc-github-link">
 FactionController.ChangeFactionRelationWith
+</a>
+</div>
+
+---
+
+<h4 id="apiv1factiongoodwill">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/faction/goodwill
+```
+</code>
+<a class="headerlink" href="#apiv1factiongoodwill" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("FactionController", {}).get("/api/v1/faction/goodwill", {'desc': 'Failed to load /api/v1/faction/goodwill'}).get('desc', '') }}
+
+{{ api.controllers.get("FactionController", {}).get("/api/v1/faction/goodwill", {'desc': 'Failed to load /api/v1/faction/goodwill'}).get('curl', '') }}
+
+{{ api.controllers.get("FactionController", {}).get("/api/v1/faction/goodwill", {'desc': 'Failed to load /api/v1/faction/goodwill'}).get('request', '') }}
+
+{{ api.controllers.get("FactionController", {}).get("/api/v1/faction/goodwill", {'desc': 'Failed to load /api/v1/faction/goodwill'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29FactionController%5C.cs%24%2F+SetFactionGoodwill&type=code" class="doc-github-link">
+FactionController.SetFactionGoodwill
 </a>
 </div>
 
@@ -1758,6 +1889,41 @@ ImageController.SetItemImage
 
 ---
 
+{{ api.controllers.get("LordController", {}).get('title', '') }}
+{{ api.controllers.get("LordController", {}).get('desc', '') }}
+
+<h4 id="apiv1lordscreate">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/lords/create
+```
+</code>
+<a class="headerlink" href="#apiv1lordscreate" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("LordController", {}).get("/api/v1/lords/create", {'desc': 'Failed to load /api/v1/lords/create'}).get('desc', '') }}
+
+{{ api.controllers.get("LordController", {}).get("/api/v1/lords/create", {'desc': 'Failed to load /api/v1/lords/create'}).get('curl', '') }}
+
+{{ api.controllers.get("LordController", {}).get("/api/v1/lords/create", {'desc': 'Failed to load /api/v1/lords/create'}).get('request', '') }}
+
+{{ api.controllers.get("LordController", {}).get("/api/v1/lords/create", {'desc': 'Failed to load /api/v1/lords/create'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29LordController%5C.cs%24%2F+CreateLord&type=code" class="doc-github-link">
+LordController.CreateLord
+</a>
+</div>
+
+---
+
 {{ api.controllers.get("MapController", {}).get('title', '') }}
 {{ api.controllers.get("MapController", {}).get('desc', '') }}
 
@@ -2300,6 +2466,300 @@ MapController.GetBuildingInfo
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+SetWeather&type=code" class="doc-github-link">
 MapController.SetWeather
+</a>
+</div>
+
+---
+
+<h4 id="apiv1mapdestroycorpses">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/destroy/corpses
+```
+</code>
+<a class="headerlink" href="#apiv1mapdestroycorpses" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/corpses", {'desc': 'Failed to load /api/v1/map/destroy/corpses'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/corpses", {'desc': 'Failed to load /api/v1/map/destroy/corpses'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/corpses", {'desc': 'Failed to load /api/v1/map/destroy/corpses'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/corpses", {'desc': 'Failed to load /api/v1/map/destroy/corpses'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+DestroyCorpses&type=code" class="doc-github-link">
+MapController.DestroyCorpses
+</a>
+</div>
+
+---
+
+<h4 id="apiv1mapdestroyforbidden">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/destroy/forbidden
+```
+</code>
+<a class="headerlink" href="#apiv1mapdestroyforbidden" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/forbidden", {'desc': 'Failed to load /api/v1/map/destroy/forbidden'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/forbidden", {'desc': 'Failed to load /api/v1/map/destroy/forbidden'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/forbidden", {'desc': 'Failed to load /api/v1/map/destroy/forbidden'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/forbidden", {'desc': 'Failed to load /api/v1/map/destroy/forbidden'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+DestroyForbiddenItems&type=code" class="doc-github-link">
+MapController.DestroyForbiddenItems
+</a>
+</div>
+
+---
+
+<h4 id="apiv1mapdestroyrect">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/destroy/rect
+```
+</code>
+<a class="headerlink" href="#apiv1mapdestroyrect" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/rect", {'desc': 'Failed to load /api/v1/map/destroy/rect'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/rect", {'desc': 'Failed to load /api/v1/map/destroy/rect'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/rect", {'desc': 'Failed to load /api/v1/map/destroy/rect'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/destroy/rect", {'desc': 'Failed to load /api/v1/map/destroy/rect'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+DestroyThingsInRect&type=code" class="doc-github-link">
+MapController.DestroyThingsInRect
+</a>
+</div>
+
+---
+
+<h4 id="apiv1maprepairpositions">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/repair/positions
+```
+</code>
+<a class="headerlink" href="#apiv1maprepairpositions" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/repair/positions", {'desc': 'Failed to load /api/v1/map/repair/positions'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/repair/positions", {'desc': 'Failed to load /api/v1/map/repair/positions'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/repair/positions", {'desc': 'Failed to load /api/v1/map/repair/positions'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/repair/positions", {'desc': 'Failed to load /api/v1/map/repair/positions'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+RepairAtPositions&type=code" class="doc-github-link">
+MapController.RepairAtPositions
+</a>
+</div>
+
+---
+
+<h4 id="apiv1maprepairrect">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/repair/rect
+```
+</code>
+<a class="headerlink" href="#apiv1maprepairrect" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/repair/rect", {'desc': 'Failed to load /api/v1/map/repair/rect'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/repair/rect", {'desc': 'Failed to load /api/v1/map/repair/rect'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/repair/rect", {'desc': 'Failed to load /api/v1/map/repair/rect'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/repair/rect", {'desc': 'Failed to load /api/v1/map/repair/rect'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+RepairInRect&type=code" class="doc-github-link">
+MapController.RepairInRect
+</a>
+</div>
+
+---
+
+<h4 id="apiv1mapdroppod">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/droppod
+```
+</code>
+<a class="headerlink" href="#apiv1mapdroppod" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/droppod", {'desc': 'Failed to load /api/v1/map/droppod'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/droppod", {'desc': 'Failed to load /api/v1/map/droppod'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/droppod", {'desc': 'Failed to load /api/v1/map/droppod'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/droppod", {'desc': 'Failed to load /api/v1/map/droppod'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+SpawnDropPod&type=code" class="doc-github-link">
+MapController.SpawnDropPod
+</a>
+</div>
+
+---
+
+<h4 id="apiv1mappawns">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/pawns
+```
+</code>
+<a class="headerlink" href="#apiv1mappawns" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/pawns", {'desc': 'Failed to load /api/v1/map/pawns'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/pawns", {'desc': 'Failed to load /api/v1/map/pawns'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/pawns", {'desc': 'Failed to load /api/v1/map/pawns'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/pawns", {'desc': 'Failed to load /api/v1/map/pawns'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+GetPawnsOnMap&type=code" class="doc-github-link">
+MapController.GetPawnsOnMap
+</a>
+</div>
+
+---
+
+{{ api.controllers.get("OrderController", {}).get('title', '') }}
+{{ api.controllers.get("OrderController", {}).get('desc', '') }}
+
+<h4 id="apiv1orderdesignatearea">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/order/designate/area
+```
+</code>
+<a class="headerlink" href="#apiv1orderdesignatearea" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("OrderController", {}).get("/api/v1/order/designate/area", {'desc': 'Failed to load /api/v1/order/designate/area'}).get('desc', '') }}
+
+{{ api.controllers.get("OrderController", {}).get("/api/v1/order/designate/area", {'desc': 'Failed to load /api/v1/order/designate/area'}).get('curl', '') }}
+
+{{ api.controllers.get("OrderController", {}).get("/api/v1/order/designate/area", {'desc': 'Failed to load /api/v1/order/designate/area'}).get('request', '') }}
+
+{{ api.controllers.get("OrderController", {}).get("/api/v1/order/designate/area", {'desc': 'Failed to load /api/v1/order/designate/area'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29OrderController%5C.cs%24%2F+DesignateArea&type=code" class="doc-github-link">
+OrderController.DesignateArea
+</a>
+</div>
+
+---
+
+{{ api.controllers.get("OverlayController", {}).get('title', '') }}
+{{ api.controllers.get("OverlayController", {}).get('desc', '') }}
+
+<h4 id="apiv1uiannounce">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/ui/announce
+```
+</code>
+<a class="headerlink" href="#apiv1uiannounce" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("OverlayController", {}).get("/api/v1/ui/announce", {'desc': 'Failed to load /api/v1/ui/announce'}).get('desc', '') }}
+
+{{ api.controllers.get("OverlayController", {}).get("/api/v1/ui/announce", {'desc': 'Failed to load /api/v1/ui/announce'}).get('curl', '') }}
+
+{{ api.controllers.get("OverlayController", {}).get("/api/v1/ui/announce", {'desc': 'Failed to load /api/v1/ui/announce'}).get('request', '') }}
+
+{{ api.controllers.get("OverlayController", {}).get("/api/v1/ui/announce", {'desc': 'Failed to load /api/v1/ui/announce'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29OverlayController%5C.cs%24%2F+ShowAnnouncement&type=code" class="doc-github-link">
+OverlayController.ShowAnnouncement
 </a>
 </div>
 
@@ -2855,33 +3315,423 @@ PawnController.MakeJobEquip
 {{ api.controllers.get("PawnEditController", {}).get('title', '') }}
 {{ api.controllers.get("PawnEditController", {}).get('desc', '') }}
 
-<h4 id="apiv1pawnedit">
+<h4 id="apiv1pawneditbasic">
 <div class="doc-api-container">
 <div class="doc-api-header">
 <div class="doc-api-method doc-api-method-post">POST</div>
 <div class="doc-api-endpoint">
 <code>
 ```
-/api/v1/pawn/edit
+/api/v1/pawn/edit/basic
 ```
 </code>
-<a class="headerlink" href="#apiv1pawnedit" title="Permanent link">¶</a>
+<a class="headerlink" href="#apiv1pawneditbasic" title="Permanent link">¶</a>
 </div>
 </div>
 </div>
 </h4>
 
-{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit", {'desc': 'Failed to load /api/v1/pawn/edit'}).get('desc', '') }}
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/basic", {'desc': 'Failed to load /api/v1/pawn/edit/basic'}).get('desc', '') }}
 
-{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit", {'desc': 'Failed to load /api/v1/pawn/edit'}).get('curl', '') }}
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/basic", {'desc': 'Failed to load /api/v1/pawn/edit/basic'}).get('curl', '') }}
 
-{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit", {'desc': 'Failed to load /api/v1/pawn/edit'}).get('request', '') }}
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/basic", {'desc': 'Failed to load /api/v1/pawn/edit/basic'}).get('request', '') }}
 
-{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit", {'desc': 'Failed to load /api/v1/pawn/edit'}).get('response', '') }}
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/basic", {'desc': 'Failed to load /api/v1/pawn/edit/basic'}).get('response', '') }}
 
 <div class="doc-github-container">
-<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditPawn&type=code" class="doc-github-link">
-PawnEditController.EditPawn
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditBasicInfo&type=code" class="doc-github-link">
+PawnEditController.EditBasicInfo
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawnedithealth">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/health
+```
+</code>
+<a class="headerlink" href="#apiv1pawnedithealth" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/health", {'desc': 'Failed to load /api/v1/pawn/edit/health'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/health", {'desc': 'Failed to load /api/v1/pawn/edit/health'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/health", {'desc': 'Failed to load /api/v1/pawn/edit/health'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/health", {'desc': 'Failed to load /api/v1/pawn/edit/health'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditHealth&type=code" class="doc-github-link">
+PawnEditController.EditHealth
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawneditneeds">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/needs
+```
+</code>
+<a class="headerlink" href="#apiv1pawneditneeds" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/needs", {'desc': 'Failed to load /api/v1/pawn/edit/needs'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/needs", {'desc': 'Failed to load /api/v1/pawn/edit/needs'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/needs", {'desc': 'Failed to load /api/v1/pawn/edit/needs'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/needs", {'desc': 'Failed to load /api/v1/pawn/edit/needs'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditNeeds&type=code" class="doc-github-link">
+PawnEditController.EditNeeds
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawneditskills">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/skills
+```
+</code>
+<a class="headerlink" href="#apiv1pawneditskills" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/skills", {'desc': 'Failed to load /api/v1/pawn/edit/skills'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/skills", {'desc': 'Failed to load /api/v1/pawn/edit/skills'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/skills", {'desc': 'Failed to load /api/v1/pawn/edit/skills'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/skills", {'desc': 'Failed to load /api/v1/pawn/edit/skills'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditSkills&type=code" class="doc-github-link">
+PawnEditController.EditSkills
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawnedittraits">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/traits
+```
+</code>
+<a class="headerlink" href="#apiv1pawnedittraits" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/traits", {'desc': 'Failed to load /api/v1/pawn/edit/traits'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/traits", {'desc': 'Failed to load /api/v1/pawn/edit/traits'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/traits", {'desc': 'Failed to load /api/v1/pawn/edit/traits'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/traits", {'desc': 'Failed to load /api/v1/pawn/edit/traits'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditTraits&type=code" class="doc-github-link">
+PawnEditController.EditTraits
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawneditinventory">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/inventory
+```
+</code>
+<a class="headerlink" href="#apiv1pawneditinventory" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/inventory", {'desc': 'Failed to load /api/v1/pawn/edit/inventory'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/inventory", {'desc': 'Failed to load /api/v1/pawn/edit/inventory'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/inventory", {'desc': 'Failed to load /api/v1/pawn/edit/inventory'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/inventory", {'desc': 'Failed to load /api/v1/pawn/edit/inventory'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditInventory&type=code" class="doc-github-link">
+PawnEditController.EditInventory
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawneditapparel">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/apparel
+```
+</code>
+<a class="headerlink" href="#apiv1pawneditapparel" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/apparel", {'desc': 'Failed to load /api/v1/pawn/edit/apparel'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/apparel", {'desc': 'Failed to load /api/v1/pawn/edit/apparel'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/apparel", {'desc': 'Failed to load /api/v1/pawn/edit/apparel'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/apparel", {'desc': 'Failed to load /api/v1/pawn/edit/apparel'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditApparel&type=code" class="doc-github-link">
+PawnEditController.EditApparel
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawneditstatus">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/status
+```
+</code>
+<a class="headerlink" href="#apiv1pawneditstatus" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/status", {'desc': 'Failed to load /api/v1/pawn/edit/status'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/status", {'desc': 'Failed to load /api/v1/pawn/edit/status'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/status", {'desc': 'Failed to load /api/v1/pawn/edit/status'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/status", {'desc': 'Failed to load /api/v1/pawn/edit/status'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditStatus&type=code" class="doc-github-link">
+PawnEditController.EditStatus
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawneditposition">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/position
+```
+</code>
+<a class="headerlink" href="#apiv1pawneditposition" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/position", {'desc': 'Failed to load /api/v1/pawn/edit/position'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/position", {'desc': 'Failed to load /api/v1/pawn/edit/position'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/position", {'desc': 'Failed to load /api/v1/pawn/edit/position'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/position", {'desc': 'Failed to load /api/v1/pawn/edit/position'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditPosition&type=code" class="doc-github-link">
+PawnEditController.EditPosition
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawneditfaction">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/edit/faction
+```
+</code>
+<a class="headerlink" href="#apiv1pawneditfaction" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/faction", {'desc': 'Failed to load /api/v1/pawn/edit/faction'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/faction", {'desc': 'Failed to load /api/v1/pawn/edit/faction'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/faction", {'desc': 'Failed to load /api/v1/pawn/edit/faction'}).get('request', '') }}
+
+{{ api.controllers.get("PawnEditController", {}).get("/api/v1/pawn/edit/faction", {'desc': 'Failed to load /api/v1/pawn/edit/faction'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnEditController%5C.cs%24%2F+EditFaction&type=code" class="doc-github-link">
+PawnEditController.EditFaction
+</a>
+</div>
+
+---
+
+{{ api.controllers.get("PawnInfoController", {}).get('title', '') }}
+{{ api.controllers.get("PawnInfoController", {}).get('desc', '') }}
+
+<h4 id="apiv1pawnsdetails">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawns/details
+```
+</code>
+<a class="headerlink" href="#apiv1pawnsdetails" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnInfoController", {}).get("/api/v1/pawns/details", {'desc': 'Failed to load /api/v1/pawns/details'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnInfoController", {}).get("/api/v1/pawns/details", {'desc': 'Failed to load /api/v1/pawns/details'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnInfoController", {}).get("/api/v1/pawns/details", {'desc': 'Failed to load /api/v1/pawns/details'}).get('request', '') }}
+
+{{ api.controllers.get("PawnInfoController", {}).get("/api/v1/pawns/details", {'desc': 'Failed to load /api/v1/pawns/details'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnInfoController%5C.cs%24%2F+GetPawnDetails&type=code" class="doc-github-link">
+PawnInfoController.GetPawnDetails
+</a>
+</div>
+
+---
+
+<h4 id="apiv1pawnsinventory">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawns/inventory
+```
+</code>
+<a class="headerlink" href="#apiv1pawnsinventory" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnInfoController", {}).get("/api/v1/pawns/inventory", {'desc': 'Failed to load /api/v1/pawns/inventory'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnInfoController", {}).get("/api/v1/pawns/inventory", {'desc': 'Failed to load /api/v1/pawns/inventory'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnInfoController", {}).get("/api/v1/pawns/inventory", {'desc': 'Failed to load /api/v1/pawns/inventory'}).get('request', '') }}
+
+{{ api.controllers.get("PawnInfoController", {}).get("/api/v1/pawns/inventory", {'desc': 'Failed to load /api/v1/pawns/inventory'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnInfoController%5C.cs%24%2F+GetPawnInventory&type=code" class="doc-github-link">
+PawnInfoController.GetPawnInventory
+</a>
+</div>
+
+---
+
+{{ api.controllers.get("PawnSpawnController", {}).get('title', '') }}
+{{ api.controllers.get("PawnSpawnController", {}).get('desc', '') }}
+
+<h4 id="apiv1pawnspawn">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/pawn/spawn
+```
+</code>
+<a class="headerlink" href="#apiv1pawnspawn" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnSpawnController", {}).get("/api/v1/pawn/spawn", {'desc': 'Failed to load /api/v1/pawn/spawn'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnSpawnController", {}).get("/api/v1/pawn/spawn", {'desc': 'Failed to load /api/v1/pawn/spawn'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnSpawnController", {}).get("/api/v1/pawn/spawn", {'desc': 'Failed to load /api/v1/pawn/spawn'}).get('request', '') }}
+
+{{ api.controllers.get("PawnSpawnController", {}).get("/api/v1/pawn/spawn", {'desc': 'Failed to load /api/v1/pawn/spawn'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnSpawnController%5C.cs%24%2F+EditPawn&type=code" class="doc-github-link">
+PawnSpawnController.EditPawn
 </a>
 </div>
 
@@ -3176,6 +4026,73 @@ ThingController.GetStoragesSummary
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ThingController%5C.cs%24%2F+SpawnItem&type=code" class="doc-github-link">
 ThingController.SpawnItem
+</a>
+</div>
+
+---
+
+{{ api.controllers.get("WindowController", {}).get('title', '') }}
+{{ api.controllers.get("WindowController", {}).get('desc', '') }}
+
+<h4 id="apiv1uimessage">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/ui/message
+```
+</code>
+<a class="headerlink" href="#apiv1uimessage" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("WindowController", {}).get("/api/v1/ui/message", {'desc': 'Failed to load /api/v1/ui/message'}).get('desc', '') }}
+
+{{ api.controllers.get("WindowController", {}).get("/api/v1/ui/message", {'desc': 'Failed to load /api/v1/ui/message'}).get('curl', '') }}
+
+{{ api.controllers.get("WindowController", {}).get("/api/v1/ui/message", {'desc': 'Failed to load /api/v1/ui/message'}).get('request', '') }}
+
+{{ api.controllers.get("WindowController", {}).get("/api/v1/ui/message", {'desc': 'Failed to load /api/v1/ui/message'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29WindowController%5C.cs%24%2F+ShowMessage&type=code" class="doc-github-link">
+WindowController.ShowMessage
+</a>
+</div>
+
+---
+
+<h4 id="apiv1uidialog">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/ui/dialog
+```
+</code>
+<a class="headerlink" href="#apiv1uidialog" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("WindowController", {}).get("/api/v1/ui/dialog", {'desc': 'Failed to load /api/v1/ui/dialog'}).get('desc', '') }}
+
+{{ api.controllers.get("WindowController", {}).get("/api/v1/ui/dialog", {'desc': 'Failed to load /api/v1/ui/dialog'}).get('curl', '') }}
+
+{{ api.controllers.get("WindowController", {}).get("/api/v1/ui/dialog", {'desc': 'Failed to load /api/v1/ui/dialog'}).get('request', '') }}
+
+{{ api.controllers.get("WindowController", {}).get("/api/v1/ui/dialog", {'desc': 'Failed to load /api/v1/ui/dialog'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29WindowController%5C.cs%24%2F+ShowDialog&type=code" class="doc-github-link">
+WindowController.ShowDialog
 </a>
 </div>
 

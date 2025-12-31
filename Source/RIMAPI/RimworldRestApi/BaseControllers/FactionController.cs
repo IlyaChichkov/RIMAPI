@@ -77,5 +77,20 @@ namespace RIMAPI.Controllers
             );
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/faction/goodwill")]
+        public async Task SetFactionGoodwill(HttpListenerContext context)
+        {
+            FactionChangeRelationRequestDto body =
+                await context.Request.ReadBodyAsync<FactionChangeRelationRequestDto>();
+            var result = _factionService.SetFactionGoodwill(
+                body.Id,
+                body.OtherId,
+                body.Value,
+                body.SendMessage,
+                body.CanSendHostilityLetter
+            );
+            await context.SendJsonResponse(result);
+        }
     }
 }

@@ -28,6 +28,7 @@ namespace RIMAPI.Core
         public void AddRoute(string method, string path, Func<HttpListenerContext, Task> handler)
         {
             _routes.Add(new Route(method, path, handler));
+            LogApi.Message($"Add route: {path}", LoggingLevels.DEBUG);
         }
 
         public void ClearRoutes()
@@ -105,6 +106,23 @@ namespace RIMAPI.Core
             return null;
         }
 
+        /// <summary>
+        /// Detects if an exception was caused by the client closing the connection.
+        /// </summary>
+        private bool IsClientDisconnect(Exception ex)
+        {
+            if (ex == null) return false;
+
+            // Common exceptions when client kills connection
+            if (ex is HttpListenerException || ex is ObjectDisposedException) return true;
+
+            // IO Exceptions often happen during stream writing
+            if (ex is System.IO.IOException) return true;
+
+            // Check inner exceptions recursively
+            return IsClientDisconnect(ex.InnerException);
+        }
+
         private async Task ExecuteRouteHandler(RouteMatch routeMatch, HttpListenerContext context)
         {
             var route = routeMatch.Route;
@@ -122,15 +140,42 @@ namespace RIMAPI.Core
             }
             catch (Exception ex)
             {
+                // 1. Check for normal client disconnections (don't log as Error)
+                if (IsClientDisconnect(ex))
+                {
+                    LogApi.Info($"Client disconnected from {route.PathPattern}");
+                    return; // Stop here, don't try to write to a closed stream
+                }
+
+                // 2. Log the actual error
                 LogApi.Error($"Error in route handler {route.Method} {route.PathPattern}: {ex}");
 
-                // Ensure CORS is set before responding with error
-                CorsUtil.WriteCors(context.Request, context.Response, _allowedOrigins);
-                await ResponseBuilder.SendError(
-                    context.Response,
-                    HttpStatusCode.InternalServerError,
-                    $"Handler error: {ex.Message}"
-                );
+                // 3. SAFE ERROR RESPONDING
+                // If this is an SSE stream, headers are already sent. 
+                // Writing JSON now will throw "Cannot be changed after headers are sent".
+                bool isSse = context.Response.ContentType == "text/event-stream";
+
+                if (isSse)
+                {
+                    LogApi.Warning("Skipping 500 Error Response because SSE stream is active.");
+                    return;
+                }
+
+                try
+                {
+                    // Only try to send JSON error if we haven't started responding yet
+                    CorsUtil.WriteCors(context.Request, context.Response, _allowedOrigins);
+                    await ResponseBuilder.SendError(
+                        context.Response,
+                        HttpStatusCode.InternalServerError,
+                        $"Handler error: {ex.Message}"
+                    );
+                }
+                catch (Exception writeEx)
+                {
+                    // If writing the error fails (e.g. headers sent), just log warning and stop.
+                    LogApi.Warning($"Could not send error response: {writeEx.Message}");
+                }
             }
             finally
             {

@@ -12,11 +12,14 @@ namespace RIMAPI.Controllers
     {
         private readonly IMapService _mapService;
         private readonly IBuildingService _buildingService;
+        private readonly IPawnInfoService _pawnInfoService;
 
-        public MapController(IMapService mapService, IBuildingService buildingService)
+        public MapController(IMapService mapService, IBuildingService buildingService,
+                             IPawnInfoService pawnInfoService)
         {
             _mapService = mapService;
             _buildingService = buildingService;
+            _pawnInfoService = pawnInfoService;
         }
 
         [Get("/api/v1/maps")]
@@ -164,6 +167,62 @@ namespace RIMAPI.Controllers
             var mapId = RequestParser.GetMapId(context);
             var defName = RequestParser.GetStringParameter(context, "name");
             var result = _mapService.SetWeather(mapId, defName);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/destroy/corpses")]
+        public async Task DestroyCorpses(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.DestroyCorpses(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/destroy/forbidden")]
+        public async Task DestroyForbiddenItems(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.DestroyForbiddenItems(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/destroy/rect")]
+        public async Task DestroyThingsInRect(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<DestroyRectRequestDto>();
+            var result = _mapService.DestroyThingsInRect(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/repair/positions")]
+        public async Task RepairAtPositions(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<RepairPositionsRequestDto>();
+            var result = _mapService.RepairThingsAtPositions(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/repair/rect")]
+        public async Task RepairInRect(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<RepairRectRequestDto>();
+            var result = _mapService.RepairThingsInRect(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/droppod")]
+        public async Task SpawnDropPod(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<SpawnDropPodRequestDto>();
+            var result = _mapService.SpawnDropPod(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/map/pawns")]
+        public async Task GetPawnsOnMap(HttpListenerContext context)
+        {
+            int mapId = RequestParser.GetMapId(context);
+            var result = _pawnInfoService.GetPawnsOnMap(mapId);
             await context.SendJsonResponse(result);
         }
     }

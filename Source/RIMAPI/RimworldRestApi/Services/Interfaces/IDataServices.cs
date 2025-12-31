@@ -81,6 +81,12 @@ namespace RIMAPI.Services
         ApiResult<List<ThingDto>> GetMapThingsInRadius(int mapId, int x, int z, int radius);
         ApiResult SetWeather(int mapId, string defName);
         ApiResult<List<ThingDto>> GetThingsAtCell(ThingsAtCellRequestDto body);
+        ApiResult DestroyCorpses(int mapId);
+        ApiResult DestroyForbiddenItems(int mapId);
+        ApiResult DestroyThingsInRect(DestroyRectRequestDto request);
+        ApiResult RepairThingsAtPositions(RepairPositionsRequestDto request);
+        ApiResult RepairThingsInRect(RepairRectRequestDto request);
+        ApiResult SpawnDropPod(SpawnDropPodRequestDto request);
     }
     #endregion
 
@@ -150,6 +156,13 @@ namespace RIMAPI.Services
             int id,
             int otherId,
             int change,
+            bool sendMessage,
+            bool canSendHostilityLetter
+        );
+        ApiResult<FactionChangeRelationResponceDto> SetFactionGoodwill(
+            int id,
+            int otherId,
+            int goodwill,
             bool sendMessage,
             bool canSendHostilityLetter
         );

@@ -101,7 +101,7 @@ namespace RIMAPI.Helpers
                 state.MapCount = Find.Maps.Count;
                 state.ProgramState = Current.ProgramState.ToString();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // If any of the above fail, we're in an unstable state
                 state.ProgramState = "Error";

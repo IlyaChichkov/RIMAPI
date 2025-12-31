@@ -93,6 +93,150 @@ api:
                 request: ""
                 response: ""
 
+        BuilderController:
+            title: |
+                ### :material-hammer-wrench: Builder Controller
+            desc: |
+                The **Builder Controller** provides tools for programmatic construction and 
+                deconstruction. It allows for copying, pasting, and blueprinting areas of the map.
+
+            "/api/v1/builder/copy":
+                desc: |
+                    Copies a specified area of the map, including buildings, items, and 
+                    terrain. The copied data can be used with the paste endpoint.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/builder/copy \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "from": { "x": 100, "z": 100 },
+                        "to": { "x": 110, "z": 110 }
+                    }'
+                    ```
+                request: |
+                    **Response:**
+                    ```json
+                    {
+                        "map_id": 0,
+                        "point_a": {"x": 10, "y": 0, "z": 10},
+                        "point_b": {"x": 16, "y": 0, "z": 16}
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success":true,
+                        "data": {
+                            "width":7,
+                            "height":7,
+                            "floors": [
+                                {"def_name":"Concrete","rel_x":1,"rel_z":1},
+                                {"def_name":"Concrete","rel_x":3,"rel_z":2}],
+                            "buildings": [
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":0,"rotation":0},
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":3,"rel_z":0,"rotation":0},
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":1,"rotation":0},
+                            ]
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-11T19:15:20.9851409Z"
+                    }
+                    ```
+
+            "/api/v1/builder/paste":
+                desc: |
+                    Pastes a previously copied area to a new location on the map.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/builder/paste \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "at": { "x": 150, "z": 150 }
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "map_id": 0,
+                        "position": {"x": 80, "y": 0, "z": 80},
+                        "blueprint": {
+                            "width":7,
+                            "height":7,
+                            "floors": [
+                                {"def_name":"Concrete","rel_x":1,"rel_z":1},
+                                {"def_name":"Concrete","rel_x":3,"rel_z":2}],
+                            "buildings": [
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":0,"rotation":0},
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":3,"rel_z":0,"rotation":0},
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":1,"rotation":0},
+                            ]
+                        },
+                        "clear_obstacles": true,
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success":true,
+                        "errors":[],
+                        "warnings":[],
+                        "timestamp":"2025-12-31T12:18:40.2019606Z"
+                    }
+                    ```
+
+            "/api/v1/builder/blueprint":
+                desc: |
+                    Places blueprints for a copied area, allowing colonists to construct 
+                    the buildings.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/builder/blueprint \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "at": { "x": 150, "z": 150 }
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "map_id": 0,
+                        "position": {"x": 80, "y": 0, "z": 80},
+                        "blueprint": {
+                            "width":7,
+                            "height":7,
+                            "floors": [
+                                {"def_name":"Concrete","rel_x":1,"rel_z":1},
+                                {"def_name":"Concrete","rel_x":3,"rel_z":2}],
+                            "buildings": [
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":0,"rotation":0},
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":3,"rel_z":0,"rotation":0},
+                                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":1,"rotation":0},
+                            ]
+                        },
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success":true,
+                        "errors":[],
+                        "warnings":[],
+                        "timestamp":"2025-12-31T12:18:40.2019606Z"
+                    }
+                    ```
+
         DevToolsController:
             title: |
                 ### :material-bug: DevTools Controller
@@ -504,6 +648,41 @@ api:
                         "errors": [],
                         "warnings": [],
                         "timestamp": "2025-12-11T19:25:02.2515491Z"
+                    }
+                    ```
+
+            "/api/v1/faction/goodwill":
+                desc: |
+                    Sets the goodwill value between two factions.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/faction/goodwill \
+                    --header 'content-type: application/json' \
+                    --data '{ 
+                        "id": 0,
+                        "other_id": 2,
+                        "value": 50
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "id": 0,
+                        "other_id": 2,
+                        "value": 50
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-08T19:13:29.997162Z"
                     }
                     ```
 
@@ -2063,6 +2242,43 @@ api:
                     }
                     ```
 
+        LordController:
+            title: |
+                ### :material-chess-king: Lord Controller
+            desc: |
+                The **Lord Controller** is responsible for managing AI Lords, which are high-level AI 
+                constructs that command groups of pawns.
+
+            "/api/v1/lords/create":
+                desc: |
+                    Creates a new AI Lord with a specified job.
+                curl: ""
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "faction": "AncientsHostile",
+                        "pawn_ids": [39395],
+                        "job_type": "AssaultThings",
+                        "target_ids": [39387]
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success":true,
+                        "data":
+                        {
+                            "lord_id":0,
+                            "member_count":1
+                        },
+                        "errors":[],
+                        "warnings":[],
+                        "timestamp":"2025-12-31T11:39:54.3651293Z"
+                    }
+                    ```
+
         MapController:
             title: |
                 ### :material-map-legend: Map Controller
@@ -2173,6 +2389,57 @@ api:
                     }
                     ```
 
+            "/api/v1/map/pawns":
+                desc: |
+                    Gets a list of all colonists/pawns present on the specified map. Returns key status 
+                    information like health, mood, and position for each.
+                curl: |
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/map/pawns?mapId=0'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "id": 148,
+                                "name": "Val",
+                                "gender": "Female",
+                                "age": 25,
+                                "health": 1.0,
+                                "mood": 0.85,
+                                "hunger": 0.2,
+                                "position": {
+                                    "x": 102,
+                                    "y": 0,
+                                    "z": 115
+                                }
+                            },
+                            {
+                                "id": 149,
+                                "name": "Stumpy",
+                                "gender": "Male",
+                                "age": 42,
+                                "health": 0.65,
+                                "mood": 0.4,
+                                "hunger": 0.8,
+                                "position": {
+                                    "x": 105,
+                                    "y": 0,
+                                    "z": 112
+                                }
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:30:00.0000000Z"
+                    }
+                    ```
+
             "/api/v1/map/terrain":
                 desc: |
                     Returns the full terrain and floor grid data for the specified map. 
@@ -2181,7 +2448,8 @@ api:
                     Encoding (RLE)** and **Palette Mapping**. 
 
                     - `palette`: A list of unique terrain definitions (e.g., "Soil", "WaterDeep").
-                    - `grid`: A compressed list of integers representing the map cells. Format is pairs of `[count, palette_index]`.
+                    - `grid`: A compressed list of integers representing the map cells. Format is 
+                              pairs of `[count, palette_index]`. 
                     
                     Example decoding: A grid `[10, 0, 5, 2]` means "10 cells of palette[0], followed by 5 cells of palette[2]".
                 curl: |
@@ -2764,6 +3032,199 @@ api:
                     }
                     ```
 
+            "/api/v1/map/destroy/corpses":
+                desc: |
+                    Destroys all corpses on the map.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/map/destroy/corpses
+                    ```
+                request: ""
+                response: ""
+
+            "/api/v1/map/destroy/forbidden":
+                desc: |
+                    Destroys all forbidden items on the map.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/map/destroy/forbidden
+                    ```
+                request: ""
+                response: ""
+
+            "/api/v1/map/destroy/rect":
+                desc: |
+                    Destroys all things within a specified rectangle on the map.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/map/destroy/rect \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "map_id": 0,
+                        "point_a": {"x": 7, "y": 0, "z": 7},
+                        "point_b": {"x": 32, "y": 0, "z": 32}
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "map_id": 0,
+                        "point_a": {"x": 7, "y": 0, "z": 7},
+                        "point_b": {"x": 32, "y": 0, "z": 32}
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T11:04:27.9729153Z"
+                    }
+                    ```
+
+            "/api/v1/map/repair/positions":
+                desc: |
+                    Repairs items placed on provided list of positions.
+                curl: ""
+                request: ""
+                response: ""
+
+            "/api/v1/map/repair/rect":
+                desc: |
+                    Repairs all repairable items within a specified rectangle on the map.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/map/repair/rect \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "map_id": 0,
+                        "point_a": {"x": 7, "y": 0, "z": 7},
+                        "point_b": {"x": 32, "y": 0, "z": 32}
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "map_id": 0,
+                        "point_a": {"x": 7, "y": 0, "z": 7},
+                        "point_b": {"x": 32, "y": 0, "z": 32}
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T11:04:27.9729153Z"
+                    }
+                    ```
+
+            "/api/v1/map/droppod":
+                desc: |
+                    Spawns a drop pod at a specified position with given contents.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/map/droppod' \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "map_id": 0,
+                        "position": {"x": 15, "y": 0, "z": 15},
+                        "items": [{"def_name": "ComponentIndustrial", "quality": 3, "count": 1}],
+                        "open_delay": true
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "map_id": 0,
+                        "position": {"x": 15, "y": 0, "z": 15},
+                        "items": [{"def_name": "ComponentIndustrial", "quality": 3, "count": 1}],
+                        "open_delay": true
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T11:04:27.9729153Z"
+                    }
+                    ```
+
+        OrderController:
+            title: |
+                ### :material-gesture-tap-button: Order Controller
+            desc: |
+                The **Order Controller** is for issuing commands to pawns.
+
+            "/api/v1/order/designate/area":
+                desc: |
+                    Send command
+
+                    Currently supported commands:
+
+                    - remove-all: removes all commands
+                    - mine
+                    - deconstruct
+                    - harvest
+                    - hunt
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url 'http://localhost:8765/api/v1/order/designate/area'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "map_id": 0,
+                        "type": "Mine",
+                        "point_a": {"x": 0, "y": 0, "z": 0},
+                        "point_b": {"x": 250, "y": 0, "z": 250}
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T11:04:27.9729153Z"
+                    }
+                    ```
+
+        OverlayController:
+            title: |
+                ### :material-layers: Overlay Controller
+            desc: |
+                The **Overlay Controller** is for drawing overlays on the screen.
+            "/api/v1/ui/announce":
+                desc: ""
+                curl: ""
+                request: ""
+                response: ""
+        
         PawnController:
             title: |
                 ### :material-account: Pawn Controller
@@ -3443,103 +3904,448 @@ api:
                 *   `Add/Remove Traits`
                 *   `Teleport`
 
-            "/api/v1/pawn/edit":
+            "/api/v1/pawn/edit/basic":
                 desc: |
-                    Modifies an existing pawn's properties based on the provided ID.
-                    This endpoint supports partial updates; only the fields included 
-                    in the JSON body will be changed. 
-
-                    !!! warning
-                        Experimental. Endpoint was not properly tested yet. Use it at your own risk.
-                    
-                    Capabilities include:
-
-                    - changing basic stats (name, age, gender)
-                    - modifying health (healing, curing diseases)
-                    - adjusting needs (mood, food, rest)
-                    - setting skill levels
-                    - adding/removing traits
-                    - modifying inventory/equipment
-                    - changing drafting status or killing/resurrecting
-                    - teleporting (changing position/map)
-                    - altering faction relations (recruit, imprison).
+                    Edits the basic information of a pawn, such as name, gender, and age.
                 curl: |
-                    **Example:**
                     ```bash
                     curl --request POST \
-                    --url http://localhost:8765/api/v1/pawn/edit \
-                    -H "Content-Type: application/json" \
-                    -d '{
-                        "pawn_id": "Thing_Human456",
-                        "heal_all_injuries": true,
-                        "mood": 1.0,
-                        "position": { "x": 120, "y": 0, "z": 45 },
-                        "map_id": "0",
-                        "draft": true
+                    --url http://localhost:8765/api/v1/pawn/edit/basic \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "nick_name": "Ace",
+                        "gender": "Male",
+                        "biological_age": 25
                     }'
                     ```
                 request: |
-                    **Request Body (JSON):**
+                    **Request:**
                     ```json
                     {
-                    "pawn_id": "634",
-                    
-                    // Basic Stats
-                    "name": "Val",                      // Optional
-                    "gender": "Female",                 // Optional: "Male", "Female", "None"
-                    "biological_age": 25,               // Optional (Years)
-                    "chronological_age": 100,           // Optional (Years)
-                    
-                    // Health
-                    "heal_all_injuries": true,          // Optional
-                    "remove_all_diseases": true,        // Optional
-                    
-                    // Needs (0.0 to 1.0)
-                    "hunger": 1.0,                      // Optional
-                    "rest": 1.0,                        // Optional
-                    "mood": 1.0,                        // Optional
-                    
-                    // Skills (Dictionary: SkillName -> Level 0-20)
-                    "skills": {
-                        "Shooting": 15,
-                        "Medical": 10
-                    },
-                    
-                    // Traits
-                    "add_traits": ["Nudist", "Cannibal"],
-                    "remove_traits": ["Wimp"],
-                    
-                    // Inventory
-                    "drop_all_equipment": false,
-                    "drop_all_inventory": true,
-                    
-                    // State
-                    "draft": true,
-                    "undraft": false,
-                    "kill": false,
-                    "resurrect": false,
-                    
-                    // Location
-                    "position": { "x": 10, "y": 0, "z": 10 },
-                    "map_id": "0",
-                    
-                    // Faction
-                    "faction": "PlayerColony",
-                    "make_colonist": true,
-                    "make_prisoner": false,
-                    "release_prisoner": false
+                        "pawn_id": 148,
+                        "name": "Ace",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "nick_name": "Ace",
+                        "gender": "Male",
+                        "biological_age": 25,
+                        "chronological_age": 150
                     }
                     ```
                 response: |
                     **Response:**
                     ```json
                     {
-                    "success": true,
-                    "errors": [],
-                    "warnings": [],
-                    "timestamp": "2025-12-13T10:45:00.1234567Z"
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
                     }
                     ```
+
+            "/api/v1/pawn/edit/health":
+                desc: |
+                    Edits the health of a pawn, allowing to heal injuries or cure diseases.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/health \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "heal_all_injuries": true,
+                        "restore_body_parts": true,
+                        "remove_all_diseases": true
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 148,
+                        "heal_all_injuries": true,
+                        "restore_body_parts": true,
+                        "remove_all_diseases": true
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
+                    }
+                    ```
+
+            "/api/v1/pawn/edit/needs":
+                desc: |
+                    Edits the needs of a pawn, such as hunger, rest, and mood. Values range from 0.0 to 1.0.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/needs \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "food": 1.0,
+                        "rest": 1.0,
+                        "mood": 1.0
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 148,
+                        "food": 1.0,
+                        "rest": 1.0,
+                        "mood": 1.0
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
+                    }
+                    ```
+
+            "/api/v1/pawn/edit/skills":
+                desc: |
+                    Edits the skills of a pawn, setting the level for specified skills.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/skills \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 2356,
+                        "skills": [
+                            { "skill_name": "Shooting", "level": 20, "passion": 3 }
+                        ]
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 2356,
+                        "skills": [
+                            {
+                                "skill_name": "Shooting",
+                                "level": 20,
+                                "passion": 3
+                            },
+                            {
+                                "skill_name": "Medicine",
+                                "level": 15,
+                                "passion": 2
+                            },
+                            {
+                                "skill_name": "Melee",
+                                "level": 0,
+                                "passion": 1
+                            }
+                        ]
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T12:36:12.432366Z"
+                    }
+                    ```
+
+            "/api/v1/pawn/edit/traits":
+                desc: |
+                    Edits the traits of a pawn, allowing to add or remove traits.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/traits \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "add_traits": [{ "trait_name": "Cannibal", "degree": 0 }],
+                        "remove_traits": ["Wimp"]
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 148,
+                        "add_traits": [
+                            {
+                                "trait_name": "Cannibal",
+                                "degree": 0
+                            },
+                            {
+                                "trait_name": "Industrious",
+                                "degree": 0
+                            }
+                        ],
+                        "remove_traits": [
+                            "Wimp",
+                            "Pyromaniac"
+                        ]
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
+                    }
+                    ```
+
+            "/api/v1/pawn/edit/inventory":
+                desc: |
+                    Edits the inventory of a pawn, allowing to add or remove items.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/inventory \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "clear_inventory": true,
+                        "add_items": [{ "def_name": "MealSimple", "count": 10 }]
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 148,
+                        "drop_inventory": false,
+                        "clear_inventory": true,
+                        "add_items": [
+                            {
+                                "def_name": "MealSimple",
+                                "count": 10
+                            },
+                            {
+                                "def_name": "MedicineHerbal",
+                                "count": 5
+                            }
+                        ]
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
+                    }
+                    ```
+
+            "/api/v1/pawn/edit/apparel":
+                desc: |
+                    Edits the apparel of a pawn. Useful for stripping prisoners or disarming enemies.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/apparel \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "drop_apparel": true,
+                        "drop_weapons": true
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 148,
+                        "drop_apparel": true,
+                        "drop_weapons": true
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
+                    }
+                    ```
+
+            "/api/v1/pawn/edit/status":
+                desc: |
+                    Edits the status of a pawn, such as drafting, killing or resurrecting.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/status \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "is_drafted": true
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 148,
+                        "is_drafted": true,
+                        "kill": false,
+                        "resurrect": false
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
+                    }
+                    ```
+
+            "/api/v1/pawn/edit/position":
+                desc: |
+                    Edits the position of a pawn, teleporting it to a new location.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/position \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "position": { "x": 100, "z": 100 }
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 148,
+                        "map_id": "0",
+                        "position": {
+                            "x": 100,
+                            "y": 0,
+                            "z": 100
+                        }
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
+                    }
+                    ```
+
+            "/api/v1/pawn/edit/faction":
+                desc: |
+                    Edits the faction of a pawn, for example making a prisoner a colonist.
+                curl: |
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/pawn/edit/faction \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "pawn_id": 148,
+                        "make_colonist": true
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_id": 148,
+                        "set_faction": "PlayerColony",
+                        "make_colonist": true,
+                        "make_prisoner": false,
+                        "release_prisoner": false
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-31T14:05:16.1755723Z"
+                    }
+                    ```
+
+        PawnInfoController:
+            title: |
+                ### :material-account-details: Pawn Info Controller
+            desc: |
+                The **Pawn Info Controller** provides detailed information about pawns.
+
+            "/api/v1/pawns/details":
+                desc: |
+                    Gets detailed information about a pawn.
+                curl: ""
+                request: ""
+                response: ""
+
+            "/api/v1/pawns/inventory":
+                desc: |
+                    Gets the inventory of a pawn.
+                curl: ""
+                request: ""
+                response: ""
+
+        PawnSpawnController:
+            title: |
+                ### :material-account-plus: Pawn Spawn Controller
+            desc: |
+                The **Pawn Spawn Controller** is used to create and spawn new pawns in the game world.
+            "/api/v1/pawn/spawn":
+                desc: |
+                    Spawns a new pawn.
+                curl: ""
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "pawn_kind": "Mercenary_Gunner",
+                        "faction": "OutlanderCivil",
+                        "position": {"x": 11, "y": 0, "z": 11},
+                        "biological_age": 25
+                    }
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success":true,
+                        "data": {
+                            "pawn_id":39473,
+                            "name":"Nitro"
+                        },
+                        "errors":[],"warnings":[],
+                        "timestamp":"2025-12-31T12:32:16.5760065Z"
+                    }
                     
         ResearchController:
             title: |
@@ -4003,6 +4809,149 @@ api:
                         "errors": [],
                         "warnings": [],
                         "timestamp": "2025-12-12T10:00:00.0000000Z"
+                    }
+                    ```
+
+            "/api/v1/item/spawn":
+                desc: |
+                    Spawn an item on the map at selected position.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/item/spawn \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "def_name": "BilliardsTable",
+                        "stuff_def_name": "WoodLog",
+                        "quality": "Legendary",
+                        "amount": 1,
+                        "x": 120,
+                        "z": 106
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "def_name": "BilliardsTable",
+                        "stuff_def_name": "WoodLog",
+                        "quality": "Legendary",
+                        "amount": 1,
+                        "x": 120,
+                        "z": 106
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
+                    }
+                    ```
+
+        WindowController:
+            title: |
+                ### :material-window-maximize: Window Controller
+            desc: |
+                The **Window Controller** manages in-game windows and dialogs.
+
+            "/api/v1/ui/message":
+                desc: |
+                    Displays a short message on the screen, similar to in-game notifications.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/ui/message \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "text": "You find a wounded refugee asking for help. They are being chased by pirates."
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
+                    }
+                    ```
+
+            "/api/v1/ui/dialog":
+                desc: |
+                    Displays a dialog window with a specified message and title.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/ui/dialog \
+                    --header 'content-type: application/json' \
+                    --data '{
+                        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+                        "options": [
+                            {
+                                "label": "Offer Safety (Triggers Raid)",
+                                "action_id": "accept_refugee",
+                                "resolve_tree": true
+                            },
+                            {
+                                "label": "Turn them away",
+                                "action_id": "reject_refugee",
+                                "resolve_tree": true
+                            },
+                            {
+                                "label": "Capture them (Prisoner)",
+                                "action_id": "capture_refugee",
+                                "resolve_tree": true
+                            }
+                        ]
+                    }'
+                    ```
+                request: |
+                    **Request:**
+                    ```json
+                    {
+                        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+                        "options": [
+                            {
+                                "label": "Offer Safety (Triggers Raid)",
+                                "action_id": "accept_refugee",
+                                "resolve_tree": true
+                            },
+                            {
+                                "label": "Turn them away",
+                                "action_id": "reject_refugee",
+                                "resolve_tree": true
+                            },
+                            {
+                                "label": "Capture them (Prisoner)",
+                                "action_id": "capture_refugee",
+                                "resolve_tree": true
+                            }
+                        ]
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2025-12-10T19:53:16.733319Z"
                     }
                     ```
 
