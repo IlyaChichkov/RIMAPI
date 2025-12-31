@@ -1,4 +1,80 @@
 # Changelog
+## v1.6.0
+
+### New Features
+
+- Added **Builder API** for copy/paste operations and blueprint placement
+- Added **Lord management API** for creating lords
+- Added **Order API** for area designation
+- Added **Overlay API** for in-game announcements
+- Added **Window API** for message and dialog windows
+- Added **Pawn Info API** for retrieving pawn details and inventory
+- Added **Pawn Spawn API** for spawning new pawns
+- Enhanced **Pawn Edit API** with granular endpoints for different pawn attributes
+- Expanded **Map API** with destruction, repair, and drop pod functionality
+- Enhanced **Faction API** with goodwill management
+
+### New Endpoints
+
+**Builder API:**
+
+- `POST /api/v1/builder/copy` - Copy area
+- `POST /api/v1/builder/paste` - Paste area
+- `POST /api/v1/builder/blueprint` - Place blueprints
+
+**Faction API:**
+
+- `POST /api/v1/faction/goodwill` - Set faction goodwill
+
+**Lord API:**
+
+- `POST /api/v1/lords/create` - Create lord
+
+**Map API:**
+
+- `POST /api/v1/map/destroy/corpses` - Destroy corpses
+- `POST /api/v1/map/destroy/forbidden` - Destroy forbidden items
+- `POST /api/v1/map/destroy/rect` - Destroy things in rectangle
+- `POST /api/v1/map/repair/positions` - Repair at positions
+- `POST /api/v1/map/repair/rect` - Repair in rectangle
+- `POST /api/v1/map/droppod` - Spawn drop pod
+
+**Order API:**
+
+- `POST /api/v1/order/designate/area` - Designate area
+
+**Overlay API:**
+
+- `POST /api/v1/ui/announce` - Show announcement
+
+**Pawn Edit API (Enhanced):**
+
+- `POST /api/v1/pawn/edit/basic` - Edit basic pawn info
+- `POST /api/v1/pawn/edit/health` - Edit pawn health
+- `POST /api/v1/pawn/edit/needs` - Edit pawn needs
+- `POST /api/v1/pawn/edit/skills` - Edit pawn skills
+- `POST /api/v1/pawn/edit/traits` - Edit pawn traits
+- `POST /api/v1/pawn/edit/inventory` - Edit pawn inventory
+- `POST /api/v1/pawn/edit/apparel` - Edit pawn apparel
+- `POST /api/v1/pawn/edit/status` - Edit pawn status
+- `POST /api/v1/pawn/edit/position` - Edit pawn position
+- `POST /api/v1/pawn/edit/faction` - Edit pawn faction
+
+**Pawn Info API:**
+
+- `GET /api/v1/pawns/map` - Get pawns on map
+- `GET /api/v1/pawns/details` - Get pawn details
+- `GET /api/v1/pawns/inventory` - Get pawn inventory
+
+**Pawn Spawn API:**
+
+- `POST /api/v1/pawn/spawn` - Spawn pawn
+
+**Window API:**
+
+- `POST /api/v1/ui/message` - Show message
+- `POST /api/v1/ui/dialog` - Show dialog
+
 ## v1.5.0
 
 Impliment API server launch at game menu screen (previously lauched when game map loaded).

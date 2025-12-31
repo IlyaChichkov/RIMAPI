@@ -1,7 +1,7 @@
 ﻿{{ api.get('page_title', '# RimAPI Documentation') }}
 
-**Version**: 1.5.0  
-**Endpoints total count**: 98  
+**Version**: 1.6.0  
+**Endpoints total count**: 126  
 
 {{ api.section.get("Core_API", {}).get('title', '') }}
 {{ api.section.get("Core_API", {}).get('desc', '') }}
