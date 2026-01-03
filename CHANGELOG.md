@@ -1,4 +1,18 @@
 # Changelog
+## v1.6.1
+
+Fix SSE in browsers: remove dublicate header "Allow-Origin" for SSE service
+
+### Add Game State hooks
+
+- game_loaded
+- new_game_created
+- exit_to_menu
+- game_saved
+- settings_changed
+
+Small fixes
+
 ## v1.6.0
 
 ### New Features

@@ -84,7 +84,6 @@ namespace RIMAPI.Core
                 response.ContentType = "text/event-stream";
                 response.Headers.Add("Cache-Control", "no-cache");
                 response.Headers.Add("Connection", "keep-alive");
-                response.Headers.Add("Access-Control-Allow-Origin", "*");
                 response.SendChunked = true;
 
                 // 2. Register Client
