@@ -59,23 +59,7 @@ namespace RIMAPI.Services
                 var pawn = GetPawnById(pawnId);
                 if (pawn == null) return ApiResult<ColonistDetailedDto>.Fail($"Pawn {pawnId} not found.");
 
-                var details = new ColonistDetailedDto
-                {
-                    Colonist = MapPawnToSummary(pawn),
-
-                    // Needs (Check for nulls as animals/mechs might not have them)
-                    Sleep = pawn.needs?.rest?.CurLevelPercentage ?? 0f,
-                    Comfort = pawn.needs?.comfort?.CurLevelPercentage ?? 0f,
-                    SurroundingBeauty = pawn.needs?.beauty?.CurLevelPercentage ?? 0f, // Mapped to SurroundingBeauty in DTO?
-                    FreshAir = pawn.needs?.outdoors?.CurLevelPercentage ?? 0f,
-
-                    // Sub-components
-                    ColonistWorkInfo = GetWorkInfoInternal(pawn),
-                    ColonistMedicalInfo = GetMedicalInfoInternal(pawn),
-                    ColonistSocialInfo = GetSocialInfoInternal(pawn),
-                    ColonistPoliciesInfo = GetPoliciesInfoInternal(pawn)
-                };
-
+                var details = ColonistsHelper.PawnToDetailedDto(pawn);
                 return ApiResult<ColonistDetailedDto>.Ok(details);
             }
             catch (Exception ex)

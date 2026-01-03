@@ -41,6 +41,10 @@ namespace RIMAPI.Models
     {
         public float Sleep { get; set; }
         public float Comfort { get; set; }
+        public float Beauty { get; set; }
+        public float Joy { get; set; }
+        public float Energy { get; set; }
+        public float DrugsDesire { get; set; }
         public float SurroundingBeauty { get; set; }
         public float FreshAir { get; set; }
         public ColonistDto Colonist { get; set; }

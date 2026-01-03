@@ -146,6 +146,10 @@ namespace RIMAPI.Helpers
                 {
                     Sleep = pawn.needs.rest?.CurLevel ?? 0,
                     Comfort = pawn.needs.comfort?.CurLevel ?? 0,
+                    Beauty = pawn.needs.beauty?.CurLevel ?? 0,
+                    Joy = pawn.needs.joy?.CurLevel ?? 0,
+                    Energy = pawn.needs.energy?.CurLevel ?? 0,
+                    DrugsDesire = pawn.needs.drugsDesire?.CurLevel ?? 0,
                     SurroundingBeauty = pawn.needs.beauty?.CurLevel ?? 0,
                     FreshAir = pawn.needs.outdoors?.CurLevel ?? 0,
                     Colonist = CreateColonistDto(pawn),
