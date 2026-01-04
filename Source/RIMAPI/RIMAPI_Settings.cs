@@ -16,7 +16,7 @@ namespace RIMAPI
         /// Current version of the RIMAPI mod.
         /// <para>Not saved to XML; used for UI display.</para>
         /// </summary>
-        public string version = "1.6.1";
+        public string version = "1.7.0";
 
         /// <summary>
         /// Current supported API protocol version.

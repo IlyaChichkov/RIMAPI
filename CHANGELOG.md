@@ -1,4 +1,25 @@
 # Changelog
+## v1.7.0
+
+Fix #40 issue by sypher01: patch On_Gui to handle server requests caused unclickable interface
+
+Update mod settings window
+
+### New Endpoints
+
+**GlobalMapController API:**
+
+- `GET Add /api/v1/world/grid`
+- `GET Add /api/v1/world/player/settlements`
+- `GET Add /api/v1/world/tile/coordinates`
+- `GET Add /api/v1/world/grid/area`
+- `GET Add /api/v1/world/tile/details`
+
+**GameController API:**
+
+- `GET Add /api/v1/game/settings/run-in-background`
+- `POST Add /api/v1/game/settings/run-in-background`
+
 ## v1.6.1
 
 Fix SSE in browsers: remove dublicate header "Allow-Origin" for SSE service

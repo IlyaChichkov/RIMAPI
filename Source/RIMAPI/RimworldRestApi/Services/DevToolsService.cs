@@ -46,15 +46,7 @@ namespace RIMAPI.Services
         {
             try
             {
-                MaterialsAtlasList atlasList = new MaterialsAtlasList
-                {
-                    Materials = new List<string>(),
-                };
-                foreach (var mat in TextureHelper.GetAtlasDictionaryMaterials())
-                {
-                    atlasList.Materials.Add(mat.name);
-                }
-                return ApiResult<MaterialsAtlasList>.Ok(atlasList);
+                return ApiResult<MaterialsAtlasList>.Ok(TextureHelper.GetMaterialsAtlasList());
             }
             catch (Exception ex)
             {
@@ -66,8 +58,7 @@ namespace RIMAPI.Services
         {
             try
             {
-                TextureHelper.GetAtlasDictionary().Clear();
-                TextureHelper.RefreshGraphics();
+                TextureHelper.MaterialsAtlasPoolClear();
                 return ApiResult.Ok();
             }
             catch (Exception ex)
