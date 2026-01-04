@@ -958,5 +958,31 @@ namespace RIMAPI.Helpers
             texture.Apply(updateMipmaps: true, makeNoLongerReadable: false);
             return texture;
         }
+
+        public static void MaterialsAtlasPoolClear()
+        {
+            GetAtlasDictionary().Clear();
+            RefreshGraphics();
+        }
+
+        public static MaterialsAtlasList GetMaterialsAtlasList()
+        {
+            MaterialsAtlasList atlasList = new MaterialsAtlasList
+            {
+                Materials = new List<string>()
+            };
+            try
+            {
+                foreach (var mat in GetAtlasDictionaryMaterials())
+                {
+                    atlasList.Materials.Add(mat.name);
+                }
+            }
+            catch (System.Exception)
+            {
+                Core.LogApi.Error($"Failed to get materials from atlas pool");
+            }
+            return atlasList;
+        }
     }
 }

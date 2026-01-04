@@ -8,7 +8,46 @@ namespace RIMAPI.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int Tile { get; set; }
+        public int TileId { get; set; }
         public FactionDto Faction { get; set; }
+    }
+
+    public class SiteDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int TileId { get; set; }
+        public FactionDto Faction { get; set; }
+    }
+
+    public class TileDto
+    {
+        public int Id { get; set; }
+        public string Biome { get; set; }
+        public float Elevation { get; set; }
+        public float Temperature { get; set; }
+        public float Rainfall { get; set; }
+        public string Hilliness { get; set; }
+        public List<string> Roads { get; set; }
+        public List<string> Rivers { get; set; }
+        public float Lat { get; set; }
+        public float Lon { get; set; }
+        public bool IsPolluted { get; set; }
+        public float Pollution { get; set; }
+    }
+
+    public class TileDetailsDto : TileDto
+    {
+        public string TimeZone { get; set; }
+        public float Forageability { get; set; }
+        public string GrowingPeriod { get; set; }
+        public float MovementDifficulty { get; set; }
+        public List<string> StoneTypes { get; set; }
+    }
+
+    public class CoordinatesDto
+    {
+        public float Lat { get; set; }
+        public float Lon { get; set; }
     }
 }

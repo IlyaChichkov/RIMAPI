@@ -14,7 +14,7 @@ namespace RIMAPI.Helpers
             {
                 Id = s.ID,
                 Name = s.Label,
-                Tile = s.Tile,
+                TileId = s.Tile,
                 Faction = FactionDto.ToDto(s.Faction)
             }).ToList();
         }

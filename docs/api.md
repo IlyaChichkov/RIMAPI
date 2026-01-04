@@ -1,7 +1,7 @@
 ﻿{{ api.get('page_title', '# RimAPI Documentation') }}
 
-**Version**: 1.6.1  
-**Endpoints total count**: 126  
+**Version**: 1.7.0  
+**Endpoints total count**: 131  
 
 {{ api.section.get("Core_API", {}).get('title', '') }}
 {{ api.section.get("Core_API", {}).get('desc', '') }}
@@ -1726,6 +1726,38 @@ GlobalMapController.GetSettlements
 
 ---
 
+<h4 id="apiv1worldplayersettlements">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/world/player/settlements
+```
+</code>
+<a class="headerlink" href="#apiv1worldplayersettlements" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/player/settlements", {'desc': 'Failed to load /api/v1/world/player/settlements'}).get('desc', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/player/settlements", {'desc': 'Failed to load /api/v1/world/player/settlements'}).get('curl', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/player/settlements", {'desc': 'Failed to load /api/v1/world/player/settlements'}).get('request', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/player/settlements", {'desc': 'Failed to load /api/v1/world/player/settlements'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GlobalMapController%5C.cs%24%2F+GetPlayerSettlements&type=code" class="doc-github-link">
+GlobalMapController.GetPlayerSettlements
+</a>
+</div>
+
+---
+
 <h4 id="apiv1worldsites">
 <div class="doc-api-container">
 <div class="doc-api-header">
@@ -1785,6 +1817,134 @@ GlobalMapController.GetSites
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GlobalMapController%5C.cs%24%2F+GetTile&type=code" class="doc-github-link">
 GlobalMapController.GetTile
+</a>
+</div>
+
+---
+
+<h4 id="apiv1worldtilecoordinates">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/world/tile/coordinates
+```
+</code>
+<a class="headerlink" href="#apiv1worldtilecoordinates" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/tile/coordinates", {'desc': 'Failed to load /api/v1/world/tile/coordinates'}).get('desc', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/tile/coordinates", {'desc': 'Failed to load /api/v1/world/tile/coordinates'}).get('curl', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/tile/coordinates", {'desc': 'Failed to load /api/v1/world/tile/coordinates'}).get('request', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/tile/coordinates", {'desc': 'Failed to load /api/v1/world/tile/coordinates'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GlobalMapController%5C.cs%24%2F+GetTileCoordinates&type=code" class="doc-github-link">
+GlobalMapController.GetTileCoordinates
+</a>
+</div>
+
+---
+
+<h4 id="apiv1worldtiledetails">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/world/tile/details
+```
+</code>
+<a class="headerlink" href="#apiv1worldtiledetails" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/tile/details", {'desc': 'Failed to load /api/v1/world/tile/details'}).get('desc', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/tile/details", {'desc': 'Failed to load /api/v1/world/tile/details'}).get('curl', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/tile/details", {'desc': 'Failed to load /api/v1/world/tile/details'}).get('request', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/tile/details", {'desc': 'Failed to load /api/v1/world/tile/details'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GlobalMapController%5C.cs%24%2F+GetTileDetails&type=code" class="doc-github-link">
+GlobalMapController.GetTileDetails
+</a>
+</div>
+
+---
+
+<h4 id="apiv1worldgrid">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/world/grid
+```
+</code>
+<a class="headerlink" href="#apiv1worldgrid" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/grid", {'desc': 'Failed to load /api/v1/world/grid'}).get('desc', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/grid", {'desc': 'Failed to load /api/v1/world/grid'}).get('curl', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/grid", {'desc': 'Failed to load /api/v1/world/grid'}).get('request', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/grid", {'desc': 'Failed to load /api/v1/world/grid'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GlobalMapController%5C.cs%24%2F+GetWorldGrid&type=code" class="doc-github-link">
+GlobalMapController.GetWorldGrid
+</a>
+</div>
+
+---
+
+<h4 id="apiv1worldgridarea">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/world/grid/area
+```
+</code>
+<a class="headerlink" href="#apiv1worldgridarea" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/grid/area", {'desc': 'Failed to load /api/v1/world/grid/area'}).get('desc', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/grid/area", {'desc': 'Failed to load /api/v1/world/grid/area'}).get('curl', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/grid/area", {'desc': 'Failed to load /api/v1/world/grid/area'}).get('request', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/grid/area", {'desc': 'Failed to load /api/v1/world/grid/area'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GlobalMapController%5C.cs%24%2F+GetWorldGridArea&type=code" class="doc-github-link">
+GlobalMapController.GetWorldGridArea
 </a>
 </div>
 

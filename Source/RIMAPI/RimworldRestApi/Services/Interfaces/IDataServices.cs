@@ -30,6 +30,8 @@ namespace RIMAPI.Services
         ApiResult GameDevQuickStart();
         ApiResult GameStart(NewGameStartRequestDto body);
         ApiResult<GameSettingsDto> GetCurrentSettings();
+        ApiResult<bool> ToggleRunInBackground();
+        ApiResult<bool> GetRunInBackground();
     }
     #endregion
 

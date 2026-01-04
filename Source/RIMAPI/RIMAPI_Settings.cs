@@ -3,19 +3,83 @@ using Verse;
 
 namespace RIMAPI
 {
+    /// <summary>
+    /// Manages the persistent configuration settings for the RIMAPI mod.
+    /// <para>Handles serialization (save/load) of settings and provides property wrappers
+    /// to trigger dynamic updates when configuration values change.</para>
+    /// </summary>
     public class RIMAPI_Settings : ModSettings
     {
-        public string version = "1.6.1";
+        // --- Version Info ---
+
+        /// <summary>
+        /// Current version of the RIMAPI mod.
+        /// <para>Not saved to XML; used for UI display.</para>
+        /// </summary>
+        public string version = "1.7.0";
+
+        /// <summary>
+        /// Current supported API protocol version.
+        /// <para>Not saved to XML; used for UI display.</para>
+        /// </summary>
         public string apiVersion = "v1";
+
+
+        // --- Server Configuration ---
+
+        /// <summary>
+        /// The local port number the HTTP server listens on.
+        /// <para>Default: 8765</para>
+        /// </summary>
         public int serverPort = 8765;
+
+        /// <summary>
+        /// The interval (in game ticks) at which the server refreshes its data cache.
+        /// <para>Default: 300 ticks (approx. 5 seconds at normal speed).</para>
+        /// </summary>
         public int refreshIntervalTicks = 300;
-        public bool _enableLogging = false;
-        public int _loggingLevel = 0;
 
-        public bool EnableCaching = true;
-        public bool CacheLogStatistics = true;
-        public int CacheDefaultExpirationSeconds = 60;
 
+        // --- Logging Configuration (Private Backing Fields) ---
+
+        /// <summary>
+        /// Backing field for EnableLogging property.
+        /// </summary>
+        private bool _enableLogging = false;
+
+        /// <summary>
+        /// Backing field for LoggingLevel property.
+        /// </summary>
+        private int _loggingLevel = 0;
+
+
+        // --- Caching Configuration ---
+
+        /// <summary>
+        /// Globally enables or disables data caching to improve performance.
+        /// <para>Default: false</para>
+        /// </summary>
+        public bool EnableCaching = false;
+
+        /// <summary>
+        /// If true, cache hit/miss statistics will be logged to the console.
+        /// <para>Default: true</para>
+        /// </summary>
+        public bool CacheLogStatistics = false;
+
+        /// <summary>
+        /// The default duration (in seconds) that cached data remains valid before expiry.
+        /// <para>Default: 10 seconds</para>
+        /// </summary>
+        public int CacheDefaultExpirationSeconds = 10;
+
+
+        // --- Properties with Change Triggers ---
+
+        /// <summary>
+        /// Toggles detailed debug logging for the API.
+        /// <para>Setting this property automatically updates the static LogApi configuration.</para>
+        /// </summary>
         public bool EnableLogging
         {
             get => _enableLogging;
@@ -29,6 +93,10 @@ namespace RIMAPI
             }
         }
 
+        /// <summary>
+        /// Sets the minimum severity level for logs (0=Debug, 1=Info, etc.).
+        /// <para>Setting this property automatically updates the static LogApi configuration.</para>
+        /// </summary>
         public int LoggingLevel
         {
             get => _loggingLevel;
@@ -42,29 +110,41 @@ namespace RIMAPI
             }
         }
 
+        /// <summary>
+        /// Propagates setting changes to the static LogApi utility immediately.
+        /// </summary>
         private void OnSettingChanged()
         {
             LogApi.IsLogging = _enableLogging;
+            // Cast integer to enum safely
             LogApi.LoggingLevel = (LoggingLevels)_loggingLevel;
+
             Log.Message(
-                $"Logging setting changed. Enabled: {LogApi.IsLogging}, Level: {LogApi.LoggingLevel}"
+                $"[RIMAPI] Logging setting updated. Enabled: {LogApi.IsLogging}, Level: {LogApi.LoggingLevel}"
             );
         }
 
+        /// <summary>
+        /// Serializes and deserializes settings data to/from the XML mod config file.
+        /// <para>Also ensures LogApi state is restored correctly upon loading.</para>
+        /// </summary>
         public override void ExposeData()
         {
+            // Logging Settings
             Scribe_Values.Look(ref _enableLogging, "enableLogging", false);
             Scribe_Values.Look(ref _loggingLevel, "loggingLevel", 1);
+
+            // Server Settings
             Scribe_Values.Look(ref serverPort, "serverPort", 8765);
             Scribe_Values.Look(ref refreshIntervalTicks, "refreshIntervalTicks", 300);
+
+            // Caching Settings
             Scribe_Values.Look(ref EnableCaching, "enableCaching", true);
             Scribe_Values.Look(ref CacheLogStatistics, "cacheLogStatistics", true);
-            Scribe_Values.Look(
-                ref CacheDefaultExpirationSeconds,
-                "cacheDefaultExpirationSeconds",
-                60
-            );
+            Scribe_Values.Look(ref CacheDefaultExpirationSeconds, "cacheDefaultExpirationSeconds", 60);
 
+            // Post-Load Initialization
+            // Ensure the static logger is updated immediately after settings are loaded from disk.
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
                 OnSettingChanged();
