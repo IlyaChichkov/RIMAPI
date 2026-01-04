@@ -2182,7 +2182,187 @@ api:
                         "timestamp": "2025-12-13T11:05:29.488063Z"
                     }
                     ```
+            "/api/v1/world/player/settlements":
+                desc: |
+                    Retrieves a list of all settlements belonging to the player's faction.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/world/player/settlements
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "id": 123,
+                                "name": "Player's Hope",
+                                "tile": 5678,
+                                "faction": {
+                                    "load_id": 3,
+                                    "def_name": "PlayerColony",
+                                    "name": "New Arrivals",
+                                    "is_player": true
+                                }
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2026-01-04T12:00:00.000Z"
+                    }
+                    ```
 
+            "/api/v1/world/grid/area":
+                desc: |
+                    Retrieves a list of world tiles within a specified radius of a center tile.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/world/grid/area?tile_id=12345&radius=5'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "id": 12345,
+                                "biome": "Tundra",
+                                "elevation": 100.0,
+                                "temperature": -10.0,
+                                "rainfall": 200.0,
+                                "hilliness": "SmallHills",
+                                "roads": [],
+                                "rivers": [],
+                                "lat": 60.0,
+                                "lon": -30.0,
+                                "is_polluted": false,
+                                "pollution": 0.0
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2026-01-04T12:00:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/world/tile/coordinates":
+                desc: |
+                    Retrieves the latitude and longitude for a specific tile ID.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/world/tile/coordinates?id=12345'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "lat": 60.0,
+                            "lon": -30.0
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2026-01-04T12:00:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/world/tile/details":
+                desc: |
+                    Retrieves detailed information about a specific tile.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url 'http://localhost:8765/api/v1/world/tile/details?id=12345'
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "id": 12345,
+                            "biome": "Tundra",
+                            "elevation": 100.0,
+                            "temperature": -10.0,
+                            "rainfall": 200.0,
+                            "hilliness": "SmallHills",
+                            "roads": [
+                                "279644:StoneRoad",
+                                "279641:StoneRoad"
+                            ],
+                            "rivers": [
+                                "279640:Creek",
+                                "279686:Creek"
+                            ],
+                            "lat": 60.0,
+                            "lon": -30.0,
+                            "is_polluted": false,
+                            "pollution": 0.0,
+                            "time_zone": "2",
+                            "forageability": 0.5,
+                            "growing_period": "Year-round",
+                            "movement_difficulty": 1.0,
+                            "stone_types": [
+                                "Sandstone",
+                                "Granite"
+                            ]
+                        },
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2026-01-04T12:00:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/world/grid":
+                desc: |
+                    Retrieves the entire world grid, returning a list of all tiles with their basic information.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/world/grid
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "id": 0,
+                                "biome": "Ocean",
+                                "elevation": -100.0,
+                                "temperature": 10.0,
+                                "rainfall": 500.0,
+                                "hilliness": "Flat",
+                                "roads": [],
+                                "rivers": [],
+                                "lat": -90.0,
+                                "lon": 0.0,
+                                "is_polluted": false,
+                                "pollution": 0.0
+                            }
+                        ],
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2026-01-04T12:00:00.000Z"
+                    }
+                    ```
         ImageController:
             title: |
                 ### :material-image: Image Controller
