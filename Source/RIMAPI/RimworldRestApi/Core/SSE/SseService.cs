@@ -21,6 +21,9 @@ namespace RIMAPI.Core
         private readonly HashSet<string> _registeredEventTypes;
         private readonly object _eventsLock = new object();
 
+        public int ClientCount => _connectedClients.Count;
+        public long TotalEventsSent { get; private set; }
+
         public SseService(IGameStateService gameStateService)
         {
             _gameStateService = gameStateService;
@@ -212,6 +215,8 @@ namespace RIMAPI.Core
                     if (!client.IsConnected) return;
                     client.Response.OutputStream.Write(buffer, 0, buffer.Length);
                     client.Response.OutputStream.Flush();
+
+                    TotalEventsSent++;
                 }
                 client.UpdateLastActivity();
             }
