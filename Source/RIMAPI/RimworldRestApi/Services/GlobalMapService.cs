@@ -41,5 +41,21 @@ namespace RIMAPI.Services
             }
             return ApiResult<TileDto>.Ok(result);
         }
+
+        public ApiResult<List<TileDto>> GetTilesInRadius(int tileId, float radius)
+        {
+            var result = GlobalMapHelper.GetTilesInRadius(tileId, radius);
+            return ApiResult<List<TileDto>>.Ok(result);
+        }
+
+        public ApiResult<CoordinatesDto> GetTileCoordinates(int tileId)
+        {
+            var result = GlobalMapHelper.GetTileCoordinates(tileId);
+            if (result == null)
+            {
+                return ApiResult<CoordinatesDto>.Fail($"Tile with id {tileId} not found.");
+            }
+            return ApiResult<CoordinatesDto>.Ok(result);
+        }
     }
 }

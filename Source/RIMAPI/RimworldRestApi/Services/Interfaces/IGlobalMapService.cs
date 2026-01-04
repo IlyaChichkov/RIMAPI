@@ -11,5 +11,7 @@ namespace RIMAPI.Services
         ApiResult<List<CaravanDto>> GetCaravans();
         ApiResult<List<SiteDto>> GetSites();
         ApiResult<TileDto> GetTile(int tileId);
+        ApiResult<List<TileDto>> GetTilesInRadius(int tileId, float radius);
+        ApiResult<CoordinatesDto> GetTileCoordinates(int tileId);
     }
 }
