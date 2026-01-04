@@ -6,6 +6,7 @@ using RIMAPI.Http;
 using RIMAPI.Models;
 using RIMAPI.Services;
 using RimWorld;
+using Verse;
 
 namespace RIMAPI.Controllers
 {
@@ -202,6 +203,20 @@ namespace RIMAPI.Controllers
         public async Task GetGameSettings(HttpListenerContext context)
         {
             var result = _gameStateService.GetCurrentSettings();
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/game/settings/run-in-background")]
+        public async Task ToggleRunInBackground(HttpListenerContext context)
+        {
+            var result = _gameStateService.ToggleRunInBackground();
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/game/settings/run-in-background")]
+        public async Task GetRunInBackground(HttpListenerContext context)
+        {
+            var result = _gameStateService.GetRunInBackground();
             await context.SendJsonResponse(result);
         }
     }

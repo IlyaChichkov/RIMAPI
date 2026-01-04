@@ -747,5 +747,17 @@ namespace RIMAPI.Services
             var result = GamePlayHelper.GetCurrentSettings();
             return ApiResult<GameSettingsDto>.Ok(result);
         }
+
+        public ApiResult<bool> ToggleRunInBackground()
+        {
+            Prefs.RunInBackground = !Prefs.RunInBackground;
+            Prefs.Save();
+            return ApiResult<bool>.Ok(Prefs.RunInBackground);
+        }
+
+        public ApiResult<bool> GetRunInBackground()
+        {
+            return ApiResult<bool>.Ok(Prefs.RunInBackground);
+        }
     }
 }
