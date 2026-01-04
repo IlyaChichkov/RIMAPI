@@ -36,6 +36,15 @@ namespace RIMAPI.Models
         public float Pollution { get; set; }
     }
 
+    public class TileDetailsDto : TileDto
+    {
+        public string TimeZone { get; set; }
+        public float Forageability { get; set; }
+        public string GrowingPeriod { get; set; }
+        public float MovementDifficulty { get; set; }
+        public List<string> StoneTypes { get; set; }
+    }
+
     public class CoordinatesDto
     {
         public float Lat { get; set; }

@@ -13,5 +13,6 @@ namespace RIMAPI.Services
         ApiResult<TileDto> GetTile(int tileId);
         ApiResult<List<TileDto>> GetTilesInRadius(int tileId, float radius);
         ApiResult<CoordinatesDto> GetTileCoordinates(int tileId);
+        ApiResult<TileDetailsDto> GetTileDetails(int tileId);
     }
 }

@@ -97,6 +97,20 @@ namespace RIMAPI.Controllers
             );
         }
 
+        [Get("/api/v1/world/tile/details")]
+        public async Task GetTileDetails(HttpListenerContext context)
+        {
+            var tileId = RequestParser.GetIntParameter(context, "id");
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                $"tile_{tileId}_details",
+                () => Task.FromResult(_globalMapService.GetTileDetails(tileId)),
+                expiration: TimeSpan.FromSeconds(120),
+                expirationType: CacheExpirationType.Absolute
+            );
+        }
+
+
 
         [Get("/api/v1/world/grid")]
         public async Task GetWorldGrid(HttpListenerContext context)

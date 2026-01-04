@@ -57,5 +57,15 @@ namespace RIMAPI.Services
             }
             return ApiResult<CoordinatesDto>.Ok(result);
         }
+
+        public ApiResult<TileDetailsDto> GetTileDetails(int tileId)
+        {
+            var result = TileHelper.GetTileDetails(tileId);
+            if (result == null)
+            {
+                return ApiResult<TileDetailsDto>.Fail($"Tile with id {tileId} not found.");
+            }
+            return ApiResult<TileDetailsDto>.Ok(result);
+        }
     }
 }
