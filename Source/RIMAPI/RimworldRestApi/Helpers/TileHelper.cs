@@ -34,7 +34,7 @@ namespace RIMAPI.Helpers
                 Rainfall = tile.rainfall,
                 Temperature = tile.temperature,
                 Roads = tile.Roads?.Select(r => $"{r.neighbor}:{r.road.defName}").ToList(),
-                Rivers = tile.Rivers?.Select(r => r.river.defName).ToList(),
+                Rivers = tile.Rivers?.Select(r => $"{r.neighbor}:{r.river.defName}").ToList(),
                 IsPolluted = ModsConfig.BiotechActive && tile.pollution > 0f,
                 Pollution = ModsConfig.BiotechActive ? tile.pollution : 0f
             };
