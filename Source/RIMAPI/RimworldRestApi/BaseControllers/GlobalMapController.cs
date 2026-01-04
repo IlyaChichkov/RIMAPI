@@ -46,6 +46,19 @@ namespace RIMAPI.Controllers
             );
         }
 
+        [Get("/api/v1/world/player/settlements")]
+        public async Task GetPlayerSettlements(HttpListenerContext context)
+        {
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                "player_settlements",
+                () => Task.FromResult(_globalMapService.GetPlayerSettlements()),
+                expiration: TimeSpan.FromSeconds(10),
+                expirationType: CacheExpirationType.GameTick
+            );
+        }
+
+
         [Get("/api/v1/world/sites")]
         public async Task GetSites(HttpListenerContext context)
         {

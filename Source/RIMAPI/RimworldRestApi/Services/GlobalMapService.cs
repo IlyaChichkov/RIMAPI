@@ -13,6 +13,13 @@ namespace RIMAPI.Services
             return ApiResult<List<SettlementDto>>.Ok(result);
         }
 
+        public ApiResult<List<SettlementDto>> GetPlayerSettlements()
+        {
+            var result = GlobalMapHelper.GetPlayerSettlements();
+            return ApiResult<List<SettlementDto>>.Ok(result);
+        }
+
+
         public ApiResult<List<CaravanDto>> GetCaravans()
         {
             var result = CaravanHelper.GetCaravans();

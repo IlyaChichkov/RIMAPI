@@ -19,6 +19,17 @@ namespace RIMAPI.Helpers
             }).ToList();
         }
 
+        public static List<SettlementDto> GetPlayerSettlements()
+        {
+            return Find.WorldObjects.Settlements.Where(s => s.Faction.IsPlayer).Select(s => new SettlementDto
+            {
+                Id = s.ID,
+                Name = s.Name,
+                Tile = s.Tile,
+                Faction = FactionDto.ToDto(s.Faction)
+            }).ToList();
+        }
+
         public static List<TileDto> GetWorldData()
         {
             var grid = Find.WorldGrid;
