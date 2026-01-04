@@ -18,5 +18,16 @@ namespace RIMAPI.Helpers
                 Faction = FactionDto.ToDto(s.Faction)
             }).ToList();
         }
+
+        public static List<TileDto> GetWorldData()
+        {
+            var grid = Find.WorldGrid;
+            var tiles = new List<TileDto>(grid.TilesCount);
+            for (int i = 0; i < grid.TilesCount; i++)
+            {
+                tiles.Add(TileHelper.GetTile(i));
+            }
+            return tiles;
+        }
     }
 }

@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using RIMAPI.Core;
+using RIMAPI.Helpers;
 using RIMAPI.Http;
+using RIMAPI.Models;
 using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
@@ -64,6 +67,18 @@ namespace RIMAPI.Controllers
                 $"tile_{tileId}",
                 () => Task.FromResult(_globalMapService.GetTile(tileId)),
                 expiration: TimeSpan.FromSeconds(120),
+                expirationType: CacheExpirationType.Absolute
+            );
+        }
+
+        [Get("/api/v1/world/grid")]
+        public async Task GetWorldGrid(HttpListenerContext context)
+        {
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                "world_grid",
+                () => Task.FromResult(ApiResult<List<TileDto>>.Ok(GlobalMapHelper.GetWorldData())),
+                expiration: TimeSpan.FromSeconds(600),
                 expirationType: CacheExpirationType.Absolute
             );
         }
