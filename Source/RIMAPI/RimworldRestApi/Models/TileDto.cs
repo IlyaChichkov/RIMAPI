@@ -12,5 +12,9 @@ namespace RIMAPI.Models
         public string Hilliness { get; set; }
         public List<string> Roads { get; set; }
         public List<string> Rivers { get; set; }
+        public float Lat { get; set; }
+        public float Lon { get; set; }
+        public bool IsPolluted { get; set; }
+        public float Pollution { get; set; }
     }
 }

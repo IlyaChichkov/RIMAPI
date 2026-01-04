@@ -1,6 +1,7 @@
 using System.Linq;
 using RIMAPI.Models;
 using RimWorld.Planet;
+using UnityEngine;
 using Verse;
 
 namespace RIMAPI.Helpers
@@ -16,6 +17,7 @@ namespace RIMAPI.Helpers
             }
 
             var tile = grid[tileId];
+            Vector2 longLat = grid.LongLatOf(tileId);
             return new TileDto
             {
                 Id = tileId,
@@ -25,11 +27,15 @@ namespace RIMAPI.Helpers
                 Biome = tile.PrimaryBiome.defName,
 #endif
                 Elevation = tile.elevation,
+                Lat = longLat.y,
+                Lon = longLat.x,
                 Hilliness = tile.hilliness.ToString(),
                 Rainfall = tile.rainfall,
                 Temperature = tile.temperature,
-                Roads = tile.Roads?.Select(r => r.road.defName).ToList(),
-                Rivers = tile.Rivers?.Select(r => r.river.defName).ToList()
+                Roads = tile.Roads?.Select(r => $"{r.neighbor}:{r.road.defName}").ToList(),
+                Rivers = tile.Rivers?.Select(r => r.river.defName).ToList(),
+                IsPolluted = ModsConfig.BiotechActive && tile.pollution > 0f,
+                Pollution = ModsConfig.BiotechActive ? tile.pollution : 0f
             };
         }
     }
