@@ -35,14 +35,14 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/colonists/positions")]
         public async Task GetColonistPositions(HttpListenerContext context)
         {
-             await _cachingService.CacheAwareResponseAsync(
-                context,
-                "/api/v1/colonists/positions",
-                dataFactory: () => Task.FromResult(_colonistService.GetColonistPositions()),
-                expiration: TimeSpan.FromSeconds(0.1),
-                priority: CachePriority.High,
-                expirationType: CacheExpirationType.Absolute
-            );
+            await _cachingService.CacheAwareResponseAsync(
+               context,
+               "/api/v1/colonists/positions",
+               dataFactory: () => Task.FromResult(_colonistService.GetColonistPositions()),
+               expiration: TimeSpan.FromSeconds(0.1),
+               priority: CachePriority.High,
+               expirationType: CacheExpirationType.Absolute
+           );
         }
 
         [Get("/api/v1/colonist")]
@@ -54,6 +54,28 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonists/detailed")]
+        public async Task GetColonistsDetailedV1(HttpListenerContext context)
+        {
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                "/api/v1/colonists/detailed",
+                dataFactory: () => Task.FromResult(_colonistService.GetColonistsDetailedV1()),
+                expiration: TimeSpan.FromSeconds(30),
+                priority: CachePriority.Normal,
+                expirationType: CacheExpirationType.Sliding
+            );
+        }
+
+        [Get("/api/v1/colonist/detailed")]
+        public async Task GetColonistDetailedV1(HttpListenerContext context)
+        {
+            var pawnId = RequestParser.GetIntParameter(context, "id");
+            var result = _colonistService.GetColonistDetailedV1(pawnId);
+            await context.SendJsonResponse(result);
+        }
+
+
+        [Get("/api/v2/colonists/detailed")]
         public async Task GetColonistsDetailed(HttpListenerContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
@@ -66,8 +88,8 @@ namespace RIMAPI.Controllers
             );
         }
 
-        [Get("/api/v1/colonist/detailed")]
-        public async Task GetResearchProGetColonistDetailedgress(HttpListenerContext context)
+        [Get("/api/v2/colonist/detailed")]
+        public async Task GetColonistDetailed(HttpListenerContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "id");
             var result = _colonistService.GetColonistDetailed(pawnId);
