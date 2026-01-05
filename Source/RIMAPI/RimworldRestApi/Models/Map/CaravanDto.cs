@@ -16,10 +16,4 @@ namespace RIMAPI.Models
         public string Forageability { get; set; }
         public string Visibility { get; set; }
     }
-
-    public class PawnDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
 }
