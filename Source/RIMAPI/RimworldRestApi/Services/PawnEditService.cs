@@ -15,7 +15,7 @@ namespace RIMAPI.Services
     {
         private Pawn GetPawn(int id)
         {
-            var pawn = ColonistsHelper.FindPawnById(id.ToString());
+            var pawn = PawnHelper.FindPawnById(id);
             if (pawn == null) throw new ArgumentException($"Pawn with ID {id} not found.");
             return pawn;
         }

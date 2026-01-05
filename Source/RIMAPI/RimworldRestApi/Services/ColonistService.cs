@@ -15,20 +15,20 @@ namespace RIMAPI.Services
     {
         public ColonistService() { }
 
-        public ApiResult<ColonistDto> GetColonist(int pawnId)
+        public ApiResult<PawnDto> GetColonist(int pawnId)
         {
-            var allColonists = ColonistsHelper
-                .GetColonists();
-
             try
             {
-                var result = allColonists
-                    .First(c => c.Id == pawnId);
-                return ApiResult<ColonistDto>.Ok(result);
+                var result = ColonistsHelper.GetSingleColonistDto(pawnId);
+                if (result == null)
+                {
+                    return ApiResult<PawnDto>.Fail($"Failed to find pawn with id: {pawnId}");
+                }
+                return ApiResult<PawnDto>.Ok(result);
             }
             catch (Exception ex)
             {
-                return ApiResult<ColonistDto>
+                return ApiResult<PawnDto>
                     .Fail($"Failed to find pawn with id: {pawnId} - {ex.Message}");
             }
         }
@@ -61,69 +61,49 @@ namespace RIMAPI.Services
             return ApiResult<BodyPartsDto>.Ok(bodyParts);
         }
 
-        public ApiResult<ColonistDetailedDto> GetColonistDetailed(int pawnId)
+        public ApiResult<PawnDetailedRequestDto> GetColonistDetailed(int pawnId)
         {
-            var allColonists = ColonistsHelper
-                .GetColonistsDetailed();
-
             try
             {
-                var result = allColonists
-                    .First(c => c.Colonist.Id == pawnId);
-                return ApiResult<ColonistDetailedDto>.Ok(result);
+                var result = ColonistsHelper.GetSingleColonistDetailedDto(pawnId);
+                if (result == null)
+                {
+                    return ApiResult<PawnDetailedRequestDto>.Fail($"Failed to find pawn with id: {pawnId}");
+                }
+                return ApiResult<PawnDetailedRequestDto>.Ok(result);
             }
             catch (Exception ex)
             {
-                return ApiResult<ColonistDetailedDto>
+                return ApiResult<PawnDetailedRequestDto>
                     .Fail($"Failed to find pawn with id: {pawnId} - {ex.Message}");
             }
         }
 
-        public ApiResult<ColonistInventoryDto> GetColonistInventory(int pawnId)
+        public ApiResult<PawnInventoryDto> GetColonistInventory(int pawnId)
         {
-            Pawn colonist = PawnsFinder
-                .AllMaps_FreeColonists.Where(p => p.thingIDNumber == pawnId)
-                .FirstOrDefault();
-
             try
             {
-                List<ThingDto> Items = new List<ThingDto>();
-                List<ThingDto> Apparels = new List<ThingDto>();
-                List<ThingDto> Equipment = new List<ThingDto>();
 
-                foreach (var item in colonist.inventory.innerContainer)
-                {
-                    Items.Add(ResourcesHelper.ThingToDto(item));
-                }
+                Pawn colonist = ColonistsHelper.GetColonistsList()
+                    .Where(p => p.thingIDNumber == pawnId)
+                    .FirstOrDefault();
 
-                foreach (var apparel in colonist.apparel.WornApparel)
-                {
-                    Items.Add(ResourcesHelper.ThingToDto(apparel));
-                }
+                if (colonist == null) return ApiResult<PawnInventoryDto>
+                    .Fail($"Colonist {pawnId} not found.");
 
-                foreach (var equipment in colonist.equipment.AllEquipmentListForReading)
-                {
-                    Items.Add(ResourcesHelper.ThingToDto(equipment));
-                }
-
-                var result = new ColonistInventoryDto
-                {
-                    Items = Items,
-                    Apparels = Apparels,
-                    Equipment = Equipment,
-                };
-                return ApiResult<ColonistInventoryDto>.Ok(result);
+                var inventory = PawnHelper.GetPawnInventory(colonist);
+                return ApiResult<PawnInventoryDto>.Ok(inventory);
             }
             catch (Exception ex)
             {
-                return ApiResult<ColonistInventoryDto>.Fail(ex.Message);
+                return ApiResult<PawnInventoryDto>.Fail(ex.Message);
             }
         }
 
-        public ApiResult<List<ColonistDto>> GetColonists()
+        public ApiResult<List<PawnDto>> GetColonists()
         {
-            var result = ColonistsHelper.GetColonists();
-            return ApiResult<List<ColonistDto>>.Ok(result);
+            var result = ColonistsHelper.GetColonistsDtos();
+            return ApiResult<List<PawnDto>>.Ok(result);
         }
 
         public ApiResult<List<PawnPositionDto>> GetColonistPositions()
@@ -132,25 +112,21 @@ namespace RIMAPI.Services
             return ApiResult<List<PawnPositionDto>>.Ok(result);
         }
 
-        public ApiResult<List<ColonistDetailedDto>> GetColonistsDetailed()
+        public ApiResult<List<PawnDetailedRequestDto>> GetColonistsDetailed()
         {
-            var result = ColonistsHelper.GetColonistsDetailed();
-            return ApiResult<List<ColonistDetailedDto>>.Ok(result);
+            var result = ColonistsHelper.GetColonistsDetailedDtos();
+            return ApiResult<List<PawnDetailedRequestDto>>.Ok(result);
         }
 
         public ApiResult<OpinionAboutPawnDto> GetOpinionAboutPawn(int pawnId, int otherPawnId)
         {
-            Pawn pawn = PawnsFinder
-                .AllMaps_FreeColonists.Where(p => p.thingIDNumber == pawnId)
-                .FirstOrDefault();
+            Pawn pawn = PawnHelper.FindPawnById(pawnId);
             if (pawn == null)
-                return ApiResult<OpinionAboutPawnDto>.Fail("Failed to find pawn by id");
+                return ApiResult<OpinionAboutPawnDto>.Fail($"Failed to find pawn with {pawnId} id");
 
-            Pawn other = PawnsFinder
-                .AllMaps_FreeColonists.Where(p => p.thingIDNumber == otherPawnId)
-                .FirstOrDefault();
+            Pawn other = PawnHelper.FindPawnById(pawnId);
             if (other == null)
-                return ApiResult<OpinionAboutPawnDto>.Fail("Failed to find other pawn by id");
+                return ApiResult<OpinionAboutPawnDto>.Fail($"Failed to find other pawn with {otherPawnId} id");
 
             var result = new OpinionAboutPawnDto
             {
@@ -162,7 +138,7 @@ namespace RIMAPI.Services
 
         public ApiResult<List<OutfitDto>> GetOutfits()
         {
-            var result = ColonistsHelper.GetOutfits();
+            var result = PawnHelper.GetOutfits();
             return ApiResult<List<OutfitDto>>.Ok(result);
         }
 
@@ -173,7 +149,7 @@ namespace RIMAPI.Services
             string direction
         )
         {
-            Pawn pawn = ColonistsHelper.GetPawnById(pawnId);
+            Pawn pawn = PawnHelper.FindPawnById(pawnId);
             var result = TextureHelper.GetPawnPortraitImage(pawn, width, height, direction);
             return ApiResult<ImageDto>.Ok(result);
         }
@@ -303,7 +279,7 @@ namespace RIMAPI.Services
             try
             {
                 // Find the pawn by thingIDNumber
-                Pawn pawn = ColonistsHelper.GetPawnById(body.Id);
+                Pawn pawn = PawnHelper.FindPawnById(body.Id);
                 if (pawn == null)
                 {
                     return ApiResult.Fail($"Could not find pawn with ID {body.Id}");
@@ -353,7 +329,7 @@ namespace RIMAPI.Services
         {
             try
             {
-                Pawn pawn = ColonistsHelper.GetPawnById(body.PawnId);
+                Pawn pawn = PawnHelper.FindPawnById(body.PawnId);
                 TimeAssignmentDef assignmentDef = DefDatabase<TimeAssignmentDef>
                     .AllDefs.Where(p => p.defName.ToLower() == body.Assignment.ToLower())
                     .FirstOrDefault();
@@ -370,6 +346,69 @@ namespace RIMAPI.Services
             catch (Exception ex)
             {
                 return ApiResult.Fail(ex.Message);
+            }
+        }
+
+        public ApiResult<List<ApiV1PawnDetailedDto>> GetColonistsDetailedV1()
+        {
+            List<ApiV1PawnDetailedDto> result = new List<ApiV1PawnDetailedDto>();
+            foreach (PawnDetailedRequestDto data in ColonistsHelper.GetColonistsDetailedDtos())
+            {
+                result.Add(new ApiV1PawnDetailedDto
+                {
+                    Colonist = data.Pawn,
+                    BodySize = data.Detailes.BodySize,
+                    Sleep = data.Detailes.Sleep,
+                    Comfort = data.Detailes.Comfort,
+                    Beauty = data.Detailes.Beauty,
+                    Joy = data.Detailes.Joy,
+                    Energy = data.Detailes.Energy,
+                    DrugsDesire = data.Detailes.DrugsDesire,
+                    SurroundingBeauty = data.Detailes.SurroundingBeauty,
+                    FreshAir = data.Detailes.FreshAir,
+                    ColonistWorkInfo = data.Detailes.WorkInfo,
+                    PoliciesInfo = data.Detailes.PoliciesInfo,
+                    ColonistMedicalInfo = data.Detailes.MedicalInfo,
+                    SocialInfo = data.Detailes.SocialInfo,
+                });
+            }
+            return ApiResult<List<ApiV1PawnDetailedDto>>.Ok(result);
+        }
+
+        public ApiResult<ApiV1PawnDetailedDto> GetColonistDetailedV1(int pawnId)
+        {
+            try
+            {
+                PawnDetailedRequestDto data = ColonistsHelper.GetSingleColonistDetailedDto(pawnId);
+
+                ApiV1PawnDetailedDto result = new ApiV1PawnDetailedDto
+                {
+                    Colonist = data.Pawn,
+                    BodySize = data.Detailes.BodySize,
+                    Sleep = data.Detailes.Sleep,
+                    Comfort = data.Detailes.Comfort,
+                    Beauty = data.Detailes.Beauty,
+                    Joy = data.Detailes.Joy,
+                    Energy = data.Detailes.Energy,
+                    DrugsDesire = data.Detailes.DrugsDesire,
+                    SurroundingBeauty = data.Detailes.SurroundingBeauty,
+                    FreshAir = data.Detailes.FreshAir,
+                    ColonistWorkInfo = data.Detailes.WorkInfo,
+                    PoliciesInfo = data.Detailes.PoliciesInfo,
+                    ColonistMedicalInfo = data.Detailes.MedicalInfo,
+                    SocialInfo = data.Detailes.SocialInfo,
+                };
+
+                if (result == null)
+                {
+                    return ApiResult<ApiV1PawnDetailedDto>.Fail($"Failed to find pawn with id: {pawnId}");
+                }
+                return ApiResult<ApiV1PawnDetailedDto>.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult<ApiV1PawnDetailedDto>
+                    .Fail($"Failed to find pawn with id: {pawnId} - {ex.Message}");
             }
         }
     }

@@ -38,12 +38,14 @@ namespace RIMAPI.Services
     #region Colonists
     public interface IColonistService
     {
-        ApiResult<List<ColonistDto>> GetColonists();
+        ApiResult<List<PawnDto>> GetColonists();
         ApiResult<List<PawnPositionDto>> GetColonistPositions();
-        ApiResult<ColonistDto> GetColonist(int pawnId);
-        ApiResult<List<ColonistDetailedDto>> GetColonistsDetailed();
-        ApiResult<ColonistDetailedDto> GetColonistDetailed(int pawnId);
-        ApiResult<ColonistInventoryDto> GetColonistInventory(int pawnId);
+        ApiResult<PawnDto> GetColonist(int pawnId);
+        ApiResult<List<ApiV1PawnDetailedDto>> GetColonistsDetailedV1();
+        ApiResult<ApiV1PawnDetailedDto> GetColonistDetailedV1(int pawnId);
+        ApiResult<List<PawnDetailedRequestDto>> GetColonistsDetailed();
+        ApiResult<PawnDetailedRequestDto> GetColonistDetailed(int pawnId);
+        ApiResult<PawnInventoryDto> GetColonistInventory(int pawnId);
         ApiResult<BodyPartsDto> GetColonistBodyParts(int pawnId);
         ApiResult<OpinionAboutPawnDto> GetOpinionAboutPawn(int pawnId, int otherPawnId);
         ApiResult<WorkListDto> GetWorkList();

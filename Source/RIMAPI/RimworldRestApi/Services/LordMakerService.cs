@@ -40,7 +40,7 @@ namespace RIMAPI.Services
                 {
                     foreach (int id in request.PawnIds)
                     {
-                        Pawn p = ColonistsHelper.FindPawnById(id.ToString());
+                        Pawn p = PawnHelper.FindPawnById(id);
                         if (p != null)
                         {
                             // If pawn is already in a lord, we might need to remove them first
@@ -75,7 +75,7 @@ namespace RIMAPI.Services
                             foreach (int tId in request.TargetIds)
                             {
                                 // Reuse FindPawnById as targets are usually pawns
-                                Pawn target = ColonistsHelper.FindPawnById(tId.ToString());
+                                Pawn target = PawnHelper.FindPawnById(tId);
                                 if (target != null) targets.Add(target);
                             }
                         }
