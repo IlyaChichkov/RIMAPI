@@ -143,6 +143,14 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
+        [Get("/api/v1/map/fog-grid")]
+        public async Task GetMapFogGrid(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.GetFogGrid(mapId);
+            await context.SendJsonResponse(result);
+        }
+
         [Get("/api/v1/map/buildings")]
         public async Task GetMapBuildings(HttpListenerContext context)
         {

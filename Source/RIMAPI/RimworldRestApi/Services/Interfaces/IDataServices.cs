@@ -91,6 +91,7 @@ namespace RIMAPI.Services
         ApiResult RepairThingsAtPositions(RepairPositionsRequestDto request);
         ApiResult RepairThingsInRect(RepairRectRequestDto request);
         ApiResult SpawnDropPod(SpawnDropPodRequestDto request);
+        ApiResult<FogGridDto> GetFogGrid(int mapId);
     }
     #endregion
 

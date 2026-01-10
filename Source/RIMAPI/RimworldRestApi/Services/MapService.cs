@@ -437,5 +437,65 @@ namespace RIMAPI.Services
                 return ApiResult.Fail(ex.Message);
             }
         }
+
+        public ApiResult<FogGridDto> GetFogGrid(int mapId)
+        {
+            try
+            {
+                var map = MapHelper.GetMapByID(mapId);
+                if (map == null) return ApiResult<FogGridDto>.Fail($"Map {mapId} not found.");
+
+                int totalCells = map.cellIndices.NumGridCells;
+                FogGrid fogGrid = map.fogGrid;
+
+                // RLE Compression Logic
+                // We store pairs of counts: [Count Revealed, Count Fogged, Count Revealed...]
+                // Since it's binary data, we don't need to store the value, just the alternating counts.
+                // We assume the starting state is "Revealed" (false). If grid starts with Fogged, the first count is 0.
+
+                var rleCounts = new List<int>();
+                bool currentVal = false; // "false" = Revealed (IsFogged == false)
+                int runLength = 0;
+
+                for (int i = 0; i < totalCells; i++)
+                {
+                    // Note: fogGrid.IsFogged(i) returns true if HIDDEN
+                    bool isFogged = fogGrid.IsFogged(i);
+
+                    if (isFogged == currentVal)
+                    {
+                        runLength++;
+                    }
+                    else
+                    {
+                        rleCounts.Add(runLength);
+                        currentVal = !currentVal; // Flip state
+                        runLength = 1;
+                    }
+                }
+                rleCounts.Add(runLength); // Add the final run
+
+                // Optimize: Convert List<int> to Base64 String to save network bandwidth
+                // Ints take 4 bytes. We convert the list to a byte array, then Base64 it.
+                byte[] byteArray = new byte[rleCounts.Count * 4];
+                Buffer.BlockCopy(rleCounts.ToArray(), 0, byteArray, 0, byteArray.Length);
+                string base64Data = Convert.ToBase64String(byteArray);
+
+                var fogGridDto = new FogGridDto
+                {
+                    MapId = map.uniqueID,
+                    Width = map.Size.x,
+                    Height = map.Size.z,
+                    FogData = base64Data
+                };
+
+                return ApiResult<FogGridDto>.Ok(fogGridDto);
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error getting fog grid: {ex}");
+                return ApiResult<FogGridDto>.Fail(ex.Message);
+            }
+        }
     }
 }
