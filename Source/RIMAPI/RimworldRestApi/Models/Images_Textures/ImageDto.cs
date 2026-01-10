@@ -18,4 +18,10 @@ namespace RIMAPI.Models
         public string MaskImage { get; set; }
         public int UpdateItemIndex { get; set; }
     }
+
+    public class FactionIconImageDto
+    {
+        public ImageDto Image { get; set; }
+        public string Color { get; set; }
+    }
 }
