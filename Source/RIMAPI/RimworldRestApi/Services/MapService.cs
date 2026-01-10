@@ -4,6 +4,7 @@ using System.Linq;
 using RIMAPI.Core;
 using RIMAPI.Helpers;
 using RIMAPI.Models;
+using RIMAPI.Models.Map;
 using RimWorld;
 using Verse;
 
@@ -49,6 +50,12 @@ namespace RIMAPI.Services
         {
             var result = MapHelper.GetMapPowerInfoInternal(mapId);
             return ApiResult<MapPowerInfoDto>.Ok(result);
+        }
+
+        public ApiResult<OreDataDto> GetMapOre(int mapId)
+        {
+            var result = MapHelper.GetOreData(mapId);
+            return ApiResult<OreDataDto>.Ok(result);
         }
 
         public ApiResult<MapRoomsDto> GetMapRooms(int mapId)
