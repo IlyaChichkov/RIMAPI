@@ -1,3 +1,4 @@
+// CachingService.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -411,7 +412,8 @@ namespace RIMAPI.Core
             Func<Task<ApiResult<T>>> dataFactory,
             TimeSpan? expiration = null,
             CachePriority priority = CachePriority.Normal,
-            CacheExpirationType expirationType = CacheExpirationType.Absolute
+            CacheExpirationType expirationType = CacheExpirationType.Absolute,
+            int? gameTicksExpiration = null
         )
         {
             try
@@ -435,7 +437,7 @@ namespace RIMAPI.Core
                 // Only cache successful responses
                 if (result.Success)
                 {
-                    Set(cacheKey, result, expiration, priority);
+                    SetWithExpirationType(cacheKey, result, expirationType, expiration, gameTicksExpiration, priority);
                 }
 
                 // Return response

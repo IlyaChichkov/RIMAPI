@@ -1,3 +1,4 @@
+// ICachingService.cs
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -48,7 +49,8 @@ namespace RIMAPI.Core
             Func<Task<ApiResult<T>>> dataFactory,
             TimeSpan? expiration = null,
             CachePriority priority = CachePriority.Normal,
-            CacheExpirationType expirationType = CacheExpirationType.Absolute
+            CacheExpirationType expirationType = CacheExpirationType.Absolute,
+            int? gameTicksExpiration = null
         );
 
         // Cache invalidation patterns

@@ -26,9 +26,9 @@ namespace RIMAPI.Controllers
                 context,
                 "/api/v1/colonists",
                 dataFactory: () => Task.FromResult(_colonistService.GetColonists()),
-                expiration: TimeSpan.FromSeconds(30),
                 priority: CachePriority.Normal,
-                expirationType: CacheExpirationType.Absolute
+                expirationType: CacheExpirationType.GameTick,
+                gameTicksExpiration: 1800
             );
         }
 
@@ -36,12 +36,12 @@ namespace RIMAPI.Controllers
         public async Task GetColonistPositions(HttpListenerContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
-               context,
-               "/api/v1/colonists/positions",
-               dataFactory: () => Task.FromResult(_colonistService.GetColonistPositions()),
-               expiration: TimeSpan.FromSeconds(0.1),
-               priority: CachePriority.High,
-               expirationType: CacheExpirationType.Absolute
+                context,
+                "/api/v1/colonists/positions",
+                dataFactory: () => Task.FromResult(_colonistService.GetColonistPositions()),
+                priority: CachePriority.High,
+                expirationType: CacheExpirationType.GameTick,
+                gameTicksExpiration: 1800
            );
         }
 
@@ -60,9 +60,9 @@ namespace RIMAPI.Controllers
                 context,
                 "/api/v1/colonists/detailed",
                 dataFactory: () => Task.FromResult(_colonistService.GetColonistsDetailedV1()),
-                expiration: TimeSpan.FromSeconds(30),
                 priority: CachePriority.Normal,
-                expirationType: CacheExpirationType.Absolute
+                expirationType: CacheExpirationType.GameTick,
+                gameTicksExpiration: 1800
             );
         }
 
@@ -82,9 +82,9 @@ namespace RIMAPI.Controllers
                 context,
                 "/api/v2/colonists/detailed",
                 dataFactory: () => Task.FromResult(_colonistService.GetColonistsDetailed()),
-                expiration: TimeSpan.FromSeconds(30),
                 priority: CachePriority.Normal,
-                expirationType: CacheExpirationType.Absolute
+                expirationType: CacheExpirationType.GameTick,
+                gameTicksExpiration: 1800
             );
         }
 
