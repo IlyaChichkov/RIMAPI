@@ -28,7 +28,7 @@ namespace RIMAPI.Controllers
                 dataFactory: () => Task.FromResult(_colonistService.GetColonists()),
                 expiration: TimeSpan.FromSeconds(30),
                 priority: CachePriority.Normal,
-                expirationType: CacheExpirationType.Sliding
+                expirationType: CacheExpirationType.Absolute
             );
         }
 
@@ -62,7 +62,7 @@ namespace RIMAPI.Controllers
                 dataFactory: () => Task.FromResult(_colonistService.GetColonistsDetailedV1()),
                 expiration: TimeSpan.FromSeconds(30),
                 priority: CachePriority.Normal,
-                expirationType: CacheExpirationType.Sliding
+                expirationType: CacheExpirationType.Absolute
             );
         }
 
@@ -80,11 +80,11 @@ namespace RIMAPI.Controllers
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
-                "/api/v1/colonists/detailed",
+                "/api/v2/colonists/detailed",
                 dataFactory: () => Task.FromResult(_colonistService.GetColonistsDetailed()),
                 expiration: TimeSpan.FromSeconds(30),
                 priority: CachePriority.Normal,
-                expirationType: CacheExpirationType.Sliding
+                expirationType: CacheExpirationType.Absolute
             );
         }
 
