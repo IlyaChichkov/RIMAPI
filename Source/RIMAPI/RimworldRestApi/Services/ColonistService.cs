@@ -124,7 +124,7 @@ namespace RIMAPI.Services
             if (pawn == null)
                 return ApiResult<OpinionAboutPawnDto>.Fail($"Failed to find pawn with {pawnId} id");
 
-            Pawn other = PawnHelper.FindPawnById(pawnId);
+            Pawn other = PawnHelper.FindPawnById(otherPawnId);
             if (other == null)
                 return ApiResult<OpinionAboutPawnDto>.Fail($"Failed to find other pawn with {otherPawnId} id");
 
@@ -150,6 +150,10 @@ namespace RIMAPI.Services
         )
         {
             Pawn pawn = PawnHelper.FindPawnById(pawnId);
+            if (pawn == null)
+            {
+                return ApiResult<ImageDto>.Fail($"Pawn with ID {pawnId} not found.");
+            }
             var result = TextureHelper.GetPawnPortraitImage(pawn, width, height, direction);
             return ApiResult<ImageDto>.Ok(result);
         }
