@@ -12,7 +12,11 @@ namespace RIMAPI.Helpers
     {
         public static List<Pawn> GetColonistsList()
         {
+#if RIMWORLD_1_5
             return PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_Colonists.ToList();
+#elif RIMWORLD_1_6
+            return PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_Colonists.ToList();
+#endif
         }
 
         public static PawnDto GetSingleColonistDto(int pawnId)

@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using RIMAPI.Core;
 using RIMAPI.Helpers;
 using RIMAPI.Models;
+using RimWorld.Planet;
+using Verse;
 
 namespace RIMAPI.Services
 {
@@ -19,11 +21,50 @@ namespace RIMAPI.Services
             return ApiResult<List<SettlementDto>>.Ok(result);
         }
 
-
         public ApiResult<List<CaravanDto>> GetCaravans()
         {
             var result = CaravanHelper.GetCaravans();
             return ApiResult<List<CaravanDto>>.Ok(result);
+        }
+
+        public ApiResult<CaravanPathDto> GetCaravanPath(int tileId)
+        {
+            Caravan caravan = CaravanHelper.GetCaravanById(tileId);
+
+            if (caravan == null)
+            {
+                return ApiResult<CaravanPathDto>.Fail($"Caravan with ID {tileId} not found.");
+            }
+
+            // 2. Prepare the basic result
+            var result = new CaravanPathDto
+            {
+                Id = caravan.ID,
+                Moving = caravan.pather.Moving,
+                CurrentTile = caravan.Tile,
+                NextTile = -1,
+                DestinationTile = -1,
+                Progress = 0f,
+            };
+
+            // 3. Calculate pathing data if moving
+            if (caravan.pather.Moving)
+            {
+                result.NextTile = caravan.pather.nextTile;
+                result.DestinationTile = caravan.pather.Destination.tileId;
+
+                // Calculate progress (0.0 to 1.0)
+                // Guard against division by zero if costTotal is somehow 0
+                float costTotal = caravan.pather.nextTileCostTotal;
+                float costLeft = caravan.pather.nextTileCostLeft;
+
+                float progress = (costTotal > 0) ? (1f - (costLeft / costTotal)) : 0f;
+                result.Progress = progress;
+
+                result.Path = CaravanHelper.GetFullCaravanPath(caravan);
+            }
+
+            return ApiResult<CaravanPathDto>.Ok(result);
         }
 
         public ApiResult<List<SiteDto>> GetSites()

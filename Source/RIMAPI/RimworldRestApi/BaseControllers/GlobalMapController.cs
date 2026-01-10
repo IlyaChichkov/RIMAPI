@@ -34,6 +34,19 @@ namespace RIMAPI.Controllers
             );
         }
 
+        [Get("/api/v1/world/caravan/path")]
+        public async Task GetCaravanPath(HttpListenerContext context)
+        {
+            var id = RequestParser.GetIntParameter(context, "id");
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                "caravans",
+                () => Task.FromResult(_globalMapService.GetCaravanPath(id)),
+                expiration: TimeSpan.FromSeconds(1),
+                expirationType: CacheExpirationType.GameTick
+            );
+        }
+
         [Get("/api/v1/world/settlements")]
         public async Task GetSettlements(HttpListenerContext context)
         {

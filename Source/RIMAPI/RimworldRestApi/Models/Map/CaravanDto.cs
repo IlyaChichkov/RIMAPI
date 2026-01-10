@@ -15,5 +15,17 @@ namespace RIMAPI.Models
         public float MassCapacity { get; set; }
         public string Forageability { get; set; }
         public string Visibility { get; set; }
+        public float DaysToArrive { get; set; }
+    }
+
+    public class CaravanPathDto
+    {
+        public int Id { get; set; }
+        public bool Moving { get; set; }
+        public int CurrentTile { get; set; }
+        public int NextTile { get; set; }
+        public float Progress { get; set; }
+        public int DestinationTile { get; set; }
+        public List<int> Path { get; set; }
     }
 }
