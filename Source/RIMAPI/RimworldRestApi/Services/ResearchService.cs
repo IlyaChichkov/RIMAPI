@@ -1,6 +1,7 @@
 using RIMAPI.Core;
 using RIMAPI.Helpers;
 using RIMAPI.Models;
+using Verse;
 
 namespace RIMAPI.Services
 {
@@ -20,7 +21,12 @@ namespace RIMAPI.Services
             if (result == null)
             {
                 return ApiResult<ResearchProjectDto>
-                    .Fail($"No research project in progress");
+                    .Ok(new ResearchProjectDto
+                    {
+                        Name = "none",
+                        Label = "None",
+                        Description = "None"
+                    });
             }
             return ApiResult<ResearchProjectDto>.Ok(result);
         }
