@@ -232,7 +232,7 @@ namespace RIMAPI.Controllers
             );
         }
 
-        [Post("/api/v1/game/settings/run-in-background")]
+        [Post("/api/v1/game/settings/toggle/run-in-background")]
         public async Task ToggleRunInBackground(HttpListenerContext context)
         {
             var result = _gameStateService.ToggleRunInBackground();
