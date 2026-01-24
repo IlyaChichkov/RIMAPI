@@ -51,7 +51,11 @@ namespace RIMAPI.Services
             if (caravan.pather.Moving)
             {
                 result.NextTile = caravan.pather.nextTile;
+#if RIMWORLD_1_5
+                result.DestinationTile = caravan.pather.Destination;
+#elif RIMWORLD_1_6
                 result.DestinationTile = caravan.pather.Destination.tileId;
+#endif
 
                 // Calculate progress (0.0 to 1.0)
                 // Guard against division by zero if costTotal is somehow 0
