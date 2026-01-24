@@ -50,5 +50,20 @@ namespace RIMAPI.Controllers
             var result = _incidentService.TriggerIncident(requestData);
             await context.SendJsonResponse(result);
         }
+
+        [Get("/api/v1/incidents/top")]
+        public async Task GetIncidentsTopChance(HttpListenerContext context)
+        {
+            var result = _incidentService.GetTopIncidents();
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/incident/chance")]
+        public async Task GetIncidentChance(HttpListenerContext context)
+        {
+            var requestData = await context.Request.ReadBodyAsync<IncidentChanceRequestDto>();
+            var result = _incidentService.GetIncidentChance(requestData);
+            await context.SendJsonResponse(result);
+        }
     }
 }

@@ -5,6 +5,19 @@ using Verse.AI.Group;
 
 namespace RIMAPI.Models
 {
+    public class IncidentChanceDto
+    {
+        public float Value { get; set; }
+    }
+
+    public class IncidentWeightDto
+    {
+        public string DefName { get; set; }
+        public string Label { get; set; }
+        public string Category { get; set; }
+        public float CurrentWeight { get; set; }
+    }
+
     public class QuestsDto
     {
         public List<QuestDto> ActiveQuests { get; set; } = new List<QuestDto>();

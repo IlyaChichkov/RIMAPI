@@ -91,6 +91,9 @@ namespace RIMAPI.Services
         ApiResult<IncidentsDto> GetIncidentsData(int mapId);
         ApiResult<List<LordDto>> GetLordsData(int mapId);
         ApiResult TriggerIncident(TriggerIncidentRequestDto request);
+        ApiResult<IncidentChanceDto> GetIncidentChance(IncidentChanceRequestDto request);
+        ApiResult<List<IncidentWeightDto>> GetTopIncidents(int limit = 10);
+
     }
     #endregion
 
