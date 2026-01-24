@@ -59,4 +59,24 @@ namespace RIMAPI.Models
             return dto;
         }
     }
+
+    public class ThingSourcesDto
+    {
+        public string DefName { get; set; }
+        public string Label { get; set; }
+        public List<string> ThingCategories { get; set; }
+
+        // -- Acquisition Flags --
+        public bool CanCraft { get; set; }
+        public bool CanTrade { get; set; }
+        public bool CanHarvest { get; set; } // Plants
+        public bool CanMine { get; set; }    // Ores
+        public bool CanButcher { get; set; } // Meat/Leather
+
+        // -- Detailed Sources --
+        public List<string> CraftingRecipes { get; set; } // e.g. "Smelt metal from slag"
+        public List<string> HarvestedFrom { get; set; }   // e.g. "Oak tree", "Corn plant"
+        public List<string> MinedFrom { get; set; }       // e.g. "Compacted machinery"
+        public List<string> TradeTags { get; set; }       // e.g. "ExoticMisc", "ResourcesRaw"
+    }
 }

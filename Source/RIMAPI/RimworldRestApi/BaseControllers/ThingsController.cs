@@ -10,10 +10,12 @@ namespace RIMAPI.Controllers
     public class ThingController
     {
         private readonly IResourceService _resourcesService;
+        private readonly IThingsService _thingsService;
 
-        public ThingController(IResourceService resourcesService)
+        public ThingController(IResourceService resourcesService, IThingsService thingsService)
         {
             _resourcesService = resourcesService;
+            _thingsService = thingsService;
         }
 
         [Get("/api/v1/resources/summary")]
@@ -55,6 +57,22 @@ namespace RIMAPI.Controllers
         {
             var body = await context.Request.ReadBodyAsync<SpawnItemRequestDto>();
             var result = _resourcesService.SpawnItem(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/item/recipes")]
+        public async Task GetItemRecipe(HttpListenerContext context)
+        {
+            var itemDef = RequestParser.GetStringParameter(context, "def_name");
+            var result = _thingsService.GetItemRecipes(itemDef);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/item/sources")]
+        public async Task GetItemSource(HttpListenerContext context)
+        {
+            var itemDef = RequestParser.GetStringParameter(context, "def_name");
+            var result = _thingsService.GetItemSources(itemDef);
             await context.SendJsonResponse(result);
         }
     }
