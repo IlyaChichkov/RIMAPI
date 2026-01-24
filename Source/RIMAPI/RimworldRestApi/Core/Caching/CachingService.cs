@@ -7,6 +7,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using RIMAPI.Models;
 using Verse;
 
 namespace RIMAPI.Core
@@ -24,6 +25,8 @@ namespace RIMAPI.Core
             public CacheExpirationType ExpirationType { get; set; }
             public int GameTickAdded { get; set; }
             public int? GameTickExpiration { get; set; }
+
+            public int HitCount { get; set; }
         }
 
         // Generic Property Setter Cache
@@ -111,11 +114,13 @@ namespace RIMAPI.Core
         }
 
         // Main Cache Section
-        private readonly Dictionary<string, CacheEntry> _cache =
-            new Dictionary<string, CacheEntry>();
+        private readonly Dictionary<string, CacheEntry> _cache = new Dictionary<string, CacheEntry>();
+        private readonly LinkedList<RecentHitDetail> _recentActivity = new LinkedList<RecentHitDetail>(); // Circular buffer logic
+        private const int MaxRecentActivity = 50;
+
         private readonly object _cacheLock = new object();
         private bool _disposed = false;
-        private bool _enabled = true; // Enabled by default
+        private bool _enabled = true;
 
         public bool IsEnabled() => _enabled;
 
@@ -264,6 +269,24 @@ namespace RIMAPI.Core
             }
         }
 
+        private void RecordActivity(string key, bool isHit)
+        {
+            lock (_cacheLock)
+            {
+                _recentActivity.AddFirst(new RecentHitDetail
+                {
+                    Key = key,
+                    Timestamp = DateTime.UtcNow,
+                    IsHit = isHit
+                });
+
+                if (_recentActivity.Count > MaxRecentActivity)
+                {
+                    _recentActivity.RemoveLast();
+                }
+            }
+        }
+
         public bool TryGet<T>(string key, out T value)
         {
             if (!_enabled)
@@ -276,30 +299,29 @@ namespace RIMAPI.Core
             {
                 if (_cache.TryGetValue(key, out var entry))
                 {
-                    // Check expiration
                     if (IsExpired(entry))
                     {
                         _cache.Remove(key);
                         _misses++;
+                        RecordActivity(key, false); // Expired counts as miss/re-fetch
                         value = default;
                         return false;
                     }
 
-                    // Update sliding expiration
-                    if (
-                        entry.ExpirationType == CacheExpirationType.Sliding
-                        && entry.SlidingExpiration.HasValue
-                    )
+                    if (entry.ExpirationType == CacheExpirationType.Sliding && entry.SlidingExpiration.HasValue)
                     {
                         entry.LastAccessed = DateTime.UtcNow;
                     }
 
                     _hits++;
+                    entry.HitCount++;
+                    RecordActivity(key, true);
                     value = (T)entry.Value;
                     return true;
                 }
 
                 _misses++;
+                RecordActivity(key, false);
                 value = default;
                 return false;
             }
@@ -396,13 +418,17 @@ namespace RIMAPI.Core
             }
         }
 
-        public void Clear()
+        public ApiResult<ServerCacheResponseDto> Clear()
         {
             lock (_cacheLock)
             {
                 int count = _cache.Count;
                 _cache.Clear();
                 LogApi.Message($"[Cache] Cleared {count} entries", LoggingLevels.DEBUG);
+                return ApiResult<ServerCacheResponseDto>.Ok(new ServerCacheResponseDto
+                {
+                    Message = "Server cache was successfully cleared."
+                });
             }
         }
 
@@ -503,11 +529,11 @@ namespace RIMAPI.Core
             }
         }
 
-        public CacheStatistics GetStatistics()
+        public CacheStatistics GetStatistics(bool includeDetails = false)
         {
             lock (_cacheLock)
             {
-                return new CacheStatistics
+                var stats = new CacheStatistics
                 {
                     TotalEntries = _cache.Count,
                     Hits = _hits,
@@ -517,11 +543,58 @@ namespace RIMAPI.Core
                     CompiledDelegateCount = CompiledDelegateCount,
                     CompiledDelegateHits = _compiledDelegateHits,
                     CompiledDelegateMisses = _compiledDelegateMisses,
+                    Entries = new List<CacheEntryDetail>(),
+                    RecentActivity = new List<RecentHitDetail>(_recentActivity)
                 };
+
+                if (includeDetails)
+                {
+                    var now = DateTime.UtcNow;
+                    var currentTick = Find.TickManager?.TicksGame ?? 0;
+
+                    foreach (var kvp in _cache)
+                    {
+                        var entry = kvp.Value;
+                        double remaining = 0;
+
+                        if (entry.AbsoluteExpiration.HasValue)
+                        {
+                            remaining = (entry.AbsoluteExpiration.Value - now).TotalSeconds;
+                        }
+                        else if (entry.GameTickExpiration.HasValue)
+                        {
+                            // Estimate based on 60 TPS
+                            int ticksLeft = (entry.GameTickAdded + entry.GameTickExpiration.Value) - currentTick;
+                            remaining = ticksLeft / 60.0;
+                        }
+                        else if (entry.SlidingExpiration.HasValue)
+                        {
+                            remaining = (entry.LastAccessed.Add(entry.SlidingExpiration.Value) - now).TotalSeconds;
+                        }
+
+                        stats.Entries.Add(new CacheEntryDetail
+                        {
+                            Key = kvp.Key,
+                            Type = entry.Value?.GetType().Name ?? "null",
+                            Created = entry.Created,
+                            LastAccessed = entry.LastAccessed,
+                            AbsoluteExpiration = entry.AbsoluteExpiration,
+                            RemainingSeconds = remaining > 0 ? remaining : 0,
+                            Hits = entry.HitCount,
+                            EstimatedSize = EstimateObjectSize(entry.Value),
+                            Priority = entry.Priority.ToString()
+                        });
+                    }
+
+                    // Sort entries by remaining time (most urgent first) or created time
+                    stats.Entries.Sort((a, b) => a.RemainingSeconds.CompareTo(b.RemainingSeconds));
+                }
+
+                return stats;
             }
         }
 
-        public void SetEnabled(bool enabled)
+        public ApiResult<ServerCacheResponseDto> SetEnabled(bool enabled)
         {
             if (_enabled != enabled)
             {
@@ -532,7 +605,15 @@ namespace RIMAPI.Core
                     ClearCompiledDelegates();
                 }
                 LogApi.Info($"[Cache] Caching {(enabled ? "enabled" : "disabled")}");
+                return ApiResult<ServerCacheResponseDto>.Ok(new ServerCacheResponseDto
+                {
+                    Message = $"Server caching service was successfully {(enabled ? "enabled" : "disabled")}."
+                });
             }
+
+            return ApiResult<ServerCacheResponseDto>.Fail(
+                $"Server caching service is already {(enabled ? "enabled" : "disabled")}."
+            );
         }
 
         public void Trim(CachePriority? priority = null)
