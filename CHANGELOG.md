@@ -1,4 +1,43 @@
 # Changelog
+
+## v1.8.0
+
+### New Features & Enhancements
+- **Add fog grid retrieve test & visualize** - New functionality for fog grid testing and visualization
+- **Update SSE debugger** - Enhanced Server-Sent Events debugging capabilities
+- **Update CacheStatistics with more details** - Improved cache monitoring and statistics
+- **Add new caravan path endpoint** - `/api/v1/world/caravan/path`
+- **Add new item endpoints**:
+  - `/api/v1/item/recipes`
+  - `/api/v1/item/sources`
+- **Add new trade endpoints** - `/api/v1/traders/defs`
+- **Add new incident endpoints**:
+  - `/api/v1/incidents/top`
+  - `/api/v1/incident/chance`
+- **Add new map endpoints**:
+  - `/api/v1/map/ore`
+  - `/api/v1/map/fog-grid`
+- **Add GetFactionIcon endpoint** - New endpoint for retrieving faction icons
+- **Update GetResearchProgress** - Now shows "none" instead of error when no research is in progress
+- **Add new hooks**:
+  - `MapEventsHook`
+  - `FogGridHook`
+
+### API Changes & Refactoring
+- **Move cache endpoints from GameController** - Added new `ServerCacheController` for better organization
+- **Refactor mod settings** - Improved settings management structure
+- **Change POST endpoint for run-in-background**:
+  - OLD: `[POST] /api/v1/game/settings/run-in-background`
+  - NEW: `[POST] /api/v1/game/settings/toggle/run-in-background`
+- **Update caching in GameController** - Improved cache management
+- **Refactor models directory** - Better code organization
+- **Update PawnController caching** - Fixed caching issues in pawn controller
+- **Fix ColonistService** - Resolved issues with colonist service functionality
+- **Update services and helpers** - General improvements and maintenance
+
+### Bug Fixes
+- **Fix caching** - Resolved various caching issues
+
 ## v1.7.0
 
 Fix #40 issue by sypher01: patch On_Gui to handle server requests caused unclickable interface
