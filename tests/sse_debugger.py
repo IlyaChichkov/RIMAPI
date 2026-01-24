@@ -32,6 +32,10 @@ def listen_to_sse():
                         if line:
                             decoded_line = line.decode('utf-8')
                             
+                            if decoded_line.startswith("event:"):
+                                raw_data = decoded_line[6:].strip()
+                                print(f"============ EVENT RECEIVED: {raw_data} ============")
+                                                  
                             # SSE format usually sends "data: {json}"
                             if decoded_line.startswith("data:"):
                                 raw_data = decoded_line[5:].strip() # Remove "data:" prefix
