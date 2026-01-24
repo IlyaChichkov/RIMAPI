@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -27,51 +28,26 @@ namespace RIMAPI.Controllers
             _cachingService = cachingService;
         }
 
-        [Post("/api/v1/cache/enable")]
-        public async Task EnableCache(HttpListenerContext context)
-        {
-            _cachingService.SetEnabled(true);
-            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache enabled" });
-        }
-
-        [Post("/api/v1/cache/disable")]
-        public async Task DisableCache(HttpListenerContext context)
-        {
-            _cachingService.SetEnabled(false);
-            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache disabled" });
-        }
-
-        [Get("/api/v1/cache/status")]
-        [EndpointMetadata("Get cache status")]
-        public async Task GetCacheStatus(HttpListenerContext context)
-        {
-            var stats = _cachingService.GetStatistics();
-            var status = new { enabled = _cachingService.IsEnabled(), statistics = stats };
-
-            await ResponseBuilder.SendSuccess(context.Response, status);
-        }
-
-        [Post("/api/v1/cache/clear")]
-        [EndpointMetadata("Clear cache")]
-        public async Task ClearCache(HttpListenerContext context)
-        {
-            _cachingService.Clear();
-            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache cleared" });
-        }
 
         [Get("/api/v1/version")]
         [EndpointMetadata("Get versions of: game, mod, API")]
         public async Task GetVersion(HttpListenerContext context)
         {
-            ApiResult<VersionDto> version = ApiResult<VersionDto>.Ok(
-                new VersionDto
-                {
-                    RimWorldVersion = VersionControl.CurrentVersionString,
-                    ModVersion = _settings.version,
-                    ApiVersion = _settings.apiVersion,
-                }
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                "/api/v1/version",
+                dataFactory: () => Task.FromResult(ApiResult<VersionDto>.Ok(
+                    new VersionDto
+                    {
+                        RimWorldVersion = VersionControl.CurrentVersionString,
+                        ModVersion = _settings.version,
+                        ApiVersion = _settings.apiVersion,
+                    }
+                )),
+                expiration: TimeSpan.FromMinutes(5),
+                priority: CachePriority.Low,
+                expirationType: CacheExpirationType.Absolute
             );
-            await context.SendJsonResponse(version);
         }
 
         [Get("/api/v1/game/state")]
@@ -86,8 +62,14 @@ namespace RIMAPI.Controllers
         [ResponseExample(typeof(ApiResponse<List<ModInfoDto>>))]
         public async Task GetModsInfo(HttpListenerContext context)
         {
-            var result = _gameStateService.GetModsInfo();
-            await context.SendJsonResponse(result);
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                "/api/v1/mods/info",
+                dataFactory: () => Task.FromResult(_gameStateService.GetModsInfo()),
+                expiration: TimeSpan.FromMinutes(1),
+                priority: CachePriority.Normal,
+                expirationType: CacheExpirationType.Absolute
+            );
         }
 
         [Post("/api/v1/game/select-area")]
@@ -148,8 +130,15 @@ namespace RIMAPI.Controllers
         public async Task GetAllDefs(HttpListenerContext context)
         {
             var body = await context.Request.ReadBodyAsync<AllDefsRequestDto>();
-            var result = _gameStateService.GetAllDefs(body);
-            await context.SendJsonResponse(result);
+
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                "/api/v1/def/all",
+                dataFactory: () => Task.FromResult(_gameStateService.GetAllDefs(body)),
+                expiration: TimeSpan.FromMinutes(5),
+                priority: CachePriority.Normal,
+                expirationType: CacheExpirationType.Absolute
+            );
         }
 
         [Post("/api/v1/game/send/letter")]
@@ -202,11 +191,17 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/game/settings")]
         public async Task GetGameSettings(HttpListenerContext context)
         {
-            var result = _gameStateService.GetCurrentSettings();
-            await context.SendJsonResponse(result);
+            await _cachingService.CacheAwareResponseAsync(
+                context,
+                "/api/v1/game/settings",
+                dataFactory: () => Task.FromResult(_gameStateService.GetCurrentSettings()),
+                expiration: TimeSpan.FromSeconds(15),
+                priority: CachePriority.Low,
+                expirationType: CacheExpirationType.Absolute
+            );
         }
 
-        [Post("/api/v1/game/settings/run-in-background")]
+        [Post("/api/v1/game/settings/toggle/run-in-background")]
         public async Task ToggleRunInBackground(HttpListenerContext context)
         {
             var result = _gameStateService.ToggleRunInBackground();

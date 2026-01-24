@@ -984,5 +984,21 @@ namespace RIMAPI.Helpers
             }
             return atlasList;
         }
+
+        internal static string FactionIconToBase64(Faction faction)
+        {
+            string result = "";
+            Texture2D texture = faction.def.FactionIcon;
+
+            TextureExportManager.Instance.QueueExtract(
+                $"Faction {faction.def.defName} Icon",
+                texture,
+                (base64Result) =>
+                {
+                    result = base64Result;
+                }
+            );
+            return result;
+        }
     }
 }

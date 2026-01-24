@@ -154,4 +154,18 @@ namespace RIMAPI.Models
         public PositionDto PointA { get; set; }
         public PositionDto PointB { get; set; }
     }
+
+    public class FogGridDto
+    {
+        public int MapId { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+        /// <summary>
+        /// Flat array of fog states. 
+        /// Index = (z * Width) + x
+        /// True = Fogged (Hidden), False = Revealed
+        /// </summary>
+        public string FogData { get; set; }
+    }
 }

@@ -267,5 +267,36 @@ namespace RIMAPI.Services
                 return ApiResult<FactionChangeRelationResponceDto>.Fail(ex.Message);
             }
         }
+
+        public ApiResult<FactionIconImageDto> GetFactionIcon(int id)
+        {
+            try
+            {
+                Faction faction = FactionHelper.GetFactionByOrderId(id);
+
+                var image = new ImageDto
+                {
+                    Result = "success",
+                    ImageBase64 = TextureHelper.FactionIconToBase64(faction)
+                };
+
+                if (image.ImageBase64 == null || string.IsNullOrEmpty(image.ImageBase64))
+                {
+                    return ApiResult<FactionIconImageDto>.Fail("Couldn't get faction icon. Result is null or empty.");
+                }
+
+                var factionIcon = new FactionIconImageDto
+                {
+                    Color = faction.Color.ToString(),
+                    Image = image
+                };
+
+                return ApiResult<FactionIconImageDto>.Ok(factionIcon);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult<FactionIconImageDto>.Fail(ex.Message);
+            }
+        }
     }
 }

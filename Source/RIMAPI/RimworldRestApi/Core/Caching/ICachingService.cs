@@ -1,7 +1,9 @@
+// ICachingService.cs
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using RIMAPI.Models;
 
 namespace RIMAPI.Core
 {
@@ -34,8 +36,8 @@ namespace RIMAPI.Core
             CachePriority priority = CachePriority.Normal
         );
         void Remove(string key);
-        void Clear();
-        void SetEnabled(bool value);
+        ApiResult<ServerCacheResponseDto> Clear();
+        ApiResult<ServerCacheResponseDto> SetEnabled(bool value);
 
         // Property setter cache methods
         Action<TTarget, TValue> GetPropertySetter<TTarget, TValue>(string propertyName);
@@ -48,7 +50,8 @@ namespace RIMAPI.Core
             Func<Task<ApiResult<T>>> dataFactory,
             TimeSpan? expiration = null,
             CachePriority priority = CachePriority.Normal,
-            CacheExpirationType expirationType = CacheExpirationType.Absolute
+            CacheExpirationType expirationType = CacheExpirationType.Absolute,
+            int? gameTicksExpiration = null
         );
 
         // Cache invalidation patterns
@@ -57,8 +60,28 @@ namespace RIMAPI.Core
         void InvalidateBySuffix(string suffix);
 
         // Cache statistics
-        CacheStatistics GetStatistics();
+        CacheStatistics GetStatistics(bool includeDetails = false);
         void Trim(CachePriority? priority = null);
+    }
+
+    public class CacheEntryDetail
+    {
+        public string Key { get; set; }
+        public string Type { get; set; } // Type of cached value
+        public DateTime Created { get; set; }
+        public DateTime LastAccessed { get; set; }
+        public DateTime? AbsoluteExpiration { get; set; }
+        public double RemainingSeconds { get; set; } // Time until expiration
+        public int Hits { get; set; } // Track hits per entry if possible, or just global hits
+        public long EstimatedSize { get; set; }
+        public string Priority { get; set; }
+    }
+
+    public class RecentHitDetail
+    {
+        public string Key { get; set; }
+        public DateTime Timestamp { get; set; }
+        public bool IsHit { get; set; } // True = Hit, False = Miss/Generated
     }
 
     public class CacheStatistics
@@ -72,5 +95,9 @@ namespace RIMAPI.Core
         public int CompiledDelegateCount { get; set; }
         public int CompiledDelegateHits { get; set; }
         public int CompiledDelegateMisses { get; set; }
+
+        // New detailed data
+        public List<CacheEntryDetail> Entries { get; set; }
+        public List<RecentHitDetail> RecentActivity { get; set; }
     }
 }

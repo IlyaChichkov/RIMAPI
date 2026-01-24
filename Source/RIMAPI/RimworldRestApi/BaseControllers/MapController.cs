@@ -84,6 +84,14 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
+        [Get("/api/v1/map/ore")]
+        public async Task GetMapOre(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.GetMapOre(mapId);
+            await context.SendJsonResponse(result);
+        }
+
         [Get("/api/v1/map/animals")]
         [EndpointMetadata("Get animals on the map")]
         public async Task GetMapAnimals(HttpListenerContext context)
@@ -140,6 +148,14 @@ namespace RIMAPI.Controllers
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapTerrain(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/map/fog-grid")]
+        public async Task GetMapFogGrid(HttpListenerContext context)
+        {
+            var mapId = RequestParser.GetMapId(context);
+            var result = _mapService.GetFogGrid(mapId);
             await context.SendJsonResponse(result);
         }
 

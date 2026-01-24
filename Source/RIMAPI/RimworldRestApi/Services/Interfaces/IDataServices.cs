@@ -38,12 +38,14 @@ namespace RIMAPI.Services
     #region Colonists
     public interface IColonistService
     {
-        ApiResult<List<ColonistDto>> GetColonists();
+        ApiResult<List<PawnDto>> GetColonists();
         ApiResult<List<PawnPositionDto>> GetColonistPositions();
-        ApiResult<ColonistDto> GetColonist(int pawnId);
-        ApiResult<List<ColonistDetailedDto>> GetColonistsDetailed();
-        ApiResult<ColonistDetailedDto> GetColonistDetailed(int pawnId);
-        ApiResult<ColonistInventoryDto> GetColonistInventory(int pawnId);
+        ApiResult<PawnDto> GetColonist(int pawnId);
+        ApiResult<List<ApiV1PawnDetailedDto>> GetColonistsDetailedV1();
+        ApiResult<ApiV1PawnDetailedDto> GetColonistDetailedV1(int pawnId);
+        ApiResult<List<PawnDetailedRequestDto>> GetColonistsDetailed();
+        ApiResult<PawnDetailedRequestDto> GetColonistDetailed(int pawnId);
+        ApiResult<PawnInventoryDto> GetColonistInventory(int pawnId);
         ApiResult<BodyPartsDto> GetColonistBodyParts(int pawnId);
         ApiResult<OpinionAboutPawnDto> GetOpinionAboutPawn(int pawnId, int otherPawnId);
         ApiResult<WorkListDto> GetWorkList();
@@ -61,34 +63,6 @@ namespace RIMAPI.Services
             int height,
             string direction
         );
-    }
-    #endregion
-
-    #region Map Service
-    public interface IMapService
-    {
-        ApiResult<List<MapDto>> GetMaps();
-        ApiResult<MapPowerInfoDto> GetMapPowerInfo(int mapId);
-        ApiResult<MapWeatherDto> GetWeather(int mapId);
-        ApiResult<List<AnimalDto>> GetMapAnimals(int mapId);
-        ApiResult<List<ThingDto>> GetMapThings(int mapId);
-        ApiResult<List<ThingDto>> GetMapPlants(int mapId);
-        ApiResult<MapCreaturesSummaryDto> GetMapCreaturesSummary(int mapId);
-        ApiResult<MapFarmSummaryDto> GenerateFarmSummary(int mapId);
-        ApiResult<GrowingZoneDto> GetGrowingZoneById(int mapId, int zoneId);
-        ApiResult<MapZonesDto> GetMapZones(int mapId);
-        ApiResult<MapRoomsDto> GetMapRooms(int mapId);
-        ApiResult<List<BuildingDto>> GetMapBuildings(int mapId);
-        ApiResult<MapTerrainDto> GetMapTerrain(int mapId);
-        ApiResult<List<ThingDto>> GetMapThingsInRadius(int mapId, int x, int z, int radius);
-        ApiResult SetWeather(int mapId, string defName);
-        ApiResult<List<ThingDto>> GetThingsAtCell(ThingsAtCellRequestDto body);
-        ApiResult DestroyCorpses(int mapId);
-        ApiResult DestroyForbiddenItems(int mapId);
-        ApiResult DestroyThingsInRect(DestroyRectRequestDto request);
-        ApiResult RepairThingsAtPositions(RepairPositionsRequestDto request);
-        ApiResult RepairThingsInRect(RepairRectRequestDto request);
-        ApiResult SpawnDropPod(SpawnDropPodRequestDto request);
     }
     #endregion
 
@@ -117,6 +91,9 @@ namespace RIMAPI.Services
         ApiResult<IncidentsDto> GetIncidentsData(int mapId);
         ApiResult<List<LordDto>> GetLordsData(int mapId);
         ApiResult TriggerIncident(TriggerIncidentRequestDto request);
+        ApiResult<IncidentChanceDto> GetIncidentChance(IncidentChanceRequestDto request);
+        ApiResult<List<IncidentWeightDto>> GetTopIncidents(int limit = 10);
+
     }
     #endregion
 
@@ -142,32 +119,6 @@ namespace RIMAPI.Services
         ApiResult<ImageDto> GetTerrainImage(string name);
         ApiResult SetItemImageByName(ImageUploadRequest request);
         ApiResult SetStuffColor(StuffColorRequest request);
-    }
-    #endregion
-
-    #region Faction Service
-    public interface IFactionService
-    {
-        ApiResult<List<FactionsDto>> GetFactions();
-        ApiResult<FactionDto> GetFaction(int id);
-        ApiResult<FactionDto> GetPlayerFaction();
-        ApiResult<FactionRelationDto> GetFactionRelationWith(int id, int otherId);
-        ApiResult<FactionRelationsDto> GetFactionRelations(int id);
-        ApiResult<FactionDefDto> GetFactionDef(string defName);
-        ApiResult<FactionChangeRelationResponceDto> ChangeFactionRelationWith(
-            int id,
-            int otherId,
-            int change,
-            bool sendMessage,
-            bool canSendHostilityLetter
-        );
-        ApiResult<FactionChangeRelationResponceDto> SetFactionGoodwill(
-            int id,
-            int otherId,
-            int goodwill,
-            bool sendMessage,
-            bool canSendHostilityLetter
-        );
     }
     #endregion
 

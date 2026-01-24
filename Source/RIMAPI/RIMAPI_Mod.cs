@@ -87,7 +87,7 @@ namespace RIMAPI
                 RIMAPI_GameComponent.RestartServer();
             }
 
-            if (list.ButtonText("Open Status Dashboard"))
+            if (list.ButtonText("Show Status Screen"))
             {
                 // Check if window is already open to prevent duplicates
                 if (!Find.WindowStack.IsOpen(typeof(RIMAPI.UI.RimApiStatusWindow)))

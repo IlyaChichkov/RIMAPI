@@ -3,25 +3,6 @@ using Newtonsoft.Json;
 
 namespace RIMAPI.Models
 {
-    public class ColonistDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Gender { get; set; }
-        public int Age { get; set; }
-        public float Health { get; set; }
-        public float Mood { get; set; }
-        public float Hunger { get; set; }
-        public PositionDto Position { get; set; }
-    }
-
-    public class ColonistInventoryDto
-    {
-        public List<ThingDto> Items { get; set; }
-        public List<ThingDto> Apparels { get; set; }
-        public List<ThingDto> Equipment { get; set; }
-    }
-
     public class BodyPartsDto
     {
         public string BodyImage { get; set; }
@@ -30,31 +11,7 @@ namespace RIMAPI.Models
         public string HeadColor { get; set; }
     }
 
-    public class PositionDto
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Z { get; set; }
-    }
-
-    public class ColonistDetailedDto
-    {
-        public float Sleep { get; set; }
-        public float Comfort { get; set; }
-        public float Beauty { get; set; }
-        public float Joy { get; set; }
-        public float Energy { get; set; }
-        public float DrugsDesire { get; set; }
-        public float SurroundingBeauty { get; set; }
-        public float FreshAir { get; set; }
-        public ColonistDto Colonist { get; set; }
-        public ColonistWorkInfoDto ColonistWorkInfo { get; set; }
-        public ColonistPoliciesInfoDto ColonistPoliciesInfo { get; set; }
-        public ColonistMedicalInfoDto ColonistMedicalInfo { get; set; }
-        public ColonistSocialInfoDto ColonistSocialInfo { get; set; }
-    }
-
-    public class ColonistWorkInfoDto
+    public class WorkInfoDto
     {
         public List<SkillDto> Skills { get; set; }
         public string CurrentJob { get; set; }
@@ -71,13 +28,13 @@ namespace RIMAPI.Models
         public bool Suppressed { get; set; }
     }
 
-    public class ColonistPoliciesInfoDto
+    public class PoliciesInfoDto
     {
         public int FoodPolicyId { get; set; }
         public int HostilityResponse { get; set; }
     }
 
-    public class ColonistSocialInfoDto
+    public class SocialInfoDto
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -98,7 +55,7 @@ namespace RIMAPI.Models
         public int OpinionAboutMe { get; set; }
     }
 
-    public class ColonistMedicalInfoDto
+    public class MedicalInfoDto
     {
         public bool IsDead { get; set; }
         public bool IsDowned { get; set; } // True if crawling or incapacitated

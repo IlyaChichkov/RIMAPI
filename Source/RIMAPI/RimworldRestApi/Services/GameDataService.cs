@@ -533,7 +533,7 @@ namespace RIMAPI.Services
                         Find.Selector.Select(item);
                         break;
                     case "pawn":
-                        var pawn = ColonistsHelper.GetPawnById(id);
+                        var pawn = PawnHelper.FindPawnById(id);
                         Find.Selector.Select(pawn);
                         break;
                     case "building":

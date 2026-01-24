@@ -1,7 +1,7 @@
 ﻿{{ api.get('page_title', '# RimAPI Documentation') }}
 
-**Version**: 1.7.0  
-**Endpoints total count**: 131  
+**Version**: 1.8.0  
+**Endpoints total count**: 144  
 
 {{ api.section.get("Core_API", {}).get('title', '') }}
 {{ api.section.get("Core_API", {}).get('desc', '') }}
@@ -853,136 +853,40 @@ FactionController.SetFactionGoodwill
 
 ---
 
-{{ api.controllers.get("GameController", {}).get('title', '') }}
-{{ api.controllers.get("GameController", {}).get('desc', '') }}
-
-<h4 id="apiv1cacheenable">
-<div class="doc-api-container">
-<div class="doc-api-header">
-<div class="doc-api-method doc-api-method-post">POST</div>
-<div class="doc-api-endpoint">
-<code>
-```
-/api/v1/cache/enable
-```
-</code>
-<a class="headerlink" href="#apiv1cacheenable" title="Permanent link">¶</a>
-</div>
-</div>
-</div>
-</h4>
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/enable", {'desc': 'Failed to load /api/v1/cache/enable'}).get('desc', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/enable", {'desc': 'Failed to load /api/v1/cache/enable'}).get('curl', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/enable", {'desc': 'Failed to load /api/v1/cache/enable'}).get('request', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/enable", {'desc': 'Failed to load /api/v1/cache/enable'}).get('response', '') }}
-
-<div class="doc-github-container">
-<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+EnableCache&type=code" class="doc-github-link">
-GameController.EnableCache
-</a>
-</div>
-
----
-
-<h4 id="apiv1cachedisable">
-<div class="doc-api-container">
-<div class="doc-api-header">
-<div class="doc-api-method doc-api-method-post">POST</div>
-<div class="doc-api-endpoint">
-<code>
-```
-/api/v1/cache/disable
-```
-</code>
-<a class="headerlink" href="#apiv1cachedisable" title="Permanent link">¶</a>
-</div>
-</div>
-</div>
-</h4>
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/disable", {'desc': 'Failed to load /api/v1/cache/disable'}).get('desc', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/disable", {'desc': 'Failed to load /api/v1/cache/disable'}).get('curl', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/disable", {'desc': 'Failed to load /api/v1/cache/disable'}).get('request', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/disable", {'desc': 'Failed to load /api/v1/cache/disable'}).get('response', '') }}
-
-<div class="doc-github-container">
-<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+DisableCache&type=code" class="doc-github-link">
-GameController.DisableCache
-</a>
-</div>
-
----
-
-<h4 id="apiv1cachestatus">
+<h4 id="apiv1factionicon">
 <div class="doc-api-container">
 <div class="doc-api-header">
 <div class="doc-api-method doc-api-method-get">GET</div>
 <div class="doc-api-endpoint">
 <code>
 ```
-/api/v1/cache/status
+/api/v1/faction/icon
 ```
 </code>
-<a class="headerlink" href="#apiv1cachestatus" title="Permanent link">¶</a>
+<a class="headerlink" href="#apiv1factionicon" title="Permanent link">¶</a>
 </div>
 </div>
 </div>
 </h4>
 
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/status", {'desc': 'Failed to load /api/v1/cache/status'}).get('desc', '') }}
+{{ api.controllers.get("FactionController", {}).get("/api/v1/faction/icon", {'desc': 'Failed to load /api/v1/faction/icon'}).get('desc', '') }}
 
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/status", {'desc': 'Failed to load /api/v1/cache/status'}).get('curl', '') }}
+{{ api.controllers.get("FactionController", {}).get("/api/v1/faction/icon", {'desc': 'Failed to load /api/v1/faction/icon'}).get('curl', '') }}
 
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/status", {'desc': 'Failed to load /api/v1/cache/status'}).get('request', '') }}
+{{ api.controllers.get("FactionController", {}).get("/api/v1/faction/icon", {'desc': 'Failed to load /api/v1/faction/icon'}).get('request', '') }}
 
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/status", {'desc': 'Failed to load /api/v1/cache/status'}).get('response', '') }}
+{{ api.controllers.get("FactionController", {}).get("/api/v1/faction/icon", {'desc': 'Failed to load /api/v1/faction/icon'}).get('response', '') }}
 
 <div class="doc-github-container">
-<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GetCacheStatus&type=code" class="doc-github-link">
-GameController.GetCacheStatus
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29FactionController%5C.cs%24%2F+GetFactionIcon&type=code" class="doc-github-link">
+FactionController.GetFactionIcon
 </a>
 </div>
 
 ---
 
-<h4 id="apiv1cacheclear">
-<div class="doc-api-container">
-<div class="doc-api-header">
-<div class="doc-api-method doc-api-method-post">POST</div>
-<div class="doc-api-endpoint">
-<code>
-```
-/api/v1/cache/clear
-```
-</code>
-<a class="headerlink" href="#apiv1cacheclear" title="Permanent link">¶</a>
-</div>
-</div>
-</div>
-</h4>
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/clear", {'desc': 'Failed to load /api/v1/cache/clear'}).get('desc', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/clear", {'desc': 'Failed to load /api/v1/cache/clear'}).get('curl', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/clear", {'desc': 'Failed to load /api/v1/cache/clear'}).get('request', '') }}
-
-{{ api.controllers.get("GameController", {}).get("/api/v1/cache/clear", {'desc': 'Failed to load /api/v1/cache/clear'}).get('response', '') }}
-
-<div class="doc-github-container">
-<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+ClearCache&type=code" class="doc-github-link">
-GameController.ClearCache
-</a>
-</div>
-
----
+{{ api.controllers.get("GameController", {}).get('title', '') }}
+{{ api.controllers.get("GameController", {}).get('desc', '') }}
 
 <h4 id="apiv1version">
 <div class="doc-api-container">
@@ -1528,6 +1432,70 @@ GameController.GetGameSettings
 
 ---
 
+<h4 id="apiv1gamesettingstogglerun-in-background">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/game/settings/toggle/run-in-background
+```
+</code>
+<a class="headerlink" href="#apiv1gamesettingstogglerun-in-background" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings/toggle/run-in-background", {'desc': 'Failed to load /api/v1/game/settings/toggle/run-in-background'}).get('desc', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings/toggle/run-in-background", {'desc': 'Failed to load /api/v1/game/settings/toggle/run-in-background'}).get('curl', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings/toggle/run-in-background", {'desc': 'Failed to load /api/v1/game/settings/toggle/run-in-background'}).get('request', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings/toggle/run-in-background", {'desc': 'Failed to load /api/v1/game/settings/toggle/run-in-background'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+ToggleRunInBackground&type=code" class="doc-github-link">
+GameController.ToggleRunInBackground
+</a>
+</div>
+
+---
+
+<h4 id="apiv1gamesettingsrun-in-background">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/game/settings/run-in-background
+```
+</code>
+<a class="headerlink" href="#apiv1gamesettingsrun-in-background" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings/run-in-background", {'desc': 'Failed to load /api/v1/game/settings/run-in-background'}).get('desc', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings/run-in-background", {'desc': 'Failed to load /api/v1/game/settings/run-in-background'}).get('curl', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings/run-in-background", {'desc': 'Failed to load /api/v1/game/settings/run-in-background'}).get('request', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/game/settings/run-in-background", {'desc': 'Failed to load /api/v1/game/settings/run-in-background'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GetRunInBackground&type=code" class="doc-github-link">
+GameController.GetRunInBackground
+</a>
+</div>
+
+---
+
 {{ api.controllers.get("GameEventsController", {}).get('title', '') }}
 {{ api.controllers.get("GameEventsController", {}).get('desc', '') }}
 
@@ -1659,6 +1627,70 @@ GameEventsController.TriggerIncident
 
 ---
 
+<h4 id="apiv1incidentstop">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/incidents/top
+```
+</code>
+<a class="headerlink" href="#apiv1incidentstop" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameEventsController", {}).get("/api/v1/incidents/top", {'desc': 'Failed to load /api/v1/incidents/top'}).get('desc', '') }}
+
+{{ api.controllers.get("GameEventsController", {}).get("/api/v1/incidents/top", {'desc': 'Failed to load /api/v1/incidents/top'}).get('curl', '') }}
+
+{{ api.controllers.get("GameEventsController", {}).get("/api/v1/incidents/top", {'desc': 'Failed to load /api/v1/incidents/top'}).get('request', '') }}
+
+{{ api.controllers.get("GameEventsController", {}).get("/api/v1/incidents/top", {'desc': 'Failed to load /api/v1/incidents/top'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameEventsController%5C.cs%24%2F+GetIncidentsTopChance&type=code" class="doc-github-link">
+GameEventsController.GetIncidentsTopChance
+</a>
+</div>
+
+---
+
+<h4 id="apiv1incidentchance">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/incident/chance
+```
+</code>
+<a class="headerlink" href="#apiv1incidentchance" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameEventsController", {}).get("/api/v1/incident/chance", {'desc': 'Failed to load /api/v1/incident/chance'}).get('desc', '') }}
+
+{{ api.controllers.get("GameEventsController", {}).get("/api/v1/incident/chance", {'desc': 'Failed to load /api/v1/incident/chance'}).get('curl', '') }}
+
+{{ api.controllers.get("GameEventsController", {}).get("/api/v1/incident/chance", {'desc': 'Failed to load /api/v1/incident/chance'}).get('request', '') }}
+
+{{ api.controllers.get("GameEventsController", {}).get("/api/v1/incident/chance", {'desc': 'Failed to load /api/v1/incident/chance'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameEventsController%5C.cs%24%2F+GetIncidentChance&type=code" class="doc-github-link">
+GameEventsController.GetIncidentChance
+</a>
+</div>
+
+---
+
 {{ api.controllers.get("GlobalMapController", {}).get('title', '') }}
 {{ api.controllers.get("GlobalMapController", {}).get('desc', '') }}
 
@@ -1689,6 +1721,38 @@ GameEventsController.TriggerIncident
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GlobalMapController%5C.cs%24%2F+GetCaravans&type=code" class="doc-github-link">
 GlobalMapController.GetCaravans
+</a>
+</div>
+
+---
+
+<h4 id="apiv1worldcaravanpath">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/world/caravan/path
+```
+</code>
+<a class="headerlink" href="#apiv1worldcaravanpath" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/caravan/path", {'desc': 'Failed to load /api/v1/world/caravan/path'}).get('desc', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/caravan/path", {'desc': 'Failed to load /api/v1/world/caravan/path'}).get('curl', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/caravan/path", {'desc': 'Failed to load /api/v1/world/caravan/path'}).get('request', '') }}
+
+{{ api.controllers.get("GlobalMapController", {}).get("/api/v1/world/caravan/path", {'desc': 'Failed to load /api/v1/world/caravan/path'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GlobalMapController%5C.cs%24%2F+GetCaravanPath&type=code" class="doc-github-link">
+GlobalMapController.GetCaravanPath
 </a>
 </div>
 
@@ -2311,6 +2375,38 @@ MapController.GetMapPowerInfo
 
 ---
 
+<h4 id="apiv1mapore">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/ore
+```
+</code>
+<a class="headerlink" href="#apiv1mapore" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/ore", {'desc': 'Failed to load /api/v1/map/ore'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/ore", {'desc': 'Failed to load /api/v1/map/ore'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/ore", {'desc': 'Failed to load /api/v1/map/ore'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/ore", {'desc': 'Failed to load /api/v1/map/ore'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+GetMapOre&type=code" class="doc-github-link">
+MapController.GetMapOre
+</a>
+</div>
+
+---
+
 <h4 id="apiv1mapanimals">
 <div class="doc-api-container">
 <div class="doc-api-header">
@@ -2530,6 +2626,38 @@ MapController.GetMapRooms
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+GetMapTerrain&type=code" class="doc-github-link">
 MapController.GetMapTerrain
+</a>
+</div>
+
+---
+
+<h4 id="apiv1mapfog-grid">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/map/fog-grid
+```
+</code>
+<a class="headerlink" href="#apiv1mapfog-grid" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/fog-grid", {'desc': 'Failed to load /api/v1/map/fog-grid'}).get('desc', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/fog-grid", {'desc': 'Failed to load /api/v1/map/fog-grid'}).get('curl', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/fog-grid", {'desc': 'Failed to load /api/v1/map/fog-grid'}).get('request', '') }}
+
+{{ api.controllers.get("MapController", {}).get("/api/v1/map/fog-grid", {'desc': 'Failed to load /api/v1/map/fog-grid'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29MapController%5C.cs%24%2F+GetMapFogGrid&type=code" class="doc-github-link">
+MapController.GetMapFogGrid
 </a>
 </div>
 
@@ -3049,8 +3177,8 @@ PawnController.GetColonist
 {{ api.controllers.get("PawnController", {}).get("/api/v1/colonists/detailed", {'desc': 'Failed to load /api/v1/colonists/detailed'}).get('response', '') }}
 
 <div class="doc-github-container">
-<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnController%5C.cs%24%2F+GetColonistsDetailed&type=code" class="doc-github-link">
-PawnController.GetColonistsDetailed
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnController%5C.cs%24%2F+GetColonistsDetailedV1&type=code" class="doc-github-link">
+PawnController.GetColonistsDetailedV1
 </a>
 </div>
 
@@ -3081,8 +3209,72 @@ PawnController.GetColonistsDetailed
 {{ api.controllers.get("PawnController", {}).get("/api/v1/colonist/detailed", {'desc': 'Failed to load /api/v1/colonist/detailed'}).get('response', '') }}
 
 <div class="doc-github-container">
-<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnController%5C.cs%24%2F+GetResearchProGetColonistDetailedgress&type=code" class="doc-github-link">
-PawnController.GetResearchProGetColonistDetailedgress
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnController%5C.cs%24%2F+GetColonistDetailedV1&type=code" class="doc-github-link">
+PawnController.GetColonistDetailedV1
+</a>
+</div>
+
+---
+
+<h4 id="apiv2colonistsdetailed">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v2/colonists/detailed
+```
+</code>
+<a class="headerlink" href="#apiv2colonistsdetailed" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnController", {}).get("/api/v2/colonists/detailed", {'desc': 'Failed to load /api/v2/colonists/detailed'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnController", {}).get("/api/v2/colonists/detailed", {'desc': 'Failed to load /api/v2/colonists/detailed'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnController", {}).get("/api/v2/colonists/detailed", {'desc': 'Failed to load /api/v2/colonists/detailed'}).get('request', '') }}
+
+{{ api.controllers.get("PawnController", {}).get("/api/v2/colonists/detailed", {'desc': 'Failed to load /api/v2/colonists/detailed'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnController%5C.cs%24%2F+GetColonistsDetailed&type=code" class="doc-github-link">
+PawnController.GetColonistsDetailed
+</a>
+</div>
+
+---
+
+<h4 id="apiv2colonistdetailed">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v2/colonist/detailed
+```
+</code>
+<a class="headerlink" href="#apiv2colonistdetailed" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("PawnController", {}).get("/api/v2/colonist/detailed", {'desc': 'Failed to load /api/v2/colonist/detailed'}).get('desc', '') }}
+
+{{ api.controllers.get("PawnController", {}).get("/api/v2/colonist/detailed", {'desc': 'Failed to load /api/v2/colonist/detailed'}).get('curl', '') }}
+
+{{ api.controllers.get("PawnController", {}).get("/api/v2/colonist/detailed", {'desc': 'Failed to load /api/v2/colonist/detailed'}).get('request', '') }}
+
+{{ api.controllers.get("PawnController", {}).get("/api/v2/colonist/detailed", {'desc': 'Failed to load /api/v2/colonist/detailed'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29PawnController%5C.cs%24%2F+GetColonistDetailed&type=code" class="doc-github-link">
+PawnController.GetColonistDetailed
 </a>
 </div>
 
@@ -4060,6 +4252,137 @@ ResearchController.GetResearchSummary
 
 ---
 
+{{ api.controllers.get("ServerCacheController", {}).get('title', '') }}
+{{ api.controllers.get("ServerCacheController", {}).get('desc', '') }}
+
+<h4 id="apiv1cacheenable">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/cache/enable
+```
+</code>
+<a class="headerlink" href="#apiv1cacheenable" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/enable", {'desc': 'Failed to load /api/v1/cache/enable'}).get('desc', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/enable", {'desc': 'Failed to load /api/v1/cache/enable'}).get('curl', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/enable", {'desc': 'Failed to load /api/v1/cache/enable'}).get('request', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/enable", {'desc': 'Failed to load /api/v1/cache/enable'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ServerCacheController%5C.cs%24%2F+EnableCache&type=code" class="doc-github-link">
+ServerCacheController.EnableCache
+</a>
+</div>
+
+---
+
+<h4 id="apiv1cachedisable">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/cache/disable
+```
+</code>
+<a class="headerlink" href="#apiv1cachedisable" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/disable", {'desc': 'Failed to load /api/v1/cache/disable'}).get('desc', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/disable", {'desc': 'Failed to load /api/v1/cache/disable'}).get('curl', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/disable", {'desc': 'Failed to load /api/v1/cache/disable'}).get('request', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/disable", {'desc': 'Failed to load /api/v1/cache/disable'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ServerCacheController%5C.cs%24%2F+DisableCache&type=code" class="doc-github-link">
+ServerCacheController.DisableCache
+</a>
+</div>
+
+---
+
+<h4 id="apiv1cachestatus">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/cache/status
+```
+</code>
+<a class="headerlink" href="#apiv1cachestatus" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/status", {'desc': 'Failed to load /api/v1/cache/status'}).get('desc', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/status", {'desc': 'Failed to load /api/v1/cache/status'}).get('curl', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/status", {'desc': 'Failed to load /api/v1/cache/status'}).get('request', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/status", {'desc': 'Failed to load /api/v1/cache/status'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ServerCacheController%5C.cs%24%2F+GetCacheStatus&type=code" class="doc-github-link">
+ServerCacheController.GetCacheStatus
+</a>
+</div>
+
+---
+
+<h4 id="apiv1cacheclear">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/cache/clear
+```
+</code>
+<a class="headerlink" href="#apiv1cacheclear" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/clear", {'desc': 'Failed to load /api/v1/cache/clear'}).get('desc', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/clear", {'desc': 'Failed to load /api/v1/cache/clear'}).get('curl', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/clear", {'desc': 'Failed to load /api/v1/cache/clear'}).get('request', '') }}
+
+{{ api.controllers.get("ServerCacheController", {}).get("/api/v1/cache/clear", {'desc': 'Failed to load /api/v1/cache/clear'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ServerCacheController%5C.cs%24%2F+ClearCache&type=code" class="doc-github-link">
+ServerCacheController.ClearCache
+</a>
+</div>
+
+---
+
 {{ api.controllers.get("ThingController", {}).get('title', '') }}
 {{ api.controllers.get("ThingController", {}).get('desc', '') }}
 
@@ -4186,6 +4509,105 @@ ThingController.GetStoragesSummary
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ThingController%5C.cs%24%2F+SpawnItem&type=code" class="doc-github-link">
 ThingController.SpawnItem
+</a>
+</div>
+
+---
+
+<h4 id="apiv1itemrecipes">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/item/recipes
+```
+</code>
+<a class="headerlink" href="#apiv1itemrecipes" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/recipes", {'desc': 'Failed to load /api/v1/item/recipes'}).get('desc', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/recipes", {'desc': 'Failed to load /api/v1/item/recipes'}).get('curl', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/recipes", {'desc': 'Failed to load /api/v1/item/recipes'}).get('request', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/recipes", {'desc': 'Failed to load /api/v1/item/recipes'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ThingController%5C.cs%24%2F+GetItemRecipe&type=code" class="doc-github-link">
+ThingController.GetItemRecipe
+</a>
+</div>
+
+---
+
+<h4 id="apiv1itemsources">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/item/sources
+```
+</code>
+<a class="headerlink" href="#apiv1itemsources" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/sources", {'desc': 'Failed to load /api/v1/item/sources'}).get('desc', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/sources", {'desc': 'Failed to load /api/v1/item/sources'}).get('curl', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/sources", {'desc': 'Failed to load /api/v1/item/sources'}).get('request', '') }}
+
+{{ api.controllers.get("ThingController", {}).get("/api/v1/item/sources", {'desc': 'Failed to load /api/v1/item/sources'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29ThingController%5C.cs%24%2F+GetItemSource&type=code" class="doc-github-link">
+ThingController.GetItemSource
+</a>
+</div>
+
+---
+
+{{ api.controllers.get("TradeController", {}).get('title', '') }}
+{{ api.controllers.get("TradeController", {}).get('desc', '') }}
+
+<h4 id="apiv1tradersdefs">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-get">GET</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/traders/defs
+```
+</code>
+<a class="headerlink" href="#apiv1tradersdefs" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("TradeController", {}).get("/api/v1/traders/defs", {'desc': 'Failed to load /api/v1/traders/defs'}).get('desc', '') }}
+
+{{ api.controllers.get("TradeController", {}).get("/api/v1/traders/defs", {'desc': 'Failed to load /api/v1/traders/defs'}).get('curl', '') }}
+
+{{ api.controllers.get("TradeController", {}).get("/api/v1/traders/defs", {'desc': 'Failed to load /api/v1/traders/defs'}).get('request', '') }}
+
+{{ api.controllers.get("TradeController", {}).get("/api/v1/traders/defs", {'desc': 'Failed to load /api/v1/traders/defs'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29TradeController%5C.cs%24%2F+GetTradersDefs&type=code" class="doc-github-link">
+TradeController.GetTradersDefs
 </a>
 </div>
 

@@ -92,5 +92,13 @@ namespace RIMAPI.Controllers
             );
             await context.SendJsonResponse(result);
         }
+
+        [Get("/api/v1/faction/icon")]
+        public async Task GetFactionIcon(HttpListenerContext context)
+        {
+            int id = RequestParser.GetIntParameter(context, "id");
+            var result = _factionService.GetFactionIcon(id);
+            await context.SendJsonResponse(result);
+        }
     }
 }

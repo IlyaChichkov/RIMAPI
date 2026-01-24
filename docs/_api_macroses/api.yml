@@ -651,6 +651,32 @@ api:
                     }
                     ```
 
+            "/api/v1/faction/icon":
+                desc: |
+                    Retrieves the visual icon and primary color associated with a specific faction. The image is returned as a **Base64 encoded string** (PNG format), suitable for direct embedding in web frontends.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/faction/icon?id=12"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "image": {
+                                "result": "Success",
+                                "image_base_64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AA..."
+                            },
+                            "color": "#9A2A2A"
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
             "/api/v1/faction/goodwill":
                 desc: |
                     Sets the goodwill value between two factions.
@@ -846,15 +872,18 @@ api:
                     }
                     ```
 
-        GameController:
+        ServerCacheController:
             title: |
-                ### :material-gamepad-variant: Game Controller
+                ### :material-server-network: Server Cache Controller
             desc: |
-                This controller handles the general game functions.
-
+                Endpoints for managing the API's internal caching mechanism. Use these routes to toggle caching, 
+                monitor performance statistics (hit/miss ratios), and manually flush the cache to free memory or
+                force data updates.
+            
             "/api/v1/cache/enable":
                 desc: |
-                    Enable server caching for endpoint results.
+                    Enable server caching for endpoint results. When enabled, valid GET requests will be stored 
+                    in memory to reduce server load and improve response times.
                 curl: |
                     **Example:**
                     ```bash
@@ -875,7 +904,8 @@ api:
 
             "/api/v1/cache/disable":
                 desc: |
-                    Disable server caching for endpoint results.
+                    Disable server caching. This forces the server to re-process every request. Useful for 
+                    debugging or ensuring real-time data accuracy during development.
                 curl: |
                     **Example:**
                     ```bash
@@ -893,6 +923,75 @@ api:
                         "timestamp": "2025-12-08T19:13:29.997162Z"
                     }
                     ```
+
+            "/api/v1/cache/status":
+                desc: |
+                    Retrieves the current status and performance statistics 
+                    of the API's internal caching system. This endpoint provides 
+                    visibility into cache utilization, effectiveness, and 
+                    memory footprint, useful for monitoring and debugging API 
+                    performance and optimization.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/cache/status
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "enabled": true,
+                        "statistics": {
+                            "total_entries": 0,
+                            "hits": 0,
+                            "misses": 0,
+                            "memory_usage_bytes": 0,
+                            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
+                            "hit_ratio": 0.0,
+                            "compiled_delegate_count": 0,
+                            "compiled_delegate_hits": 0,
+                            "compiled_delegate_misses": 0
+                        }
+                    }
+                    ```
+
+            "/api/v1/cache/clear":
+                desc: |
+                    Manually triggers a complete flush of the caching system. 
+                    This removes all stored entries and resets runtime statistics.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                    --url http://localhost:8765/api/v1/cache/clear
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "enabled": true,
+                        "statistics": {
+                            "total_entries": 0,
+                            "hits": 0,
+                            "misses": 0,
+                            "memory_usage_bytes": 0,
+                            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
+                            "hit_ratio": 0.0,
+                            "compiled_delegate_count": 0,
+                            "compiled_delegate_hits": 0,
+                            "compiled_delegate_misses": 0
+                        }
+                    }
+                    ```
+
+        GameController:
+            title: |
+                ### :material-gamepad-variant: Game Controller
+            desc: |
+                This controller handles the general game functions.
 
             "/api/v1/game/state":
                 desc: |
@@ -954,65 +1053,45 @@ api:
                         }
                         ```
 
-            "/api/v1/cache/status":
+            "/api/v1/game/settings/run-in-background":
                 desc: |
-                    Retrieves the current status and performance statistics 
-                    of the API's internal caching system. This endpoint provides 
-                    visibility into cache utilization, effectiveness, and 
-                    memory footprint, useful for monitoring and debugging API 
-                    performance and optimization.
+                    Retrieves the current state of the "Run in Background" setting.
                 curl: |
                     **Example:**
                     ```bash
                     curl --request GET \
-                    --url http://localhost:8765/api/v1/cache/status
+                    --url http://localhost:8765/api/v1/game/settings/run-in-background
                     ```
                 request: ""
                 response: |
                     **Response:**
                     ```json
                     {
-                        "enabled": true,
-                        "statistics": {
-                            "total_entries": 0,
-                            "hits": 0,
-                            "misses": 0,
-                            "memory_usage_bytes": 0,
-                            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
-                            "hit_ratio": 0.0,
-                            "compiled_delegate_count": 0,
-                            "compiled_delegate_hits": 0,
-                            "compiled_delegate_misses": 0
-                        }
+                        "success": true,
+                        "data": true,
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
                     }
                     ```
 
-            "/api/v1/cache/clear":
+            "/api/v1/game/settings/toggle/run-in-background":
                 desc: |
-                    Manually triggers a complete flush of the API's internal caching system.
+                    Toggles or sets the "Run in Background" setting. The request body determines the desired state.
                 curl: |
                     **Example:**
                     ```bash
                     curl --request POST \
-                    --url http://localhost:8765/api/v1/cache/clear
+                    --url http://localhost:8765/api/v1/game/settings/toggle/run-in-background \
+                    --header 'Content-Type: application/json' \
+                    --data 'true'
                     ```
                 request: ""
                 response: |
                     **Response:**
                     ```json
                     {
-                        "enabled": true,
-                        "statistics": {
-                            "total_entries": 0,
-                            "hits": 0,
-                            "misses": 0,
-                            "memory_usage_bytes": 0,
-                            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
-                            "hit_ratio": 0.0,
-                            "compiled_delegate_count": 0,
-                            "compiled_delegate_hits": 0,
-                            "compiled_delegate_misses": 0
-                        }
+                        "success": true,
+                        "data": true,
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
                     }
                     ```
 
@@ -1901,6 +1980,73 @@ api:
                     }
                     ```
 
+            "/api/v1/incidents/top":
+                desc: |
+                    Returns a list of incidents with the highest current weight (probability) of occurring, based on the current Storyteller settings and game state. Accepts an optional `limit` parameter.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/incidents/top?limit=3"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "def_name": "RaidEnemy",
+                                "label": "enemy raid",
+                                "category": "ThreatBig",
+                                "current_weight": 1.2
+                            },
+                            {
+                                "def_name": "TraderCaravan",
+                                "label": "trader caravan",
+                                "category": "Misc",
+                                "current_weight": 0.85
+                            },
+                            {
+                                "def_name": "TravelerGroup",
+                                "label": "travelers",
+                                "category": "Misc",
+                                "current_weight": 0.5
+                            }
+                        ],
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
+            "/api/v1/incident/chance":
+                desc: |
+                    Calculates the specific probability weight for a single incident definition.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/incident/chance?incident_def_name=RaidEnemy"
+                    ```
+                request: |
+                    **Request Body (or Query Params):**
+                    ```json
+                    {
+                        "incident_def_name": "RaidEnemy"
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "value": 1.2
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
             "/api/v1/incident/trigger":
                 desc: |
                     Manually triggers a specific in-game incident (event) immediately. 
@@ -2182,6 +2328,40 @@ api:
                         "timestamp": "2025-12-13T11:05:29.488063Z"
                     }
                     ```
+
+            "/api/v1/world/caravan/path":
+                desc: |
+                    Retrieves the current movement status and planned path for a specific world caravan.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/world/caravan/path?caravan_id=12"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "id": 12,
+                            "moving": true,
+                            "current_tile": 150,
+                            "next_tile": 151,
+                            "progress": 0.45,
+                            "destination_tile": 180,
+                            "path": [
+                                151,
+                                152,
+                                160,
+                                180
+                            ]
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
             "/api/v1/world/player/settlements":
                 desc: |
                     Retrieves a list of all settlements belonging to the player's faction.
@@ -2350,8 +2530,14 @@ api:
                                 "temperature": 10.0,
                                 "rainfall": 500.0,
                                 "hilliness": "Flat",
-                                "roads": [],
-                                "rivers": [],
+                                "roads": [
+                                    "279644:StoneRoad",
+                                    "279641:StoneRoad"
+                                ],
+                                "rivers": [
+                                    "279640:Creek",
+                                    "279686:Creek"
+                                ],
                                 "lat": -90.0,
                                 "lon": 0.0,
                                 "is_polluted": false,
@@ -2765,6 +2951,84 @@ api:
                         "errors": [],
                         "warnings": [],
                         "timestamp": "2025-12-14T13:42:00.000Z"
+                    }
+                    ```
+
+            "/api/v1/map/ore":
+                desc: |
+                    Returns a compressed dictionary of all ore deposits on the map.
+                    
+                    **Structure:**
+                    * Keys are the ore definition names (e.g., "MineableSteel").
+                    * `cells` contains the flattened map indices of the ore.
+                    * `hp` contains the current health of the ore block at the corresponding index (parallel arrays).
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/map/ore?map_id=0"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "map_width": 250,
+                            "ores": {
+                                "MineableSteel": {
+                                    "max_hp": 1500,
+                                    "cells": [
+                                        12500,
+                                        12501,
+                                        12502
+                                    ],
+                                    "hp": [
+                                        1500,
+                                        1500,
+                                        850
+                                    ]
+                                },
+                                "MineableGold": {
+                                    "max_hp": 500,
+                                    "cells": [
+                                        3005
+                                    ],
+                                    "hp": [
+                                        500
+                                    ]
+                                }
+                            }
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
+            "/api/v1/map/fog-grid":
+                desc: |
+                    Retrieves the visibility (fog of war) grid for the current map. 
+                    
+                    The `fog_data` is a flat string representation of the grid where `Index = (z * Width) + x`.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/map/fog-grid?map_id=0"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "map_id": 0,
+                            "width": 250,
+                            "height": 250,
+                            "fog_data": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+fw=="
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
                     }
                     ```
 
@@ -3418,6 +3682,133 @@ api:
                 *   **Bio:** Age, Traits, Backstory.
                 *   **Work:** Current job, priorities, and schedules.
 
+            "/api/v2/colonists/detailed":
+                desc: |
+                    Retrieves a comprehensive list of all colonists with detailed statistics, including needs (sleep, joy, beauty), work priorities, and medical status.
+                    
+                    !!! info "Cache Policy"
+                        This endpoint is cached server-side for **1800 game ticks** (~30 seconds) to reduce performance impact on the game loop.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v2/colonists/detailed
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "pawn": {
+                                    "id": 101,
+                                    "name": "Lumi",
+                                    "gender": "Female",
+                                    "age": 25,
+                                    "health": 1.0,
+                                    "mood": 0.85,
+                                    "hunger": 0.2,
+                                    "position": {
+                                        "x": 10,
+                                        "y": 0,
+                                        "z": 15
+                                    }
+                                },
+                                "detailes": {
+                                    "body_size": 1.0,
+                                    "sleep": 0.9,
+                                    "comfort": 0.8,
+                                    "beauty": 0.5,
+                                    "joy": 0.75,
+                                    "energy": 0.8,
+                                    "drugs_desire": 0.0,
+                                    "surrounding_beauty": 1.2,
+                                    "fresh_air": 1.0,
+                                    "work_info": {
+                                        "job": "Harvesting",
+                                        "work_speed": 1.1
+                                    },
+                                    "policies_info": {
+                                        "food": "Lavish",
+                                        "clothing": "Anything"
+                                    },
+                                    "medical_info": {
+                                        "in_pain": false,
+                                        "bleeding_rate": 0.0
+                                    },
+                                    "social_info": {
+                                        "marital_status": "Single"
+                                    }
+                                }
+                            }
+                        ],
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
+            "/api/v2/colonist/detailed":
+                desc: |
+                    Retrieves detailed statistics for a single colonist identified by their ID. Unlike the bulk endpoint, this request fetches real-time data without caching.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v2/colonist/detailed?id=101"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "pawn": {
+                                "id": 101,
+                                "name": "Lumi",
+                                "gender": "Female",
+                                "age": 25,
+                                "health": 1.0,
+                                "mood": 0.85,
+                                "hunger": 0.2,
+                                "position": {
+                                    "x": 10,
+                                    "y": 0,
+                                    "z": 15
+                                }
+                            },
+                            "detailes": {
+                                "body_size": 1.0,
+                                "sleep": 0.9,
+                                "comfort": 0.8,
+                                "beauty": 0.5,
+                                "joy": 0.75,
+                                "energy": 0.8,
+                                "drugs_desire": 0.0,
+                                "surrounding_beauty": 1.2,
+                                "fresh_air": 1.0,
+                                "work_info": {
+                                    "job": "Harvesting",
+                                    "work_speed": 1.1
+                                },
+                                "policies_info": {
+                                    "food": "Lavish",
+                                    "clothing": "Anything"
+                                },
+                                "medical_info": {
+                                    "in_pain": false,
+                                    "bleeding_rate": 0.0
+                                },
+                                "social_info": {
+                                    "marital_status": "Single"
+                                }
+                            }
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
             "/api/v1/colonists":
                 desc: |
                     Retrieves a list of all colonists in the player's faction, including 
@@ -3521,32 +3912,115 @@ api:
 
             "/api/v1/colonists/detailed":
                 desc: |
-                    Retrieves a detailed list of all colonists in the player's faction, including 
-                    their skills, traits, health, mood, and current activities.
+                    Retrieves a detailed list of all colonists in the player's faction, including their skills, traits, health, mood, and current activities.
                 curl: |
                     **Example:**
                     ```bash
                     curl --request GET \
-                    --url 'http://localhost:8765/api/v1/colonists/detailed'
+                    --url http://localhost:8765/api/v1/colonists/detailed
                     ```
                 request: ""
                 response: |
                     **Response:**
-                    Download json
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "colonist": {
+                                    "id": 1020,
+                                    "name": "Lumi",
+                                    "gender": "Female",
+                                    "age": 25,
+                                    "health": 1.0,
+                                    "mood": 0.85,
+                                    "hunger": 0.2,
+                                    "position": { "x": 10, "y": 0, "z": 15 }
+                                },
+                                "body_size": 1.0,
+                                "sleep": 0.9,
+                                "comfort": 0.8,
+                                "beauty": 0.5,
+                                "joy": 0.75,
+                                "energy": 0.8,
+                                "drugs_desire": 0.0,
+                                "surrounding_beauty": 1.2,
+                                "fresh_air": 1.0,
+                                "colonist_work_info": {
+                                    "job": "Harvesting",
+                                    "work_speed": 1.1
+                                },
+                                "policies_info": {
+                                    "food": "Lavish",
+                                    "clothing": "Anything"
+                                },
+                                "colonist_medical_info": {
+                                    "in_pain": false,
+                                    "bleeding_rate": 0.0
+                                },
+                                "social_info": {
+                                    "marital_status": "Single"
+                                }
+                            }
+                        ],
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
 
             "/api/v1/colonist/detailed":
                 desc: |
-                    Retrieves a detailed info about single colonist in the player's faction.
+                    Retrieves detailed info about a single colonist in the player's faction by ID.
                 curl: |
                     **Example:**
                     ```bash
                     curl --request GET \
-                    --url 'http://localhost:8765/api/v1/colonist/detailed?id=1020'
+                    --url "http://localhost:8765/api/v1/colonist/detailed?id=1020"
                     ```
                 request: ""
                 response: |
                     **Response:**
-                    Download json
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "colonist": {
+                                "id": 1020,
+                                "name": "Lumi",
+                                "gender": "Female",
+                                "age": 25,
+                                "health": 1.0,
+                                "mood": 0.85,
+                                "hunger": 0.2,
+                                "position": { "x": 10, "y": 0, "z": 15 }
+                            },
+                            "body_size": 1.0,
+                            "sleep": 0.9,
+                            "comfort": 0.8,
+                            "beauty": 0.5,
+                            "joy": 0.75,
+                            "energy": 0.8,
+                            "drugs_desire": 0.0,
+                            "surrounding_beauty": 1.2,
+                            "fresh_air": 1.0,
+                            "colonist_work_info": {
+                                "job": "Harvesting",
+                                "work_speed": 1.1
+                            },
+                            "policies_info": {
+                                "food": "Lavish",
+                                "clothing": "Anything"
+                            },
+                            "colonist_medical_info": {
+                                "in_pain": false,
+                                "bleeding_rate": 0.0
+                            },
+                            "social_info": {
+                                "marital_status": "Single"
+                            }
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
 
             "/api/v1/colonist/opinion-about":
                 desc: |
@@ -4773,6 +5247,116 @@ api:
                 *   **Buildings:** Walls, Furniture, Workbenches.
                 *   **Plants:** Crops, Trees.
 
+            "/api/v1/item/recipes":
+                desc: |
+                    Retrieves crafting recipes associated with a specific item. This includes details on ingredients, work amount, required skills, and production stations.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/item/recipes?def_name=MealSimple"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "item_def_name": "MealSimple",
+                            "item_label": "simple meal",
+                            "recipes": [
+                                {
+                                    "recipe_def_name": "CookMealSimple",
+                                    "label": "cook simple meal",
+                                    "job_string": "Cooking simple meal.",
+                                    "work_amount": 300.0,
+                                    "work_time_seconds": 5.0,
+                                    "ingredients": [
+                                        {
+                                            "summary": "Raw food",
+                                            "count": 0.5,
+                                            "is_fixed_item": false,
+                                            "allowed_def_names": [
+                                                "RawPotatoes",
+                                                "RawRice",
+                                                "Meat_Chicken"
+                                            ]
+                                        }
+                                    ],
+                                    "produced_at": [
+                                        {
+                                            "def_name": "ElectricStove",
+                                            "label": "electric stove"
+                                        },
+                                        {
+                                            "def_name": "FueledStove",
+                                            "label": "fueled stove"
+                                        },
+                                        {
+                                            "def_name": "Campfire",
+                                            "label": "campfire"
+                                        }
+                                    ],
+                                    "skill_requirements": [
+                                        {
+                                            "skill": "Cooking",
+                                            "min_level": 0
+                                        }
+                                    ],
+                                    "research_prerequisite": null
+                                }
+                            ]
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
+            "/api/v1/item/sources":
+                desc: |
+                    Identifies the various methods by which a specific item can be obtained in the game. This includes flags for broad categories (Mining, Trading, Crafting) and specific details like the names of the ores or plants that produce the item.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url "http://localhost:8765/api/v1/item/sources?def_name=Steel"
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": {
+                            "def_name": "Steel",
+                            "label": "steel",
+                            "thing_categories": [
+                                "ResourcesRaw",
+                                "Resources"
+                            ],
+                            "can_craft": true,
+                            "can_trade": true,
+                            "can_harvest": false,
+                            "can_mine": true,
+                            "can_butcher": false,
+                            "crafting_recipes": [
+                                "SmeltWeapon",
+                                "SmeltApparel",
+                                "ExtractMetalFromSlag"
+                            ],
+                            "harvested_from": [],
+                            "mined_from": [
+                                "MineableSteel"
+                            ],
+                            "trade_tags": [
+                                "BulkGoods",
+                                "ExoticMisc"
+                            ]
+                        },
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
+                    }
+                    ```
+
             "/api/v1/resources/summary":
                 desc: |
                     Retrieves a comprehensive summary of all resources present on a 
@@ -5132,6 +5716,92 @@ api:
                         "errors": [],
                         "warnings": [],
                         "timestamp": "2025-12-10T19:53:16.733319Z"
+                    }
+                    ```
+
+        TradeController:
+            title: |
+                ### :material-store: Trade Controller
+            desc: |
+                Provides access to the game's economy and trading systems. This controller handles the definitions for various trader types (Orbital, Caravan, Visitor), allowing you to analyze their stock generation rules, item commonality, and buy/sell behaviors.
+
+                **Capabilities:**
+
+                * List all global Trader Kinds (Defs).
+                * Inspect stock generation logic (specific items, categories, or tags).
+                * Determine if a trader type is orbital or land-based.
+
+            "/api/v1/traders/defs":
+                desc: |
+                    Returns a list of all trader definitions (TraderKindDefs). This includes orbital traders, caravans, and visitors, detailing their stock generation rules, commonality, and whether they buy specific categories of items.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request GET \
+                    --url http://localhost:8765/api/v1/traders/defs
+                    ```
+                request: ""
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": [
+                            {
+                                "def_name": "Orbital_BulkGoods",
+                                "label": "bulk goods trader",
+                                "orbital": true,
+                                "visitor": false,
+                                "commonality": 1.0,
+                                "items": [
+                                    {
+                                        "name": "Steel",
+                                        "count": "500~800",
+                                        "price": "Normal"
+                                    },
+                                    {
+                                        "name": "ComponentIndustrial",
+                                        "count": "20~40"
+                                    }
+                                ],
+                                "categories": [
+                                    {
+                                        "name": "Textiles",
+                                        "count": "300~600"
+                                    },
+                                    {
+                                        "name": "FoodRaw",
+                                        "count": "200~400"
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "name": "Artifact",
+                                        "buys": false
+                                    }
+                                ]
+                            },
+                            {
+                                "def_name": "Caravan_Outlander_CombatSupplier",
+                                "label": "combat supplier",
+                                "orbital": false,
+                                "visitor": true,
+                                "commonality": 1.0,
+                                "items": [
+                                    {
+                                        "name": "MedicineIndustrial",
+                                        "count": "5~15"
+                                    }
+                                ],
+                                "categories": [
+                                    {
+                                        "name": "WeaponsMelee",
+                                        "count": "3~6"
+                                    }
+                                ]
+                            }
+                        ],
+                        "timestamp": "2025-12-11T19:46:05.7088803Z"
                     }
                     ```
 

@@ -109,45 +109,5 @@ namespace RimworldRestApi.Hooks
                 });
             }
         }
-
-        // --- 6. STORYTELLER / DIFFICULTY CHANGED ---
-        // This hooks the closing of the Storyteller/Difficulty selection page in-game.
-        // This is the most reliable way to detect runtime changes without spamming Tick checks.
-        [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "PreOpen")]
-        public static class StorytellerOpenPatch
-        {
-            public static string OldStoryteller;
-            public static string OldDifficulty;
-
-            static void Postfix()
-            {
-                // Capture state before user edits
-                OldStoryteller = Find.Storyteller?.def?.defName;
-                OldDifficulty = Find.Storyteller?.difficultyDef?.defName;
-            }
-        }
-
-        [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "PostClose")]
-        public static class StorytellerClosePatch
-        {
-            static void Postfix()
-            {
-                var newStoryteller = Find.Storyteller?.def?.defName;
-                var newDifficulty = Find.Storyteller?.difficultyDef?.defName;
-
-                // Check if anything actually changed
-                if (newStoryteller != StorytellerOpenPatch.OldStoryteller ||
-                    newDifficulty != StorytellerOpenPatch.OldDifficulty)
-                {
-                    SendStateEvent("storyteller_changed", new
-                    {
-                        old_storyteller = StorytellerOpenPatch.OldStoryteller,
-                        new_storyteller = newStoryteller,
-                        old_difficulty = StorytellerOpenPatch.OldDifficulty,
-                        new_difficulty = newDifficulty
-                    });
-                }
-            }
-        }
     }
 }

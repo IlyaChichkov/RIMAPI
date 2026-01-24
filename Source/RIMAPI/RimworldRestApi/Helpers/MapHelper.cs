@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using RIMAPI.Models;
+using RIMAPI.Models.Map;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -610,6 +611,52 @@ namespace RIMAPI.Helpers
                 }
             }
             return results;
+        }
+
+        public static OreDataDto GetOreData(int mapId)
+        {
+            Map map = MapHelper.GetMapByID(mapId);
+            if (map == null) return null;
+
+            int width = map.Size.x;
+
+            var oreData = new OreDataDto
+            {
+                MapWidth = width,
+                Ores = new Dictionary<string, OreGroupDto>()
+            };
+
+            // Use a single loop through AllThings to populate the groups
+            // This is faster than LINQ GroupBy for large datasets in Unity/RimWorld
+            foreach (var thing in map.listerThings.AllThings)
+            {
+                if (thing.def.mineable)
+                {
+                    string defName = thing.def.defName;
+
+                    // Get or Create the Group for this ore type
+                    if (!oreData.Ores.TryGetValue(defName, out OreGroupDto group))
+                    {
+                        group = new OreGroupDto
+                        {
+                            MaxHp = thing.MaxHitPoints,
+                            Cells = new List<int>(),
+                            Hp = new List<int>()
+                        };
+                        oreData.Ores[defName] = group;
+                    }
+
+                    // Flatten Position (X, Z) into a single integer Index
+                    // Formula: index = (z * width) + x
+                    // We ignore Y because ores are always on the surface layer in RimWorld
+                    int index = (thing.Position.z * width) + thing.Position.x;
+
+                    group.Cells.Add(index);
+                    group.Hp.Add(thing.HitPoints);
+                }
+            }
+
+            return oreData;
         }
     }
 }
