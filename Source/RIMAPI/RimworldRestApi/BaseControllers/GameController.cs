@@ -28,37 +28,6 @@ namespace RIMAPI.Controllers
             _cachingService = cachingService;
         }
 
-        [Post("/api/v1/cache/enable")]
-        public async Task EnableCache(HttpListenerContext context)
-        {
-            _cachingService.SetEnabled(true);
-            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache enabled" });
-        }
-
-        [Post("/api/v1/cache/disable")]
-        public async Task DisableCache(HttpListenerContext context)
-        {
-            _cachingService.SetEnabled(false);
-            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache disabled" });
-        }
-
-        [Get("/api/v1/cache/status")]
-        [EndpointMetadata("Get cache status")]
-        public async Task GetCacheStatus(HttpListenerContext context)
-        {
-            var stats = _cachingService.GetStatistics();
-            var status = new { enabled = _cachingService.IsEnabled(), statistics = stats };
-
-            await ResponseBuilder.SendSuccess(context.Response, status);
-        }
-
-        [Post("/api/v1/cache/clear")]
-        [EndpointMetadata("Clear cache")]
-        public async Task ClearCache(HttpListenerContext context)
-        {
-            _cachingService.Clear();
-            await ResponseBuilder.SendSuccess(context.Response, new { message = "Cache cleared" });
-        }
 
         [Get("/api/v1/version")]
         [EndpointMetadata("Get versions of: game, mod, API")]
