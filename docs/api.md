@@ -3996,9 +3996,8 @@ PawnEditController.EditFaction
 <div class="doc-api-method doc-api-method-get">GET</div>
 <div class="doc-api-endpoint">
 <code>
-```
 /api/v1/pawns/details
-```
+
 </code>
 <a class="headerlink" href="#apiv1pawnsdetails" title="Permanent link">¶</a>
 </div>
@@ -4028,9 +4027,8 @@ PawnInfoController.GetPawnDetails
 <div class="doc-api-method doc-api-method-get">GET</div>
 <div class="doc-api-endpoint">
 <code>
-```
 /api/v1/pawns/inventory
-```
+
 </code>
 <a class="headerlink" href="#apiv1pawnsinventory" title="Permanent link">¶</a>
 </div>
@@ -4057,21 +4055,20 @@ PawnInfoController.GetPawnInventory
 {{ api.controllers.get("PawnSpawnController", {}).get('title', '') }}
 {{ api.controllers.get("PawnSpawnController", {}).get('desc', '') }}
 
-<h4 id="apiv1pawnspawn">
+<div id="apiv1pawnspawn">
 <div class="doc-api-container">
 <div class="doc-api-header">
 <div class="doc-api-method doc-api-method-post">POST</div>
 <div class="doc-api-endpoint">
 <code>
-```
 /api/v1/pawn/spawn
-```
+
 </code>
 <a class="headerlink" href="#apiv1pawnspawn" title="Permanent link">¶</a>
 </div>
 </div>
 </div>
-</h4>
+</div>
 
 {{ api.controllers.get("PawnSpawnController", {}).get("/api/v1/pawn/spawn", {'desc': 'Failed to load /api/v1/pawn/spawn'}).get('desc', '') }}
 
@@ -4092,21 +4089,20 @@ PawnSpawnController.EditPawn
 {{ api.controllers.get("ResearchController", {}).get('title', '') }}
 {{ api.controllers.get("ResearchController", {}).get('desc', '') }}
 
-<h4 id="apiv1researchprogress">
+<div id="apiv1researchprogress">
 <div class="doc-api-container">
 <div class="doc-api-header">
 <div class="doc-api-method doc-api-method-get">GET</div>
 <div class="doc-api-endpoint">
 <code>
-```
 /api/v1/research/progress
-```
+
 </code>
 <a class="headerlink" href="#apiv1researchprogress" title="Permanent link">¶</a>
 </div>
 </div>
 </div>
-</h4>
+</div>
 
 {{ api.controllers.get("ResearchController", {}).get("/api/v1/research/progress", {'desc': 'Failed to load /api/v1/research/progress'}).get('desc', '') }}
 
