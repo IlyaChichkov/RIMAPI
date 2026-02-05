@@ -4988,6 +4988,7 @@ api:
                         "position": {"x": 11, "y": 0, "z": 11},
                         "biological_age": 25
                     }
+                    ```
                 response: |
                     **Response:**
                     ```json
@@ -5000,6 +5001,7 @@ api:
                         "errors":[],"warnings":[],
                         "timestamp":"2025-12-31T12:32:16.5760065Z"
                     }
+                    ```
                     
         ResearchController:
             title: |
