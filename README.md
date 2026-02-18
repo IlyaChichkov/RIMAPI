@@ -8,11 +8,9 @@
 
 # RimAPI
 
-It's a RimWorld mod that gives you an API Server to interact with the game.
+RimAPI is a RimWorld mod that embeds a high-performance REST API server directly into the game, allowing external applications to read and interact with your colony in real-time.
 
-RimAPI exposes a comprehensive REST API from inside RimWorld.
-The API listens on `http://localhost:8765/` by default once the
-game reaches the main menu.
+RimAPI exposes over **120+ comprehensive endpoints**. The API starts listening on `http://localhost:8765/` by default as soon as the game reaches the main menu.
 
 <table>
   <tr>
@@ -32,6 +30,8 @@ game reaches the main menu.
 ## 🚀 Features
 
 ### Monitor current game state
+- **Game Controls** - Change game settings, modlist, start a new RimWorld game or load one from saves
+- **Global & Colony map** - Get a list of caravans or items inside your storage
 - **Real-time colony status** - Get current game time, weather, storyteller, and difficulty
 - **Colonist management** - Track health, mood, skills, inventory, and work priorities
 - **Resource tracking** - Monitor food, medicine, materials, and storage utilization
@@ -42,9 +42,9 @@ game reaches the main menu.
 
 ### Performance optimizations
 - **Caching** - Efficient data updates without game lag
-- **Field filtering** - Request only the data you need
-- **ETag support** - Intelligent caching with 304 Not Modified responses
 - **Non-blocking operations** - Game non-blocking API operations
+- **Field filtering [todo]** - Request only the data you need
+- **ETag support [todo]** - Intelligent caching with 304 Not Modified responses
 
 ![alt text](../media/media/banner_get_colonist.jpg)
 
@@ -54,7 +54,7 @@ Share your projects - send integrations on discord server
 
 ## 🛠️ Usage
 
-1. Start new RimWorld game or load one from saves with the mod enabled. When game map is loaded the API server will begin listening.
+1. Start new RimWorld game or load one from saves with the mod enabled. When the game map is loaded the API server will begin listening.
 2. The default address is `http://localhost:8765/`. You can change the port from the RIMAPI mod settings.
 3. Use any HTTP client (curl, Postman, etc.) to call the endpoints.
 
@@ -67,10 +67,18 @@ This project is licensed under the GNU GPLv3 License - see the [LICENSE](https:/
 
 ## 👥 Credits and Acknowledgments
 
-Thanks to MasterPNJ and his project for insipiration: [ARROM](https://github.com/MasterPNJ/API-REST-RimwOrld-Mod)
+Thanks to MasterPNJ and his project for inspiration.
 
-Thanks to @braasdas and his [RatLab](https://github.com/braasdas/ratlab-mod-github)
-for code reference and contributions
+Thanks to @braasdas and his RatLab project for code reference.
+
+Contributors: @braasdas, @M4x28
+
+## 📌 Links
+
+- [RimWorld Dashboard [#Web]](https://github.com/IlyaChichkov/rimapi-dashboard)
+- [RatLab [#Mod]](https://github.com/braasdas/ratlab-mod-github)
+- [RimAPI MCP [#AI]](https://github.com/M4x28/RimAPI_MCP_Server)
+- [ARROM [#Analogs]](https://github.com/MasterPNJ/API-REST-RimwOrld-Mod)
 
 ## 📋 Changelog
 
