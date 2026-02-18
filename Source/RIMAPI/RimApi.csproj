@@ -41,7 +41,7 @@
       Condition="'$(Configuration)' == 'Release-1.6'"
     />
 
-    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" ExcludeAssets="runtime" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\Libraries\Newtonsoft.Json.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
