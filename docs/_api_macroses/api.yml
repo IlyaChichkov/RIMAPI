@@ -1178,6 +1178,47 @@ api:
                     }
                     ```
 
+            "/api/v1/mods/configure":
+                desc: |
+                    Configures the active mods list and their load order. Pass an array of package IDs in the exact order you want them loaded. Core (`ludeon.rimworld`) will be automatically prepended if missing. Set `restart_game` to `true` to immediately reboot RimWorld and apply the changes.
+                curl: |
+                    **Example:**
+                    ```bash
+                    curl --request POST \
+                      --url http://localhost:8765/api/v1/mods/configure \
+                      --header 'content-type: application/json' \
+                      --data '{"package_ids":["brrainz.harmony","ludeon.rimworld","ludeon.rimworld.royalty","ludeon.rimworld.ideology","ludeon.rimworld.biotech","ludeon.rimworld.anomaly","ludeon.rimworld.odyssey","unlimitedhugs.hugslib","redeyedev.rimapi"],"restart_game":true}'
+                    ```
+                request: |
+                    **Request Body:**
+                    ```json
+                    {
+                      "package_ids": [
+                        "brrainz.harmony",
+                        "ludeon.rimworld",
+                        "ludeon.rimworld.royalty",
+                        "ludeon.rimworld.ideology",
+                        "ludeon.rimworld.biotech",
+                        "ludeon.rimworld.anomaly",
+                        "ludeon.rimworld.odyssey",
+                        "unlimitedhugs.hugslib",
+                        "redeyedev.rimapi"
+                      ],
+                      "restart_game": true
+                    }
+                    ```
+                response: |
+                    **Response:**
+                    ```json
+                    {
+                        "success": true,
+                        "data": null,
+                        "errors": [],
+                        "warnings": [],
+                        "timestamp": "2026-02-18T18:23:32.0000000Z"
+                    }
+                    ```
+
             "/api/v1/select":
                 desc: |
                     Selects a specific in-game object (pawn, building, item, etc.) 

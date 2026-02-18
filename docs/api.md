@@ -1,7 +1,7 @@
 ﻿{{ api.get('page_title', '# RimAPI Documentation') }}
 
 **Version**: 1.8.0  
-**Endpoints total count**: 144  
+**Endpoints total count**: 145  
 
 {{ api.section.get("Core_API", {}).get('title', '') }}
 {{ api.section.get("Core_API", {}).get('desc', '') }}
@@ -947,6 +947,38 @@ GameController.GetVersion
 <div class="doc-github-container">
 <a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+GetGameState&type=code" class="doc-github-link">
 GameController.GetGameState
+</a>
+</div>
+
+---
+
+<h4 id="apiv1modsconfigure">
+<div class="doc-api-container">
+<div class="doc-api-header">
+<div class="doc-api-method doc-api-method-post">POST</div>
+<div class="doc-api-endpoint">
+<code>
+```
+/api/v1/mods/configure
+```
+</code>
+<a class="headerlink" href="#apiv1modsconfigure" title="Permanent link">¶</a>
+</div>
+</div>
+</div>
+</h4>
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/mods/configure", {'desc': 'Failed to load /api/v1/mods/configure'}).get('desc', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/mods/configure", {'desc': 'Failed to load /api/v1/mods/configure'}).get('curl', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/mods/configure", {'desc': 'Failed to load /api/v1/mods/configure'}).get('request', '') }}
+
+{{ api.controllers.get("GameController", {}).get("/api/v1/mods/configure", {'desc': 'Failed to load /api/v1/mods/configure'}).get('response', '') }}
+
+<div class="doc-github-container">
+<a href="https://github.com/search?q=repo%3AIlyaChichkov%2FRIMAPI+path%3A%2F%28%5E%7C%5C%2F%29GameController%5C.cs%24%2F+ConfigureMods&type=code" class="doc-github-link">
+GameController.ConfigureMods
 </a>
 </div>
 
