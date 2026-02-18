@@ -16,13 +16,6 @@ namespace RIMAPI.Models
         public int MapCount { get; set; }
     }
 
-    public class ModInfoDto
-    {
-        public string Name { get; set; }
-        public string PackageId { get; set; }
-        public int LoadOrder { get; set; }
-    }
-
     public class NewGameStartRequestDto
     {
         public string StorytellerName { get; set; }
