@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.8.1
+
+### New Features & Enhancements
+- **Add Mod Configuration endpoint** - `[POST] /api/v1/mods/configure` allows programmatic updating of the active mod list, enforcing exact load order, and optionally restarting the game to apply changes.
+- **Add server IP property to settings**
+
+### Bug Fixes
+- **Fix SSE Heartbeat Crash** - Resolved a `NullReferenceException` in `SseService` that caused console spam when Server-Sent Event heartbeats attempted to access the game tick manager while the player was on the main menu.
+- **Removed Harmony library from mod pack**
+
 ## v1.8.0
 
 ### New Features & Enhancements
