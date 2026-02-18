@@ -12,24 +12,16 @@ namespace RIMAPI.Core
         )
         {
             var origin = req.Headers["Origin"];
-            string allowOrigin = null;
 
-            if (string.IsNullOrEmpty(origin))
-            {
-                // Non-CORS or same-origin XHR; choose * or leave unset.
-                allowOrigin = "*"; // Allow all origins for non-CORS requests
-            }
-            else if (allowedOrigins != null && allowedOrigins.Contains(origin))
-            {
-                allowOrigin = origin;
-            }
-            else
-            {
-                allowOrigin = "*"; // Or you can explicitly allow specific origins
-            }
+            string allowOrigin = string.IsNullOrEmpty(origin) ? "*" : origin;
 
             res.Headers.Set("Access-Control-Allow-Origin", allowOrigin);
-            res.Headers.Set("Access-Control-Allow-Credentials", "true");
+
+            if (allowOrigin != "*")
+            {
+                res.Headers.Set("Access-Control-Allow-Credentials", "true");
+            }
+
             res.Headers.Set(
                 "Access-Control-Allow-Methods",
                 "GET, POST, PUT, PATCH, DELETE, OPTIONS"
@@ -47,6 +39,7 @@ namespace RIMAPI.Core
         )
         {
             LogApi.Info($"WritePreflight");
+            var req = ctx.Request;
             var res = ctx.Response;
 
             res.Headers.Set(
@@ -56,7 +49,7 @@ namespace RIMAPI.Core
                     : "GET, POST, PUT, PATCH, DELETE, OPTIONS"
             );
 
-            var requested = ctx.Request.Headers["Access-Control-Request-Headers"];
+            var requested = req.Headers["Access-Control-Request-Headers"];
             res.Headers.Set(
                 "Access-Control-Allow-Headers",
                 !string.IsNullOrEmpty(requested)
@@ -68,11 +61,20 @@ namespace RIMAPI.Core
                     )
             );
 
-            res.Headers.Set("Access-Control-Allow-Origin", "*");
-            res.Headers.Set("Access-Control-Max-Age", "86400"); // Cache preflight response for 24 hours
+            var origin = req.Headers["Origin"];
+            string allowOrigin = string.IsNullOrEmpty(origin) ? "*" : origin;
+
+            res.Headers.Set("Access-Control-Allow-Origin", allowOrigin);
+
+            if (allowOrigin != "*")
+            {
+                res.Headers.Set("Access-Control-Allow-Credentials", "true");
+            }
+
+            res.Headers.Set("Access-Control-Max-Age", "86400"); // Cache preflight for 24 hours
             res.StatusCode = (int)HttpStatusCode.NoContent; // 204 No Content
-            res.StatusDescription = "No Content"; // Set appropriate status description
-            res.Close(); // Close after writing the headers
+            res.StatusDescription = "No Content";
+            res.Close();
         }
     }
 }

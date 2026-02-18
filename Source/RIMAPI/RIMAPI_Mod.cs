@@ -74,6 +74,10 @@ namespace RIMAPI
             list.GapLine();
 
             // --- Server Configuration ---
+
+            list.Label("RIMAPI.ServerIPLabel".Translate() + " (e.g., 0.0.0.0 or localhost)");
+            Settings.serverIP = Widgets.TextField(list.GetRect(24f), Settings.serverIP);
+
             list.Label("RIMAPI.ServerPortLabel".Translate());
             string bufferPort = Settings.serverPort.ToString();
             list.TextFieldNumeric(ref Settings.serverPort, ref bufferPort, 1, 65535);

@@ -21,8 +21,9 @@ namespace RIMAPI.Core
         private bool _isRunning;
         private bool _disposed = false;
 
+        public string ServerIP { get; private set; }
         public int Port { get; private set; }
-        public string BaseUrl => $"http://localhost:{Port}/";
+        public string BaseUrl => $"http://{ServerIP}:{Port}/";
 
         private readonly ExtensionRegistry _extensionRegistry;
         private RIMAPI_Settings Settings;
@@ -38,8 +39,9 @@ namespace RIMAPI.Core
                 LogApi.Info("Starting ApiServer constructor...");
 
                 Settings = settings;
+                ServerIP = settings.serverIP;
                 Port = settings.serverPort;
-                LogApi.Info($"Settings loaded - Port: {Port}");
+                LogApi.Info($"Settings loaded - IP: {ServerIP}, Port: {Port}");
 
                 // Initialize extension registry FIRST
                 LogApi.Info("Initializing extension registry...");
@@ -61,7 +63,11 @@ namespace RIMAPI.Core
 
                 LogApi.Info("Initializing HTTP components...");
                 _listener = new HttpListener();
-                _listener.Prefixes.Add(BaseUrl);
+
+                string hostBinding = ServerIP == "0.0.0.0" ? "+" : ServerIP;
+                string listenerPrefix = $"http://{hostBinding}:{Port}/";
+                _listener.Prefixes.Add(listenerPrefix);
+
                 _router = new Router();
                 _requestQueue = new Queue<HttpListenerContext>();
 
