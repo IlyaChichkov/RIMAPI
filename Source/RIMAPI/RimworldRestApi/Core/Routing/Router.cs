@@ -191,7 +191,7 @@ namespace RIMAPI.Core
             HttpListenerContext context,
             string method,
             string path
-        ) // Fixed: added async Task
+        )
         {
             LogApi.Warning($"No route found for {method} {path}");
 
@@ -199,7 +199,7 @@ namespace RIMAPI.Core
             var availableRoutes = _routes
                 .Where(r => r.Method == method)
                 .Select(r => r.PathPattern)
-                .ToList();
+                .ToHashSet();
 
             if (availableRoutes.Any())
             {

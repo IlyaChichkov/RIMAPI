@@ -7,7 +7,6 @@ using RIMAPI.Http;
 using RIMAPI.Models;
 using RIMAPI.Services;
 using RimWorld;
-using Verse;
 
 namespace RIMAPI.Controllers
 {
@@ -27,7 +26,6 @@ namespace RIMAPI.Controllers
             _settings = settings;
             _cachingService = cachingService;
         }
-
 
         [Get("/api/v1/version")]
         [EndpointMetadata("Get versions of: game, mod, API")]
@@ -54,6 +52,14 @@ namespace RIMAPI.Controllers
         public async Task GetGameState(HttpListenerContext context)
         {
             var result = _gameStateService.GetGameState();
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/mods/configure")]
+        public async Task ConfigureMods(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<ConfigureModsRequestDto>();
+            var result = _gameStateService.ConfigureMods(body);
             await context.SendJsonResponse(result);
         }
 

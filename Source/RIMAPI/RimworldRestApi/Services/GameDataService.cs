@@ -65,17 +65,13 @@ namespace RIMAPI.Services
                     return ApiResult.Fail("Invalid request. 'PackageIds' list is required.");
                 }
 
-                // Ensure Core is always active and loaded first
+                // Ensure Core is always active
                 if (!body.PackageIds.Contains("ludeon.rimworld", StringComparer.OrdinalIgnoreCase))
                 {
                     body.PackageIds.Insert(0, "ludeon.rimworld");
                 }
 
-                ModsConfig.Reset();
-                foreach (var packageId in body.PackageIds)
-                {
-                    ModsConfig.SetActive(packageId, true);
-                }
+                ModsConfig.SetActiveToList(body.PackageIds);
                 ModsConfig.Save();
 
                 if (body.RestartGame)
