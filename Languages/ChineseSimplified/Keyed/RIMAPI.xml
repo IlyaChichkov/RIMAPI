@@ -2,6 +2,7 @@
 <LanguageData>
   <RIMAPI.Version>版本：</RIMAPI.Version>
   <RIMAPI.APIVersion>API 版本：</RIMAPI.APIVersion>
+  <RIMAPI.ServerIPLabel>REST服务器IP（需要重启）：</RIMAPI.ServerIPLabel>
   <RIMAPI.ServerPortLabel>REST 服务器端口（需要重启）：</RIMAPI.ServerPortLabel>
   <RIMAPI.RefreshIntervalLabel>刷新间隔（时钟周期）：</RIMAPI.RefreshIntervalLabel>
   <RIMAPI.RestartServer>重启服务器</RIMAPI.RestartServer>
