@@ -28,6 +28,12 @@ namespace RIMAPI
         // --- Server Configuration ---
 
         /// <summary>
+        /// The IP address the HTTP server binds to.
+        /// <para>Default: 0.0.0.0 (listens on all available network interfaces)</para>
+        /// </summary>
+        public string serverIP = "localhost";
+
+        /// <summary>
         /// The local port number the HTTP server listens on.
         /// <para>Default: 8765</para>
         /// </summary>
@@ -135,6 +141,7 @@ namespace RIMAPI
             Scribe_Values.Look(ref _loggingLevel, "loggingLevel", 1);
 
             // Server Settings
+            Scribe_Values.Look(ref serverIP, "serverIP", "localhost");
             Scribe_Values.Look(ref serverPort, "serverPort", 8765);
             Scribe_Values.Look(ref refreshIntervalTicks, "refreshIntervalTicks", 300);
 
