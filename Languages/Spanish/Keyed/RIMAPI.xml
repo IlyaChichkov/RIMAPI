@@ -2,6 +2,7 @@
 <LanguageData>
   <RIMAPI.Version>Versión:</RIMAPI.Version>
   <RIMAPI.APIVersion>Versión API:</RIMAPI.APIVersion>
+  <RIMAPI.ServerIPLabel>IP del servidor REST (requiere reinicio):</RIMAPI.ServerIPLabel>
   <RIMAPI.ServerPortLabel>Puerto del servidor REST (reinicio requerido):</RIMAPI.ServerPortLabel>
   <RIMAPI.RefreshIntervalLabel>Intervalo de actualización (ticks):</RIMAPI.RefreshIntervalLabel>
   <RIMAPI.RestartServer>Reiniciar servidor</RIMAPI.RestartServer>
