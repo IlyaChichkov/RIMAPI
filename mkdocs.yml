@@ -59,6 +59,24 @@ plugins:
   - offline
   - social
   - tags
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      languages:
+        - build: true
+          default: true
+          locale: en
+          name: English
+        - build: true
+          default: false
+          locale: ja
+          name: 日本語
+        - build: true
+          default: false
+          locale: ru
+          name: Русский
+      reconfigure_material: true
+      reconfigure_search: true
   - mermaid2:
       javascript: https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs
   - minify:
@@ -103,6 +121,16 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
 
 extra:
+  alternate:
+    - name: English
+      link: /RIMAPI/
+      lang: en
+    - name: 日本語
+      link: /RIMAPI/ja/
+      lang: ja
+    - name: Русский
+      link: /RIMAPI/ru/
+      lang: ru
   social:
     - icon: fontawesome/brands/github
       link: https://ilyachichkov.github.io/RIMAPI
