@@ -23,6 +23,7 @@ namespace RIMAPI.Core
 
         public int ClientCount => _connectedClients.Count;
         public long TotalEventsSent { get; private set; }
+        private DateTime _lastHeartbeatTime = DateTime.UtcNow;
 
         public SseService(IGameStateService gameStateService)
         {
@@ -168,11 +169,11 @@ namespace RIMAPI.Core
 
         private void SendHeartbeatsIfNeeded()
         {
-            var currentTick = Find.TickManager?.TicksGame ?? 0;
-            if (currentTick - _lastBroadcastTick < 180) return;
+            if ((DateTime.UtcNow - _lastHeartbeatTime).TotalSeconds < 3) return;
 
+            int currentTick = Current.Game != null ? Find.TickManager.TicksGame : 0;
             BroadcastEventInternal("heartbeat", new { timestamp = DateTime.UtcNow, tick = currentTick });
-            _lastBroadcastTick = currentTick;
+            _lastHeartbeatTime = DateTime.UtcNow;
         }
 
         private void BroadcastEventInternal(string eventType, object data)
