@@ -56,6 +56,43 @@ namespace RIMAPI.Services
             }
         }
 
+        public ApiResult ConfigureMods(ConfigureModsRequestDto body)
+        {
+            try
+            {
+                if (body == null || body.PackageIds == null)
+                {
+                    return ApiResult.Fail("Invalid request. 'PackageIds' list is required.");
+                }
+
+                // Ensure Core is always active and loaded first
+                if (!body.PackageIds.Contains("ludeon.rimworld", StringComparer.OrdinalIgnoreCase))
+                {
+                    body.PackageIds.Insert(0, "ludeon.rimworld");
+                }
+
+                ModsConfig.Reset();
+                foreach (var packageId in body.PackageIds)
+                {
+                    ModsConfig.SetActive(packageId, true);
+                }
+                ModsConfig.Save();
+
+                if (body.RestartGame)
+                {
+                    LogApi.Info("Restarting RimWorld to apply new mod configuration...");
+                    GenCommandLine.Restart();
+                }
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error configuring mods: {ex}");
+                return ApiResult.Fail($"Failed to configure mods: {ex.Message}");
+            }
+        }
+
         public ApiResult DeselectAll()
         {
             try
