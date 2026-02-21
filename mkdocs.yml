@@ -53,7 +53,7 @@ plugins:
         - trimmer
       lang: en
   - macros:
-      include_yaml: [docs/_api_macroses/api.yml]
+      module_name: scripts/docs/mkdocs_generate_api
       on_error_fail: false
       on_undefined: lax
   - offline
