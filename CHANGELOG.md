@@ -1,4 +1,22 @@
 # Changelog
+## v1.8.2
+
+### Documentation Infrastructure (Refactor)
+
+- Migrated from a single API YAML file to a modular, folder-based structure.
+- Multi-Language Support — Added dedicated localization folders (ja/, ru/) with fallback logic to ensure translated pages remain functional even if specific endpoints aren't yet translated.
+- Automated Validation — Introduced a Python-based sanity checker (mkdocs_check_api.py) that cross-references C# [Route] attributes against YAML documentation to prevent "documentation drift".
+- Auto-Fixer Tools — Added a synchronization script (mkdocs_fix_yaml_methods.py) that automatically updates YAML HTTP methods to match the C# source of truth.
+- Visual Enhancements — Implemented a tagging system (e.g., UI, Map, Pawn) with custom CSS badges to help users filter endpoints by category.
+
+### Developer Workflow & CI/CD
+
+- GitHub Actions Integration — Integrated the formatting, fixing, and validation scripts into the deployment pipeline to guarantee documentation accuracy on every push to master.
+- Improved Repository Hygiene — Optimized .gitignore to prevent Python bytecode (.pyc) and C# build artifacts from bloating the repository.
+
+### Bug Fixes & API Refinement
+
+- Unique Endpoint Routing — Refactored ImageController to use unique paths for GET and POST actions (e.g., /api/v1/item/change/image), resolving documentation collisions and improving REST clarity.
 
 ## v1.8.1
 

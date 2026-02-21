@@ -3,7 +3,7 @@
 
 {{ current_api.meta.page_title | default('# API Reference') }}
 
-**Version**: 1.8.1  
+**Version**: 1.8.2  
 **Endpoints total count**: 145  
 
 {% if current_api.meta.section and current_api.meta.section.Core_API %}
