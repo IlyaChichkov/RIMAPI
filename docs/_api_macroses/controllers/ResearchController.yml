@@ -1,0 +1,229 @@
+title: '### :material-flask: Research Controller'
+desc: |-
+  Manages the scientific progress of the colony. This controller allows for viewing the current
+  tech tree status and instantly unlocking technologies.
+/api/v1/research/progress:
+  desc: |-
+    Retrieves information about the currently active research project,
+    including its progress, required research points, and status.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/research/progress'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "name": "Microelectronics",
+            "label": "Microelectronics",
+            "progress": 500,
+            "research_points": 3000,
+            "description": "Build advanced components and electronics.",
+            "is_finished": false,
+            "can_start_now": true,
+            "player_has_any_appropriate_research_bench": true,
+            "required_analyzed_thing_count": 0,
+            "analyzed_things_completed": 0,
+            "tech_level": "Industrial",
+            "prerequisites": ["Electricity"],
+            "hidden_prerequisites": [],
+            "required_by_this": ["Fabrication", "AdvancedMachining"],
+            "progress_percent": 0.16666667
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/research/finished:
+  desc: |-
+    Retrieves a list of all research projects that have been successfully
+    completed by the player.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/research/finished'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "finished_projects": [
+                "electricity",
+                "basic_research",
+                "stonecutting"
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/research/tree:
+  desc: |-
+    Retrieves the entire research tree, providing a list of all research
+    projects and their details, including prerequisites and tech levels.
+    This can be used to visualize or analyze research progression.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/research/tree'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "projects": [
+                {
+                    "name": "basic_research",
+                    "label": "basic research",
+                    "progress": 0,
+                    "research_points": 500,
+                    "description": "unlocks basic research capabilities.",
+                    "is_finished": true,
+                    "can_start_now": false,
+                    "player_has_any_appropriate_research_bench": true,
+                    "required_analyzed_thing_count": 0,
+                    "analyzed_things_completed": 0,
+                    "tech_level": "neolithic",
+                    "prerequisites": [],
+                    "hidden_prerequisites": [],
+                    "required_by_this": ["electricity", "stonecutting"],
+                    "progress_percent": 1.0
+                },
+                {
+                    "name": "electricity",
+                    "label": "electricity",
+                    "progress": 0,
+                    "research_points": 1000,
+                    "description": "unlocks electrical power generation and basic electrical devices.",
+                    "is_finished": false,
+                    "can_start_now": true,
+                    "player_has_any_appropriate_research_bench": true,
+                    "required_analyzed_thing_count": 0,
+                    "analyzed_things_completed": 0,
+                    "tech_level": "industrial",
+                    "prerequisites": ["basic_research"],
+                    "hidden_prerequisites": [],
+                    "required_by_this": ["microelectronics"],
+                    "progress_percent": 0.0
+                }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/research/project:
+  desc: |-
+    Retrieves detailed information about a specific research project
+    by its name. This includes its progress, prerequisites,
+    tech level, and description.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/research/project?name=Microelectronics'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "name": "Microelectronics",
+            "label": "Microelectronics",
+            "progress": 500,
+            "research_points": 3000,
+            "description": "build advanced components and electronics.",
+            "is_finished": false,
+            "can_start_now": true,
+            "player_has_any_appropriate_research_bench": true,
+            "required_analyzed_thing_count": 0,
+            "analyzed_things_completed": 0,
+            "tech_level": "Industrial",
+            "prerequisites": ["Electricity"],
+            "hidden_prerequisites": [],
+            "required_by_this": ["Fabrication", "AdvancedMachining"],
+            "progress_percent": 0.16666667
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12t10:00:00.0000000z"
+    }
+    ```
+  method: GET
+/api/v1/research/summary:
+  desc: |-
+    Provides a high-level summary of the player's research status,
+    including counts of finished, total, and available projects,
+    and categorization by tech level and research tab.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/research/summary'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "finished_projects_count": 3,
+            "total_projects_count": 50,
+            "available_projects_count": 15,
+            "by_tech_level": {
+                "neolithic": {
+                    "finished": 1,
+                    "total": 5,
+                    "percent_complete": 20.0,
+                    "projects": ["BasicResearch"]
+                },
+                "industrial": {
+                    "finished": 2,
+                    "total": 10,
+                    "percent_complete": 20.0,
+                    "projects": ["Electricity", "Stonecutting"]
+                }
+            },
+            "by_tab": {
+                "basic": {
+                    "finished": 2,
+                    "total": 10,
+                    "percent_complete": 20.0,
+                    "projects": ["BasicResearch", "Stonecutting"]
+                },
+                "power": {
+                    "finished": 1,
+                    "total": 5,
+                    "percent_complete": 20.0,
+                    "projects": ["electricity"]
+                }
+            }
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET

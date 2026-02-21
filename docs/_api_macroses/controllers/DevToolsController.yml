@@ -1,0 +1,152 @@
+title: '### :material-bug: DevTools Controller'
+desc: |-
+  This controller exposes RimWorld's internal **Debug Actions** and development tools. It provides "God Mode" functionality usually reserved for the game's developer console.
+
+  !!! danger "Use with Caution"
+      Actions performed here bypass standard gameplay rules. Misuse can lead to:
+      *   Corrupted save states.
+      *   Game crashes.
+      *   Broken AI behavior.
+/api/v1/dev/materials-atlas:
+  desc: |-
+    Retrieves the development-level materials atlas data, which contains
+    the internal mapping of material definitions to their graphical
+    textures, shaders, and rendering properties.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/dev/materials-atlas
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "materials": [
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_CompactedMachinery_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_AncientFence_Atlas",
+            "Custom/CutoutComplex_Fleshmass_Atlas",
+            "Custom/Transparent_PowerConduit_Blueprint_Atlas",
+            "Custom/Transparent_Sandbags_Blueprint_Atlas",
+            "Custom/Transparent_Barricade_Blueprint_Atlas",
+            "Custom/Transparent_Wall_Blueprint_Atlas",
+            "Custom/Transparent_Fence_Atlas_Smooth",
+            "Custom/Cutout_Wall_Atlas_Smooth",
+            "Custom/Cutout_Wall_Atlas_Bricks",
+            "Custom/Cutout_Wall_Atlas_Smooth",
+            "Custom/Cutout_Wall_Atlas_Bricks",
+            "Custom/Cutout_Wall_Atlas_Bricks"
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:15:20.9851409Z"
+    }
+    ```
+  method: GET
+/api/v1/dev/console:
+  desc: |-
+    A development and debugging endpoint that allows interaction with the
+    game's internal logging system. This provides programmatic control over
+    the developer console, allowing sending log messages, clearing console.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/dev/console'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+    "action": "message",
+    "message": "hello_world"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/dev/stuff/color:
+  desc: |-
+    A development tool endpoint that modifies the visual color
+    properties of a specific "stuff" material in-game. "Stuff"
+    in RimWorld refers to the base materials that items and
+    structures are made from (e.g., wood, steel, cloth, plasteel).
+    This endpoint allows for real-time adjustment of a material's
+    displayed color, primarily used for visual customization,
+    debugging, or mod development testing.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/dev/stuff/color \
+    --header 'content-type: application/json' \
+    --data '{
+        "name": "WoodLog",
+        "hex": "aa00ff"
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "name": "WoodLog",
+        "hex": "aa00ff"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/dev/materials-atlas/clear:
+  desc: |-
+    Clears the in‑memory materials atlas cache, forcing the game to reload
+    material textures, shaders, and rendering properties from disk on‑demand.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/dev/materials-atlas/clear
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST

@@ -1,0 +1,67 @@
+title: '### :material-book-open-page-variant: Documentation Controller'
+desc: |-
+  The **Documentation Controller** provides introspection capabilities for the API itself. It allows clients to dynamically discover available endpoints, schemas, and API versions without needing external references.
+
+  | Feature | Description |
+  | :--- | :--- |
+  | **Discovery** | List all registered routes and their parameters. |
+  | **Health** | Check the status of the API server. |
+  | **Schema** | Retrieve JSON schemas for request/response bodies. |
+/api/v1/core/docs/export:
+  desc: |-
+    Generates and exports comprehensive documentation for all available API endpoints.
+    Returning documentation in requested format both in response and as file in mod_path/docs/
+    directory.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/core/docs/export
+    ```
+  request: ''
+  response: ''
+  method: GET
+/api/v1/docs:
+  desc: Get documentation for all available API endpoints in requested format.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/docs
+    ```
+  request: ''
+  response: ''
+  method: GET
+/api/v1/docs/extensions/{extensionId}:
+  desc: Get documentation for all available API endpoints in requested format.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/docs/extensions/34
+    ```
+  request: ''
+  response: ''
+  method: GET
+/api/v1/docs/health:
+  desc: Get documentation for all available API endpoints in requested format.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/docs/health
+    ```
+  request: ''
+  response: ''
+  method: GET
+/api/v1/docs/export:
+  desc: Get documentation for all available API endpoints in requested format.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/docs/export
+    ```
+  request: ''
+  response: ''
+  method: GET

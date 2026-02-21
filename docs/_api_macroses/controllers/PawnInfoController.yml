@@ -1,0 +1,14 @@
+title: '### :material-account-details: Pawn Info Controller'
+desc: The **Pawn Info Controller** provides detailed information about pawns.
+/api/v1/pawns/details:
+  desc: Gets detailed information about a pawn.
+  curl: ''
+  request: ''
+  response: ''
+  method: GET
+/api/v1/pawns/inventory:
+  desc: Gets the inventory of a pawn.
+  curl: ''
+  request: ''
+  response: ''
+  method: GET

@@ -1,0 +1,323 @@
+title: '### :material-cube-outline: Thing Controller'
+desc: |-
+  The **Thing Controller** handles physical objects in the game world that are *not* humanoids
+  (Pawns). In RimWorld code, almost everything is a "Thing."
+
+  **Includes:**
+
+  *   **Items:** Weapons, Resources, Apparel.
+  *   **Buildings:** Walls, Furniture, Workbenches.
+  *   **Plants:** Crops, Trees.
+/api/v1/item/recipes:
+  desc: Retrieves crafting recipes associated with a specific item. This includes details on ingredients, work amount, required skills, and production stations.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/item/recipes?def_name=MealSimple"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "item_def_name": "MealSimple",
+            "item_label": "simple meal",
+            "recipes": [
+                {
+                    "recipe_def_name": "CookMealSimple",
+                    "label": "cook simple meal",
+                    "job_string": "Cooking simple meal.",
+                    "work_amount": 300.0,
+                    "work_time_seconds": 5.0,
+                    "ingredients": [
+                        {
+                            "summary": "Raw food",
+                            "count": 0.5,
+                            "is_fixed_item": false,
+                            "allowed_def_names": [
+                                "RawPotatoes",
+                                "RawRice",
+                                "Meat_Chicken"
+                            ]
+                        }
+                    ],
+                    "produced_at": [
+                        {
+                            "def_name": "ElectricStove",
+                            "label": "electric stove"
+                        },
+                        {
+                            "def_name": "FueledStove",
+                            "label": "fueled stove"
+                        },
+                        {
+                            "def_name": "Campfire",
+                            "label": "campfire"
+                        }
+                    ],
+                    "skill_requirements": [
+                        {
+                            "skill": "Cooking",
+                            "min_level": 0
+                        }
+                    ],
+                    "research_prerequisite": null
+                }
+            ]
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/item/sources:
+  desc: Identifies the various methods by which a specific item can be obtained in the game. This includes flags for broad categories (Mining, Trading, Crafting) and specific details like the names of the ores or plants that produce the item.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/item/sources?def_name=Steel"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "def_name": "Steel",
+            "label": "steel",
+            "thing_categories": [
+                "ResourcesRaw",
+                "Resources"
+            ],
+            "can_craft": true,
+            "can_trade": true,
+            "can_harvest": false,
+            "can_mine": true,
+            "can_butcher": false,
+            "crafting_recipes": [
+                "SmeltWeapon",
+                "SmeltApparel",
+                "ExtractMetalFromSlag"
+            ],
+            "harvested_from": [],
+            "mined_from": [
+                "MineableSteel"
+            ],
+            "trade_tags": [
+                "BulkGoods",
+                "ExoticMisc"
+            ]
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/resources/summary:
+  desc: |-
+    Retrieves a comprehensive summary of all resources present on a
+    specified map, including total item count, total market value,
+    and categorized breakdowns of resources. It also highlights critical
+    resources like food, medicine, and weapons.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/resources/summary?map_id=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "total_items": 1234,
+            "total_market_value": 5678.90,
+            "last_updated": "2025-12-12t10:00:00.0000000z",
+            "categories": [
+                { "category": "foods", "count": 500, "market_value": 1200.00 },
+                { "category": "manufactured", "count": 200, "market_value": 2500.00 }
+            ],
+            "critical_resources": {
+                "food_summary": {
+                    "food_total": 450,
+                    "total_nutrition": 1500.0,
+                    "meals_count": 300,
+                    "raw_food_count": 150,
+                    "rot_status_info": {
+                        "nutrition_rotating_soon": 100.0,
+                        "nutrition_not_rotating": 1400.0,
+                        "percentage_rotating_soon": 6.67,
+                        "soon_rotting_items": [
+                            {
+                                "thing_id": 1001,
+                                "def_name": "MealSimple",
+                                "label": "simple meal",
+                                "stack_count": 5,
+                                "nutrition": 4.5,
+                                "days_until_rot": 0.5,
+                                "hours_until_rot": 12.0
+                            }
+                        ],
+                        "total_soon_rotting_items": 1,
+                        "total_soon_rotting_stacks": 1
+                    }
+                },
+                "medicine_total": 20,
+                "weapon_count": 5,
+                "weapon_value": 1000.00
+            }
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/resources/stored:
+  desc: |-
+    Retrieves a detailed list of all items currently stored on a specified
+    map. Optionally, results can be filtered by resource category. This
+    endpoint provides granular information about each stored item,
+    including its ID, definition name, label, and stack count.
+  curl: |-
+    **Example:**
+    ```bash
+    # Get all stored resources
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/resources/stored?map_id=0'
+
+    # Get stored resources by category
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/resources/stored?map_id=0&category=Foods'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "Foods": [
+                {
+                    "thing_id": 4895,
+                    "def_name": "MealSurvivalPack",
+                    "label": "packaged survival meal x10",
+                    "categories": ["FoodMeals"],
+                    "position": { "x": 13, "y": 0, "z": 62 },
+                    "stack_count": 10,
+                    "market_value": 24.0,
+                    "is_forbidden": false,
+                    "quality": -1,
+                    "hit_points": 50,
+                    "max_hit_points": 50
+                },
+                {
+                    "thing_id": 4896,
+                    "def_name": "Pemmican",
+                    "label": "pemmican x2",
+                    "categories": ["FoodMeals"],
+                    "position": { "x": 14, "y": 0, "z": 62 },
+                    "stack_count": 50,
+                    "market_value": 1.5,
+                    "is_forbidden": false,
+                    "quality": -1,
+                    "hit_points": 50,
+                    "max_hit_points": 50
+                }
+            ],
+            "resources_raw": [
+                {
+                    "thing_id": 2328,
+                    "def_name": "ChunkGranite",
+                    "label": "granite chunk",
+                    "categories": ["StoneChunks"],
+                    "position": { "x": 41, "y": 0, "z": 1 },
+                    "stack_count": 1,
+                    "market_value": 0.0,
+                    "is_forbidden": false,
+                    "quality": -1,
+                    "hit_points": 300,
+                    "max_hit_points": 300
+                }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/resources/storages/summary:
+  desc: |-
+    Provides a summary of all storage areas (stockpiles and dumping grounds)
+    on a specified map, including the total number of stockpiles, total cells,
+    used cells, and utilization percentage.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/resources/storages/summary?map_id=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "total_stockpiles": 5,
+            "total_cells": 200,
+            "used_cells": 120,
+            "utilization_percent": 60
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/item/spawn:
+  desc: Spawn an item on the map at selected position.
+  method: POST
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/item/spawn \
+    --header 'content-type: application/json' \
+    --data '{
+        "def_name": "BilliardsTable",
+        "stuff_def_name": "WoodLog",
+        "quality": "Legendary",
+        "amount": 1,
+        "x": 120,
+        "z": 106
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "def_name": "BilliardsTable",
+        "stuff_def_name": "WoodLog",
+        "quality": "Legendary",
+        "amount": 1,
+        "x": 120,
+        "z": 106
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```

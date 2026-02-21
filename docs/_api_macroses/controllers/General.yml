@@ -1,0 +1,8 @@
+title: '### :material-cogs: General Controller'
+desc: |-
+  The **General Controller** serves as the entry point for miscellaneous utility functions that don't fit into specific entity categories. It handles the "meta" layer of the game client.
+
+  !!! info "Primary Capabilities"
+      *   **Camera Control**: Pan, zoom, and focus the player's view.
+      *   **UI Management**: Toggle interface visibility or open specific menus.
+      *   **Time Control**: Adjust game speed multiplier.

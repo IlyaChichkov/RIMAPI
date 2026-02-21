@@ -1,0 +1,140 @@
+title: '### :material-hammer-wrench: Builder Controller'
+desc: |-
+  The **Builder Controller** provides tools for programmatic construction and
+  deconstruction. It allows for copying, pasting, and blueprinting areas of the map.
+/api/v1/builder/copy:
+  desc: |-
+    Copies a specified area of the map, including buildings, items, and
+    terrain. The copied data can be used with the paste endpoint.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/builder/copy \
+    --header 'content-type: application/json' \
+    --data '{
+        "from": { "x": 100, "z": 100 },
+        "to": { "x": 110, "z": 110 }
+    }'
+    ```
+  request: |-
+    **Response:**
+    ```json
+    {
+        "map_id": 0,
+        "point_a": {"x": 10, "y": 0, "z": 10},
+        "point_b": {"x": 16, "y": 0, "z": 16}
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success":true,
+        "data": {
+            "width":7,
+            "height":7,
+            "floors": [
+                {"def_name":"Concrete","rel_x":1,"rel_z":1},
+                {"def_name":"Concrete","rel_x":3,"rel_z":2}],
+            "buildings": [
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":0,"rotation":0},
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":3,"rel_z":0,"rotation":0},
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":1,"rotation":0},
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:15:20.9851409Z"
+    }
+    ```
+  method: POST
+/api/v1/builder/paste:
+  desc: Pastes a previously copied area to a new location on the map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/builder/paste \
+    --header 'content-type: application/json' \
+    --data '{
+        "at": { "x": 150, "z": 150 }
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "map_id": 0,
+        "position": {"x": 80, "y": 0, "z": 80},
+        "blueprint": {
+            "width":7,
+            "height":7,
+            "floors": [
+                {"def_name":"Concrete","rel_x":1,"rel_z":1},
+                {"def_name":"Concrete","rel_x":3,"rel_z":2}],
+            "buildings": [
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":0,"rotation":0},
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":3,"rel_z":0,"rotation":0},
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":1,"rotation":0},
+            ]
+        },
+        "clear_obstacles": true,
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success":true,
+        "errors":[],
+        "warnings":[],
+        "timestamp":"2025-12-31T12:18:40.2019606Z"
+    }
+    ```
+  method: POST
+/api/v1/builder/blueprint:
+  desc: |-
+    Places blueprints for a copied area, allowing colonists to construct
+    the buildings.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/builder/blueprint \
+    --header 'content-type: application/json' \
+    --data '{
+        "at": { "x": 150, "z": 150 }
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "map_id": 0,
+        "position": {"x": 80, "y": 0, "z": 80},
+        "blueprint": {
+            "width":7,
+            "height":7,
+            "floors": [
+                {"def_name":"Concrete","rel_x":1,"rel_z":1},
+                {"def_name":"Concrete","rel_x":3,"rel_z":2}],
+            "buildings": [
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":0,"rotation":0},
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":3,"rel_z":0,"rotation":0},
+                {"def_name":"Wall","stuff_def_name":"WoodLog","rel_x":0,"rel_z":1,"rotation":0},
+            ]
+        },
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success":true,
+        "errors":[],
+        "warnings":[],
+        "timestamp":"2025-12-31T12:18:40.2019606Z"
+    }
+    ```
+  method: POST

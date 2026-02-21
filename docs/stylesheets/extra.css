@@ -312,3 +312,23 @@
 .doc-github-container:hover::before {
     opacity: 1;
 }
+
+/* Custom API Tags */
+.doc-tag {
+  background-color: var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light);
+  font-size: 0.45rem;
+  font-weight: 600;
+  padding: 0.2em 0.8em;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid var(--md-default-fg-color--lighter);
+}
+
+/* Make them pop a bit more in dark mode */
+[data-md-color-scheme="slate"] .doc-tag {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--md-default-fg-color);
+}

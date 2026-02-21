@@ -1,0 +1,112 @@
+title: '### :material-server-network: Server Cache Controller'
+desc: |-
+  Endpoints for managing the API's internal caching mechanism. Use these routes to toggle caching,
+  monitor performance statistics (hit/miss ratios), and manually flush the cache to free memory or
+  force data updates.
+/api/v1/cache/enable:
+  desc: |-
+    Enable server caching for endpoint results. When enabled, valid GET requests will be stored
+    in memory to reduce server load and improve response times.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/cache/enable
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/cache/disable:
+  desc: |-
+    Disable server caching. This forces the server to re-process every request. Useful for
+    debugging or ensuring real-time data accuracy during development.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/cache/disable
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/cache/status:
+  desc: |-
+    Retrieves the current status and performance statistics
+    of the API's internal caching system. This endpoint provides
+    visibility into cache utilization, effectiveness, and
+    memory footprint, useful for monitoring and debugging API
+    performance and optimization.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/cache/status
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "enabled": true,
+        "statistics": {
+            "total_entries": 0,
+            "hits": 0,
+            "misses": 0,
+            "memory_usage_bytes": 0,
+            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
+            "hit_ratio": 0.0,
+            "compiled_delegate_count": 0,
+            "compiled_delegate_hits": 0,
+            "compiled_delegate_misses": 0
+        }
+    }
+    ```
+  method: GET
+/api/v1/cache/clear:
+  desc: |-
+    Manually triggers a complete flush of the caching system.
+    This removes all stored entries and resets runtime statistics.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/cache/clear
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "enabled": true,
+        "statistics": {
+            "total_entries": 0,
+            "hits": 0,
+            "misses": 0,
+            "memory_usage_bytes": 0,
+            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
+            "hit_ratio": 0.0,
+            "compiled_delegate_count": 0,
+            "compiled_delegate_hits": 0,
+            "compiled_delegate_misses": 0
+        }
+    }
+    ```
+  method: POST

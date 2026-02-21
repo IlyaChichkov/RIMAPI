@@ -1,0 +1,82 @@
+title: '### :material-store: Trade Controller'
+desc: |-
+  Provides access to the game's economy and trading systems. This controller handles the definitions for various trader types (Orbital, Caravan, Visitor), allowing you to analyze their stock generation rules, item commonality, and buy/sell behaviors.
+
+  **Capabilities:**
+
+  * List all global Trader Kinds (Defs).
+  * Inspect stock generation logic (specific items, categories, or tags).
+  * Determine if a trader type is orbital or land-based.
+/api/v1/traders/defs:
+  desc: Returns a list of all trader definitions (TraderKindDefs). This includes orbital traders, caravans, and visitors, detailing their stock generation rules, commonality, and whether they buy specific categories of items.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/traders/defs
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "def_name": "Orbital_BulkGoods",
+                "label": "bulk goods trader",
+                "orbital": true,
+                "visitor": false,
+                "commonality": 1.0,
+                "items": [
+                    {
+                        "name": "Steel",
+                        "count": "500~800",
+                        "price": "Normal"
+                    },
+                    {
+                        "name": "ComponentIndustrial",
+                        "count": "20~40"
+                    }
+                ],
+                "categories": [
+                    {
+                        "name": "Textiles",
+                        "count": "300~600"
+                    },
+                    {
+                        "name": "FoodRaw",
+                        "count": "200~400"
+                    }
+                ],
+                "tags": [
+                    {
+                        "name": "Artifact",
+                        "buys": false
+                    }
+                ]
+            },
+            {
+                "def_name": "Caravan_Outlander_CombatSupplier",
+                "label": "combat supplier",
+                "orbital": false,
+                "visitor": true,
+                "commonality": 1.0,
+                "items": [
+                    {
+                        "name": "MedicineIndustrial",
+                        "count": "5~15"
+                    }
+                ],
+                "categories": [
+                    {
+                        "name": "WeaponsMelee",
+                        "count": "3~6"
+                    }
+                ]
+            }
+        ],
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET

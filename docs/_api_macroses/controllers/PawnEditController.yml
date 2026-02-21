@@ -1,0 +1,396 @@
+title: '### :material-account-edit: Pawn Edit Controller'
+desc: |-
+  The **Pawn Edit Controller** allows for direct **Mutation** of entity data. Unlike the standard
+  Pawn controller, this allows you to rewrite the fundamental properties of a character.
+
+  !!! warning "Experimental Feature"
+      This API controller is experimental.
+
+  **Common Uses:**
+
+  *   `Resurrection` / `Heal`
+  *   `Set Skill Level`
+  *   `Add/Remove Traits`
+  *   `Teleport`
+/api/v1/pawn/edit/basic:
+  desc: Edits the basic information of a pawn, such as name, gender, and age.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/basic \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "nick_name": "Ace",
+        "gender": "Male",
+        "biological_age": 25
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "name": "Ace",
+        "first_name": "John",
+        "last_name": "Doe",
+        "nick_name": "Ace",
+        "gender": "Male",
+        "biological_age": 25,
+        "chronological_age": 150
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/health:
+  desc: Edits the health of a pawn, allowing to heal injuries or cure diseases.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/health \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "heal_all_injuries": true,
+        "restore_body_parts": true,
+        "remove_all_diseases": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "heal_all_injuries": true,
+        "restore_body_parts": true,
+        "remove_all_diseases": true
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/needs:
+  desc: Edits the needs of a pawn, such as hunger, rest, and mood. Values range from 0.0 to 1.0.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/needs \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "food": 1.0,
+        "rest": 1.0,
+        "mood": 1.0
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "food": 1.0,
+        "rest": 1.0,
+        "mood": 1.0
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/skills:
+  desc: Edits the skills of a pawn, setting the level for specified skills.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/skills \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 2356,
+        "skills": [
+            { "skill_name": "Shooting", "level": 20, "passion": 3 }
+        ]
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 2356,
+        "skills": [
+            {
+                "skill_name": "Shooting",
+                "level": 20,
+                "passion": 3
+            },
+            {
+                "skill_name": "Medicine",
+                "level": 15,
+                "passion": 2
+            },
+            {
+                "skill_name": "Melee",
+                "level": 0,
+                "passion": 1
+            }
+        ]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T12:36:12.432366Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/traits:
+  desc: Edits the traits of a pawn, allowing to add or remove traits.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/traits \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "add_traits": [{ "trait_name": "Cannibal", "degree": 0 }],
+        "remove_traits": ["Wimp"]
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "add_traits": [
+            {
+                "trait_name": "Cannibal",
+                "degree": 0
+            },
+            {
+                "trait_name": "Industrious",
+                "degree": 0
+            }
+        ],
+        "remove_traits": [
+            "Wimp",
+            "Pyromaniac"
+        ]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/inventory:
+  desc: Edits the inventory of a pawn, allowing to add or remove items.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/inventory \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "clear_inventory": true,
+        "add_items": [{ "def_name": "MealSimple", "count": 10 }]
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "drop_inventory": false,
+        "clear_inventory": true,
+        "add_items": [
+            {
+                "def_name": "MealSimple",
+                "count": 10
+            },
+            {
+                "def_name": "MedicineHerbal",
+                "count": 5
+            }
+        ]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/apparel:
+  desc: Edits the apparel of a pawn. Useful for stripping prisoners or disarming enemies.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/apparel \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "drop_apparel": true,
+        "drop_weapons": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "drop_apparel": true,
+        "drop_weapons": true
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/status:
+  desc: Edits the status of a pawn, such as drafting, killing or resurrecting.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/status \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "is_drafted": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "is_drafted": true,
+        "kill": false,
+        "resurrect": false
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/position:
+  desc: Edits the position of a pawn, teleporting it to a new location.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/position \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "position": { "x": 100, "z": 100 }
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "map_id": "0",
+        "position": {
+            "x": 100,
+            "y": 0,
+            "z": 100
+        }
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/faction:
+  desc: Edits the faction of a pawn, for example making a prisoner a colonist.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/faction \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "make_colonist": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "set_faction": "PlayerColony",
+        "make_colonist": true,
+        "make_prisoner": false,
+        "release_prisoner": false
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST

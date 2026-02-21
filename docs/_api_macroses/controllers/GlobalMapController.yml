@@ -1,0 +1,444 @@
+title: '### :material-earth: Global Map Controller'
+desc: |-
+  Operates on the **Planetary** scale. This controller interacts with objects that exist on the world map rather than the local colony map.
+
+  *   **Caravans:** Track movement, ETA, and inventory of traveling groups.
+  *   **Settlements:** locate other faction bases and quest sites.
+  *   **Tiles:** Query biome, temperature, and terrain data for specific world hexes.
+/api/v1/world/caravans:
+  desc: |-
+    Retrieves a list of all active caravans currently on the world map. This includes the player's caravans and visible non-player caravans.
+    Returns details about location, destination, and contents (pawns/items).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/world/caravans
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+            "id": 11,
+            "name": "Rosa's caravan",
+            "is_player_controlled": true,
+            "position": {
+                "x": 1,
+                "y": 65,
+                "z": -75
+            },
+            "tile": 232,
+            "pawns": [
+                {
+                "id": 74,
+                "name": "Rosa"
+                }
+            ],
+            "items": [
+                {
+                "thing_id": 74,
+                "def_name": "Human",
+                "label": "Rosa<color=#999999FF>, Explorer</color>",
+                "categories": [],
+                "position": {
+                    "x": 143,
+                    "y": 0,
+                    "z": 62
+                },
+                "stack_count": 1,
+                "market_value": 840.0,
+                "is_forbidden": false,
+                "quality": -1,
+                "hit_points": 0,
+                "max_hit_points": 0
+                }
+            ],
+            "mass_usage": 0.75,
+            "mass_capacity": 28.0,
+            "forageability": "Forageable",
+            "visibility": "0.16"
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-13T11:01:59.5952054Z"
+    }
+    ```
+  method: GET
+/api/v1/world/settlements:
+  desc: |-
+    Retrieves a list of all permanent settlements (bases) on the world map. This includes the player's colonies and other faction bases.
+    Useful for finding trade partners or raid targets.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/world/settlements
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 0,
+                "name": "Planeton",
+                "tile": 2241,
+                "faction": {
+                    "load_id": 0,
+                    "def_name": "OutlanderCivil",
+                    "name": "Dinium",
+                    "is_player": false,
+                    "leader_title": "Spiritual Bodhisattva",
+                    "leader_id": 10
+                }
+            },
+            {
+                "id": 1,
+                "name": "Borne",
+                "tile": 1031,
+                "faction": {
+                    "load_id": 1,
+                    "def_name": "TribeCivil",
+                    "name": "Union of Cheñoalo",
+                    "is_player": false,
+                    "leader_title": "Anima Chief",
+                    "leader_id": 19
+                }
+            },
+            {
+                "id": 2,
+                "name": "Carsium",
+                "tile": 387,
+                "faction": {
+                    "load_id": 2,
+                    "def_name": "Empire",
+                    "name": "Imperium of God",
+                    "is_player": false,
+                    "leader_title": "High Stellarch",
+                    "leader_id": 25
+                }
+            },
+                {
+                "id": 3,
+                "name": "Colony",
+                "tile": 232,
+                "faction": {
+                    "load_id": 14,
+                    "def_name": "PlayerColony",
+                    "name": "New Arrivals",
+                    "is_player": true,
+                    "leader_title": "Spirit Curate",
+                    "leader_id": 0
+                }
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-13T11:02:36.2212158Z"
+    }
+    ```
+  method: GET
+/api/v1/world/sites:
+  desc: Retrieves a list of temporary world sites. This includes quest locations, bandit camps, item stashes, ambushes, and other event-generated locations.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/world/sites
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 12,
+                "name": "outpost",
+                "tile": 712,
+                "faction": {
+                    "load_id": 7,
+                    "def_name": "PirateWaster",
+                    "name": "Gas Crew",
+                    "is_player": false,
+                    "leader_title": "Moral Thug",
+                    "leader_id": 59
+                }
+            },
+            {
+                "id": 13,
+                "name": "bandit camp",
+                "tile": 2720,
+                "faction": {
+                    "load_id": 7,
+                    "def_name": "PirateWaster",
+                    "name": "Gas Crew",
+                    "is_player": false,
+                    "leader_title": "Moral Thug",
+                    "leader_id": 59
+                }
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-13T11:04:31.8428299Z"
+    }
+    ```
+  method: GET
+/api/v1/world/tile:
+  desc: |-
+    Retrieves detailed ecological and geographical information about a specific world hex (tile) based on its ID.
+    Returns biome, temperature, elevation, and road/river data.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/world/tile?id=12345"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "id": 232,
+            "biome": "Tundra",
+            "elevation": 1592.0,
+            "temperature": -4.1,
+            "rainfall": 269.0,
+            "hilliness": "SmallHills",
+            "roads": [
+                "DirtRoad",
+                "DirtRoad"
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-13T11:05:29.488063Z"
+    }
+    ```
+  method: GET
+/api/v1/world/caravan/path:
+  desc: Retrieves the current movement status and planned path for a specific world caravan.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/world/caravan/path?caravan_id=12"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "id": 12,
+            "moving": true,
+            "current_tile": 150,
+            "next_tile": 151,
+            "progress": 0.45,
+            "destination_tile": 180,
+            "path": [
+                151,
+                152,
+                160,
+                180
+            ]
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/world/player/settlements:
+  desc: Retrieves a list of all settlements belonging to the player's faction.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/world/player/settlements
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 123,
+                "name": "Player's Hope",
+                "tile": 5678,
+                "faction": {
+                    "load_id": 3,
+                    "def_name": "PlayerColony",
+                    "name": "New Arrivals",
+                    "is_player": true
+                }
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-01-04T12:00:00.000Z"
+    }
+    ```
+  method: GET
+/api/v1/world/grid/area:
+  desc: Retrieves a list of world tiles within a specified radius of a center tile.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/world/grid/area?tile_id=12345&radius=5'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 12345,
+                "biome": "Tundra",
+                "elevation": 100.0,
+                "temperature": -10.0,
+                "rainfall": 200.0,
+                "hilliness": "SmallHills",
+                "roads": [],
+                "rivers": [],
+                "lat": 60.0,
+                "lon": -30.0,
+                "is_polluted": false,
+                "pollution": 0.0
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-01-04T12:00:00.000Z"
+    }
+    ```
+  method: GET
+/api/v1/world/tile/coordinates:
+  desc: Retrieves the latitude and longitude for a specific tile ID.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/world/tile/coordinates?id=12345'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "lat": 60.0,
+            "lon": -30.0
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-01-04T12:00:00.000Z"
+    }
+    ```
+  method: GET
+/api/v1/world/tile/details:
+  desc: Retrieves detailed information about a specific tile.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/world/tile/details?id=12345'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "id": 12345,
+            "biome": "Tundra",
+            "elevation": 100.0,
+            "temperature": -10.0,
+            "rainfall": 200.0,
+            "hilliness": "SmallHills",
+            "roads": [
+                "279644:StoneRoad",
+                "279641:StoneRoad"
+            ],
+            "rivers": [
+                "279640:Creek",
+                "279686:Creek"
+            ],
+            "lat": 60.0,
+            "lon": -30.0,
+            "is_polluted": false,
+            "pollution": 0.0,
+            "time_zone": "2",
+            "forageability": 0.5,
+            "growing_period": "Year-round",
+            "movement_difficulty": 1.0,
+            "stone_types": [
+                "Sandstone",
+                "Granite"
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-01-04T12:00:00.000Z"
+    }
+    ```
+  method: GET
+/api/v1/world/grid:
+  desc: Retrieves the entire world grid, returning a list of all tiles with their basic information.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/world/grid
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 0,
+                "biome": "Ocean",
+                "elevation": -100.0,
+                "temperature": 10.0,
+                "rainfall": 500.0,
+                "hilliness": "Flat",
+                "roads": [
+                    "279644:StoneRoad",
+                    "279641:StoneRoad"
+                ],
+                "rivers": [
+                    "279640:Creek",
+                    "279686:Creek"
+                ],
+                "lat": -90.0,
+                "lon": 0.0,
+                "is_polluted": false,
+                "pollution": 0.0
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-01-04T12:00:00.000Z"
+    }
+    ```
+  method: GET

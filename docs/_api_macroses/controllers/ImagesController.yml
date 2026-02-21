@@ -1,0 +1,104 @@
+title: '### :material-image: Image Controller'
+desc: |-
+  Provides endpoints for extracting visual assets and textures from the game.
+  This is essential for external tools that need to render game maps or items
+  visually by retrieving the actual textures used by RimWorld.
+/api/v1/terrain/image:
+  desc: |-
+    Retrieves the texture image for a specific terrain definition in Base64 format.
+    The `name` parameter corresponds to the `defName` of the terrain (e.g., `Soil`, `WaterDeep`, `Sand`).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/terrain/image?name=Soil"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "name": "Soil",
+            "image_base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0..."
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T14:15:30.000Z"
+    }
+    ```
+  method: GET
+/api/v1/item/image:
+  desc: Retrieves a base64-encoded image of a specific in-game item.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/item/image?name=ComponentIndustrial'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "result": "success",
+            "image_base64": "..."
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:31:48.7480326Z"
+    }
+    ```
+  method: GET
+/api/v1/item/change/image:
+  method: POST
+  desc: |-
+    Uploads and applies a new custom texture to a specific in-game item or thing.
+    Accepts base64-encoded image data along with various rendering properties like
+    scale, directional facing, and masking.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/item/change/image \
+    --header 'content-type: application/json' \
+    --data '{
+        "Name": "WoodLog",
+        "Image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+        "Direction": "South",
+        "Offset": "0,0,0",
+        "Scale": "1.0",
+        "ThingType": "Item",
+        "IsStackable": "true",
+        "MaskImage": "",
+        "UpdateItemIndex": 0
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "Name": "WoodLog",
+        "Image": "<base64_encoded_string>",
+        "Direction": "South",
+        "Offset": "0,0,0",
+        "Scale": "1.0",
+        "ThingType": "Item",
+        "IsStackable": "true",
+        "MaskImage": "<optional_base64_mask>",
+        "UpdateItemIndex": 0
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-02-21T20:15:30.000Z"
+    }
+    ```
