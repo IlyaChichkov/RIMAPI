@@ -30,7 +30,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libcairo2-dev pkg-config python3-dev
-          pip install cairosvg pycairo mkdocs mkdocs-material mkdocs-mermaid2-plugin mkdocs-minify-plugin mkdocs-macros-plugin mkdocs-llmstxt mkdocs-static-i18n
+          # Added pyyaml to ensure the scripts have it available
+          pip install cairosvg pycairo mkdocs mkdocs-material mkdocs-mermaid2-plugin mkdocs-minify-plugin mkdocs-macros-plugin mkdocs-llmstxt mkdocs-static-i18n pyyaml
+
+      - name: Format, Fix, and Validate API Docs
+        run: |
+          echo "🧹 Formatting YAML files..."
+          python scripts/docs/mkdocs_format_yaml.py
+          
+          echo "🔧 Auto-fixing HTTP methods..."
+          python scripts/docs/mkdocs_fix_yaml_methods.py
+          
+          echo "🔍 Running final validation check..."
+          python scripts/docs/mkdocs_check_api.py
 
       - name: Build site
         run: mkdocs build --site-dir public
