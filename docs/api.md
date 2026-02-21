@@ -37,6 +37,14 @@
 </div>
 </h4>
 
+{% if data.tags %}
+<div class="doc-api-tags" style="margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
+  {% for tag in data.tags %}
+  <span class="doc-tag">{{ tag }}</span>
+  {% endfor %}
+</div>
+{% endif %}
+
 {{ data.desc | default('') }}
 
 {{ data.curl | default('') }}
