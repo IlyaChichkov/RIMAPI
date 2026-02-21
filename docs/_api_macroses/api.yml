@@ -4377,7 +4377,7 @@ api:
                     **Example:**
                     ```bash
                     curl --request GET \
-                    --url 'http://localhost:8765/api/v1/pawn/portrait/image?id=1020&width=128&height=128&direction=South'
+                    --url 'http://localhost:8765/api/v1/pawn/portrait/image?pawn_id=1020&width=128&height=128&direction=South'
                     ```
                 request: ""
                 response: |
