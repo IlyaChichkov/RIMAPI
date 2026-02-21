@@ -1,0 +1,157 @@
+title: '### :material-camera: Camera Controller'
+desc: |-
+  Provides endpoints for controlling the user's view in the game.
+  Allows external tools to pan the camera to specific coordinates or adjust the zoom level programmatically.
+/api/v1/camera/change/zoom:
+  desc: |-
+    Adjusts the in-game camera's zoom level to a specified value,
+    instantly changing the field of view. This allows for precise
+    control over how close or far the camera is on the game map.
+  method: POST
+  tags:
+  - UI
+  - Camera
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/camera/change/zoom?zoom=15'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+    "success": true,
+    "errors": [],
+    "warnings": [],
+    "timestamp": "2025-12-09T19:16:06.4839322Z"
+    }
+    ```
+/api/v1/camera/change/position:
+  desc: Instantly moves the in-game camera to the specified world coordinates on the current map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/camera/change/position?x=50&y=50'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/stream/start:
+  desc: |-
+    Starts a live video stream of the game's current camera view.
+    This endpoint initiates a real-time broadcast of the rendered gameplay,
+    capturing exactly what is visible in the player's main viewport.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/stream/start'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/stream/stop:
+  desc: Gracefully stops the active live video stream of the game's camera view.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/stream/stop'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/stream/setup:
+  desc: |-
+    Configures the parameters and settings for the live video stream of
+    the game's camera view before starting it.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "port": 8080,
+        "address": "127.0.0.1",
+        "frame_width": 1280,
+        "frame_height": 720,
+        "target_fps": 30,
+        "jpeg_quality": 85
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/stream/status:
+  desc: Gracefully stops the active live video stream of the game's camera view.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/stream/status'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+    "success": true,
+    "data": {
+        "is_streaming": false,
+        "config": {
+        "port": 5007,
+        "address": "127.0.0.1",
+        "frame_width": 1280,
+        "frame_height": 720,
+        "target_fps": 15,
+        "jpeg_quality": 50
+        }
+    },
+    "errors": [],
+    "warnings": [],
+    "timestamp": "2025-12-09T19:31:56.8297247Z"
+    }
+    ```
+  method: GET

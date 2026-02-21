@@ -1,0 +1,29 @@
+title: '### :material-account-plus: Pawn Spawn Controller'
+desc: The **Pawn Spawn Controller** is used to create and spawn new pawns in the game world.
+/api/v1/pawn/spawn:
+  desc: Spawns a new pawn.
+  curl: ''
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_kind": "Mercenary_Gunner",
+        "faction": "OutlanderCivil",
+        "position": {"x": 11, "y": 0, "z": 11},
+        "biological_age": 25
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success":true,
+        "data": {
+            "pawn_id":39473,
+            "name":"Nitro"
+        },
+        "errors":[],"warnings":[],
+        "timestamp":"2025-12-31T12:32:16.5760065Z"
+    }
+    ```
+  method: POST

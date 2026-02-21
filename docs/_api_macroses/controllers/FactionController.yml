@@ -1,0 +1,309 @@
+title: '### :material-flag: Faction Controller'
+desc: |-
+  The **Faction Controller** manages the geopolitical landscape of the world. It allows for the inspection and manipulation of relationships between the player's colony and other groups.
+
+  **Key Functions:**
+
+  *   :handshake: **Diplomacy:** Adjust goodwill and relation status (Hostile/Neutral/Ally).
+  *   :scroll: **Registry:** List all generated factions and their leaders.
+  *   :busts_in_silhouette: **Interaction:** Trigger faction-specific requests or gifts.
+/api/v1/factions:
+  desc: Retrieves a list of all factions currently known in the game world.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/factions
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "load_id": 0,
+                "def_name": "OutlanderCivil",
+                "name": "Western Haderia",
+                "is_player": false,
+                "relation": "Neutral",
+                "goodwill": 0
+            },
+            {
+                "load_id": 1,
+                "def_name": "TribeCivil",
+                "name": "Coalition of Tol",
+                "is_player": false,
+                "relation": "Neutral",
+                "goodwill": 0
+            },
+            {
+                "load_id": 2,
+                "def_name": "Empire",
+                "name": "Empire of Mophoos",
+                "is_player": false,
+                "relation": "Neutral",
+                "goodwill": 0
+            },
+            {
+                "load_id": 3,
+                "def_name": "PlayerColony",
+                "name": "New Arrivals",
+                "is_player": true,
+                "relation": "",
+                "goodwill": 0
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:21:17.8272328Z"
+    }
+    ```
+  method: GET
+/api/v1/faction/relations:
+  desc: |-
+    Retrieves the diplomatic relationship status between selected by id
+    faction and all other factions.
+  curl: |-
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/faction/relations?id=2
+    ```
+  request: |-
+    ```json
+    {
+        "label": "lowercase label",
+        "message": "uppercase message",
+        "letter_def": "NeutralEvent"
+    }
+    ```
+  response: |-
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: GET
+/api/v1/faction/player:
+  desc: Returns detailed information about the player's own faction.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/faction/player
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "load_id": 3,
+            "def_name": "PlayerColony",
+            "name": "New Arrivals",
+            "is_player": true,
+            "leader_title": "Spirit Speaker",
+            "leader_id": 0
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:22:33.5209596Z"
+    }
+    ```
+  method: GET
+/api/v1/faction:
+  desc: Retrieves detailed information about a specific faction identified by id.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/faction?id=2'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "load_id": 2,
+            "def_name": "Empire",
+            "name": "Empire of Mophoos",
+            "is_player": false,
+            "leader_title": "High Stellarch",
+            "leader_id": 969
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:23:10.8428989Z"
+    }
+    ```
+  method: GET
+/api/v1/faction/relation-with:
+  desc: Gets the diplomatic relationship status between two specified factions.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/faction/relation-with?id=2&other_id=1'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "goodwill": 0,
+            "relation_kind": "Neutral"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:25:02.2515491Z"
+    }
+    ```
+  method: GET
+/api/v1/faction/def:
+  desc: Fetches the raw definition data (Def) for a faction.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/faction/def?name=OutlanderCivil'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "def_name": "OutlanderCivil",
+            "pawn_singular": "outlander",
+            "pawns_plural": "outlanders",
+            "leader_title": "prime councilor",
+            "category_tag": "Outlander",
+            "hostile_to_factionless_humanlikes": false,
+            "starting_count_at_world_creation": "1",
+            "permanent_enemy": false,
+            "natural_enemy": false,
+            "classic_ideo": true,
+            "hidden_ideo": false,
+            "can_siege": true,
+            "can_stage_attacks": true,
+            "can_use_avoid_grid": true,
+            "can_psychic_ritual_siege": false,
+            "earliest_raid_days": 0.0
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:34:20.6487856Z"
+    }
+    ```
+  method: GET
+/api/v1/faction/change/goodwill:
+  desc: Manually **change** the goodwill value between two factions by a specified amount.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/faction/change/goodwill \
+    --header 'content-type: application/json' \
+    --data '{
+        "id": 0,
+        "other_id": 2,
+        "value": -30,
+        "send_message": false,
+        "can_send_hostility_letter": false
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "id": 0,
+        "other_id": 2,
+        "value": -30,
+        "send_message": false,
+        "can_send_hostility_letter": false
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "goodwill": 0,
+            "relation_kind": "Neutral"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:25:02.2515491Z"
+    }
+    ```
+  method: POST
+/api/v1/faction/icon:
+  desc: Retrieves the visual icon and primary color associated with a specific faction. The image is returned as a **Base64 encoded string** (PNG format), suitable for direct embedding in web frontends.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/faction/icon?id=12"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "image": {
+                "result": "Success",
+                "image_base_64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AA..."
+            },
+            "color": "#9A2A2A"
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/faction/goodwill:
+  desc: Sets the goodwill value between two factions.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/faction/goodwill \
+    --header 'content-type: application/json' \
+    --data '{
+        "id": 0,
+        "other_id": 2,
+        "value": 50
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "id": 0,
+        "other_id": 2,
+        "value": 50
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST

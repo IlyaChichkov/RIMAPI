@@ -1,0 +1,862 @@
+title: '### :material-gamepad-variant: Game Controller'
+desc: This controller handles the general game functions.
+/api/v1/game/state:
+  desc: Disable server caching for endpoint results.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/game/state
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "game_tick": 120,
+            "colony_wealth": 4.0,
+            "colonist_count": 3,
+            "storyteller": "Cassandra",
+            "is_paused": true
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:39:28.6476222Z"
+    }
+    ```
+  method: GET
+/api/v1/game/speed:
+  desc: |-
+    Sets the current game time speed.
+
+    !!! info
+        **Speed Values:**
+        ```json
+        `0`: Paused
+        `1`: Normal Speed
+        `2`: Fast Speed
+        `3`: Super Fast Speed
+        `4`: Ultra Fast (Dev Mode only)
+        ```
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url "http://localhost:8765/api/v1/game/speed?speed=3"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": "Game speed set to 3",
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T14:10:05.123Z"
+    }
+    ```
+  method: POST
+/api/v1/game/settings/run-in-background:
+  desc: Retrieves the current state of the "Run in Background" setting.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/game/settings/run-in-background
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": true,
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/game/settings/toggle/run-in-background:
+  desc: Toggles or sets the "Run in Background" setting. The request body determines the desired state.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/game/settings/toggle/run-in-background \
+    --header 'Content-Type: application/json' \
+    --data 'true'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": true,
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: POST
+/api/v1/version:
+  desc: |-
+    Retrieves version information for the game, the REST API mod,
+    and the API itself. This endpoint provides essential identification
+    metadata that can be used for compatibility checks, debugging,
+    and system documentation.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/version
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "rim_world_version": "1.5.4243",
+            "mod_version": "1.2.0",
+            "api_version": "v1"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T18:52:09.0916968Z"
+    }
+    ```
+  method: GET
+/api/v1/mods/info:
+  desc: Manually triggers a complete flush of the API's internal caching system.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/mods/info
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+            "name": "Core",
+            "package_id": "ludeon.rimworld",
+            "load_order": 0
+            },
+            {
+            "name": "Royalty",
+            "package_id": "ludeon.rimworld.royalty",
+            "load_order": 1
+            },
+            {
+            "name": "Ideology",
+            "package_id": "ludeon.rimworld.ideology",
+            "load_order": 2
+            },
+            {
+            "name": "Biotech",
+            "package_id": "ludeon.rimworld.biotech",
+            "load_order": 3
+            },
+            {
+            "name": "Anomaly",
+            "package_id": "ludeon.rimworld.anomaly",
+            "load_order": 4
+            },
+            {
+            "name": "RIMAPI",
+            "package_id": "redeyedev.rimapi",
+            "load_order": 5
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T18:53:40.5041431Z"
+    }
+    ```
+  method: GET
+/api/v1/mods/configure:
+  desc: Configures the active mods list and their load order. Pass an array of package IDs in the exact order you want them loaded. Core (`ludeon.rimworld`) will be automatically prepended if missing. Set `restart_game` to `true` to immediately reboot RimWorld and apply the changes.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+      --url http://localhost:8765/api/v1/mods/configure \
+      --header 'content-type: application/json' \
+      --data '{"package_ids":["brrainz.harmony","ludeon.rimworld","ludeon.rimworld.royalty","ludeon.rimworld.ideology","ludeon.rimworld.biotech","ludeon.rimworld.anomaly","ludeon.rimworld.odyssey","unlimitedhugs.hugslib","redeyedev.rimapi"],"restart_game":true}'
+    ```
+  request: |-
+    **Request Body:**
+    ```json
+    {
+      "package_ids": [
+        "brrainz.harmony",
+        "ludeon.rimworld",
+        "ludeon.rimworld.royalty",
+        "ludeon.rimworld.ideology",
+        "ludeon.rimworld.biotech",
+        "ludeon.rimworld.anomaly",
+        "ludeon.rimworld.odyssey",
+        "unlimitedhugs.hugslib",
+        "redeyedev.rimapi"
+      ],
+      "restart_game": true
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": null,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-02-18T18:23:32.0000000Z"
+    }
+    ```
+  method: POST
+/api/v1/select:
+  desc: |-
+    Selects a specific in-game object (pawn, building, item, etc.)
+    based on its type and unique identifier.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/select?type=pawn&id=443'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/deselect:
+  desc: |-
+    Clears the current in-game selection, removing any highlighted
+    objects and returning the interface to a neutral state.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/deselect
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/open-tab:
+  desc: |-
+    Opens a specific information panel (tab) for the currently selected
+    pawn in the game's inspection pane. This endpoint allows external
+    control to view detailed information about a pawn's health, equipment,
+    needs, relationships, and other attributes—mirroring the tab interface
+    available when manually inspecting a character in-game.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/open-tab?name=health'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/def/all:
+  desc: |-
+    Retrieves comprehensive information about all game definition
+    entries (defs) from RimWorld's data system. Definitions are the core
+    data structures that define nearly every element in the game, including
+    items, buildings, creatures, terrain, research projects, and more.
+
+    ??? info
+        - Things Defs
+
+        ??? example
+
+            ```json
+            {
+                "def_name": "Beer",
+                "label": "beer",
+                "description": "The first beverage besides water ever consumed by mankind. Beer can taste good, but its main effect is intoxication. Excessive consumption can lead to alcohol blackouts and, over time, addiction.",
+                "category": "Item",
+                "thing_class": "ThingWithComps",
+                "stat_base": {
+                "max_hit_points": 50.0,
+                "flammability": 0.5,
+                "deterioration_rate": 0.5,
+                "beauty": -4.0,
+                "market_value": 12.0,
+                "mass": 0.3,
+                "nutrition": 0.08
+                },
+                "is_weapon": true,
+                "is_apparel": false,
+                "is_item": true,
+                "is_pawn": false,
+                "is_plant": false,
+                "is_building": false,
+                "is_medicine": false,
+                "is_drug": true,
+                "market_value": 12.0,
+                "mass": 0.3,
+                "max_hit_points": 50.0,
+                "flammability": 0.5,
+                "stack_limit": 25,
+                "nutrition": 0.08,
+                "work_to_make": 1.0,
+                "work_to_build": 1.0,
+                "beauty": -4.0,
+                "max_health": 0.0,
+                "armor_rating__sharp": 0.0,
+                "armor_rating__blunt": 0.0,
+                "armor_rating__heat": 0.0,
+                "insulation__cold": 0.0,
+                "insulation__heat": 0.0
+            }
+            ```
+
+        - Incidents Defs
+
+        ??? example
+
+            ```json
+            {
+                "def_name": "BloodRain",
+                "label": "Blood rain",
+                "base_chance": 0.5,
+                "base_chance_with_royalty": -1.0,
+                "letter_def_name": "ThreatBig",
+                "population_effect": "0",
+                "min_population": 0,
+                "min_threat_points": -3.40282347E+38,
+                "max_threat_points": 3.40282347E+38,
+                "category": "ThreatBig",
+                "should_ignore_recent_weighting": false,
+                "tags": [],
+                "disallowed_biomes": [],
+                "allowed_biomes": [],
+                "require_colonists_present": false
+            },
+            ```
+
+        - Conditions Defs
+        - PawnKind Defs
+        - Trait Defs
+        - Research Defs
+        - Hediff Defs
+
+        ??? example
+            ```json
+            {
+                "def_name": "GoJuiceHigh",
+                "label": "High on go-juice",
+                "description": "Go-juice in the bloodstream. It supercharges combat-related abilities, and instantly increases psyfocus when first injected.",
+                "hediff_class": "Hediff_High",
+                "is_addiction": false,
+                "makes_sick_thought": false,
+                "severity_per_day": 0.0,
+                "max_severity": 1.0,
+                "tendable": false,
+                "is_bad": false,
+                "stages": [
+                {
+                    "min_severity": 0.0,
+                    "death_mtb_days": -1.0,
+                    "pain_factor": 0.1,
+                    "forget_memory_thought_mtb_days": -1.0,
+                    "vomit_mtb_days": -1.0,
+                    "mental_break_mtb_days": -1.0
+                }
+                ]
+            }
+            ```
+
+        - Skill Defs
+        - WorkType Defs
+        - Need Defs
+        - Thought Defs
+        - Stat Defs
+        - WorldObject Defs
+        - Biome Defs
+        - Terrain Defs
+        - Recipe Defs
+        - Body Defs
+        - BodyPart Defs
+        - Faction Defs
+        - Sound Defs
+        - DesignationCategory Defs
+        - JoyKind Defs
+        - Meme Defs
+        - Precept Defs
+        - Ability Defs
+        - Gene Defs
+        - Weather Defs
+        - RoomRole Defs
+        - RoomStat Defs
+        - MentalState Defs
+        - DrugPolicy Defs
+        - Plant Defs
+        - Animal Defs
+        - Storyteller Defs
+
+        ??? example
+            ```json
+            {
+                "def_name": "Cassandra"
+            },
+            {
+                "def_name": "Phoebe"
+            },
+            {
+                "def_name": "Randy"
+            },
+            {
+                "def_name": "Tutor"
+            }
+            ```
+
+        - Difficulty Defs
+
+        ??? example
+            ```json
+            {
+                "def_name": "Peaceful"
+            },
+            {
+                "def_name": "Easy"
+            },
+            {
+                "def_name": "Medium"
+            },
+            {
+                "def_name": "Rough"
+            },
+            {
+                "def_name": "Hard"
+            },
+            {
+                "def_name": "Extreme"
+            },
+            {
+                "def_name": "Custom"
+            }
+            ```
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/def/all
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "things_defs": [
+                {
+                    "def_name": "TextBook",
+                    "label": "textbook",
+                    "description": "A book which focuses on teaching skills.",
+                    "category": "Item",
+                    "thing_class": "Book",
+                    "stat_base": {
+                    "max_hit_points": 60.0,
+                    "deterioration_rate": 5.0,
+                    "mass": 0.5,
+                    "flammability": 1.0,
+                    "beauty": 1.0,
+                    "market_value": 160.0
+                    },
+                    "is_weapon": false,
+                    "is_apparel": false,
+                    "is_item": true,
+                    "is_pawn": false,
+                    "is_plant": false,
+                    "is_building": false,
+                    "is_medicine": false,
+                    "is_drug": false,
+                    "market_value": 160.0,
+                    "mass": 0.5,
+                    "max_hit_points": 60.0,
+                    "flammability": 1.0,
+                    "stack_limit": 1,
+                    "nutrition": 0.0,
+                    "work_to_make": 1.0,
+                    "work_to_build": 1.0,
+                    "beauty": 1.0,
+                    "max_health": 0.0,
+                    "armor_rating__sharp": 0.0,
+                    "armor_rating__blunt": 0.0,
+                    "armor_rating__heat": 0.0,
+                    "insulation__cold": 0.0,
+                    "insulation__heat": 0.0
+                },
+                {
+                    <...>
+                }
+            ],
+            "incidents_defs": [],
+            "conditions_defs": [],
+            "pawn_kind_defs": [],
+            "trait_defs": [],
+            "research_defs": [],
+            "hediff_defs": [],
+            "skill_defs": [],
+            "work_type_defs": [],
+            "need_defs": [],
+            "stat_defs": [],
+            "world_object_defs": [],
+            "biome_defs": [],
+            "terrain_defs": [],
+            "recipe_defs": [],
+            "body_defs": [],
+            "body_part_defs": [],
+            "faction_defs": [],
+            "sound_defs": [],
+            "designation_category_defs": [],
+            "joy_kind_defs": [],
+            "meme_defs": [],
+            "precept_defs": [],
+            "ability_defs": [],
+            "gene_defs": [],
+            "weather_defs": [],
+            "room_role_defs": [],
+            "room_stat_defs": [],
+            "mental_state_defs": [],
+            "drug_policy_defs": [],
+            "plant_defs": [],
+            "animal_defs": []
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:09:46.047553Z"
+    }
+    ```
+  method: GET
+/api/v1/datetime:
+  desc: Retrieves the current in-game date and time according to the RimWorld world calendar.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/datetime
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "datetime": "12th of Aprimay, 5500, 17h"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:05:35.3244951Z"
+    }
+    ```
+  method: GET
+/api/v1/datetime/tile:
+  desc: Retrieves the current in-game date and time according to the RimWorld world calendar.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/datetime
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "datetime": "12th of Aprimay, 5500, 17h"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:05:35.3244951Z"
+    }
+    ```
+  method: GET
+/api/v1/game/select-area:
+  desc: |-
+    Simulates a drag-select action in the game world (UI).
+    Selects all selectable objects (colonists, items, etc.) within the rectangle defined by PositionA and PositionB.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/game/select-area \
+    --header 'Content-Type: application/json' \
+    --data '{
+        "position_a": { "x": 10, "y": 0, "z": 10 },
+        "position_b": { "x": 20, "y": 0, "z": 20 }
+    }'
+    ```
+  request: |-
+    **Request Body:**
+    ```json
+    {
+        "position_a": { "x": 10, "y": 0, "z": 10 },
+        "position_b": { "x": 20, "y": 0, "z": 20 }
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": "Area selected from (10, 0, 10) to (20, 0, 20). 5 objects selected.",
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T14:18:10.000Z"
+    }
+    ```
+  method: POST
+/api/v1/game/send/letter:
+  desc: |-
+    Manually triggers an in-game notification letter (message) with custom
+    title, text, and type (e.g., neutral, negative, positive, threat).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/game/send/letter
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "label": "New Message Label",
+        "message": "Hello RimWorld!",
+        "letter_def": "NeutralEvent"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/game/save:
+  desc: Saves the current game state to a file with the specified name.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url "http://localhost:8765/api/v1/game/save?name=MyApiSave"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-20T10:00:00.000Z"
+    }
+    ```
+  method: POST
+/api/v1/game/load:
+  desc: Try to loads a game state from a save file with the specified name.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/game/load?name=MyApiSave"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-20T10:01:00.000Z"
+    }
+    ```
+  method: POST
+/api/v1/game/start/devquick:
+  desc: Starts a new game immediately using the developer 'quick start' configuration, bypassing character selection and landing site choice. This is useful for rapid testing.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/game/start/devquick
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-20T10:02:00.000Z"
+    }
+    ```
+  method: POST
+/api/v1/game/start:
+  desc: |-
+    This endpoint starts a new RimWorld game with the specified
+    configuration parameters. It initializes a new game world with
+    the given storyteller, difficulty, map settings, and planet
+    generation parameters.
+
+    !!! info "Getting Available Options"
+        Storyteller names, difficulty levels, and other definition values can be
+        retrieved from the `/api/v1/def/all` endpoint. This endpoint provides
+        comprehensive information about all game definitions, including:
+
+        - **Storyteller definitions**
+        - **Difficulty settings**
+
+        **Example usage:**
+        ```bash
+        curl --request GET \
+        --url http://localhost:8765/api/v1/def/all
+        ```
+
+        The response is a large json structure from the game, it contains
+        categorized definitions that can be used to
+        populate the parameters for this game start request.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/game/start \
+    --header 'Content-Type: application/json' \
+    --data '{
+        "storyteller_name": "Randy",
+        "difficulty_name": "Peaceful",
+        "map_size": 120,
+        "permadeath": false,
+        "planet_coverage": 0.1,
+        "world_seed": "rickroll",
+        "starting_tile": "7298",
+        "starting_season": "2",
+        "overall_rainfall": 2,
+        "overall_temperature": 2,
+        "overall_population": 2,
+        "landmark_density": 2
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "storyteller_name": "Randy",
+        "difficulty_name": "Peaceful",
+        "map_size": 120,
+        "permadeath": false,
+        "planet_coverage": 0.1,
+        "world_seed": "rickroll",
+        "starting_tile": "7298",
+        "starting_season": "2",
+        "overall_rainfall": 2,
+        "overall_temperature": 2,
+        "overall_population": 2,
+        "landmark_density": 2
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-20T10:03:00.000Z"
+    }
+    ```
+  method: POST
+/api/v1/game/settings:
+  desc: |-
+    Retrieves the current game configuration settings. This endpoint
+    provides access to various gameplay, audio, video, and interface preferences.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/game/settings
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "language": "English",
+            "run_in_background": true,
+            "development_mode": true,
+            "log_verbose": false,
+            "temperature_mode": "Celsius",
+            "autosave_interval": true,
+            "resolution": "1024x768",
+            "fullscreen": false,
+            "user_interface_scale": 1.0,
+            "custom_cursor_enabled": true,
+            "hats_only_on_map": false,
+            "plant_wind_sway": true,
+            "max_number_of_player_settlements": 1,
+            "volume_master": 0.6375921,
+            "volume_game": 0.7051597,
+            "volume_music": 0.0,
+            "volume_ambient": 0.6007371,
+            "pause_on_load": false,
+            "pause_on_urgent_letter": "MajorThreat",
+            "automatic_pause_on_letter": false,
+            "edge_screen_scroll": true,
+            "map_drag_sensitivity": 1.3,
+            "zoom_to_mouse": false,
+            "show_realtime_clock": true,
+            "resource_readout_categorized": false,
+            "show_animal_names": false,
+            "reset_mods_config_on_crash": false,
+            "texture_compression": 0
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-20T12:30:35.4174593Z"
+    }
+    ```
+  method: GET

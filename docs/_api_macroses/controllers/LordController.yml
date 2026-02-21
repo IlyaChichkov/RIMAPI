@@ -1,0 +1,33 @@
+title: '### :material-chess-king: Lord Controller'
+desc: |-
+  The **Lord Controller** is responsible for managing AI Lords, which are high-level AI
+  constructs that command groups of pawns.
+/api/v1/lords/create:
+  desc: Creates a new AI Lord with a specified job.
+  curl: ''
+  request: |-
+    **Request:**
+    ```json
+    {
+        "faction": "AncientsHostile",
+        "pawn_ids": [39395],
+        "job_type": "AssaultThings",
+        "target_ids": [39387]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success":true,
+        "data":
+        {
+            "lord_id":0,
+            "member_count":1
+        },
+        "errors":[],
+        "warnings":[],
+        "timestamp":"2025-12-31T11:39:54.3651293Z"
+    }
+    ```
+  method: POST

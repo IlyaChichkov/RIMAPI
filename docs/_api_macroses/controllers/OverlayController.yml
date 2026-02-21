@@ -1,0 +1,8 @@
+title: '### :material-layers: Overlay Controller'
+desc: The **Overlay Controller** is for drawing overlays on the screen.
+/api/v1/ui/announce:
+  desc: ''
+  curl: ''
+  request: ''
+  response: ''
+  method: POST

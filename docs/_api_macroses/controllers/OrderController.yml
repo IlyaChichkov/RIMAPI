@@ -1,0 +1,40 @@
+title: '### :material-gesture-tap-button: Order Controller'
+desc: The **Order Controller** is for issuing commands to pawns.
+/api/v1/order/designate/area:
+  desc: |-
+    Send command
+
+    Currently supported commands:
+
+    - remove-all: removes all commands
+    - mine
+    - deconstruct
+    - harvest
+    - hunt
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/order/designate/area'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "map_id": 0,
+        "type": "Mine",
+        "point_a": {"x": 0, "y": 0, "z": 0},
+        "point_b": {"x": 250, "y": 0, "z": 250}
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T11:04:27.9729153Z"
+    }
+    ```
+  method: POST

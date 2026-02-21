@@ -1,0 +1,953 @@
+title: '### :material-map-legend: Map Controller'
+desc: |-
+  Focuses on the **Local** map selected by **map_id**. This handles the physical terrain and conditions of the colony's immediate area.
+
+  !!! abstract "Scope"
+      This controller deals with the *environment*, not the *entities* within it. For Pawns or Items, see their respective controllers.
+
+  **Capabilities:**
+
+  *   Change local weather.
+  *   Query map size and boundaries.
+  *   Modify terrain (set floors, clear debris).
+/api/v1/map/things:
+  desc: Returns a comprehensive list of all objects (things) present on the current map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/map/things?map_id=0
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "thing_id": 2328,
+                "def_name": "ChunkGranite",
+                "label": "granite chunk",
+                "categories": [
+                    "StoneChunks"
+                ],
+                "position": {
+                    "x": 41,
+                    "y": 0,
+                    "z": 1
+                },
+                "stack_count": 1,
+                "market_value": 0.0,
+                "is_forbidden": false,
+                "quality": -1,
+                "hit_points": 300,
+                "max_hit_points": 300
+            },
+            {
+                "thing_id": 4895,
+                "def_name": "MealSurvivalPack",
+                "label": "packaged survival meal",
+                "categories": [
+                    "FoodMeals"
+                ],
+                "position": {
+                    "x": 13,
+                    "y": 0,
+                    "z": 62
+                },
+                "stack_count": 1,
+                "market_value": 24.0,
+                "is_forbidden": true,
+                "quality": -1,
+                "hit_points": 50,
+                "max_hit_points": 50
+            },
+            <...>
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/maps:
+  desc: Retrieves a list of all currently loaded maps in the game session.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/maps
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+            "id": 0,
+            "index": 0,
+            "seed": 16622162,
+            "faction_id": "14",
+            "is_player_home": true,
+            "is_pocket_map": false,
+            "is_temp_incident_map": false,
+            "size": "(150, 1, 150)"
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:38:45.9289233Z"
+    }
+    ```
+  method: GET
+/api/v1/map/pawns:
+  desc: |-
+    Gets a list of all colonists/pawns present on the specified map. Returns key status
+    information like health, mood, and position for each.
+  curl: |-
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/map/pawns?mapId=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 148,
+                "name": "Val",
+                "gender": "Female",
+                "age": 25,
+                "health": 1.0,
+                "mood": 0.85,
+                "hunger": 0.2,
+                "position": {
+                    "x": 102,
+                    "y": 0,
+                    "z": 115
+                }
+            },
+            {
+                "id": 149,
+                "name": "Stumpy",
+                "gender": "Male",
+                "age": 42,
+                "health": 0.65,
+                "mood": 0.4,
+                "hunger": 0.8,
+                "position": {
+                    "x": 105,
+                    "y": 0,
+                    "z": 112
+                }
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:30:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/map/terrain:
+  desc: |-
+    Returns the full terrain and floor grid data for the specified map.
+
+    **Note on Data Format:** To optimize bandwidth, this endpoint uses **Run-Length
+    Encoding (RLE)** and **Palette Mapping**.
+
+    - `palette`: A list of unique terrain definitions (e.g., "Soil", "WaterDeep").
+    - `grid`: A compressed list of integers representing the map cells. Format is
+              pairs of `[count, palette_index]`.
+
+    Example decoding: A grid `[10, 0, 5, 2]` means "10 cells of palette[0], followed by 5 cells of palette[2]".
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/map/terrain?map_id=0
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "width": 250,
+            "height": 250,
+            "palette": [
+                "Soil",
+                "Gravel",
+                "SoilRich",
+                "WaterDeep"
+            ],
+            "grid": [
+                22,
+                0,
+                5,
+                1,
+                500,
+                0,
+                10,
+                3
+            ],
+            "floor_palette": [
+                "WoodPlankFloor",
+                "TileSandstone"
+            ],
+            "floor_grid": [
+                62400,
+                0,
+                50,
+                1,
+                50,
+                2
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T13:12:28.8217513Z"
+    }
+    ```
+  method: GET
+/api/v1/map/things-at:
+  desc: |-
+    Returns a list of things located at a specific single cell coordinate.
+
+    **Note:** Unlike standard GET requests, this endpoint requires a JSON body containing the coordinates.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/map/things-at \
+    --header 'Content-Type: application/json' \
+    --data '{
+        "map_id": 0,
+        "position": { "x": 15, "y": 0, "z": 25 }
+    }'
+    ```
+  request: |-
+    **Request Body:**
+    ```json
+    {
+        "map_id": 0,
+        "position": {
+            "x": 15,
+            "y": 0,
+            "z": 25
+        }
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "thing_id": 4895,
+                "def_name": "MealSurvivalPack",
+                "label": "packaged survival meal",
+                "position": { "x": 15, "y": 0, "z": 25 },
+                "stack_count": 10
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T13:40:00.000Z"
+    }
+    ```
+  method: GET
+/api/v1/map/things/radius:
+  desc: |-
+    Returns a list of all things found within a specified radius around a center point.
+    Useful for finding nearby resources or enemies.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/map/things/radius?map_id=0&x=120&z=120&radius=10"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "thing_id": 2328,
+                "def_name": "ChunkGranite",
+                "label": "granite chunk",
+                "position": { "x": 121, "y": 0, "z": 119 },
+                "stack_count": 1
+            },
+            {
+                "thing_id": 5012,
+                "def_name": "Steel",
+                "label": "steel",
+                "position": { "x": 118, "y": 0, "z": 122 },
+                "stack_count": 35
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T13:42:00.000Z"
+    }
+    ```
+  method: GET
+/api/v1/map/ore:
+  desc: |-
+    Returns a compressed dictionary of all ore deposits on the map.
+
+    **Structure:**
+    * Keys are the ore definition names (e.g., "MineableSteel").
+    * `cells` contains the flattened map indices of the ore.
+    * `hp` contains the current health of the ore block at the corresponding index (parallel arrays).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/map/ore?map_id=0"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "map_width": 250,
+            "ores": {
+                "MineableSteel": {
+                    "max_hp": 1500,
+                    "cells": [
+                        12500,
+                        12501,
+                        12502
+                    ],
+                    "hp": [
+                        1500,
+                        1500,
+                        850
+                    ]
+                },
+                "MineableGold": {
+                    "max_hp": 500,
+                    "cells": [
+                        3005
+                    ],
+                    "hp": [
+                        500
+                    ]
+                }
+            }
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/map/fog-grid:
+  desc: |-
+    Retrieves the visibility (fog of war) grid for the current map.
+
+    The `fog_data` is a flat string representation of the grid where `Index = (z * Width) + x`.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/map/fog-grid?map_id=0"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "map_id": 0,
+            "width": 250,
+            "height": 250,
+            "fog_data": "AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+fw=="
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/map/plants:
+  desc: |-
+    Returns a list of all plants located on the specified map.
+    This includes wild plants (trees, bushes, grass) and sown crops.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/map/plants?map_id=0"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "thing_id": 1024,
+                "def_name": "Plant_TreeOak",
+                "label": "oak tree",
+                "position": { "x": 45, "y": 0, "z": 88 },
+                "growth": 0.85
+            },
+            {
+                "thing_id": 1025,
+                "def_name": "Plant_Potato",
+                "label": "potato plant",
+                "position": { "x": 50, "y": 0, "z": 50 },
+                "growth": 0.45
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T14:12:00.000Z"
+    }
+    ```
+  method: GET
+/api/v1/map/weather:
+  desc: |-
+    Retrieves the current weather conditions and temperature for
+    the currently active map (the map the player is viewing).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/map/weather?map_id=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "weather": "Rain",
+            "temperature": 19.7876511
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:39:54.5380426Z"
+    }
+    ```
+  method: GET
+/api/v1/map/animals:
+  desc: |-
+    Retrieves a list of all animals currently present on the active map.
+    This includes both wild animals and tamed/owned animals
+    (pets, livestock, caravan animals).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/map/animals?map_id=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+            "id": 3633,
+            "name": "Colin",
+            "def": "Yak",
+            "faction": "PlayerColony",
+            "position": {
+                "x": 67,
+                "y": 119,
+                "z": 0
+            },
+            "pregnant": false
+            },
+            {
+            "id": 8547,
+            "name": "Hare",
+            "def": "Hare",
+            "position": {
+                "x": 50,
+                "y": 40,
+                "z": 0
+            },
+            "pregnant": false
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:41:34.3358819Z"
+    }
+    ```
+  method: GET
+/api/v1/map/zones:
+  desc: |-
+    Retrieves a list of all defined zones and areas on the active map.
+    Zones are player-designated and areas are specific purposes layouts,
+    such as roof build, clear pollution, etc.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/map/zones?map_id=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "zones": [],
+            "areas": [
+                {
+                    "id": 0,
+                    "cells_count": 0,
+                    "label": "Home",
+                    "base_label": "Home",
+                    "type": "Area_Home"
+                },
+                {
+                    "id": 1,
+                    "cells_count": 0,
+                    "label": "Build roof",
+                    "base_label": "Build roof",
+                    "type": "Area_BuildRoof"
+                },
+                {
+                    "id": 2,
+                    "cells_count": 0,
+                    "label": "No roof",
+                    "base_label": "No roof",
+                    "type": "Area_NoRoof"
+                },
+                {
+                    "id": 3,
+                    "cells_count": 0,
+                    "label": "Snow clear",
+                    "base_label": "Snow clear",
+                    "type": "Area_SnowClear"
+                },
+                {
+                    "id": 4,
+                    "cells_count": 0,
+                    "label": "Pollution clear",
+                    "base_label": "Pollution clear",
+                    "type": "Area_PollutionClear"
+                },
+                {
+                    "id": 5,
+                    "cells_count": 0,
+                    "label": "Area 1",
+                    "base_label": "Area 1",
+                    "type": "Area_Allowed"
+                }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:42:50.3515476Z"
+    }
+    ```
+  method: GET
+/api/v1/map/building/info:
+  desc: Retrieves detailed information about a specific building on the active map, given its unique identifier.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/building/info?id=51058'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/map/weather/change:
+  desc: Manually changes the current weather conditions on the active map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/map/weather/change?map_id=0&name=Clear'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/map/power/info:
+  desc: |-
+    Provides detailed information about the power grid on the current
+    map, including generators, batteries, consumers, network balance,
+    and power flow status.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/map/power/info?map_id=0
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "produce_power_buildings": [],
+            "consume_power_buildings": [],
+            "store_power_buildings": [],
+            "current_power": 0,
+            "total_possible_power": 0,
+            "currently_stored_power": 0,
+            "total_power_storage": 0,
+            "total_consumption": 0,
+            "consumption_power_on": 0
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:48:05.7377482Z"
+    }
+    ```
+  method: GET
+/api/v1/map/creatures/summary:
+  desc: Returns a summarized count and classification of all creatures (pawns) on the current map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/map/creatures/summary?map_id=0
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "colonists_count": 3,
+            "prisoners_count": 0,
+            "enemies_count": 0,
+            "animals_count": 5,
+            "insectoids_count": 0,
+            "mechanoids_count": 0
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:49:21.2287056Z"
+    }
+    ```
+  method: GET
+/api/v1/map/farm/summary:
+  desc: |-
+    Retrieves a summary of all farming activities on the current map, including
+    planted crops, growth stages, soil fertility, and expected yield.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/map/farm/summary?map_id=0
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "total_growing_zones": 0,
+            "total_plants": 0,
+            "total_expected_yield": 0,
+            "total_infected_plants": 0,
+            "growth_progress_average": 0.0,
+            "crop_types": []
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:52:41.9403791Z"
+    }
+    ```
+  method: GET
+/api/v1/map/zone/growing:
+  desc: |-
+    Returns detailed information about all growing zones on the map,
+    including their plant types, growth progress, and zone settings.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/map/zone/growing?map_id=0
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "zone": {
+            "id": 0,
+            "cells_count": 24,
+            "label": "Growing zone 1",
+            "base_label": "Growing zone"
+            },
+            "plant_def_name": "Plant_Potato",
+            "plant_count": 2,
+            "def_expected_yield": 0,
+            "expected_yield": 0,
+            "infected_count": 0,
+            "growth_progress": 0.5825427,
+            "is_sowing": true,
+            "soil_type": "Soil",
+            "fertility": 1.0,
+            "has_dying": false,
+            "has_dying_from_pollution": false,
+            "has_dying_from_no_pollution": false
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:53:31.8379705Z"
+    }
+    ```
+  method: GET
+/api/v1/map/rooms:
+  desc: |-
+    Retrieves a list of all colonists in the player's faction, including
+    their skills, traits, health, mood, and current activities.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/map/rooms?map_id=0
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "rooms": [
+            {
+                "id": 5,
+                "role_label": "none",
+                "temperature": 4.217273,
+                "cells_count": 0,
+                "touches_map_edge": false,
+                "is_prison_cell": false,
+                "is_doorway": false,
+                "open_roof_count": 0,
+                "contained_beds_ids": []
+            },
+            {
+                "id": 61,
+                "role_label": "bedroom",
+                "temperature": 4.217273,
+                "cells_count": 6,
+                "touches_map_edge": false,
+                "is_prison_cell": false,
+                "is_doorway": false,
+                "open_roof_count": 6,
+                "contained_beds_ids": [
+                8408
+                ]
+            }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:57:48.1578638Z"
+    }
+    ```
+  method: GET
+/api/v1/map/buildings:
+  desc: Retrieves a comprehensive list of all buildings and structures present on the active map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/map/buildings?map_id=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 8880,
+                "def": "Turret_MiniTurret",
+                "label": "steel mini-turret",
+                "position": {
+                    "x": 60,
+                    "y": 0,
+                    "z": 86
+                },
+                "type": "Building_TurretGun"
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:46:33.2115192Z"
+    }
+    ```
+  method: GET
+/api/v1/map/destroy/corpses:
+  desc: Destroys all corpses on the map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/map/destroy/corpses
+    ```
+  request: ''
+  response: ''
+  method: POST
+/api/v1/map/destroy/forbidden:
+  desc: Destroys all forbidden items on the map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/map/destroy/forbidden
+    ```
+  request: ''
+  response: ''
+  method: POST
+/api/v1/map/destroy/rect:
+  desc: Destroys all things within a specified rectangle on the map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/map/destroy/rect \
+    --header 'content-type: application/json' \
+    --data '{
+        "map_id": 0,
+        "point_a": {"x": 7, "y": 0, "z": 7},
+        "point_b": {"x": 32, "y": 0, "z": 32}
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "map_id": 0,
+        "point_a": {"x": 7, "y": 0, "z": 7},
+        "point_b": {"x": 32, "y": 0, "z": 32}
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T11:04:27.9729153Z"
+    }
+    ```
+  method: POST
+/api/v1/map/repair/positions:
+  desc: Repairs items placed on provided list of positions.
+  curl: ''
+  request: ''
+  response: ''
+  method: POST
+/api/v1/map/repair/rect:
+  desc: Repairs all repairable items within a specified rectangle on the map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/map/repair/rect \
+    --header 'content-type: application/json' \
+    --data '{
+        "map_id": 0,
+        "point_a": {"x": 7, "y": 0, "z": 7},
+        "point_b": {"x": 32, "y": 0, "z": 32}
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "map_id": 0,
+        "point_a": {"x": 7, "y": 0, "z": 7},
+        "point_b": {"x": 32, "y": 0, "z": 32}
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T11:04:27.9729153Z"
+    }
+    ```
+  method: POST
+/api/v1/map/droppod:
+  desc: Spawns a drop pod at a specified position with given contents.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/map/droppod' \
+    --header 'content-type: application/json' \
+    --data '{
+        "map_id": 0,
+        "position": {"x": 15, "y": 0, "z": 15},
+        "items": [{"def_name": "ComponentIndustrial", "quality": 3, "count": 1}],
+        "open_delay": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "map_id": 0,
+        "position": {"x": 15, "y": 0, "z": 15},
+        "items": [{"def_name": "ComponentIndustrial", "quality": 3, "count": 1}],
+        "open_delay": true
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T11:04:27.9729153Z"
+    }
+    ```
+  method: POST

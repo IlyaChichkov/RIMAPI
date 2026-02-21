@@ -1,0 +1,96 @@
+title: '### :material-window-maximize: Window Controller'
+desc: The **Window Controller** manages in-game windows and dialogs.
+/api/v1/ui/message:
+  desc: Displays a short message on the screen, similar to in-game notifications.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/message \
+    --header 'content-type: application/json' \
+    --data '{
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates."
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/ui/dialog:
+  desc: Displays a dialog window with a specified message and title.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/dialog \
+    --header 'content-type: application/json' \
+    --data '{
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+        "options": [
+            {
+                "label": "Offer Safety (Triggers Raid)",
+                "action_id": "accept_refugee",
+                "resolve_tree": true
+            },
+            {
+                "label": "Turn them away",
+                "action_id": "reject_refugee",
+                "resolve_tree": true
+            },
+            {
+                "label": "Capture them (Prisoner)",
+                "action_id": "capture_refugee",
+                "resolve_tree": true
+            }
+        ]
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+        "options": [
+            {
+                "label": "Offer Safety (Triggers Raid)",
+                "action_id": "accept_refugee",
+                "resolve_tree": true
+            },
+            {
+                "label": "Turn them away",
+                "action_id": "reject_refugee",
+                "resolve_tree": true
+            },
+            {
+                "label": "Capture them (Prisoner)",
+                "action_id": "capture_refugee",
+                "resolve_tree": true
+            }
+        ]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST

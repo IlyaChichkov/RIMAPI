@@ -1,0 +1,265 @@
+title: '### :material-flash: Game Events Controller'
+desc: |-
+  The **Game Events Controller** allows external systems to act as the "Storyteller," forcing specific incidents to occur immediately.
+
+  !!! tip "Narrative Control"
+      This is useful for Twitch integrations or scenario managers that want to trigger raids, weather changes, or drop pods on demand.
+
+  **Supported Event Types:**
+
+  1.  **Threats:** Raids, Manhunters, Infestations.
+  2.  **Weather:** Rain, Fog, Eclipses, Solar Flares.
+  3.  **Misc:** Trader arrivals, Quest triggers.
+/api/v1/quests:
+  desc: Retrieves a list of all active and historical quests.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/quests?map_id=0
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "active_quests": [
+            {
+                "id": 1,
+                "quest_def": "OpportunitySite_ItemStash",
+                "name": "Choma's Shack of Valuables",
+                "description": "<color=#D09B61FF>Choma</color>, Great Chief of <color=#00BFFFFF>Coalition of Tol</color>, has informed us of a collection of valuable items worth $535 not far from us. The collection consists of:\n\n  - The Archaic Psychoid Chronicle (excellent)\r\n  - Voro-Harbinger (good)\n\n<color=#D09B61FF>Choma</color> says that there may be an <color=#D46F68FF>unknown threat</color>.",
+                "state": "Ongoing",
+                "expiry_hours": -0.000400000019,
+                "reward": [
+                "Reward_Items(value $535)\n  -Voro-Harbinger (good) $310\n  -The Archaic Psychoid Chronicle (excellent) $225"
+                ]
+            }
+            ],
+            "historical_quests": [
+            {
+                "id": 0,
+                "quest_def": "Beggars",
+                "name": "Drifter Hopes for Resources",
+                "description": "A poor traveler named <color=#D09B61FF>Ace</color> is approaching looking for help. <color=#D09B61FF>Ace</color> is begging for x700 silver. <color=#D09B61FF>Ace</color> wants the silver to pay off a debt to a gang of pirates who are hunting her.\n\nYou can give items to <color=#D09B61FF>Ace</color> by selecting a colonist and right-clicking on her.\n\n<color=#D09B61FF>Ace</color> will move on after <color=#87F6F6FF>1 day</color>.\n\nThis traveler is not part of any faction. If you wish, you can choose to kill, arrest, sell, or harvest her, without diplomatic consequences.",
+                "state": "EndedSuccess",
+                "expiry_hours": -0.000400000019,
+                "reward": []
+            }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:43:32.2659508Z"
+    }
+    ```
+  method: GET
+/api/v1/incidents:
+  desc: Description
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/incidents?map_id=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "incidents": [
+                {
+                    "incident_def": "VisitorGroup",
+                    "label": "visitor group",
+                    "category": "None",
+                    "incident_hour": 60.0,
+                    "days_since_occurred": 0.1068
+                },
+                {
+                    "incident_def": "GiveQuest_Beggars",
+                    "label": "beggars arrive",
+                    "category": "GiveQuest",
+                    "incident_hour": 8.8,
+                    "days_since_occurred": 2.24013329
+                }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:24:31.91622Z"
+    }
+    ```
+  method: GET
+/api/v1/lords:
+  desc: |-
+    Retrieves detailed information about all active "Lord" processes on
+    a specified map. In RimWorld, a Lord represents a high-level AI
+    manager that coordinates groups of pawns toward a common objective—such
+    as raiding, visiting or trading.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/lords?map_id=0'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "load_id": 2,
+                "faction_name": "Nation of Iralaguaro",
+                "faction_def_name": "TribeCivil",
+                "lord_job_type": "LordJob_VisitColony",
+                "current_toil_name": "LordToil_DefendPoint",
+                "ticks_in_toil": 2231,
+                "num_pawns_lost_violently": 0,
+                "num_pawns_ever_gained": 1,
+                "owned_pawn_ids": [
+                    "Human8834"
+                ],
+                "owned_building_ids": [],
+                "any_active_pawn": true
+            },
+            {
+                "load_id": 3,
+                "faction_name": "Cancer Unit",
+                "faction_def_name": "PirateWaster",
+                "lord_job_type": "LordJob_StageThenAttack",
+                "current_toil_name": "LordToil_Stage",
+                "ticks_in_toil": 0,
+                "num_pawns_lost_violently": 0,
+                "num_pawns_ever_gained": 1,
+                "owned_pawn_ids": [
+                    "Human8861"
+                ],
+                "owned_building_ids": [],
+                "any_active_pawn": true
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:26:22.0370532Z"
+    }
+    ```
+  method: GET
+/api/v1/incidents/top:
+  desc: Returns a list of incidents with the highest current weight (probability) of occurring, based on the current Storyteller settings and game state. Accepts an optional `limit` parameter.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/incidents/top?limit=3"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "def_name": "RaidEnemy",
+                "label": "enemy raid",
+                "category": "ThreatBig",
+                "current_weight": 1.2
+            },
+            {
+                "def_name": "TraderCaravan",
+                "label": "trader caravan",
+                "category": "Misc",
+                "current_weight": 0.85
+            },
+            {
+                "def_name": "TravelerGroup",
+                "label": "travelers",
+                "category": "Misc",
+                "current_weight": 0.5
+            }
+        ],
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/incident/chance:
+  desc: Calculates the specific probability weight for a single incident definition.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/incident/chance?incident_def_name=RaidEnemy"
+    ```
+  request: |-
+    **Request Body (or Query Params):**
+    ```json
+    {
+        "incident_def_name": "RaidEnemy"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "value": 1.2
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/incident/trigger:
+  desc: Manually triggers a specific in-game incident (event) immediately.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/incident/trigger \
+    --header 'content-type: application/json' \
+    --data '{
+        "name": "RaidEnemy",
+        "map_id": "0",
+        "incident_parms": {
+            "points": 300.0,
+            "forced": true,
+            "faction": "Pirate",
+            "send_letter": true,
+            "custom_letter_label": "API Raid Test",
+            "custom_letter_text": "Test raid triggered via API"
+        }
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "name": "RaidEnemy",
+        "map_id": "0",
+        "incident_parms": {
+            "points": 300.0,
+            "forced": true,
+            "faction": "Pirate",
+            "send_letter": true,
+            "custom_letter_label": "API Raid Test",
+            "custom_letter_text": "Test raid triggered via API"
+        }
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
