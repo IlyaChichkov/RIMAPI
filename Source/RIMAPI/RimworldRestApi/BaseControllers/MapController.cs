@@ -126,6 +126,15 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
+        [Post("/api/v1/map/zone/growing")]
+        [EndpointMetadata("Create a new growing zone with the specified plant and cells")]
+        public async Task CreateGrowingZone(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<CreateGrowingZoneRequestDto>();
+            var result = _mapService.CreateGrowingZone(body);
+            await context.SendJsonResponse(result);
+        }
+
         [Get("/api/v1/map/zones")]
         [EndpointMetadata("Get zones on the map")]
         public async Task GetMapZones(HttpListenerContext context)
@@ -173,6 +182,16 @@ namespace RIMAPI.Controllers
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _buildingService.GetBuildingInfo(mapId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/building/power")]
+        [EndpointMetadata("Toggle power on/off for a flickable building")]
+        public async Task SetBuildingPower(HttpListenerContext context)
+        {
+            var buildingId = RequestParser.GetIntParameter(context, "buildingId");
+            var powerOn = RequestParser.GetBooleanParameter(context, "powerOn");
+            var result = _buildingService.SetBuildingPower(buildingId, powerOn);
             await context.SendJsonResponse(result);
         }
 

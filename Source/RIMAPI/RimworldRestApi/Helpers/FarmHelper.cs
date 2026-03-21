@@ -171,6 +171,26 @@ namespace RIMAPI.Helpers
             return zoneDto;
         }
 
+        public static GrowingZoneDto CreateGrowingZone(
+            Map map, string plantDefName, List<IntVec3> cells)
+        {
+            var plantDef = DefDatabase<ThingDef>.GetNamedSilentFail(plantDefName);
+            if (plantDef == null || plantDef.plant == null)
+                return null;
+
+            var zone = new Zone_Growing(map.zoneManager);
+            map.zoneManager.RegisterZone(zone);
+            foreach (var cell in cells)
+            {
+                if (cell.InBounds(map) && map.zoneManager.ZoneAt(cell) == null)
+                {
+                    zone.AddCell(cell);
+                }
+            }
+            zone.SetPlantDefToGrow(plantDef);
+            return GetGrowingZoneById(map, zone.ID);
+        }
+
         // Helper methods
         public static string GetPlantCategory(ThingDef plantDef)
         {

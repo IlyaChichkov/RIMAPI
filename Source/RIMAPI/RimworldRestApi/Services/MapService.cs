@@ -28,6 +28,26 @@ namespace RIMAPI.Services
             return ApiResult<GrowingZoneDto>.Ok(result);
         }
 
+        public ApiResult<GrowingZoneDto> CreateGrowingZone(CreateGrowingZoneRequestDto request)
+        {
+            var map = MapHelper.GetMapByID(request.MapId);
+            if (map == null)
+            {
+                return ApiResult<GrowingZoneDto>.Fail($"Map not found: {request.MapId}");
+            }
+
+            var cells = request.Cells
+                .Select(c => new IntVec3(c.X, 0, c.Z))
+                .ToList();
+
+            var result = FarmHelper.CreateGrowingZone(map, request.PlantDef, cells);
+            if (result == null)
+            {
+                return ApiResult<GrowingZoneDto>.Fail($"Invalid plant definition: {request.PlantDef}");
+            }
+            return ApiResult<GrowingZoneDto>.Ok(result);
+        }
+
         public ApiResult<List<AnimalDto>> GetMapAnimals(int mapId)
         {
             var result = MapHelper.GetMapAnimals(mapId);
