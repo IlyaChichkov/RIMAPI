@@ -2,6 +2,7 @@ using System.Net;
 using System.Threading.Tasks;
 using RIMAPI.Core;
 using RIMAPI.Http;
+using RIMAPI.Models;
 using RIMAPI.Services;
 
 namespace RIMAPI.Controllers
@@ -48,6 +49,15 @@ namespace RIMAPI.Controllers
         public async Task GetResearchSummary(HttpListenerContext context)
         {
             var result = _researchService.GetResearchSummary();
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/research/target")]
+        [EndpointMetadata("Set the current research project by defName")]
+        public async Task SetResearchTarget(HttpListenerContext context)
+        {
+            var name = RequestParser.GetStringParameter(context, "name");
+            var result = _researchService.SetResearchTarget(name);
             await context.SendJsonResponse(result);
         }
     }

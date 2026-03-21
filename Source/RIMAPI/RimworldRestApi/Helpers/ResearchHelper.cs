@@ -118,6 +118,16 @@ namespace RIMAPI.Helpers
             }
         }
 
+        public static ResearchProjectDto SetResearchTarget(string projectDefName)
+        {
+            var project = DefDatabase<ResearchProjectDef>.GetNamedSilentFail(projectDefName);
+            if (project == null)
+                return null;
+
+            Find.ResearchManager.SetCurrentProject(project);
+            return ResearchProjectToDto(project);
+        }
+
         public static ResearchSummaryDto GetResearchSummary()
         {
             try
