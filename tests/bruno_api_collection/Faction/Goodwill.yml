@@ -1,0 +1,23 @@
+info:
+  name: Goodwill
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/faction/goodwill"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "id": 0,
+            "other_id": 2,
+            "value": 50
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

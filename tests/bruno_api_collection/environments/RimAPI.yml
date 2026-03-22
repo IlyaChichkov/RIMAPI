@@ -1,0 +1,4 @@
+name: RimAPI
+variables:
+  - name: baseURL
+    value: http://localhost:8765

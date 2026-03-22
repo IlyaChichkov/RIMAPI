@@ -1,0 +1,32 @@
+info:
+  name: Start
+  type: http
+  seq: 19
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/game/start"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "storyteller_name": "Randy",
+            "difficulty_name": "Peaceful",
+            "map_size": 120,
+            "permadeath": false,
+            "planet_coverage": 0.1,
+            "world_seed": "rickroll",
+            "starting_tile": "7298",
+            "starting_season": "2",
+            "overall_rainfall": 2,
+            "overall_temperature": 2,
+            "overall_population": 2,
+            "landmark_density": 2
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

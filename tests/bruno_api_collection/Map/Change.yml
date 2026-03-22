@@ -1,0 +1,15 @@
+info:
+  name: Change
+  type: http
+  seq: 14
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/map/weather/change?map_id=0&name=Clear"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

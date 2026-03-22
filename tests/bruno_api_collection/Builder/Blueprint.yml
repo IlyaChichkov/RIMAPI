@@ -1,0 +1,21 @@
+info:
+  name: Blueprint
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/builder/blueprint"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "at": { "x": 150, "z": 150 }
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

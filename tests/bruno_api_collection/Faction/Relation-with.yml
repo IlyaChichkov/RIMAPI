@@ -1,0 +1,15 @@
+info:
+  name: Relation-with
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/faction/relation-with?id=2&other_id=1"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

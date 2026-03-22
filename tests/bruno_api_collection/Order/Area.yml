@@ -1,0 +1,15 @@
+info:
+  name: Area
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/order/designate/area"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

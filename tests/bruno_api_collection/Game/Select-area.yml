@@ -1,0 +1,22 @@
+info:
+  name: Select-area
+  type: http
+  seq: 14
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/game/select-area"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "position_a": { "x": 10, "y": 0, "z": 10 },
+            "position_b": { "x": 20, "y": 0, "z": 20 }
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

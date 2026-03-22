@@ -1,0 +1,19 @@
+info:
+  name: Info
+  type: http
+  seq: 15
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/map/power/info?map_id=0"
+  params:
+    - name: map_id
+      value: "0"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,23 @@
+info:
+  name: Job Goto
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawn/job"
+  body:
+    type: json
+    data: |-
+      {
+        "pawn_id": 215,
+        "job_def": "Goto",
+        "target_position": {"x": 100, "z": 140}
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

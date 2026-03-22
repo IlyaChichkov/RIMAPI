@@ -1,0 +1,15 @@
+info:
+  name: Forbidden
+  type: http
+  seq: 22
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/map/destroy/forbidden"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

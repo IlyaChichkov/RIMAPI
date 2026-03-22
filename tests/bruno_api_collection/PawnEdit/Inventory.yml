@@ -1,0 +1,23 @@
+info:
+  name: Inventory
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawn/edit/inventory"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "pawn_id": 148,
+            "clear_inventory": true,
+            "add_items": [{ "def_name": "MealSimple", "count": 10 }]
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

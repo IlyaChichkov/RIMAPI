@@ -1,0 +1,15 @@
+info:
+  name: Growing
+  type: http
+  seq: 18
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/map/zone/growing?map_id=0"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

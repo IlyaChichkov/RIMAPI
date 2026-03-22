@@ -1,0 +1,15 @@
+info:
+  name: Tile
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/world/tile"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

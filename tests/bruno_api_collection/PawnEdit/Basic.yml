@@ -1,0 +1,24 @@
+info:
+  name: Basic
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawn/edit/basic"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "pawn_id": 148,
+            "nick_name": "Ace",
+            "gender": "Male",
+            "biological_age": 25
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

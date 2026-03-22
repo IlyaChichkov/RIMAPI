@@ -1,0 +1,15 @@
+info:
+  name: Start
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/stream/start"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

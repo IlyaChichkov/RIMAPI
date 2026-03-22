@@ -1,0 +1,21 @@
+info:
+  name: Message
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/ui/message"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "text": "You find a wounded refugee asking for help. They are being chased by pirates."
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

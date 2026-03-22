@@ -1,0 +1,15 @@
+info:
+  name: Setup
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

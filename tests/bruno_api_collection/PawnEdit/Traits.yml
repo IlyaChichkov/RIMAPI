@@ -1,0 +1,23 @@
+info:
+  name: Traits
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawn/edit/traits"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "pawn_id": 148,
+            "add_traits": [{ "trait_name": "Cannibal", "degree": 0 }],
+            "remove_traits": ["Wimp"]
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

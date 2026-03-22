@@ -1,0 +1,15 @@
+info:
+  name: Corpses
+  type: http
+  seq: 21
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/map/destroy/corpses"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

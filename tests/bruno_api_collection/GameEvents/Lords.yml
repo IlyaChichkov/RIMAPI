@@ -1,0 +1,15 @@
+info:
+  name: Lords
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/lords?map_id=0"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

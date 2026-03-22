@@ -1,0 +1,29 @@
+info:
+  name: Image
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/item/change/image"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "Name": "WoodLog",
+            "Image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+            "Direction": "South",
+            "Offset": "0,0,0",
+            "Scale": "1.0",
+            "ThingType": "Item",
+            "IsStackable": "true",
+            "MaskImage": "",
+            "UpdateItemIndex": 0
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

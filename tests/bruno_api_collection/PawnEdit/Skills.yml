@@ -1,0 +1,24 @@
+info:
+  name: Skills
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawn/edit/skills"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "pawn_id": 2356,
+            "skills": [
+                { "skill_name": "Shooting", "level": 20, "passion": 3 }
+            ]
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

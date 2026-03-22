@@ -1,0 +1,19 @@
+info:
+  name: Configure
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/mods/configure"
+  auth: inherit
+
+body:
+  json: |-
+    {"package_ids":["brrainz.harmony","ludeon.rimworld","ludeon.rimworld.royalty","ludeon.rimworld.ideology","ludeon.rimworld.biotech","ludeon.rimworld.anomaly","ludeon.rimworld.odyssey","unlimitedhugs.hugslib","redeyedev.rimapi"],"restart_game":true}
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

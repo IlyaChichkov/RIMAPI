@@ -1,0 +1,27 @@
+info:
+  name: Create Growing Zone
+  type: http
+  seq: 25
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/map/zone/growing"
+  body:
+    type: json
+    data: |-
+      {
+        "MapId": 0,
+        "PlantDef": "PlantCorn",
+        "Cells": [
+          {"X": 10, "Z": 20},
+          {"X": 11, "Z": 20},
+          {"X": 12, "Z": 20}
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
