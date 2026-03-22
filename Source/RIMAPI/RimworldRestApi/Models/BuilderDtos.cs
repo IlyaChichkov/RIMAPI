@@ -17,6 +17,7 @@ namespace RIMAPI.Models
         public PositionDto Position { get; set; } // This will be the bottom-left corner
         public BlueprintDto Blueprint { get; set; }
         public bool ClearObstacles { get; set; } = true; // Destroy existing things before pasting
+        public bool CreateHomeArea { get; set; } = false; // Create home area for blueprint zone
     }
 
     // --- The Blueprint Data Structure ---
@@ -26,6 +27,8 @@ namespace RIMAPI.Models
         public int Height { get; set; }
         public List<SavedTerrainDto> Floors { get; set; } = new List<SavedTerrainDto>();
         public List<SavedBuildingDto> Buildings { get; set; } = new List<SavedBuildingDto>();
+    
+
     }
 
     public class SavedTerrainDto

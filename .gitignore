@@ -42,3 +42,5 @@ lib/
 # =========================
 1.5/
 1.6/
+.vscode/tasks.json
+Source/Directory.Build.props

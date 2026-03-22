@@ -225,6 +225,32 @@ namespace RIMAPI.Services
                     count++;
                 }
 
+                // 3. Mark Home Area
+                if (request.CreateHomeArea)
+                {
+                    try
+                    {
+                        CellRect blueprintRect = new CellRect(anchorX, anchorZ, request.Blueprint.Width, request.Blueprint.Height);
+                        blueprintRect.ClipInsideMap(map);
+                        if (map.areaManager.Home != null)
+                        {
+                            foreach (IntVec3 cell in blueprintRect)
+                            {
+                                map.areaManager.Home[cell] = true;
+                            }
+                            LogApi.Info($"Home Area marked: {blueprintRect.Area} cells");
+                        }
+                        else
+                        {
+                            LogApi.Error("map.areaManager.Home is null");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogApi.Error($"Home Area Error: {ex}");
+                    }
+                }
+
                 return ApiResult.Ok();
             }
             catch (Exception ex)
