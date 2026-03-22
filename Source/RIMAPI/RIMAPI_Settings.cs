@@ -16,7 +16,7 @@ namespace RIMAPI
         /// Current version of the RIMAPI mod.
         /// <para>Not saved to XML; used for UI display.</para>
         /// </summary>
-        public string version = "1.8.2";
+        public string version => LoadedModManager.GetMod<RIMAPI_Mod>().Content.ModMetaData.ModVersion;
 
         /// <summary>
         /// Current supported API protocol version.
