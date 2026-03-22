@@ -453,6 +453,22 @@ namespace RIMAPI.Helpers
                 .ToList();
         }
 
+        public static List<JobDefDto> GetJobDefDtoList()
+        {
+            return DefDatabase<JobDef>
+                .AllDefsListForReading.Select(j => new JobDefDto
+                {
+                    DefName = j.defName,
+                    Label = j.label,
+                    Description = j.description,
+                    PlayerInterruptible = j.playerInterruptible,
+                    AlwaysShowWeapon = j.alwaysShowWeapon,
+                    NeverShowWeapon = j.neverShowWeapon,
+                    Suspendable = j.suspendable,
+                })
+                .ToList();
+        }
+
         public static List<StorytellerDefDto> GetStorytellerDefDtoList()
         {
             return DefDatabase<StorytellerDef>

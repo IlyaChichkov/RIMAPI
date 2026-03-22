@@ -445,6 +445,13 @@ namespace RIMAPI.Services
                             warnings,
                             "DifficultyDefs"
                         ),
+                    ["JobDefs"] = () =>
+                        SetProperty(
+                            defs,
+                            DefDatabaseHelper.GetJobDefDtoList,
+                            warnings,
+                            "JobDefs"
+                        ),
                 };
 
                 // Execute only the requested properties
