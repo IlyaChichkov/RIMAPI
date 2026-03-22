@@ -17,6 +17,9 @@
 **Version**: {{ current_api.meta.version | default('1.8.2') }}  
 **Endpoints total count**: {{ ns.endpoint_count }}
 
+!!! warning "Warning"
+    Please read our [API Conventions](developer_guide/api_conventions.md) page to understand our `snake_case` JSON requirements and header rules.
+
 {% if current_api.meta.section and current_api.meta.section.Core_API %}
 {{ current_api.meta.section.Core_API.title | default('') }}
 {{ current_api.meta.section.Core_API.desc | default('') }}
