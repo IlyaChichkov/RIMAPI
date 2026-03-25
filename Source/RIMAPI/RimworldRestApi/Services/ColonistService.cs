@@ -252,24 +252,37 @@ namespace RIMAPI.Services
         {
             try
             {
+                if (body?.Priorities == null)
+                {
+                    return ApiResult.Fail("Invalid payload: 'priorities' array is missing or null.");
+                }
+
+                if (body.Priorities.Count == 0)
+                {
+                    return ApiResult.Ok();
+                }
+
                 var warnings = new List<string>();
                 foreach (var colonistPriorityUpdate in body.Priorities)
                 {
                     var result = SetColonistWorkPriority(colonistPriorityUpdate);
                     if (result.Success == false)
                     {
-                        warnings.Add(result.Errors.ToString());
+                        warnings.AddRange(result.Errors);
                     }
                 }
 
                 if (warnings.Count > 0)
                 {
+                    string combinedWarnings = string.Join("; ", warnings);
+
                     if (warnings.Count == body.Priorities.Count)
                     {
-                        return ApiResult.Fail(warnings.ToString());
+                        return ApiResult.Fail(combinedWarnings);
                     }
                     return ApiResult.Partial(warnings);
                 }
+
                 return ApiResult.Ok();
             }
             catch (Exception ex)
