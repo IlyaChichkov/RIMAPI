@@ -1,5 +1,5 @@
 info:
-  name: Color
+  name: Set Stuff Color
   type: http
   seq: 3
 
@@ -7,13 +7,6 @@ http:
   method: POST
   url: "{{baseURL}}/api/v1/dev/stuff/color"
   auth: inherit
-
-body:
-  json: |-
-    {
-            "name": "WoodLog",
-            "hex": "aa00ff"
-        }
 
 settings:
   encodeUrl: true

@@ -1,11 +1,11 @@
 info:
-  name: All
+  name: Select Pawn
   type: http
-  seq: 11
+  seq: 8
 
 http:
-  method: GET
-  url: "{{baseURL}}/api/v1/def/all"
+  method: POST
+  url: "{{baseURL}}/api/v1/select?type=pawn&id=443"
   auth: inherit
 
 settings:

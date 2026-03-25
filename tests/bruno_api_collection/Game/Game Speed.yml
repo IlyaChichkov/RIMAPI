@@ -1,11 +1,11 @@
 info:
-  name: Work-list
+  name: Game Speed
   type: http
-  seq: 17
+  seq: 2
 
 http:
-  method: GET
-  url: "{{baseURL}}/api/v1/work-list"
+  method: POST
+  url: "{{baseURL}}/api/v1/game/speed"
   auth: inherit
 
 settings:

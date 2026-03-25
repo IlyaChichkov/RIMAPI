@@ -1,11 +1,11 @@
 info:
-  name: Clear
+  name: Trait Def
   type: http
-  seq: 4
+  seq: 14
 
 http:
-  method: POST
-  url: "{{baseURL}}/api/v1/dev/materials-atlas/clear"
+  method: GET
+  url: "{{baseURL}}/api/v1/trait-def?name=Ascetic"
   auth: inherit
 
 settings:

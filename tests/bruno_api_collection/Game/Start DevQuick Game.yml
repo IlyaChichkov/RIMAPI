@@ -1,11 +1,11 @@
 info:
-  name: Speed
+  name: Start DevQuick Game
   type: http
-  seq: 2
+  seq: 18
 
 http:
   method: POST
-  url: "{{baseURL}}/api/v1/game/speed"
+  url: "{{baseURL}}/api/v1/game/start/devquick"
   auth: inherit
 
 settings:
