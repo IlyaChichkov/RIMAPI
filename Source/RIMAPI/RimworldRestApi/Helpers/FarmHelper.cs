@@ -187,6 +187,14 @@ namespace RIMAPI.Helpers
                     zone.AddCell(cell);
                 }
             }
+
+            // No valid cells added — remove the empty zone and report failure
+            if (zone.CellCount == 0)
+            {
+                zone.Delete();
+                return null;
+            }
+
             zone.SetPlantDefToGrow(plantDef);
             return GetGrowingZoneById(map, zone.ID);
         }
