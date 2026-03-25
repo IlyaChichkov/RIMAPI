@@ -212,7 +212,8 @@ namespace RIMAPI.Models
 
     public class ColonistsWorkPrioritiesRequestDto
     {
-        public List<WorkPriorityRequestDto> Priorities { get; set; }
+        [JsonProperty("priorities")]
+        public List<WorkPriorityRequestDto> Priorities { get; set; } = new List<WorkPriorityRequestDto>();
     }
 
     public class TimeAssignmentDto
