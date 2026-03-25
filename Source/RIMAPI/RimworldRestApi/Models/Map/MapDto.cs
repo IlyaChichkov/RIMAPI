@@ -155,6 +155,14 @@ namespace RIMAPI.Models
         public PositionDto PointB { get; set; }
     }
 
+    public class CreateGrowingZoneRequestDto
+    {
+        public int MapId { get; set; }
+        public string PlantDef { get; set; }
+        public PositionDto PointA { get; set; }
+        public PositionDto PointB { get; set; }
+    }
+
     public class FogGridDto
     {
         public int MapId { get; set; }

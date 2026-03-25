@@ -14,6 +14,7 @@ namespace RIMAPI.Services
     public interface IBuildingService
     {
         ApiResult<BuildingDto> GetBuildingInfo(int buildingId);
+        ApiResult SetBuildingPower(int buildingId, bool powerOn);
     }
 
     public interface IJobService { }

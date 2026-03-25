@@ -37,5 +37,21 @@ namespace RIMAPI.Services
             result = BuildingHelper.BuildingToDto(building);
             return ApiResult<BuildingDto>.Ok(result);
         }
+
+        public ApiResult SetBuildingPower(int buildingId, bool powerOn)
+        {
+            Building building = BuildingHelper.FindBuildingByID(buildingId);
+            if (building == null)
+            {
+                return ApiResult.Fail($"Building not found: {buildingId}");
+            }
+
+            bool success = BuildingHelper.SetBuildingPower(building, powerOn);
+            if (!success)
+            {
+                return ApiResult.Fail($"Building {buildingId} has no flickable power component");
+            }
+            return ApiResult.Ok();
+        }
     }
 }
