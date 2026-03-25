@@ -11,5 +11,6 @@ namespace RIMAPI.Services
         ApiResult MaterialsAtlasPoolClear();
         ApiResult ConsoleAction(DebugConsoleRequest body);
         ApiResult SetStuffColor(StuffColorRequest stuffColor);
+        ApiResult<EndpointListDto> GetEndpoints();
     }
 }

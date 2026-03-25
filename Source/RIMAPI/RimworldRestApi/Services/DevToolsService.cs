@@ -10,7 +10,12 @@ namespace RIMAPI.Services
 {
     public class DevToolsService : IDevToolsService
     {
-        public DevToolsService() { }
+        private readonly IDocumentationService _documentationService;
+
+        public DevToolsService(IDocumentationService documentationService)
+        {
+            _documentationService = documentationService;
+        }
 
         public ApiResult ConsoleAction(DebugConsoleRequest body)
         {
@@ -92,6 +97,40 @@ namespace RIMAPI.Services
             catch (Exception ex)
             {
                 return ApiResult.Fail(ex.Message);
+            }
+        }
+
+        public ApiResult<EndpointListDto> GetEndpoints()
+        {
+            try
+            {
+                var docs = _documentationService.GenerateDocumentation();
+                var endpoints = new List<EndpointDto>();
+
+                foreach (var section in docs.Sections)
+                {
+                    foreach (var endpoint in section.Endpoints)
+                    {
+                        endpoints.Add(new EndpointDto
+                        {
+                            Method = endpoint.Method,
+                            Path = endpoint.Path,
+                            Description = endpoint.Description,
+                            Category = endpoint.Category,
+                            Tags = endpoint.Tags,
+                            IsDeprecated = !string.IsNullOrEmpty(endpoint.DeprecationNotice)
+                        });
+                    }
+                }
+
+                return ApiResult<EndpointListDto>.Ok(new EndpointListDto
+                {
+                    Endpoints = endpoints
+                });
+            }
+            catch (Exception ex)
+            {
+                return ApiResult<EndpointListDto>.Fail(ex.Message);
             }
         }
     }
