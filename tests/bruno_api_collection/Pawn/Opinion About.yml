@@ -1,11 +1,11 @@
 info:
-  name: Select
+  name: Opinion About
   type: http
-  seq: 8
+  seq: 5
 
 http:
-  method: POST
-  url: "{{baseURL}}/api/v1/select?type=pawn&id=443"
+  method: GET
+  url: "{{baseURL}}/api/v1/colonist/opinion-about?id=1020&other_id=964"
   auth: inherit
 
 settings:

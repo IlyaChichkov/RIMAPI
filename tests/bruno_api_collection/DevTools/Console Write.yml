@@ -1,11 +1,11 @@
 info:
-  name: Devquick
+  name: Console Write
   type: http
-  seq: 18
+  seq: 2
 
 http:
   method: POST
-  url: "{{baseURL}}/api/v1/game/start/devquick"
+  url: "{{baseURL}}/api/v1/dev/console"
   auth: inherit
 
 settings:

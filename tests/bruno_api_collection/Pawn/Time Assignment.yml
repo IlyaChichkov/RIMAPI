@@ -1,5 +1,5 @@
 info:
-  name: Time-assignment
+  name: Time Assignment
   type: http
   seq: 6
 
@@ -7,14 +7,6 @@ http:
   method: POST
   url: "{{baseURL}}/api/v1/colonist/time-assignment"
   auth: inherit
-
-body:
-  json: |-
-    {
-            "pawn_id": 99,
-            "hour": 14,
-            "assignment": "Joy"
-        }
 
 settings:
   encodeUrl: true

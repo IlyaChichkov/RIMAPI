@@ -1,11 +1,11 @@
 info:
-  name: Console
+  name: Work Priority
   type: http
-  seq: 2
+  seq: 11
 
 http:
   method: POST
-  url: "{{baseURL}}/api/v1/dev/console"
+  url: "{{baseURL}}/api/v1/colonists/work-priority"
   auth: inherit
 
 settings:
