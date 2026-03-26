@@ -13,6 +13,11 @@ config:
         username: ""
         password: ""
       bypassProxy: ""
+
+request:
+  variables:
+    - name: baseURL
+      value: http://localhost:8765
 bundled: false
 extensions:
   bruno:
