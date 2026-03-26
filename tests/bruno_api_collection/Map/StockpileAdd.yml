@@ -1,0 +1,31 @@
+info:
+  name: StockpileAdd
+  type: http
+  seq: 26
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/map/zone/stockpile"
+  body:
+    type: json
+    data: |-
+      {
+        "map_id": 0,
+        "point_a": {"x": 120, "y": 0, "z": 120},
+        "point_b": {"x": 150, "y": 0, "z": 150},
+        "name": "My Storage",
+        "priority": 1,
+        "allowed_item_defs": ["Gold", "Steel","MealSimple"],
+        "allowed_item_categories": ["WeaponsMelee","Foods"],
+        "min_hit_points_percent": 0.8,
+        "max_hit_points_percent": 1.0,
+        "min_quality": "Normal",
+        "max_quality": "Legendary"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
