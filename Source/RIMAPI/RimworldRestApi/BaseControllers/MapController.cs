@@ -260,5 +260,32 @@ namespace RIMAPI.Controllers
             var result = _pawnInfoService.GetPawnsOnMap(mapId);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/map/zone/stockpile")]
+        [EndpointMetadata("Create a new stockpile zone on the map")]
+        public async Task CreateStockpile(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<CreateStockpileRequestDto>();
+            var result = _mapService.CreateStockpile(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Delete("/api/v1/map/zone/stockpile/delete")]
+        [EndpointMetadata("Delete a stockpile zone by zone ID")]
+        public async Task DeleteStockpile(HttpListenerContext context)
+        {
+            var zoneId = RequestParser.GetIntParameter(context, "zone_id");
+            var result = _mapService.DeleteStockpile(zoneId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/map/zone/stockpile/update")]
+        [EndpointMetadata("Update stockpile zone parameters by zone ID")]
+        public async Task UpdateStockpile(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<UpdateStockpileRequestDto>();
+            var result = _mapService.UpdateStockpile(body);
+            await context.SendJsonResponse(result);
+        }
     }
 }
