@@ -160,12 +160,46 @@ namespace RIMAPI.Models
         public int MapId { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-
-        /// <summary>
-        /// Flat array of fog states. 
-        /// Index = (z * Width) + x
-        /// True = Fogged (Hidden), False = Revealed
-        /// </summary>
         public string FogData { get; set; }
+    }
+
+    public class CreateStockpileRequestDto
+    {
+        public int MapId { get; set; }
+        public PositionDto PointA { get; set; }
+        public PositionDto PointB { get; set; }
+        public string Name { get; set; }
+        public int? Priority { get; set; }
+        public List<string> AllowedItemDefs { get; set; }
+        public List<string> AllowedItemCategories { get; set; }
+        public float? MinHitPointsPercent { get; set; }
+        public float? MaxHitPointsPercent { get; set; }
+        public string MinQuality { get; set; }
+        public string MaxQuality { get; set; }
+    }
+
+    public class StockpileResponseDto
+    {
+        public int ZoneId { get; set; }
+        public string Name { get; set; }
+        public int CellsCount { get; set; }
+        public int Priority { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class UpdateStockpileRequestDto
+    {
+        public int ZoneId { get; set; }
+        public string Name { get; set; }
+        public int? Priority { get; set; }
+        public List<string> AddItemDefs { get; set; }
+        public List<string> RemoveItemDefs { get; set; }
+        public List<string> AddItemCategories { get; set; }
+        public List<string> RemoveItemCategories { get; set; }
+        public float? MinHitPointsPercent { get; set; }
+        public float? MaxHitPointsPercent { get; set; }
+        public string MinQuality { get; set; }
+        public string MaxQuality { get; set; }
     }
 }
