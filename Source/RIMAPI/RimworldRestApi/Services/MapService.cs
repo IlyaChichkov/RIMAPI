@@ -529,5 +529,36 @@ namespace RIMAPI.Services
                 return ApiResult<FogGridDto>.Fail(ex.Message);
             }
         }
+
+        public ApiResult<StockpileResponseDto> CreateStockpile(CreateStockpileRequestDto request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    return ApiResult<StockpileResponseDto>.Fail("Request cannot be null.");
+                }
+
+                var result = MapHelper.CreateStockpile(request);
+                
+                if (result.Success)
+                {
+                    return ApiResult<StockpileResponseDto>.Ok(result);
+                }
+                else
+                {
+                    return ApiResult<StockpileResponseDto>.Fail(result.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error creating stockpile: {ex}");
+                return ApiResult<StockpileResponseDto>.Fail($"Failed to create stockpile: {ex.Message}");
+            }
+        }
+
+        public ApiResult DeleteStockpile(int zoneId) => MapHelper.DeleteStockpile(zoneId);
+
+        public ApiResult<StockpileResponseDto> UpdateStockpile(UpdateStockpileRequestDto request) => MapHelper.UpdateStockpile(request);
     }
 }
