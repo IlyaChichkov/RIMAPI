@@ -1,0 +1,31 @@
+info:
+  name: StockpileEdit
+  type: http
+  seq: 28
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/map/zone/stockpile/update"
+  body:
+    type: json
+    data: |
+      {
+        "zone_id": 3,
+        "name": "My Storage",
+        "priority": 3,
+        "add_item_defs": ["Silver", "Gold", "Steel", "MealSimple"],
+        "remove_item_defs": ["Gold", "Steel" ],
+        
+        "remove_item_categories": ["WeaponsRanged","Foods"],
+        "min_hit_points_percent": 0.7,
+        "max_hit_points_percent": 0.9,
+        "min_quality": "Masterwork",
+        "max_quality": "Legendary"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
