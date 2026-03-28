@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using RIMAPI.Core;
 using RIMAPI.Models;
 using RimWorld;
 using Verse;
@@ -46,6 +48,8 @@ namespace RIMAPI.Helpers
                     PawnRestrictionId = bill.PawnRestriction?.thingIDNumber,
                     PlayerCustomName = bill.RenamableLabel,
                     SlotGroupId = null,
+                    AllowedMaterials = bill.ingredientFilter?.AllowedThingDefs?.Select(d => d.defName).ToList() ?? new List<string>(),
+                    AvailableMaterials = bill.recipe.fixedIngredientFilter?.AllowedThingDefs?.Select(d => d.defName).ToList() ?? new List<string>(),
                 };
             }
             catch (Exception ex)
