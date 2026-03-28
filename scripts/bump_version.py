@@ -36,6 +36,11 @@ files_to_update = [
         "pattern": r'(version:\s*").*?(")',
         "replacement": rf"\g<1>{new_version}\g<2>",
     },
+    {
+        "path": "CHANGELOG.md",
+        "pattern": r"## \[Unreleased\]",
+        "replacement": f"## [Unreleased]\n\n## v{new_version}",
+    },
 ]
 
 print(f"🚀 Bumping RIMAPI to version {new_version}...")
