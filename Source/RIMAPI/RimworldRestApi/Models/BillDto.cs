@@ -39,6 +39,8 @@ namespace RIMAPI.Models
         public int? PawnRestrictionId { get; set; }
         public string PlayerCustomName { get; set; }
         public int? SlotGroupId { get; set; }
+        public List<string> AllowedMaterials { get; set; } = new List<string>();
+        public List<string> AvailableMaterials { get; set; } = new List<string>();
     }
 
     public class CreateBillRequest
@@ -60,6 +62,7 @@ namespace RIMAPI.Models
         public IntRangeDto AllowedSkillRange { get; set; }
         public int? PawnRestrictionId { get; set; }
         public string PlayerCustomName { get; set; }
+        public List<string> AllowedMaterials { get; set; }
     }
 
     public class UpdateBillRequest
@@ -80,6 +83,7 @@ namespace RIMAPI.Models
         public IntRangeDto AllowedSkillRange { get; set; }
         public int? PawnRestrictionId { get; set; }
         public string PlayerCustomName { get; set; }
+        public List<string> AllowedMaterials { get; set; }
     }
 
     public class BillReorderRequest

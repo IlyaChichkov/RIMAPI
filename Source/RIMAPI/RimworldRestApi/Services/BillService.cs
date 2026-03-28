@@ -69,6 +69,10 @@ namespace RIMAPI.Services
                     request.LimitToAllowedStuff, request.IngredientSearchRadius, request.AllowedSkillRange,
                     request.PawnRestrictionId, request.PlayerCustomName);
 
+                var materialError = ApplyMaterialFilter(bill, request.AllowedMaterials);
+                if (materialError != null)
+                    return ApiResult<BillDto>.Fail(materialError);
+
                 workTable.BillStack.AddBill(bill);
                 return ApiResult<BillDto>.Ok(BillHelper.ToDto(bill));
             }
@@ -95,6 +99,10 @@ namespace RIMAPI.Services
                     request.IncludeEquipped, request.IncludeTainted, request.HpRange, request.QualityRange,
                     request.LimitToAllowedStuff, request.IngredientSearchRadius, request.AllowedSkillRange,
                     request.PawnRestrictionId, request.PlayerCustomName);
+
+                var materialError = ApplyMaterialFilter(bill, request.AllowedMaterials);
+                if (materialError != null)
+                    return ApiResult<BillDto>.Fail(materialError);
 
                 return ApiResult<BillDto>.Ok(BillHelper.ToDto(bill));
             }
@@ -315,6 +323,33 @@ namespace RIMAPI.Services
 
             if (playerCustomName != null && LabelField != null)
                 LabelField.SetValue(bill, playerCustomName);
+        }
+
+        private string ApplyMaterialFilter(Bill_Production bill, List<string> materials)
+        {
+            if (materials == null)
+                return null;
+
+            var availableDefs = bill.recipe.fixedIngredientFilter.AllowedThingDefs.ToList();
+
+            foreach (var defName in materials)
+            {
+                var def = DefDatabase<ThingDef>.GetNamed(defName, false);
+                if (def == null)
+                    return $"Material '{defName}' not found";
+                if (!availableDefs.Contains(def))
+                    return $"Material '{defName}' is not available for recipe '{bill.recipe.defName}'";
+            }
+
+            bill.ingredientFilter.SetDisallowAll();
+
+            foreach (var defName in materials)
+            {
+                var def = DefDatabase<ThingDef>.GetNamed(defName, false);
+                bill.ingredientFilter.SetAllow(def, true);
+            }
+
+            return null;
         }
     }
 }
