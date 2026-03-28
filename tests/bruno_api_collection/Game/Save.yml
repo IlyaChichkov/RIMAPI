@@ -6,6 +6,12 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/api/v1/game/save"
+  body:
+    type: json
+    data: |-
+      {
+        "file_name": "AutoSave_RimAPI"
+      }
   auth: inherit
 
 settings:
