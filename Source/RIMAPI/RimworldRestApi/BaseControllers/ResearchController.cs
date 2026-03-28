@@ -57,7 +57,10 @@ namespace RIMAPI.Controllers
         public async Task SetResearchTarget(HttpListenerContext context)
         {
             var name = RequestParser.GetStringParameter(context, "name");
-            var result = _researchService.SetResearchTarget(name);
+            var force = RequestParser.GetBooleanParameter(context, "force");
+            var result = _researchService.SetResearchTarget(name, force);
+            await context.SendJsonResponse(result);
+        }
             await context.SendJsonResponse(result);
         }
     }
