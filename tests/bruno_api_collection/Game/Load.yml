@@ -6,6 +6,14 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/api/v1/game/load"
+  body:
+    type: json
+    data: |-
+      {
+        "file_name": "AutoTestingScenario",
+        "check_version": false,
+        "skip_mod_mismatch": true
+      }
   auth: inherit
 
 settings:
