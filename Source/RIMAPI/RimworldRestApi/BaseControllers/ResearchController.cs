@@ -61,6 +61,12 @@ namespace RIMAPI.Controllers
             var result = _researchService.SetResearchTarget(name, force);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/research/stop")]
+        [EndpointMetadata("Stop the currently active research project")]
+        public async Task StopCurrentProject(HttpListenerContext context)
+        {
+            var result = _researchService.StopCurrentProject();
             await context.SendJsonResponse(result);
         }
     }

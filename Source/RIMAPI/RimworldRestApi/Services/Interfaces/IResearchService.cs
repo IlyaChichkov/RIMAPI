@@ -13,5 +13,6 @@ namespace RIMAPI.Services
         ApiResult<ResearchProjectDto> GetResearchProjectByName(string name);
         ApiResult<ResearchSummaryDto> GetResearchSummary();
         ApiResult<ResearchProjectDto> SetResearchTarget(string projectDefName, bool force);
+        ApiResult StopCurrentProject();
     }
 }
