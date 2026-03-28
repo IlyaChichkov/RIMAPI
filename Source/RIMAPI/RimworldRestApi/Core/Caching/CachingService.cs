@@ -448,7 +448,8 @@ namespace RIMAPI.Core
                 if (TryGet(cacheKey, out ApiResult<T> cachedResult))
                 {
                     // Cache hit - return the cached ApiResult
-                    await ResponseBuilder.SendApiResult(context.Response, cachedResult);
+                    // Use SendJsonResponse extension to apply query filters
+                    await context.SendJsonResponse(cachedResult);
                     LogApi.Message($"[Cache] Hit for key: {cacheKey}", LoggingLevels.DEBUG);
                     return;
                 }
@@ -466,8 +467,8 @@ namespace RIMAPI.Core
                     SetWithExpirationType(cacheKey, result, expirationType, expiration, gameTicksExpiration, priority);
                 }
 
-                // Return response
-                await ResponseBuilder.SendApiResult(context.Response, result);
+                // Return response using SendJsonResponse extension to apply query filters
+                await context.SendJsonResponse(result);
             }
             catch (Exception ex)
             {

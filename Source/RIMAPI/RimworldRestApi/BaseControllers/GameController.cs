@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using RIMAPI.Core;
@@ -132,10 +133,25 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/def/all")]
-        [EndpointMetadata("Get in-game date and time in global map tile")]
+        [EndpointMetadata("Get all game definitions with optional filtering")]
         public async Task GetAllDefs(HttpListenerContext context)
         {
             var body = await context.Request.ReadBodyAsync<AllDefsRequestDto>();
+            
+            // Support filters via query string if body is empty (e.g., ?include=things_defs,biome_defs)
+            if (body == null || body.Filters == null || body.Filters.Count == 0)
+            {
+                var filterParam = context.Request.QueryString["include"] ?? context.Request.QueryString["filter"];
+                if (!string.IsNullOrEmpty(filterParam))
+                {
+                    body = new AllDefsRequestDto
+                    {
+                        Filters = filterParam.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                            .Select(s => s.Trim())
+                                            .ToList()
+                    };
+                }
+            }
 
             await _cachingService.CacheAwareResponseAsync(
                 context,

@@ -320,6 +320,19 @@ namespace RIMAPI.Core
             ApiResult<T> result
         )
         {
+            // Apply generic filtering if success and query parameters are present
+            if (result.Success && result.Data != null && context.Request.QueryString.Count > 0)
+            {
+                try
+                {
+                    result.Data = (T)QueryFilter.ApplyToResult(result.Data, context.Request.QueryString);
+                }
+                catch (Exception ex)
+                {
+                    LogApi.Warning($"Failed to apply query filters: {ex.Message}");
+                    result.Warnings.Add($"Filtering failed: {ex.Message}");
+                }
+            }
             await ResponseBuilder.SendApiResult(context.Response, result);
         }
 

@@ -469,9 +469,14 @@ namespace RIMAPI.Services
                     // Execute only filtered properties
                     foreach (var filter in body.Filters)
                     {
-                        if (propertyMap.TryGetValue(filter, out var propertySetter))
+                        // Match either exact name or snake_case name
+                        var matchedKey = propertyMap.Keys.FirstOrDefault(k => 
+                            k.Equals(filter, StringComparison.OrdinalIgnoreCase) || 
+                            ToSnakeCase(k).Equals(filter, StringComparison.OrdinalIgnoreCase));
+
+                        if (matchedKey != null)
                         {
-                            propertySetter();
+                            propertyMap[matchedKey]();
                         }
                         else
                         {
@@ -491,6 +496,26 @@ namespace RIMAPI.Services
                 LogApi.Error($"Error getting all defs: {ex}");
                 return ApiResult<DefsDto>.Fail($"Failed to get defs: {ex.Message}");
             }
+        }
+
+        private string ToSnakeCase(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+            var result = new System.Text.StringBuilder();
+            result.Append(char.ToLower(input[0]));
+            for (int i = 1; i < input.Length; i++)
+            {
+                if (char.IsUpper(input[i]))
+                {
+                    result.Append('_');
+                    result.Append(char.ToLower(input[i]));
+                }
+                else
+                {
+                    result.Append(input[i]);
+                }
+            }
+            return result.ToString();
         }
 
         public static int GetMapTileId(Map map)
