@@ -1,0 +1,148 @@
+title: '### :material-briefcase: Pawn Job Controller'
+desc: |-
+  Focuses on overriding standard AI behaviors by forcing pawns to execute specific tasks.
+
+  !!! abstract "Scope"
+      This controller deals with *immediate actions* and direct job assignments. For configuring long-term work priorities, schedules, or drafting, see the `PawnEditController` or `PawnController`.
+
+  **Capabilities:**
+
+  * Force a pawn to perform a specific action (Haul, Mine, Hunt).
+  * Direct medical care by assigning doctors to patients.
+  * Force injured or sick pawns into specific medical beds.
+
+/api/v1/pawn/job:
+  desc: |-
+    Assign a specific job to a pawn by its `JobDef` name. You can optionally provide a target 
+    object (like a rock to mine or item to haul) or a target position on the map.
+
+    !!! tip "Discovering JobDefs"
+
+        You can fetch a complete, up-to-date list of all available job definitions in your current 
+        game (including those added by mods) by making a `GET` request to the `/api/v1/def/all` 
+        endpoint and inspecting the `job_defs` array.
+    
+    !!! note "Current Job Limitations"
+
+        Under the hood, RimWorld jobs can require up to three targets (`targetA`, `targetB`, `targetC`).
+        Currently, this endpoint only supports single-target jobs (mapping to `targetA`).
+        Jobs requiring multiple targets (e.g., hauling an item *to* a specific stockpile) are not yet supported.
+        *(Tip: Look at the `Verse.JobMaker` class in the RimWorld source code to see the various 
+        `MakeJob` overloads and how jobs are constructed and pooled internally).*
+        
+        **Examples of currently supported JobDefs:**
+
+        - `Goto` (Movement/travel)
+        - `AttackMelee` (Melee combat attacks)
+        - `ManTurret` (Manning turret stations)
+        - `LayDown` (Sleeping/resting)
+        - `PickupToHold` (Picking up items to carry)
+        - `Clean` (Cleaning filth)
+        - `PlaceNoCostFrame` (Placing construction frames)
+        - `TendEntity` (Tending to entities)
+        - `CastJump` (Jump/cast abilities)
+        - `StandAndStare` (Idle behavior)
+        - `Meditate` (Meditation activities)
+
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/pawn/job' \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 123,
+        "job_def": "Mine",
+        "target_thing_id": 456
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 123,
+        "job_def": "Mine",
+        "target_thing_id": 456,
+        "target_position": {"x": 10, "y": 0, "z": 15}
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T15:00:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: AssignJob
+
+/api/v1/pawn/medical/tend:
+  desc: Assign a doctor to tend to a specific patient. If `doctor_pawn_id` is omitted, the game will automatically search for and assign the best available doctor based on the Medicine skill.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/pawn/medical/tend' \
+    --header 'content-type: application/json' \
+    --data '{
+        "patient_pawn_id": 123,
+        "doctor_pawn_id": 456
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "patient_pawn_id": 123,
+        "doctor_pawn_id": 456
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T15:05:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: AssignTendJob
+
+/api/v1/pawn/medical/bed-rest:
+  desc: Force a pawn to enter bed rest. You can optionally specify a particular bed by passing its `bed_building_id`. If omitted, the pawn will find the best available medical bed themselves.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/pawn/medical/bed-rest' \
+    --header 'content-type: application/json' \
+    --data '{
+        "patient_pawn_id": 123,
+        "bed_building_id": 789
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "patient_pawn_id": 123,
+        "bed_building_id": 789
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T15:10:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: AssignBedRest

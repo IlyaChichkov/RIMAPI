@@ -227,3 +227,81 @@ desc: |-
     }
     ```
   method: GET
+
+/api/v1/research/target:
+  desc: Set the colony's active research project by its `defName`. This immediately redirects the colony's research focus.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/research/target?name=Electricity&force=false'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "finished_projects_count": 3,
+            "total_projects_count": 50,
+            "available_projects_count": 15,
+            "by_tech_level": {
+                "neolithic": {
+                    "finished": 1,
+                    "total": 5,
+                    "percent_complete": 20.0,
+                    "projects": ["BasicResearch"]
+                },
+                "industrial": {
+                    "finished": 2,
+                    "total": 10,
+                    "percent_complete": 20.0,
+                    "projects": ["Electricity", "Stonecutting"]
+                }
+            },
+            "by_tab": {
+                "basic": {
+                    "finished": 2,
+                    "total": 10,
+                    "percent_complete": 20.0,
+                    "projects": ["BasicResearch", "Stonecutting"]
+                },
+                "power": {
+                    "finished": 1,
+                    "total": 5,
+                    "percent_complete": 20.0,
+                    "projects": ["electricity"]
+                }
+            }
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T16:10:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: SetResearchTarget
+
+/api/v1/research/stop:
+  desc: Stop the colony's currently active research project. This unassigns the research focus 
+        and returns the state of the project that was halted. Returns an error if no research is currently active.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/research/stop'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+      "success": true,
+      "errors": [],
+      "warnings": [],
+      "timestamp": "2026-02-18T13:22:46.312391Z"
+    }
+    ```
+  method: POST
+  csharp_method: StopCurrentProject
