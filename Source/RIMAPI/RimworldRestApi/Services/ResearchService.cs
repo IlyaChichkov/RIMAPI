@@ -54,9 +54,9 @@ namespace RIMAPI.Services
             return ApiResult<ResearchTreeDto>.Ok(result);
         }
 
-        public ApiResult<ResearchProjectDto> SetResearchTarget(string projectDefName)
+        public ApiResult<ResearchProjectDto> SetResearchTarget(string projectDefName, bool force)
         {
-            var result = ResearchHelper.SetResearchTarget(projectDefName);
+            var result = ResearchHelper.SetResearchTarget(projectDefName, force);
             if (result == null)
             {
                 return ApiResult<ResearchProjectDto>
