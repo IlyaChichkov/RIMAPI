@@ -5,7 +5,11 @@ info:
 
 http:
   method: POST
-  url: "{{baseURL}}/api/v1/game/speed"
+  url: "{{baseURL}}/api/v1/game/speed?speed=0"
+  params:
+    - name: speed
+      value: "0"
+      type: query
   auth: inherit
 
 settings:
