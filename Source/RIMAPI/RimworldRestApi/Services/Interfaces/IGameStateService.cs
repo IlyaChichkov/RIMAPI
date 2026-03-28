@@ -19,8 +19,8 @@ namespace RIMAPI.Services
         ApiResult<MapTimeDto> GetWorldTileDatetime(int tileID);
         ApiResult SendLetterSimple(SendLetterRequestDto body);
         ApiResult SetGameSpeed(int speed);
-        ApiResult GameSave(string name);
-        ApiResult GameLoad(string name);
+        ApiResult GameSave(GameSaveRequestDto body);
+        ApiResult GameLoad(GameLoadRequestDto body);
         ApiResult GameDevQuickStart();
         ApiResult GameStart(NewGameStartRequestDto body);
         ApiResult<GameSettingsDto> GetCurrentSettings();

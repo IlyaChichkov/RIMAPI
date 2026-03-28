@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using RIMAPI.Core;
@@ -710,42 +711,106 @@ namespace RIMAPI.Services
             }
         }
 
-        public ApiResult GameSave(string name)
+        public ApiResult GameSave(GameSaveRequestDto body)
         {
+            string saveName;
+
             try
             {
-                var saveName = GenFile.SanitizedFileName(name);
+                if (body == null)
+                {
+                    return ApiResult.Fail("Request body is missing or invalid.");
+                }
+
+                if (Current.Game == null)
+                {
+                    return ApiResult.Fail("Cannot save: No active game is currently running.");
+                }
 
                 if (GameDataSaveLoader.SavingIsTemporarilyDisabled)
                 {
-                    return ApiResult.Fail("Cannot save game - saving is temporarily disabled");
+                    return ApiResult.Fail("Cannot save game - saving is temporarily disabled (e.g., during a cutscene).");
                 }
 
-                LongEventHandler.QueueLongEvent(delegate
+                if (Current.Game.Info.permadeathMode)
                 {
-                    GameDataSaveLoader.SaveGame(saveName);
-                }, "SavingLongEvent", doAsynchronously: false, null);
+                    saveName = Current.Game.Info.permadeathModeUniqueName;
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(body.FileName))
+                    {
+                        return ApiResult.Fail("The 'file_name' parameter is required to save a game.");
+                    }
+                    saveName = GenFile.SanitizedFileName(body.FileName);
+                }
 
-                Messages.Message("Game saved as: " + saveName, MessageTypeDefOf.SilentInput);
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    LongEventHandler.QueueLongEvent(delegate
+                    {
+                        GameDataSaveLoader.SaveGame(saveName);
+                    }, "SavingLongEvent", doAsynchronously: false, null);
+
+                    Messages.Message("Game saved as: " + saveName, MessageTypeDefOf.SilentInput);
+                });
+
+                return ApiResult.Ok();
             }
             catch (Exception ex)
             {
-                return ApiResult.Fail($"Failed to load game: {ex.Message}");
+                return ApiResult.Fail($"Failed to initialize game save: {ex.Message}");
             }
-            return ApiResult.Ok();
         }
 
-        public ApiResult GameLoad(string name)
+        public ApiResult GameLoad(GameLoadRequestDto body)
         {
             try
             {
-                GameDataSaveLoader.CheckVersionAndLoadGame(name);
+                if (body == null)
+                {
+                    return ApiResult.Fail("Request body is missing or invalid.");
+                }
+
+                string filePath = GenFilePaths.FilePathForSavedGame(body.FileName);
+                if (!File.Exists(filePath))
+                {
+                    return ApiResult.Fail($"Save file not found: {body.FileName}.rws");
+                }
+
+                // Queue execution onto RimWorld's main thread. 
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    if (!body.CheckVersion)
+                    {
+                        // Immediate asynchronous queueing without version checking
+                        GameDataSaveLoader.LoadGame(body.FileName);
+                    }
+                    else if (body.SkipModMismatch)
+                    {
+                        // Check version but forcefully skip the mod mismatch dialog
+                        PreLoadUtility.CheckVersionAndLoad(
+                            filePath,
+                            ScribeMetaHeaderUtility.ScribeHeaderMode.Map,
+                            delegate
+                            {
+                                GameDataSaveLoader.LoadGame(body.FileName);
+                            },
+                            skipOnMismatch: true
+                        );
+                    }
+                    else
+                    {
+                        GameDataSaveLoader.CheckVersionAndLoadGame(body.FileName);
+                    }
+                });
+
+                return ApiResult.Ok();
             }
             catch (Exception ex)
             {
-                return ApiResult.Fail($"Failed to load game: {ex.Message}");
+                return ApiResult.Fail($"Failed to initialize game load: {ex.Message}");
             }
-            return ApiResult.Ok();
         }
 
         public ApiResult GameDevQuickStart()
