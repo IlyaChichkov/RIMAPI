@@ -140,6 +140,20 @@ namespace RIMAPI.Helpers
             return ResearchProjectToDto(project);
         }
 
+        public static ResearchProjectDto StopCurrentProject()
+        {
+            var currentProject = Find.ResearchManager.GetProject(null);
+
+            if (currentProject == null)
+            {
+                throw new InvalidOperationException("No main research project is currently active.");
+            }
+
+            var projectDto = ResearchProjectToDto(currentProject);
+            Find.ResearchManager.StopProject(currentProject);
+            return projectDto;
+        }
+
         public static ResearchSummaryDto GetResearchSummary()
         {
             try

@@ -64,5 +64,11 @@ namespace RIMAPI.Services
             }
             return ApiResult<ResearchProjectDto>.Ok(result);
         }
+
+        public ApiResult StopCurrentProject()
+        {
+            ResearchHelper.StopCurrentProject();
+            return ApiResult.Ok();
+        }
     }
 }
