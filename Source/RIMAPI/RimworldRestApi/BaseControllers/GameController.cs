@@ -166,16 +166,16 @@ namespace RIMAPI.Controllers
         [Post("/api/v1/game/save")]
         public async Task GameSave(HttpListenerContext context)
         {
-            var saveName = RequestParser.GetStringParameter(context, "name");
-            var result = _gameStateService.GameSave(saveName);
+            var body = await context.Request.ReadBodyAsync<GameSaveRequestDto>();
+            var result = _gameStateService.GameSave(body);
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/game/load")]
         public async Task GameLoad(HttpListenerContext context)
         {
-            var loadName = RequestParser.GetStringParameter(context, "name");
-            var result = _gameStateService.GameLoad(loadName);
+            var body = await context.Request.ReadBodyAsync<GameLoadRequestDto>();
+            var result = _gameStateService.GameLoad(body);
             await context.SendJsonResponse(result);
         }
 
