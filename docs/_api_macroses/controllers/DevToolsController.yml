@@ -150,3 +150,53 @@ desc: |-
     }
     ```
   method: POST
+
+/api/v1/dev/endpoints:
+  desc: Get a comprehensive list of all registered API endpoints, including their HTTP methods, paths, descriptions, categories, and tags. This is highly useful for programmatic route discovery and building automated API clients.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/dev/endpoints'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "endpoints": [
+                {
+                    "method": "POST",
+                    "path": "/api/v1/camera/change/zoom",
+                    "description": "Change game camera zoom",
+                    "category": "CameraController",
+                    "tags": [],
+                    "is_deprecated": false
+                },
+                {
+                    "method": "POST",
+                    "path": "/api/v1/camera/change/position",
+                    "description": "Change game camera position",
+                    "category": "CameraController",
+                    "tags": [],
+                    "is_deprecated": false
+                },
+                {
+                    "method": "POST",
+                    "path": "/api/v1/stream/start",
+                    "description": "Start game camera stream",
+                    "category": "CameraController",
+                    "tags": [],
+                    "is_deprecated": false
+                }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T16:45:00.0000000Z"
+    }
+    ```
+  method: GET
+  csharp_method: GetEndpoints
