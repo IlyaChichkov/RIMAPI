@@ -1,0 +1,833 @@
+title: '### :material-account: Pawn Controller'
+desc: |-
+  **Pawn Controller** — это интерфейс **только для чтения** для получения подробной статистики о поселенцах, заключенных, животных и врагах.
+
+  Он предоставляет глубокое погружение в:
+
+  *   **Потребности (Needs):** Голод, Отдых, Развлечения.
+  *   **Биография (Bio):** Возраст, Черты характера, Предыстория.
+  *   **Работа (Work):** Текущая работа, приоритеты и расписания.
+/api/v2/colonists/detailed:
+  desc: |-
+    Получает исчерпывающий список всех поселенцев с подробной статистикой, включая потребности (сон, радость, красота), приоритеты в работе и медицинский статус.
+
+    !!! info "Политика кэширования"
+        Эта конечная точка кэшируется на стороне сервера на **1800 игровых тиков** (~30 секунд), чтобы уменьшить влияние на производительность игрового цикла.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v2/colonists/detailed
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "pawn": {
+                    "id": 101,
+                    "name": "Lumi",
+                    "gender": "Female",
+                    "age": 25,
+                    "health": 1.0,
+                    "mood": 0.85,
+                    "hunger": 0.2,
+                    "position": {
+                        "x": 10,
+                        "y": 0,
+                        "z": 15
+                    }
+                },
+                "detailes": {
+                    "body_size": 1.0,
+                    "sleep": 0.9,
+                    "comfort": 0.8,
+                    "beauty": 0.5,
+                    "joy": 0.75,
+                    "energy": 0.8,
+                    "drugs_desire": 0.0,
+                    "surrounding_beauty": 1.2,
+                    "fresh_air": 1.0,
+                    "work_info": {
+                        "job": "Harvesting",
+                        "work_speed": 1.1
+                    },
+                    "policies_info": {
+                        "food": "Lavish",
+                        "clothing": "Anything"
+                    },
+                    "medical_info": {
+                        "in_pain": false,
+                        "bleeding_rate": 0.0
+                    },
+                    "social_info": {
+                        "marital_status": "Single"
+                    }
+                }
+            }
+        ],
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v2/colonist/detailed:
+  desc: Получает подробную статистику для одного поселенца, идентифицированного по его ID. В отличие от массовой конечной точки, этот запрос извлекает данные в реальном времени без кэширования.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v2/colonist/detailed?id=101"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "pawn": {
+                "id": 101,
+                "name": "Lumi",
+                "gender": "Female",
+                "age": 25,
+                "health": 1.0,
+                "mood": 0.85,
+                "hunger": 0.2,
+                "position": {
+                    "x": 10,
+                    "y": 0,
+                    "z": 15
+                }
+            },
+            "detailes": {
+                "body_size": 1.0,
+                "sleep": 0.9,
+                "comfort": 0.8,
+                "beauty": 0.5,
+                "joy": 0.75,
+                "energy": 0.8,
+                "drugs_desire": 0.0,
+                "surrounding_beauty": 1.2,
+                "fresh_air": 1.0,
+                "work_info": {
+                    "job": "Harvesting",
+                    "work_speed": 1.1
+                },
+                "policies_info": {
+                    "food": "Lavish",
+                    "clothing": "Anything"
+                },
+                "medical_info": {
+                    "in_pain": false,
+                    "bleeding_rate": 0.0
+                },
+                "social_info": {
+                    "marital_status": "Single"
+                }
+            }
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/colonists:
+  desc: |-
+    Получает список всех поселенцев во фракции игрока, включая их навыки, черты характера, здоровье, настроение и текущие занятия.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/colonists'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 1011,
+                "name": "Walters",
+                "gender": "Male",
+                "age": 13,
+                "health": 1.0,
+                "mood": 0.7448001,
+                "hunger": 0.663999736,
+                "position": {
+                    "x": 71,
+                    "y": 0,
+                    "z": 94
+                }
+            },
+            {
+                "id": 1014,
+                "name": "Nordi",
+                "gender": "Male",
+                "age": 61,
+                "health": 1.0,
+                "mood": 0.559999764,
+                "hunger": 0.663999736,
+                "position": {
+                    "x": 74,
+                    "y": 0,
+                    "z": 91
+                }
+            },
+            {
+                "id": 1017,
+                "name": "Casey",
+                "gender": "Male",
+                "age": 41,
+                "health": 1.0,
+                "mood": 0.55,
+                "hunger": 0.667999744,
+                "position": {
+                    "x": 68,
+                    "y": 0,
+                    "z": 95
+                }
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T20:00:34.2760128Z"
+    }
+    ```
+  method: GET
+/api/v1/colonist:
+  desc: Получает информацию об одном поселенце во фракции игрока.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/colonist?id=1020'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "id": 1040,
+            "name": "Blake",
+            "gender": "Male",
+            "age": 31,
+            "health": 1.0,
+            "mood": 0.5072,
+            "hunger": 0.796,
+            "position": {
+            "x": 63,
+            "y": 0,
+            "z": 88
+            }
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T20:09:41.7078214Z"
+    }
+    ```
+  method: GET
+/api/v1/colonists/detailed:
+  desc: Получает подробный список всех поселенцев во фракции игрока, включая их навыки, черты характера, здоровье, настроение и текущие занятия.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/colonists/detailed
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "colonist": {
+                    "id": 1020,
+                    "name": "Lumi",
+                    "gender": "Female",
+                    "age": 25,
+                    "health": 1.0,
+                    "mood": 0.85,
+                    "hunger": 0.2,
+                    "position": { "x": 10, "y": 0, "z": 15 }
+                },
+                "body_size": 1.0,
+                "sleep": 0.9,
+                "comfort": 0.8,
+                "beauty": 0.5,
+                "joy": 0.75,
+                "energy": 0.8,
+                "drugs_desire": 0.0,
+                "surrounding_beauty": 1.2,
+                "fresh_air": 1.0,
+                "colonist_work_info": {
+                    "job": "Harvesting",
+                    "work_speed": 1.1
+                },
+                "policies_info": {
+                    "food": "Lavish",
+                    "clothing": "Anything"
+                },
+                "colonist_medical_info": {
+                    "in_pain": false,
+                    "bleeding_rate": 0.0
+                },
+                "social_info": {
+                    "marital_status": "Single"
+                }
+            }
+        ],
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/colonist/detailed:
+  desc: Получает подробную информацию об одном поселенце во фракции игрока по ID.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/colonist/detailed?id=1020"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "colonist": {
+                "id": 1020,
+                "name": "Lumi",
+                "gender": "Female",
+                "age": 25,
+                "health": 1.0,
+                "mood": 0.85,
+                "hunger": 0.2,
+                "position": { "x": 10, "y": 0, "z": 15 }
+            },
+            "body_size": 1.0,
+            "sleep": 0.9,
+            "comfort": 0.8,
+            "beauty": 0.5,
+            "joy": 0.75,
+            "energy": 0.8,
+            "drugs_desire": 0.0,
+            "surrounding_beauty": 1.2,
+            "fresh_air": 1.0,
+            "colonist_work_info": {
+                "job": "Harvesting",
+                "work_speed": 1.1
+            },
+            "policies_info": {
+                "food": "Lavish",
+                "clothing": "Anything"
+            },
+            "colonist_medical_info": {
+                "in_pain": false,
+                "bleeding_rate": 0.0
+            },
+            "social_info": {
+                "marital_status": "Single"
+            }
+        },
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET
+/api/v1/colonist/opinion-about:
+  desc: |-
+    Получает мнение одного поселенца о другом указанном поселенце. Эта конечная точка дает представление о межличностных отношениях внутри поселения, возвращая два целочисленных значения: `Opinion` (мнение поселенца с `id` о поселенце с `other_id`) и `OpinionAboutMe` (мнение поселенца с `other_id` о поселенце с `id`).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/colonist/opinion-about?id=1020&other_id=964'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "opinion": 75,
+            "opinion_about_me": 50
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/colonist/time-assignment:
+  desc: |-
+    Устанавливает или изменяет назначение времени (расписание) для одного или нескольких поселенцев. Расписание в RimWorld определяет распорядок дня для каждого поселенца, определяя, когда они спят, работают, развлекаются или занимаются чем-либо еще.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/colonist/time-assignment \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 99,
+        "hour": 14,
+        "assignment": "Joy"
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 99,
+        "hour": 14,
+        "assignment": "Joy"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/colonists/positions:
+  desc: |-
+    Получает координаты всех поселенцев на всех картах в реальном времени.
+
+    **Примечание по производительности:** Эта конечная точка активно кэшируется (TTL 100 мс) и оптимизирована для высокочастотного опроса. Она возвращает облегченный DTO, содержащий только необходимые данные о местоположении, что делает её идеальной для обновления миникарт или трекеров в реальном времени.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/colonists/positions
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 5612,
+                "map_id": 0,
+                "x": 125,
+                "z": 110
+            },
+            {
+                "id": 5613,
+                "map_id": 0,
+                "x": 128,
+                "z": 112
+            },
+            {
+                "id": 8901,
+                "map_id": 1,
+                "x": 45,
+                "z": 200
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T14:22:15.500Z"
+    }
+    ```
+  method: GET
+/api/v1/colonist/inventory:
+  desc: |-
+    Получает подробный список всех предметов, одежды и снаряжения, находящихся в данный момент в инвентаре поселенца. Сюда входят переносимые предметы, надетая одежда и экипированное оружие/инструменты.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/colonist/inventory?id=1020'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "Items": [
+                {
+                    "thing_id": 4895,
+                    "def_name": "MealSurvivalPack",
+                    "label": "packaged survival meal",
+                    "categories": ["FoodMeals"],
+                    "position": { "x": 13, "y": 0, "z": 62 },
+                    "stack_count": 5,
+                    "market_value": 24.0,
+                    "is_forbidden": false,
+                    "quality": -1,
+                    "hit_points": 50,
+                    "max_hit_points": 50
+                }
+            ],
+            "Apparels": [
+                {
+                    "thing_id": 1234,
+                    "def_name": "Apparel_Pants",
+                    "label": "pants",
+                    "categories": ["Apparel"],
+                    "position": { "x": 0, "y": 0, "z": 0 },
+                    "stack_count": 1,
+                    "market_value": 50.0,
+                    "is_forbidden": false,
+                    "quality": 3,
+                    "hit_points": 75,
+                    "max_hit_points": 100
+                }
+            ],
+            "Equipment": [
+                {
+                    "thing_id": 5678,
+                    "def_name": "Weapon_AssaultRifle",
+                    "label": "assault rifle",
+                    "categories": ["Weapons"],
+                    "position": { "x": 0, "y": 0, "z": 0 },
+                    "stack_count": 1,
+                    "market_value": 700.0,
+                    "is_forbidden": false,
+                    "quality": 4,
+                    "hit_points": 120,
+                    "max_hit_points": 150
+                }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/colonist/body/image:
+  desc: |-
+    Получает изображения в кодировке base64 и информацию о цвете тела и головы поселенца. Эта конечная точка полезна для рендеринга или анализа внешности поселенца.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/colonist/body/image?id=1020'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "body_image": "base64_encoded_body_image_string",
+            "body_color": "RGBA(1.000, 1.000, 1.000, 1.000)",
+            "head_image": "base64_encoded_head_image_string",
+            "head_color": "RGBA(1.000, 1.000, 1.000, 1.000)"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/colonist/work-priority:
+  desc: |-
+    Устанавливает или корректирует приоритеты типов работ для одного или нескольких поселенцев. Приоритеты работы определяют, какие задачи поселенец будет выполнять в рабочее время; каждому типу работы (например, пожаротушение, строительство, выращивание, ремесло) назначается уровень приоритета от 1 (самый высокий) до 4 (самый низкий) или работа отключается (0).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/colonist/work-priority \
+    --header 'content-type: application/json' \
+    --data '{
+        "id": 99,
+        "work": "Cooking",
+        "priority": 1
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "id": 99,
+        "work": "Cooking",
+        "priority": 1
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/colonists/work-priority:
+  desc: Устанавливает или корректирует приоритеты типов работ для нескольких поселенцев в одном запросе.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/colonists/work-priority \
+    --header 'content-type: application/json' \
+    --data '[
+        { "id": 37586, "work": "Patient", "priority": 5 },
+        { "id": 67969, "work": "Hauling", "priority": 1 }
+    ]'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    [
+        { "id": 37586, "work": "Patient", "priority": 5 },
+        { "id": 67969, "work": "Hauling", "priority": 1 }
+    ]
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/jobs/make/equip:
+  desc: |-
+    Создает задание для поселенца экипировать определенный предмет из доступного инвентаря или окружающей местности. Эта конечная точка ставит в очередь немедленную задачу "экипировать", приказывая поселенцу взять и надеть/вооружить указанную одежду или оружие.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/jobs/make/equip?map_id=0&pawn_id=1011&item_id=4849' \
+    --header 'content-type: application/json'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/portrait/image:
+  desc: |-
+    Получает портретное изображение конкретной пешки в кодировке base64. Эта конечная точка позволяет указать желаемую ширину, высоту и направление взгляда для портрета.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawn/portrait/image?pawn_id=1020&width=128&height=128&direction=South'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "result": "success",
+            "image_base64": "base64_encoded_portrait_image_string"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/trait-def:
+  desc: |-
+    Получает подробную информацию об определении конкретной черты характера. Черты определяют врожденные характеристики пешки и могут влиять на их навыки, настроение и взаимодействия.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/trait-def?name=Ascetic'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "def_name": "Ascetic",
+            "label": "ascetic",
+            "description": "",
+            "degree_datas": [
+                {
+                    "label": "ascetic",
+                    "description": "{PAWN_nameDef} has forsaken physical comforts and enjoyments in favor of a simple, pure lifestyle. {PAWN_pronoun} will become unhappy if {PAWN_pronoun} has a bedroom that's too impressive. {PAWN_pronoun} also dislikes fancy food and prefers to eat raw. {PAWN_pronoun} never judges others by their appearance.",
+                    "degree": 0,
+                    "skill_gains": {},
+                    "stat_offsets": [],
+                    "stat_factors": [
+                        {
+                            "stat_def_name": "CertaintyLossFactor",
+                            "value": 0.5
+                        }
+                    ]
+                }
+            ],
+            "conflicting_traits": [
+                "Greedy",
+                "Jealous",
+                "Gourmand"
+            ],
+            "disabled_work_types": [],
+            "disabled_work_tags": "None"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/time-assignments:
+  desc: |-
+    Получает список всех доступных назначений времени, которые могут быть установлены для поселенцев. Эти назначения определяют распорядок дня, такой как "Сон", "Работа", "Радость" и т. д.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/time-assignments'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            { "name": "Anything" },
+            { "name": "Work" },
+            { "name": "Joy" },
+            { "name": "Sleep" },
+            { "name": "Meditate" }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/outfits:
+  desc: |-
+    Получает список всех определенных наборов одежды (outfits) в игре, включая их названия и связанные фильтры предметов. Наборы одежды определяют, какую одежду будут носить поселенцы на основе таких критериев, как тип, качество и очки здоровья.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/outfits'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "Id": 1,
+                "Label": "Worker",
+                "Filter": {
+                    "allowed_thing_def_names": [
+                        "Apparel_CowboyHat",
+                        "Apparel_BowlerHat",
+                        "Apparel_TribalHeaddress",
+                        "Apparel_Tuque",
+                    ],
+                    "disallowed_special_filter_def_names": ["AllowBurned"],
+                    "allowed_hit_points_min": 0.5,
+                    "allowed_hit_points_max": 1.0,
+                    "allowed_hit_points_configurable": true,
+                    "allowed_qualities_configurable": true
+                }
+            },
+            {
+                "id": 2,
+                "label": "soldier",
+                "filter": {
+                    "allowed_thing_def_names": [],
+                    "disallowed_special_filter_def_names": ["AllowSmeltable"],
+                    "allowed_hit_points_min": 0.8,
+                    "allowed_hit_points_max": 1.0,
+                    "allowed_quality_min": "good",
+                    "allowed_quality_max": "legendary",
+                    "allowed_hit_points_configurable": true,
+                    "allowed_qualities_configurable": true
+                }
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET
+/api/v1/work-list:
+  desc: |-
+    Получает исчерпывающий список всех определенных типов работ в игре. Типы работ классифицируют задачи, которые могут выполнять поселенцы, такие как "Переноска", "Приготовление пищи", "Добыча ресурсов", "Стрижка растений" и т. д.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/work-list'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "work": [
+                "Firefighter",
+                "Patient",
+                "Doctor",
+                "PatientBedRest",
+                "BasicWorker",
+                "Warden",
+                "Handling",
+                "Cooking",
+                "Hunting",
+                "Construction",
+                "Growing",
+                "Mining",
+                "PlantCutting",
+                "Smithing",
+                "Tailoring",
+                "Art",
+                "Crafting",
+                "Hauling",
+                "Cleaning",
+                "Research",
+                "Childcare",
+                "DarkStudy"
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-12T10:00:00.0000000Z"
+    }
+    ```
+  method: GET

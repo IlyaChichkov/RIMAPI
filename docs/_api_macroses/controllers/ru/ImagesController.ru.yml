@@ -1,0 +1,104 @@
+title: '### :material-image: Изображения'
+desc: |-
+  Предоставляет конечные точки для извлечения визуальных ресурсов и текстур из игры.
+  Это необходимо для внешних инструментов, которым нужно визуально отрисовывать
+  игровые карты или предметы, получая реальные текстуры, используемые в RimWorld.
+/api/v1/terrain/image:
+  desc: |-
+    Возвращает изображение текстуры для конкретного определения ландшафта в формате Base64.
+    Параметр `name` соответствует `defName` ландшафта (например, `Soil`, `WaterDeep`, `Sand`).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url "http://localhost:8765/api/v1/terrain/image?name=Soil"
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "name": "Soil",
+            "image_base64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0..."
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-14T14:15:30.000Z"
+    }
+    ```
+  method: GET
+/api/v1/item/image:
+  desc: Возвращает изображение конкретного игрового предмета в кодировке base64.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/item/image?name=ComponentIndustrial'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "result": "success",
+            "image_base64": "..."
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:31:48.7480326Z"
+    }
+    ```
+  method: GET
+/api/v1/item/change/image:
+  method: POST
+  desc: |-
+    Загружает и применяет новую пользовательскую текстуру к конкретному игровому предмету или объекту.
+    Принимает данные изображения в кодировке base64 вместе с различными свойствами рендеринга, такими как
+    масштаб, направление взгляда и маскирование.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/item/change/image \
+    --header 'content-type: application/json' \
+    --data '{
+        "Name": "WoodLog",
+        "Image": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+        "Direction": "South",
+        "Offset": "0,0,0",
+        "Scale": "1.0",
+        "ThingType": "Item",
+        "IsStackable": "true",
+        "MaskImage": "",
+        "UpdateItemIndex": 0
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "Name": "WoodLog",
+        "Image": "<base64_encoded_string>",
+        "Direction": "South",
+        "Offset": "0,0,0",
+        "Scale": "1.0",
+        "ThingType": "Item",
+        "IsStackable": "true",
+        "MaskImage": "<optional_base64_mask>",
+        "UpdateItemIndex": 0
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-02-21T20:15:30.000Z"
+    }
+    ```

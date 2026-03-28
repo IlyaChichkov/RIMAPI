@@ -1,0 +1,84 @@
+title: '### :material-store: Торговля'
+desc: |-
+  Предоставляет доступ к экономике игры и торговым системам. Этот контроллер обрабатывает
+  определения для различных типов торговцев (орбитальные, караваны, посетители), позволяя вам
+  анализировать их правила генерации товаров, распространенность предметов и поведение при покупке/продаже.
+
+  **Возможности:**
+
+  * Список всех глобальных типов торговцев (Defs).
+  * Проверка логики генерации товаров (конкретные предметы, категории или теги).
+  * Определение того, является ли тип торговца орбитальным или наземным.
+/api/v1/traders/defs:
+  desc: Возвращает список всех определений торговцев (TraderKindDefs). Сюда входят орбитальные торговцы, караваны и посетители, с подробным описанием их правил генерации товаров, распространенности и того, покупают ли они определенные категории предметов.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/traders/defs
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "def_name": "Orbital_BulkGoods",
+                "label": "bulk goods trader",
+                "orbital": true,
+                "visitor": false,
+                "commonality": 1.0,
+                "items": [
+                    {
+                        "name": "Steel",
+                        "count": "500~800",
+                        "price": "Normal"
+                    },
+                    {
+                        "name": "ComponentIndustrial",
+                        "count": "20~40"
+                    }
+                ],
+                "categories": [
+                    {
+                        "name": "Textiles",
+                        "count": "300~600"
+                    },
+                    {
+                        "name": "FoodRaw",
+                        "count": "200~400"
+                    }
+                ],
+                "tags": [
+                    {
+                        "name": "Artifact",
+                        "buys": false
+                    }
+                ]
+            },
+            {
+                "def_name": "Caravan_Outlander_CombatSupplier",
+                "label": "combat supplier",
+                "orbital": false,
+                "visitor": true,
+                "commonality": 1.0,
+                "items": [
+                    {
+                        "name": "MedicineIndustrial",
+                        "count": "5~15"
+                    }
+                ],
+                "categories": [
+                    {
+                        "name": "WeaponsMelee",
+                        "count": "3~6"
+                    }
+                ]
+            }
+        ],
+        "timestamp": "2025-12-11T19:46:05.7088803Z"
+    }
+    ```
+  method: GET

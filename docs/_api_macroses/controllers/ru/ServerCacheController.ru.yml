@@ -1,0 +1,111 @@
+title: '### :material-server-network: Кэш сервера'
+desc: |-
+  Эндпоинты для управления механизмом внутреннего кэширования API. Используйте эти маршруты для
+  переключения кэширования, мониторинга статистики производительности (соотношение попаданий/промахов)
+  и ручной очистки кэша для освобождения памяти или принудительного обновления данных.
+/api/v1/cache/enable:
+  desc: |-
+    Включить кэширование сервера для результатов эндпоинтов. Когда оно включено, валидные GET-запросы
+    будут сохраняться в памяти для снижения нагрузки на сервер и улучшения времени ответа.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/cache/enable
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/cache/disable:
+  desc: |-
+    Отключить кэширование сервера. Это заставляет сервер заново обрабатывать каждый запрос.
+    Полезно для отладки или обеспечения точности данных в реальном времени во время разработки.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/cache/disable
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/cache/status:
+  desc: |-
+    Возвращает текущий статус и статистику производительности
+    системы внутреннего кэширования API. Этот эндпоинт обеспечивает
+    видимость использования кэша, его эффективности и занимаемой памяти,
+    что полезно для мониторинга и отладки производительности и оптимизации API.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/cache/status
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "enabled": true,
+        "statistics": {
+            "total_entries": 0,
+            "hits": 0,
+            "misses": 0,
+            "memory_usage_bytes": 0,
+            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
+            "hit_ratio": 0.0,
+            "compiled_delegate_count": 0,
+            "compiled_delegate_hits": 0,
+            "compiled_delegate_misses": 0
+        }
+    }
+    ```
+  method: GET
+/api/v1/cache/clear:
+  desc: |-
+    Вручную запускает полную очистку системы кэширования.
+    Это удаляет все сохраненные записи и сбрасывает статистику выполнения.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/cache/clear
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "enabled": true,
+        "statistics": {
+            "total_entries": 0,
+            "hits": 0,
+            "misses": 0,
+            "memory_usage_bytes": 0,
+            "last_cleanup": "2025-12-10T18:43:21.4353167Z",
+            "hit_ratio": 0.0,
+            "compiled_delegate_count": 0,
+            "compiled_delegate_hits": 0,
+            "compiled_delegate_misses": 0
+        }
+    }
+    ```
+  method: POST

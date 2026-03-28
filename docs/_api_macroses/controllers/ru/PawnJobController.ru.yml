@@ -1,0 +1,144 @@
+title: '### :material-briefcase: Pawn Job Controller'
+desc: |-
+  Сосредоточен на переопределении стандартного поведения ИИ путем принуждения пешек к выполнению конкретных задач.
+
+  !!! abstract "Scope"
+      Этот контроллер имеет дело с *немедленными действиями* и прямым назначением работ. Для настройки долгосрочных приоритетов работы, расписаний или призыва см. `PawnEditController` или `PawnController`.
+
+  **Возможности:**
+
+  * Принуждение пешки к выполнению определенного действия (переноска, добыча ресурсов, охота).
+  * Прямое назначение медицинской помощи путем назначения врачей пациентам.
+  * Принуждение раненых или больных пешек занять определенные медицинские кровати.
+
+/api/v1/pawn/job:
+  desc: |-
+    Назначить пешке определенную работу по имени её `JobDef`. Вы можете опционально указать целевой объект (например, скалу для добычи или предмет для переноски) или целевую позицию на карте.
+
+    !!! tip "Поиск JobDefs"
+
+        Вы можете получить полный, актуальный список всех доступных определений работ в вашей текущей игре (включая добавленные модами), сделав `GET`-запрос к конечной точке `/api/v1/def/all` и изучив массив `job_defs`.
+    
+    !!! note "Текущие ограничения работы"
+
+        «Под капотом» задачи RimWorld могут требовать до трех целей (`targetA`, `targetB`, `targetC`).
+        В настоящее время эта конечная точка поддерживает только задачи с одной целью (сопоставляется с `targetA`).
+        Задачи, требующие нескольких целей (например, переноска предмета *на* конкретный склад), пока не поддерживаются.
+        *(Совет: посмотрите класс `Verse.JobMaker` в исходном коде RimWorld, чтобы увидеть различные перегрузки `MakeJob` и то, как задачи создаются и объединяются внутри).*
+        
+        **Примеры поддерживаемых в данный момент JobDef:**
+
+        - `Goto` (Передвижение/путешествие)
+        - `AttackMelee` (Ближний бой)
+        - `ManTurret` (Управление турелью)
+        - `LayDown` (Сон/отдых)
+        - `PickupToHold` (Подбор предметов для переноски)
+        - `Clean` (Уборка грязи)
+        - `PlaceNoCostFrame` (Размещение строительных чертежей)
+        - `TendEntity` (Уход за сущностями)
+        - `CastJump` (Прыжок/использование способностей)
+        - `StandAndStare` (Бездействие)
+        - `Meditate` (Медитация)
+
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/pawn/job' \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 123,
+        "job_def": "Mine",
+        "target_thing_id": 456
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 123,
+        "job_def": "Mine",
+        "target_thing_id": 456,
+        "target_position": {"x": 10, "y": 0, "z": 15}
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T15:00:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: AssignJob
+
+/api/v1/pawn/medical/tend:
+  desc: Назначить врача для ухода за конкретным пациентом. Если `doctor_pawn_id` опущен, игра автоматически найдет и назначит лучшего доступного врача на основе навыка Медицины.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/pawn/medical/tend' \
+    --header 'content-type: application/json' \
+    --data '{
+        "patient_pawn_id": 123,
+        "doctor_pawn_id": 456
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "patient_pawn_id": 123,
+        "doctor_pawn_id": 456
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T15:05:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: AssignTendJob
+
+/api/v1/pawn/medical/bed-rest:
+  desc: Принудительно отправить пешку на постельный режим. Вы можете опционально указать конкретную кровать, передав её `bed_building_id`. Если он опущен, пешка сама найдет лучшую доступную медицинскую кровать.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/pawn/medical/bed-rest' \
+    --header 'content-type: application/json' \
+    --data '{
+        "patient_pawn_id": 123,
+        "bed_building_id": 789
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "patient_pawn_id": 123,
+        "bed_building_id": 789
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T15:10:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: AssignBedRest
