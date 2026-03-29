@@ -1,0 +1,281 @@
+/api/v1/map/work-tables:
+  desc: Get a list of all work tables (buildings capable of holding bills) currently spawned on the map.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/map/work-tables?map_id=0'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "id": 14502,
+                "thing_def": "TableButcher",
+                "label": "butcher table",
+                "position": {"x": 120, "y": 0, "z": 95},
+                "bills_count": 2
+            }
+        ]
+    }
+    ```
+  method: GET
+  csharp_method: GetWorkTables
+
+/api/v1/buildings/recipes:
+  desc: Get a list of all available recipes that can be crafted at a specific work table.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/buildings/recipes?building_id=14502'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "def_name": "Make_MeleeWeapon_Club",
+                "label": "make club",
+                "description": "Craft a simple club.",
+                "work_amount": 3000.0,
+                "work_skill": "Crafting"
+            }
+        ]
+    }
+    ```
+  method: GET
+  csharp_method: GetAvailableRecipes
+
+# --- BILLS (PLURAL) ---
+
+"/api/v1/buildings/bills":
+  desc: List all active and suspended bills currently queued on a specific work table.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/buildings/bills?building_id=14502'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "load_id": 402,
+                "recipe_def_name": "Make_MeleeWeapon_Club",
+                "repeat_mode": "RepeatCount",
+                "repeat_count": 5
+            }
+        ]
+    }
+    ```
+  method: GET
+  csharp_method: GetBills
+
+"/api/v1/buildings/bills ":
+  desc: Create a new bill and add it to the work table's queue.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/buildings/bills?building_id=14502' \
+    --header 'content-type: application/json' \
+    --data '{
+        "recipe_def_name": "Make_MeleeWeapon_Club",
+        "repeat_mode": "RepeatCount",
+        "repeat_count": 5
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "recipe_def_name": "Make_MeleeWeapon_Club",
+        "repeat_mode": "RepeatCount",
+        "repeat_count": 5
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "load_id": 403,
+            "recipe_def_name": "Make_MeleeWeapon_Club"
+        }
+    }
+    ```
+  method: POST
+  csharp_method: CreateBill
+
+"/api/v1/buildings/bills  ":
+  desc: Completely clear and delete all bills from a specific work table.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request DELETE \
+    --url 'http://localhost:8765/api/v1/buildings/bills?building_id=14502'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": null
+    }
+    ```
+  method: DELETE
+  csharp_method: ClearBills
+
+# --- SINGLE BILL ---
+
+"/api/v1/buildings/bill":
+  desc: Get detailed configuration properties of a single specific bill.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/buildings/bill?building_id=14502&bill_id=402'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "load_id": 402,
+            "recipe_def_name": "Make_MeleeWeapon_Club",
+            "suspended": false
+        }
+    }
+    ```
+  method: GET
+  csharp_method: GetBill
+
+"/api/v1/buildings/bill ":
+  desc: Update the configuration properties (like target count or allowed materials) of an existing bill.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request PUT \
+    --url 'http://localhost:8765/api/v1/buildings/bill?building_id=14502&bill_id=402' \
+    --header 'content-type: application/json' \
+    --data '{
+        "repeat_mode": "TargetCount",
+        "target_count": 10
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "repeat_mode": "TargetCount",
+        "target_count": 10
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "load_id": 402,
+            "repeat_mode": "TargetCount",
+            "target_count": 10
+        }
+    }
+    ```
+  method: PUT
+  csharp_method: UpdateBill
+
+"/api/v1/buildings/bill  ":
+  desc: Delete a single bill from the work table.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request DELETE \
+    --url 'http://localhost:8765/api/v1/buildings/bill?building_id=14502&bill_id=402'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": null
+    }
+    ```
+  method: DELETE
+  csharp_method: DeleteBill
+
+# --- BILL ACTIONS ---
+
+/api/v1/buildings/bill/reorder:
+  desc: Shift a bill up or down in the work table's queue. A negative offset moves the bill up (higher priority), a positive offset moves it down.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request PUT \
+    --url 'http://localhost:8765/api/v1/buildings/bill/reorder?building_id=14502&bill_id=402' \
+    --header 'content-type: application/json' \
+    --data '{"offset": -1}'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "offset": -1
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": null
+    }
+    ```
+  method: PUT
+  csharp_method: ReorderBill
+
+/api/v1/buildings/bill/suspend:
+  desc: Suspend (pause) or resume an existing bill.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request PUT \
+    --url 'http://localhost:8765/api/v1/buildings/bill/suspend?building_id=14502&bill_id=402' \
+    --header 'content-type: application/json' \
+    --data '{"suspended": true}'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "suspended": true
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": null
+    }
+    ```
+  method: PUT
+  csharp_method: SuspendBill
