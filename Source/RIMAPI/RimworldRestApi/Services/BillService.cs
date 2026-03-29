@@ -145,6 +145,15 @@ namespace RIMAPI.Services
                 if (bill == null)
                     return ApiResult.Fail($"Bill {billId} not found on building {buildingId}");
 
+                var bills = workTable.BillStack.Bills;
+                var currentIndex = bills.IndexOf(bill);
+                if (currentIndex < 0)
+                    return ApiResult.Fail($"Bill {billId} not found in queue");
+
+                var newIndex = currentIndex + offset;
+                if (newIndex < 0 || newIndex >= bills.Count)
+                    return ApiResult.Fail($"Reorder out of bounds: index {currentIndex} + offset {offset} = {newIndex}, valid range 0-{bills.Count - 1}");
+
                 workTable.BillStack.Reorder(bill, offset);
                 return ApiResult.Ok();
             }
