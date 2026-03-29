@@ -201,14 +201,14 @@ namespace RIMAPI.Services
             }
         }
 
-        public ApiResult<List<RecipeDto>> GetAvailableRecipes(int buildingId)
+        public ApiResult<List<RecipeDto>> GetAvailableRecipes(int buildingId, bool onlyResearched = false)
         {
             var workTable = FindWorkTable(buildingId);
             if (workTable == null)
                 return ApiResult<List<RecipeDto>>.Fail($"Building {buildingId} not found or is not a work table");
 
-            var recipes = DefDatabase<RecipeDef>.AllDefsListForReading
-                .Where(r => r.recipeUsers != null && r.recipeUsers.Contains(workTable.def))
+            var recipes = workTable.def.AllRecipes
+                .Where(r => !onlyResearched || r.AvailableNow)
                 .Select(r => BillHelper.ToRecipeDto(r))
                 .Where(r => r != null)
                 .ToList();

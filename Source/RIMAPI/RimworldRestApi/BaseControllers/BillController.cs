@@ -102,7 +102,8 @@ namespace RIMAPI.Controllers
         public async Task GetAvailableRecipes(HttpListenerContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
-            var result = _billService.GetAvailableRecipes(buildingId);
+            var onlyResearched = RequestParser.GetBooleanParameter(context, "only_researched", false);
+            var result = _billService.GetAvailableRecipes(buildingId, onlyResearched);
             await ResponseBuilder.SendApiResult(context.Response,result);
         }
 
