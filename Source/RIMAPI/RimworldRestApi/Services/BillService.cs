@@ -62,7 +62,9 @@ namespace RIMAPI.Services
                 if (recipe == null)
                     return ApiResult<BillDto>.Fail($"Recipe not found: {request.RecipeDefName}");
 
-                var bill = new Bill_Production(recipe);
+                var bill = recipe.UsesUnfinishedThing
+                    ? new Bill_ProductionWithUft(recipe)
+                    : new Bill_Production(recipe);
                 ApplyRequestFields(bill, request.RepeatMode, request.RepeatCount, request.TargetCount,
                     request.StoreMode, request.Suspended, request.PauseWhenSatisfied, request.UnpauseWhenYouHave,
                     request.IncludeEquipped, request.IncludeTainted, request.HpRange, request.QualityRange,
@@ -303,7 +305,11 @@ namespace RIMAPI.Services
                 bill.includeTainted = includeTainted.Value;
 
             if (hpRange != null)
-                bill.hpRange = new Verse.FloatRange(hpRange.Min, hpRange.Max);
+            {
+                var minHp = Math.Max(hpRange.Min, 0.01f);
+                var maxHp = Math.Max(hpRange.Max, 0.01f);
+                bill.hpRange = new Verse.FloatRange(minHp, maxHp);
+            }
 
             if (qualityRange != null)
                 bill.qualityRange = new QualityRange((QualityCategory)qualityRange.Min, (QualityCategory)qualityRange.Max);

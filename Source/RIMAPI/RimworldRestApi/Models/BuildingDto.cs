@@ -100,6 +100,8 @@ namespace RIMAPI.Models
         public float Min { get; set; }
         public float Max { get; set; }
 
+        public FloatRange() { }
+
         public FloatRange(float min, float max)
         {
             Min = min;
