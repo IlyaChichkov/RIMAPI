@@ -15,7 +15,7 @@ namespace RIMAPI.Services
         ApiResult ReorderBill(int buildingId, int billId, int offset);
         ApiResult SuspendBill(int buildingId, int billId, bool suspended);
         ApiResult ClearBills(int buildingId);
-        ApiResult<List<RecipeDto>> GetAvailableRecipes(int buildingId);
+        ApiResult<List<RecipeDto>> GetAvailableRecipes(int buildingId, bool onlyResearched = false);
         ApiResult<List<WorkTableDto>> GetWorkTables(int mapId);
     }
 }
