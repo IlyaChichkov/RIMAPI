@@ -1,0 +1,28 @@
+info:
+  name: Suspend Bill
+  type: http
+  seq: 7
+
+http:
+  method: PUT
+  url: "{{baseURL}}/api/v1/buildings/bill/suspend?building_id=25345&bill_id=3"
+  params:
+    - name: building_id
+      value: "25345"
+      type: query
+    - name: bill_id
+      value: "3"
+      type: query
+  body:
+    type: json
+    data: |-
+      {
+        "suspended": true
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

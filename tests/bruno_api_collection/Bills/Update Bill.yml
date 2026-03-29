@@ -1,0 +1,30 @@
+info:
+  name: Update Bill
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseURL}}/api/v1/buildings/bill?building_id=25345&bill_id=3"
+  params:
+    - name: building_id
+      value: "25345"
+      type: query
+    - name: bill_id
+      value: "3"
+      type: query
+  body:
+    type: json
+    data: |-
+      {
+        "repeat_count": 10,
+        "suspended": true,
+        "allowed_materials": ["WoolBison"]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

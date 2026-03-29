@@ -1,0 +1,42 @@
+info:
+  name: Create Bill
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/buildings/bills?building_id=25345"
+  params:
+    - name: building_id
+      value: "25345"
+      type: query
+  body:
+    type: json
+    data: |-
+      {
+        "recipe_def_name": "Make_Apparel_TribalA",
+        "repeat_mode": "RepeatCount",
+        "repeat_count": 1,
+        "target_count": 10,
+        "store_mode": "BestStockpile",
+        "suspended": false,
+        "pause_when_satisfied": false,
+        "unpause_when_you_have": 5,
+        "include_equipped": false,
+        "include_tainted": false,
+        "hp_range": { "min": 0.0, "max": 1.0 },
+        "quality_range": { "min": 0, "max": 6 },
+        "limit_to_allowed_stuff": false,
+        "ingredient_search_radius": 999.0,
+        "allowed_skill_range": { "min": 0, "max": 20 },
+        "pawn_restriction_id": null,
+        "player_custom_name": null,
+        "allowed_materials": ["Cloth"]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
