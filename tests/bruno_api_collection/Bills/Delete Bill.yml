@@ -1,0 +1,22 @@
+info:
+  name: Delete Bill
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseURL}}/api/v1/buildings/bill?building_id=25345&bill_id=2"
+  params:
+    - name: building_id
+      value: "25345"
+      type: query
+    - name: bill_id
+      value: "2"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
