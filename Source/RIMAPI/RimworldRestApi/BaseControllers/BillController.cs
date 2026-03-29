@@ -22,7 +22,7 @@ namespace RIMAPI.Controllers
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var result = _billService.GetBills(buildingId);
-            await context.SendJsonResponse(result);
+            await ResponseBuilder.SendApiResult(context.Response, result);
         }
 
         [Post("/api/v1/buildings/bills")]
@@ -103,7 +103,7 @@ namespace RIMAPI.Controllers
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var result = _billService.GetAvailableRecipes(buildingId);
-            await context.SendJsonResponse(result);
+            await ResponseBuilder.SendApiResult(context.Response,result);
         }
 
         [Get("/api/v1/map/work-tables")]
