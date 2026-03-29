@@ -22,6 +22,8 @@ namespace RIMAPI.Services
         ApiResult GameSave(GameSaveRequestDto body);
         ApiResult GameLoad(GameLoadRequestDto body);
         ApiResult GameDevQuickStart();
+        ApiResult GoToMainMenu();
+        ApiResult QuitGame();
         ApiResult GameStart(NewGameStartRequestDto body);
         ApiResult<GameSettingsDto> GetCurrentSettings();
         ApiResult<bool> ToggleRunInBackground();

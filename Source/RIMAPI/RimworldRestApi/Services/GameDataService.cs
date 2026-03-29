@@ -470,8 +470,8 @@ namespace RIMAPI.Services
                     foreach (var filter in body.Filters)
                     {
                         // Match either exact name or snake_case name
-                        var matchedKey = propertyMap.Keys.FirstOrDefault(k => 
-                            k.Equals(filter, StringComparison.OrdinalIgnoreCase) || 
+                        var matchedKey = propertyMap.Keys.FirstOrDefault(k =>
+                            k.Equals(filter, StringComparison.OrdinalIgnoreCase) ||
                             ToSnakeCase(k).Equals(filter, StringComparison.OrdinalIgnoreCase));
 
                         if (matchedKey != null)
@@ -734,6 +734,24 @@ namespace RIMAPI.Services
                 LogApi.Error($"Error selecting area: {ex}");
                 return ApiResult.Fail($"Failed to select area: {ex.Message}");
             }
+        }
+
+        public ApiResult GoToMainMenu()
+        {
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                GenScene.GoToMainMenu();
+            });
+            return ApiResult.Ok();
+        }
+
+        public ApiResult QuitGame()
+        {
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                Root.Shutdown();
+            });
+            return ApiResult.Ok();
         }
 
         public ApiResult GameSave(GameSaveRequestDto body)
