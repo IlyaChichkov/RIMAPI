@@ -224,5 +224,48 @@ namespace RIMAPI.Services
                 return ApiResult<ThingSourcesDto>.Fail(ex.Message);
             }
         }
+
+        public ApiResult SetForbidden(SetForbiddenRequestDto request)
+        {
+            try
+            {
+                if (request.ThingIds == null || request.ThingIds.Count == 0)
+                    return ApiResult.Fail("thing_ids list is required and must not be empty");
+
+                var map = Find.Maps.FirstOrDefault(m => m.uniqueID == request.MapId);
+                if (map == null)
+                    return ApiResult.Fail($"Map {request.MapId} not found");
+
+                var warnings = new List<string>();
+                int updated = 0;
+
+                foreach (var thingId in request.ThingIds)
+                {
+                    var thing = map.listerThings.AllThings
+                        .FirstOrDefault(t => t.thingIDNumber == thingId);
+
+                    if (thing == null)
+                    {
+                        warnings.Add($"Thing {thingId} not found");
+                        continue;
+                    }
+
+                    thing.SetForbidden(request.Forbidden, false);
+                    updated++;
+                }
+
+                if (warnings.Count > 0 && updated == 0)
+                    return ApiResult.Fail($"No things were updated: {string.Join(", ", warnings)}");
+
+                if (warnings.Count > 0)
+                    return ApiResult.Partial(warnings);
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail($"Failed to set forbidden: {ex.Message}");
+            }
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace RIMAPI.Services
     {
         ApiResult<ItemRecipesDto> GetItemRecipes(string defName);
         ApiResult<ThingSourcesDto> GetItemSources(string defName);
+        ApiResult SetForbidden(SetForbiddenRequestDto request);
     }
 }
