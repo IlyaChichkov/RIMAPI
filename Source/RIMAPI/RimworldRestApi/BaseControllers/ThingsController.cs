@@ -75,5 +75,14 @@ namespace RIMAPI.Controllers
             var result = _thingsService.GetItemSources(itemDef);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/things/set-forbidden")]
+        [EndpointMetadata("Set forbidden status on one or more things")]
+        public async Task SetForbidden(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<SetForbiddenRequestDto>();
+            var result = _thingsService.SetForbidden(body);
+            await context.SendJsonResponse(result);
+        }
     }
 }
