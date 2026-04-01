@@ -342,25 +342,26 @@ namespace RIMAPI.Services
 
         private string ApplyMaterialFilter(Bill_Production bill, List<string> materials)
         {
-            if (materials == null)
-                return null;
+            if (materials == null) return null;
 
             var availableDefs = bill.recipe.fixedIngredientFilter.AllowedThingDefs.ToList();
+            var resolvedMaterials = new List<ThingDef>();
 
             foreach (var defName in materials)
             {
-                var def = DefDatabase<ThingDef>.GetNamed(defName, false);
+                var def = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
                 if (def == null)
                     return $"Material '{defName}' not found";
+
                 if (!availableDefs.Contains(def))
                     return $"Material '{defName}' is not available for recipe '{bill.recipe.defName}'";
+
+                resolvedMaterials.Add(def);
             }
 
             bill.ingredientFilter.SetDisallowAll();
-
-            foreach (var defName in materials)
+            foreach (var def in resolvedMaterials)
             {
-                var def = DefDatabase<ThingDef>.GetNamed(defName, false);
                 bill.ingredientFilter.SetAllow(def, true);
             }
 
