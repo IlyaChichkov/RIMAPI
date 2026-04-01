@@ -46,7 +46,11 @@ namespace RIMAPI.Helpers
                     IngredientSearchRadius = bill.ingredientSearchRadius,
                     AllowedSkillRange = new IntRangeDto(bill.allowedSkillRange.min, bill.allowedSkillRange.max),
                     PawnRestrictionId = bill.PawnRestriction?.thingIDNumber,
+#if RIMWORLD_1_5
+                    PlayerCustomName = "Not supported",
+#elif RIMWORLD_1_6
                     PlayerCustomName = bill.RenamableLabel,
+#endif
                     SlotGroupId = null,
                     AllowedMaterials = bill.ingredientFilter?.AllowedThingDefs?.Select(d => d.defName).ToList() ?? new List<string>(),
                     AvailableMaterials = bill.recipe.fixedIngredientFilter?.AllowedThingDefs?.Select(d => d.defName).ToList() ?? new List<string>(),
