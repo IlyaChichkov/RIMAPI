@@ -861,3 +861,48 @@ desc: This controller handles the general game functions.
     }
     ```
   method: GET
+/api/v1/game/main-menu:
+  desc: Return to the main menu from an active game session. Any unsaved progress will be lost.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/game/main-menu'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": "Returning to main menu...",
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-04-01T17:13:42.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: GoToMainMenu
+
+/api/v1/game/quit:
+  desc: Completely shut down the RimWorld application and exit to the desktop.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/game/quit'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": "Shutting down the game...",
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-04-01T17:13:42.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: QuitGame
