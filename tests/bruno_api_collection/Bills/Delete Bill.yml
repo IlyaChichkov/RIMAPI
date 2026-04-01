@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{baseURL}}/api/v1/buildings/bill?building_id=25345&bill_id=2"
+  url: "{{baseURL}}/api/v1/buildings/bill/remove?building_id=25345&bill_id=2"
   params:
     - name: building_id
       value: "25345"
