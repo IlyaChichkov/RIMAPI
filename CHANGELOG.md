@@ -1,6 +1,8 @@
 # Changelog
 ## [Unreleased]
 
+## v1.9.0
+
 ### Added
 - **New Endpoints (Game Lifecycle):** Added `POST /api/v1/game/main-menu` and `POST /api/v1/game/quit` to control the game session, including cross-thread safety. *(by @Ilya)*
 - **New Endpoints (Bills & Production):** Added a new `BillController` providing full CRUD operations for managing work table bills, querying available recipes, and fetching active work tables. *(by @Yuri)*
