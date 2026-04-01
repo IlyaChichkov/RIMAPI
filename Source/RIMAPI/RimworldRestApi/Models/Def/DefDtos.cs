@@ -47,6 +47,18 @@ namespace RIMAPI.Models
         public List<AnimalDefDto> AnimalDefs { get; set; }
         public List<StorytellerDefDto> StorytellerDefs { get; set; }
         public List<DifficultyDefDto> DifficultyDefs { get; set; }
+        public List<JobDefDto> JobDefs { get; set; }
+    }
+
+    public class JobDefDto
+    {
+        public string DefName { get; set; }
+        public string Label { get; set; }
+        public string Description { get; set; }
+        public bool PlayerInterruptible { get; set; }
+        public bool AlwaysShowWeapon { get; set; }
+        public bool NeverShowWeapon { get; set; }
+        public bool Suspendable { get; set; }
     }
 
     public class ThingCostDto

@@ -1,0 +1,15 @@
+info:
+  name: Work Priority
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/colonists/work-priority"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

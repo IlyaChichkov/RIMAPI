@@ -555,7 +555,8 @@ desc: This controller handles the general game functions.
             "mental_state_defs": [],
             "drug_policy_defs": [],
             "plant_defs": [],
-            "animal_defs": []
+            "animal_defs": [],
+            "job_defs": []
         },
         "errors": [],
         "warnings": [],

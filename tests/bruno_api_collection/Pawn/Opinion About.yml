@@ -1,0 +1,15 @@
+info:
+  name: Opinion About
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/colonist/opinion-about?id=1020&other_id=964"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

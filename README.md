@@ -71,7 +71,7 @@ Thanks to MasterPNJ and his project for inspiration.
 
 Thanks to @braasdas and his RatLab project for code reference.
 
-Contributors: @braasdas, @M4x28
+Contributors: @braasdas, @M4x28, @inqus637, @jkbennitt
 
 ## 📌 Links
 

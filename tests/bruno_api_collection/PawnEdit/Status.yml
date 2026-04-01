@@ -1,0 +1,22 @@
+info:
+  name: Status
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawn/edit/status"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "pawn_id": 148,
+            "is_drafted": true
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

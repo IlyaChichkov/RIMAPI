@@ -1,0 +1,15 @@
+info:
+  name: Animals
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/map/animals?map_id=0"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

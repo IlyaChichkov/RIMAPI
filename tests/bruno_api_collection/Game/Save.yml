@@ -1,0 +1,21 @@
+info:
+  name: Save
+  type: http
+  seq: 16
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/game/save"
+  body:
+    type: json
+    data: |-
+      {
+        "file_name": "AutoSave_RimAPI"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

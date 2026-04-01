@@ -1,0 +1,8 @@
+page_title: |
+    # Справочник API
+version: "1.8.2"
+section:
+    Core_API:
+        title: |
+            ## Основной API
+        desc: ""

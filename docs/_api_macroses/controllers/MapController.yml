@@ -951,3 +951,225 @@ desc: |-
     }
     ```
   method: POST
+
+/api/v1/map/zone/stockpile:
+  desc: Create a new stockpile zone on the map with specific coordinate bounds and item filters.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/map/zone/stockpile' \
+    --header 'content-type: application/json' \
+    --data '{
+        "map_id": 0,
+        "point_a": {"x": 10, "y": 0, "z": 10},
+        "point_b": {"x": 15, "y": 0, "z": 15},
+        "name": "High Quality Steel",
+        "priority": 4,
+        "allowed_item_defs": ["Steel"],
+        "allowed_item_categories": [],
+        "min_hit_points_percent": 0.5,
+        "max_hit_points_percent": 1.0,
+        "min_quality": "Normal",
+        "max_quality": "Legendary"
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "map_id": 0,
+        "point_a": {"x": 10, "y": 0, "z": 10},
+        "point_b": {"x": 15, "y": 0, "z": 15},
+        "name": "High Quality Steel",
+        "priority": 4,
+        "allowed_item_defs": ["Steel"],
+        "allowed_item_categories": [],
+        "min_hit_points_percent": 0.5,
+        "max_hit_points_percent": 1.0,
+        "min_quality": "Normal",
+        "max_quality": "Legendary"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+      "success": true,
+      "data": {
+        "zone_id": 6,
+        "name": "Stockpile 3",
+        "cells_count": 36,
+        "priority": 0,
+        "success": true,
+        "message": "Stockpile 'Stockpile 3' created successfully with 36 cells."
+      },
+      "errors": [],
+      "warnings": [],
+      "timestamp": "2026-03-28T13:52:52.7387655Z"
+    }
+    ```
+  method: POST
+  csharp_method: CreateStockpile
+
+/api/v1/map/zone/stockpile/update:
+  desc: Update an existing stockpile zone's parameters, including allowed items, categories, and quality/HP filters.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/map/zone/stockpile/update' \
+    --header 'content-type: application/json' \
+    --data '{
+        "zone_id": 142,
+        "name": "Updated Steel & Wood",
+        "priority": 5,
+        "add_item_defs": ["WoodLog"],
+        "remove_item_defs": [],
+        "add_item_categories": [],
+        "remove_item_categories": [],
+        "min_hit_points_percent": 0.1,
+        "max_hit_points_percent": 1.0,
+        "min_quality": "Awful",
+        "max_quality": "Legendary"
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "zone_id": 142,
+        "name": "Updated Steel & Wood",
+        "priority": 5,
+        "add_item_defs": ["WoodLog"],
+        "remove_item_defs": [],
+        "add_item_categories": [],
+        "remove_item_categories": [],
+        "min_hit_points_percent": 0.1,
+        "max_hit_points_percent": 1.0,
+        "min_quality": "Awful",
+        "max_quality": "Legendary"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "zone_id": 142,
+            "name": "Updated Steel & Wood",
+            "cells_count": 36,
+            "priority": 5,
+            "success": true,
+            "message": null
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T14:35:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: UpdateStockpile
+
+/api/v1/map/zone/stockpile/delete:
+  desc: Delete a stockpile zone by its zone ID.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request DELETE \
+    --url 'http://localhost:8765/api/v1/map/zone/stockpile/delete?zone_id=142'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T14:40:00.0000000Z"
+    }
+    ```
+  method: DELETE
+  csharp_method: DeleteStockpile
+
+/api/v1/map/building/power:
+  desc: Toggle the power state on or off for a flickable building (e.g., sun lamps, turrets, production benches) via its `CompFlickable` component.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/map/building/power?buildingId=123&powerOn=true'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T16:00:00.0000000Z"
+    }
+    ```
+  method: POST
+  csharp_method: SetBuildingPower
+
+/api/v1/map/zone/growing:
+  desc: Create a new growing zone for a specific plant type across a list of targeted cells. Cells that are out of bounds or already occupied by other zones will be skipped.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/map/zone/growing' \
+    --header 'content-type: application/json' \
+    --data '{
+      "map_id": 0,
+      "plant_def": "Plant_Rice",
+      "point_a": {"x":120,"y":0,"z":130},
+      "point_b": {"x":125,"y":0,"z":135}
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+      "map_id": 0,
+      "plant_def": "Plant_Rice",
+      "point_a": {"x":120,"y":0,"z":130},
+      "point_b": {"x":125,"y":0,"z":135}
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+      "success": true,
+      "data": {
+        "zone": {
+          "id": 5,
+          "cells_count": 36,
+          "label": "Growing zone 1",
+          "base_label": "Growing zone"
+        },
+        "plant_def_name": "Plant_Rice",
+        "plant_count": 6,
+        "def_expected_yield": 174,
+        "expected_yield": 0,
+        "infected_count": 0,
+        "growth_progress": 0.202831179,
+        "is_sowing": true,
+        "soil_type": "Mud",
+        "fertility": 0.6,
+        "has_dying": false,
+        "has_dying_from_pollution": false,
+        "has_dying_from_no_pollution": false
+      },
+      "errors": [],
+      "warnings": [],
+      "timestamp": "2026-03-28T13:51:53.9267279Z"
+    }
+    ```
+  method: POST
+  csharp_method: CreateGrowingZone

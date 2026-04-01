@@ -1,0 +1,23 @@
+info:
+  name: Apparel
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawn/edit/apparel"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "pawn_id": 148,
+            "drop_apparel": true,
+            "drop_weapons": true
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

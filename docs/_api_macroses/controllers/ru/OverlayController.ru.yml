@@ -1,0 +1,8 @@
+title: '### :material-layers: Overlay Controller'
+desc: "**Overlay Controller** предназначен для рисования оверлеев на экране."
+/api/v1/ui/announce:
+  desc: ''
+  curl: ''
+  request: ''
+  response: ''
+  method: POST

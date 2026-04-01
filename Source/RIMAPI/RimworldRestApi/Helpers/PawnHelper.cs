@@ -5,6 +5,7 @@ using RIMAPI.Models;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace RIMAPI.Helpers
 {
@@ -49,6 +50,28 @@ namespace RIMAPI.Helpers
                     Z = pawn.Position.z,
                 },
             };
+        }
+
+        public static bool AssignJob(Pawn pawn, JobDef jobDef, LocalTargetInfo target)
+        {
+            Job job = JobMaker.MakeJob(jobDef, target);
+            return pawn.jobs.TryTakeOrderedJob(job);
+        }
+
+        public static bool AssignTendJob(Pawn doctor, Pawn patient)
+        {
+            Job job = JobMaker.MakeJob(JobDefOf.TendPatient, patient);
+            return doctor.jobs.TryTakeOrderedJob(job);
+        }
+
+        public static bool AssignBedRest(Pawn patient, Building_Bed bed)
+        {
+            if (bed != null)
+            {
+                patient.ownership.ClaimBedIfNonMedical(bed);
+            }
+            Job job = JobMaker.MakeJob(JobDefOf.LayDown, patient.ownership.OwnedBed ?? bed);
+            return patient.jobs.TryTakeOrderedJob(job);
         }
 
         public static PawnInventoryDto GetPawnInventory(Pawn pawn)

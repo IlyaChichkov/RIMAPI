@@ -1,0 +1,22 @@
+info:
+  name: Power Toggle
+  type: http
+  seq: 24
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/map/building/power?buildingId=45059&powerOn=true"
+  params:
+    - name: buildingId
+      value: "45059"
+      type: query
+    - name: powerOn
+      value: "true"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

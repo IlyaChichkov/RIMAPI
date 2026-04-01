@@ -1,0 +1,67 @@
+title: '### :material-book-open-page-variant: Документация'
+desc: |-
+  **Documentation Controller** предоставляет возможности самоанализа для самого API. Он позволяет клиентам динамически обнаруживать доступные конечные точки, схемы и версии API без необходимости во внешних ссылках.
+
+  | Функция | Описание |
+  | :--- | :--- |
+  | **Discovery** | Список всех зарегистрированных маршрутов и их параметров. |
+  | **Health** | Проверка статуса сервера API. |
+  | **Schema** | Получение схем JSON для тел запросов/ответов. |
+/api/v1/core/docs/export:
+  desc: |-
+    Генерирует и экспортирует подробную документацию для всех доступных конечных точек API.
+    Возвращает документацию в запрошенном формате как в ответе, так и в виде файла в директории
+    mod_path/docs/.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/core/docs/export
+    ```
+  request: ''
+  response: ''
+  method: GET
+/api/v1/docs:
+  desc: Получить документацию для всех доступных конечных точек API в запрошенном формате.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/docs
+    ```
+  request: ''
+  response: ''
+  method: GET
+/api/v1/docs/extensions/{extensionId}:
+  desc: Получить документацию для всех доступных конечных точек API расширения в запрошенном формате.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/docs/extensions/34
+    ```
+  request: ''
+  response: ''
+  method: GET
+/api/v1/docs/health:
+  desc: Получить документацию по состоянию (health) для всех доступных конечных точек API в запрошенном формате.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/docs/health
+    ```
+  request: ''
+  response: ''
+  method: GET
+/api/v1/docs/export:
+  desc: Получить экспорт документации для всех доступных конечных точек API в запрошенном формате.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/docs/export
+    ```
+  request: ''
+  response: ''
+  method: GET

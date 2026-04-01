@@ -1,0 +1,15 @@
+info:
+  name: Stop
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/stream/stop"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

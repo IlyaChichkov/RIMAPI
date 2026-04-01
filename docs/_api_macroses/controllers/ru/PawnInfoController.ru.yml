@@ -1,0 +1,14 @@
+title: '### :material-account-details: Pawn Info Controller'
+desc: "**Pawn Info Controller** предоставляет подробную информацию о пешках."
+/api/v1/pawns/details:
+  desc: Получает подробную информацию о пешке.
+  curl: ''
+  request: ''
+  response: ''
+  method: GET
+/api/v1/pawns/inventory:
+  desc: Получает инвентарь пешки.
+  curl: ''
+  request: ''
+  response: ''
+  method: GET

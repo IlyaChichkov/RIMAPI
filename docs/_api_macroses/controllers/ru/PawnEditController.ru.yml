@@ -1,0 +1,395 @@
+title: '### :material-account-edit: Pawn Edit Controller'
+desc: |-
+  **Pawn Edit Controller** позволяет напрямую **изменять (Mutation)** данные сущностей. В отличие от стандартного контроллера Pawn, этот позволяет перезаписывать фундаментальные свойства персонажа.
+
+  !!! warning "Экспериментальная функция"
+      Этот контроллер API является экспериментальным.
+
+  **Общие случаи использования:**
+
+  *   `Resurrection` (Воскрешение) / `Heal` (Лечение)
+  *   `Set Skill Level` (Установка уровня навыка)
+  *   `Add/Remove Traits` (Добавление/удаление черт)
+  *   `Teleport` (Телепортация)
+/api/v1/pawn/edit/basic:
+  desc: Редактирует основную информацию о пешке, такую как имя, пол и возраст.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/basic \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "nick_name": "Ace",
+        "gender": "Male",
+        "biological_age": 25
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "name": "Ace",
+        "first_name": "John",
+        "last_name": "Doe",
+        "nick_name": "Ace",
+        "gender": "Male",
+        "biological_age": 25,
+        "chronological_age": 150
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/health:
+  desc: Редактирует здоровье пешки, позволяя залечивать раны или излечивать болезни.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/health \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "heal_all_injuries": true,
+        "restore_body_parts": true,
+        "remove_all_diseases": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "heal_all_injuries": true,
+        "restore_body_parts": true,
+        "remove_all_diseases": true
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/needs:
+  desc: Редактирует потребности пешки, такие как голод, отдых и настроение. Значения варьируются от 0.0 до 1.0.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/needs \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "food": 1.0,
+        "rest": 1.0,
+        "mood": 1.0
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "food": 1.0,
+        "rest": 1.0,
+        "mood": 1.0
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/skills:
+  desc: Редактирует навыки пешки, устанавливая уровень для указанных навыков.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/skills \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 2356,
+        "skills": [
+            { "skill_name": "Shooting", "level": 20, "passion": 3 }
+        ]
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 2356,
+        "skills": [
+            {
+                "skill_name": "Shooting",
+                "level": 20,
+                "passion": 3
+            },
+            {
+                "skill_name": "Medicine",
+                "level": 15,
+                "passion": 2
+            },
+            {
+                "skill_name": "Melee",
+                "level": 0,
+                "passion": 1
+            }
+        ]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T12:36:12.432366Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/traits:
+  desc: Редактирует черты характера пешки, позволяя добавлять или удалять их.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/traits \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "add_traits": [{ "trait_name": "Cannibal", "degree": 0 }],
+        "remove_traits": ["Wimp"]
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "add_traits": [
+            {
+                "trait_name": "Cannibal",
+                "degree": 0
+            },
+            {
+                "trait_name": "Industrious",
+                "degree": 0
+            }
+        ],
+        "remove_traits": [
+            "Wimp",
+            "Pyromaniac"
+        ]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/inventory:
+  desc: Редактирует инвентарь пешки, позволяя добавлять или удалять предметы.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/inventory \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "clear_inventory": true,
+        "add_items": [{ "def_name": "MealSimple", "count": 10 }]
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "drop_inventory": false,
+        "clear_inventory": true,
+        "add_items": [
+            {
+                "def_name": "MealSimple",
+                "count": 10
+            },
+            {
+                "def_name": "MedicineHerbal",
+                "count": 5
+            }
+        ]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/apparel:
+  desc: Редактирует одежду пешки. Полезно для раздевания заключенных или разоружения врагов.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/apparel \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "drop_apparel": true,
+        "drop_weapons": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "drop_apparel": true,
+        "drop_weapons": true
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/status:
+  desc: Редактирует статус пешки, например, призыв (drafting), убийство или воскрешение.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/status \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "is_drafted": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "is_drafted": true,
+        "kill": false,
+        "resurrect": false
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/position:
+  desc: Редактирует позицию пешки, телепортируя её в новое место.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/position \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "position": { "x": 100, "z": 100 }
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "map_id": "0",
+        "position": {
+            "x": 100,
+            "y": 0,
+            "z": 100
+        }
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST
+/api/v1/pawn/edit/faction:
+  desc: Редактирует фракцию пешки, например, делая заключенного поселенцем.
+  curl: |-
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawn/edit/faction \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn_id": 148,
+        "make_colonist": true
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_id": 148,
+        "set_faction": "PlayerColony",
+        "make_colonist": true,
+        "make_prisoner": false,
+        "release_prisoner": false
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T14:05:16.1755723Z"
+    }
+    ```
+  method: POST

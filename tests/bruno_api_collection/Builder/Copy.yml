@@ -1,0 +1,22 @@
+info:
+  name: Copy
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/builder/copy"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "from": { "x": 100, "z": 100 },
+            "to": { "x": 110, "z": 110 }
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using RIMAPI.Core;
@@ -445,6 +446,13 @@ namespace RIMAPI.Services
                             warnings,
                             "DifficultyDefs"
                         ),
+                    ["JobDefs"] = () =>
+                        SetProperty(
+                            defs,
+                            DefDatabaseHelper.GetJobDefDtoList,
+                            warnings,
+                            "JobDefs"
+                        ),
                 };
 
                 // Execute only the requested properties
@@ -461,9 +469,14 @@ namespace RIMAPI.Services
                     // Execute only filtered properties
                     foreach (var filter in body.Filters)
                     {
-                        if (propertyMap.TryGetValue(filter, out var propertySetter))
+                        // Match either exact name or snake_case name
+                        var matchedKey = propertyMap.Keys.FirstOrDefault(k =>
+                            k.Equals(filter, StringComparison.OrdinalIgnoreCase) ||
+                            ToSnakeCase(k).Equals(filter, StringComparison.OrdinalIgnoreCase));
+
+                        if (matchedKey != null)
                         {
-                            propertySetter();
+                            propertyMap[matchedKey]();
                         }
                         else
                         {
@@ -483,6 +496,26 @@ namespace RIMAPI.Services
                 LogApi.Error($"Error getting all defs: {ex}");
                 return ApiResult<DefsDto>.Fail($"Failed to get defs: {ex.Message}");
             }
+        }
+
+        private string ToSnakeCase(string input)
+        {
+            if (string.IsNullOrEmpty(input)) return input;
+            var result = new System.Text.StringBuilder();
+            result.Append(char.ToLower(input[0]));
+            for (int i = 1; i < input.Length; i++)
+            {
+                if (char.IsUpper(input[i]))
+                {
+                    result.Append('_');
+                    result.Append(char.ToLower(input[i]));
+                }
+                else
+                {
+                    result.Append(input[i]);
+                }
+            }
+            return result.ToString();
         }
 
         public static int GetMapTileId(Map map)
@@ -703,42 +736,124 @@ namespace RIMAPI.Services
             }
         }
 
-        public ApiResult GameSave(string name)
+        public ApiResult GoToMainMenu()
         {
-            try
+            LongEventHandler.ExecuteWhenFinished(() =>
             {
-                var saveName = GenFile.SanitizedFileName(name);
-
-                if (GameDataSaveLoader.SavingIsTemporarilyDisabled)
-                {
-                    return ApiResult.Fail("Cannot save game - saving is temporarily disabled");
-                }
-
-                LongEventHandler.QueueLongEvent(delegate
-                {
-                    GameDataSaveLoader.SaveGame(saveName);
-                }, "SavingLongEvent", doAsynchronously: false, null);
-
-                Messages.Message("Game saved as: " + saveName, MessageTypeDefOf.SilentInput);
-            }
-            catch (Exception ex)
-            {
-                return ApiResult.Fail($"Failed to load game: {ex.Message}");
-            }
+                GenScene.GoToMainMenu();
+            });
             return ApiResult.Ok();
         }
 
-        public ApiResult GameLoad(string name)
+        public ApiResult QuitGame()
         {
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                Root.Shutdown();
+            });
+            return ApiResult.Ok();
+        }
+
+        public ApiResult GameSave(GameSaveRequestDto body)
+        {
+            string saveName;
+
             try
             {
-                GameDataSaveLoader.CheckVersionAndLoadGame(name);
+                if (body == null)
+                {
+                    return ApiResult.Fail("Request body is missing or invalid.");
+                }
+
+                if (Current.Game == null)
+                {
+                    return ApiResult.Fail("Cannot save: No active game is currently running.");
+                }
+
+                if (GameDataSaveLoader.SavingIsTemporarilyDisabled)
+                {
+                    return ApiResult.Fail("Cannot save game - saving is temporarily disabled (e.g., during a cutscene).");
+                }
+
+                if (Current.Game.Info.permadeathMode)
+                {
+                    saveName = Current.Game.Info.permadeathModeUniqueName;
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(body.FileName))
+                    {
+                        return ApiResult.Fail("The 'file_name' parameter is required to save a game.");
+                    }
+                    saveName = GenFile.SanitizedFileName(body.FileName);
+                }
+
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    LongEventHandler.QueueLongEvent(delegate
+                    {
+                        GameDataSaveLoader.SaveGame(saveName);
+                    }, "SavingLongEvent", doAsynchronously: false, null);
+
+                    Messages.Message("Game saved as: " + saveName, MessageTypeDefOf.SilentInput);
+                });
+
+                return ApiResult.Ok();
             }
             catch (Exception ex)
             {
-                return ApiResult.Fail($"Failed to load game: {ex.Message}");
+                return ApiResult.Fail($"Failed to initialize game save: {ex.Message}");
             }
-            return ApiResult.Ok();
+        }
+
+        public ApiResult GameLoad(GameLoadRequestDto body)
+        {
+            try
+            {
+                if (body == null)
+                {
+                    return ApiResult.Fail("Request body is missing or invalid.");
+                }
+
+                string filePath = GenFilePaths.FilePathForSavedGame(body.FileName);
+                if (!File.Exists(filePath))
+                {
+                    return ApiResult.Fail($"Save file not found: {body.FileName}.rws");
+                }
+
+                // Queue execution onto RimWorld's main thread. 
+                LongEventHandler.ExecuteWhenFinished(() =>
+                {
+                    if (!body.CheckVersion)
+                    {
+                        // Immediate asynchronous queueing without version checking
+                        GameDataSaveLoader.LoadGame(body.FileName);
+                    }
+                    else if (body.SkipModMismatch)
+                    {
+                        // Check version but forcefully skip the mod mismatch dialog
+                        PreLoadUtility.CheckVersionAndLoad(
+                            filePath,
+                            ScribeMetaHeaderUtility.ScribeHeaderMode.Map,
+                            delegate
+                            {
+                                GameDataSaveLoader.LoadGame(body.FileName);
+                            },
+                            skipOnMismatch: true
+                        );
+                    }
+                    else
+                    {
+                        GameDataSaveLoader.CheckVersionAndLoadGame(body.FileName);
+                    }
+                });
+
+                return ApiResult.Ok();
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail($"Failed to initialize game load: {ex.Message}");
+            }
         }
 
         public ApiResult GameDevQuickStart()

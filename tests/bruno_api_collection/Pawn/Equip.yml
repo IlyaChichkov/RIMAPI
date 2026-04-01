@@ -1,0 +1,15 @@
+info:
+  name: Equip
+  type: http
+  seq: 12
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/jobs/make/equip?map_id=0&pawn_id=1011&item_id=4849"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

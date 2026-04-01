@@ -1,0 +1,30 @@
+info:
+  name: Trigger
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/incident/trigger"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "name": "RaidEnemy",
+            "map_id": "0",
+            "incident_parms": {
+                "points": 300.0,
+                "forced": true,
+                "faction": "Pirate",
+                "send_letter": true,
+                "custom_letter_label": "API Raid Test",
+                "custom_letter_text": "Test raid triggered via API"
+            }
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

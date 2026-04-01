@@ -118,6 +118,42 @@ namespace RIMAPI.Helpers
             }
         }
 
+        public static ResearchProjectDto SetResearchTarget(string projectDefName, bool force = false)
+        {
+            var project = DefDatabase<ResearchProjectDef>.GetNamedSilentFail(projectDefName);
+            if (project == null)
+            {
+                throw new ArgumentException($"Research project '{projectDefName}' not found.");
+            }
+
+            if (project.IsFinished)
+            {
+                throw new InvalidOperationException($"Research project '{projectDefName}' is already finished.");
+            }
+
+            if (!project.CanStartNow && !force)
+            {
+                throw new InvalidOperationException($"Research project '{projectDefName}' is not currently available for research. Prerequisites or required research benches may be missing. Use force=true to bypass.");
+            }
+
+            Find.ResearchManager.SetCurrentProject(project);
+            return ResearchProjectToDto(project);
+        }
+
+        public static ResearchProjectDto StopCurrentProject()
+        {
+            var currentProject = Find.ResearchManager.GetProject(null);
+
+            if (currentProject == null)
+            {
+                throw new InvalidOperationException("No main research project is currently active.");
+            }
+
+            var projectDto = ResearchProjectToDto(currentProject);
+            Find.ResearchManager.StopProject(currentProject);
+            return projectDto;
+        }
+
         public static ResearchSummaryDto GetResearchSummary()
         {
             try

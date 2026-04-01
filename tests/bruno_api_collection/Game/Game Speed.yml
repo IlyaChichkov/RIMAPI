@@ -1,0 +1,19 @@
+info:
+  name: Game Speed
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/game/speed?speed=0"
+  params:
+    - name: speed
+      value: "0"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

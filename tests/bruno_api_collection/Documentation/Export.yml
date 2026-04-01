@@ -1,0 +1,15 @@
+info:
+  name: Export
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/docs/export"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

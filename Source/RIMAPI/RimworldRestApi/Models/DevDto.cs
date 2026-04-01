@@ -19,4 +19,19 @@ namespace RIMAPI.Models
     {
         public List<string> Materials { get; set; }
     }
+
+    public class EndpointDto
+    {
+        public string Method { get; set; }
+        public string Path { get; set; }
+        public string Description { get; set; }
+        public string Category { get; set; }
+        public string[] Tags { get; set; }
+        public bool IsDeprecated { get; set; }
+    }
+
+    public class EndpointListDto
+    {
+        public List<EndpointDto> Endpoints { get; set; }
+    }
 }

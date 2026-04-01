@@ -1,0 +1,15 @@
+info:
+  name: Open Tab
+  type: http
+  seq: 10
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/open-tab?name=health"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

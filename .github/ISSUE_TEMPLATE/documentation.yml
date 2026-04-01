@@ -1,0 +1,63 @@
+name: 📖 Documentation Update/Fix
+description: Suggest additions, corrections, or improvements to the RIMAPI documentation
+title: "[Docs]: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the RIMAPI documentation! Clear docs make the mod better for everyone.
+
+  - type: dropdown
+    id: doc-issue-type
+    attributes:
+      label: Type of Documentation Issue
+      description: What kind of update is needed?
+      options:
+        - "Missing Endpoint / Missing Information"
+        - "Inaccurate / Outdated Information"
+        - "Typo / Formatting Issue"
+        - "Unclear Explanation"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location of the Issue
+      description: Which file, page, or API endpoint needs updating?
+      placeholder: e.g., docs/api.md, /api/v1/colonist/detailed, or a URL to the page
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current State
+      description: What is currently wrong, confusing, or missing?
+      placeholder: "The documentation for endpoint X says it returns a boolean, but it actually returns..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-change
+    attributes:
+      label: Proposed Change (Optional)
+      description: If you know what the correction should be, please provide the updated text or JSON structure here.
+      placeholder: |
+        Please update the response example to match the latest DTO:
+        ```json
+        {
+          "success": true,
+          "data": ...
+        }
+        ```
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: I have searched the existing issues and this is not a duplicate
+          required: true

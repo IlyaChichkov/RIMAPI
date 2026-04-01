@@ -1,0 +1,23 @@
+info:
+  name: Rect
+  type: http
+  seq: 25
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/map/repair/rect"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "map_id": 0,
+            "point_a": {"x": 7, "y": 0, "z": 7},
+            "point_b": {"x": 32, "y": 0, "z": 32}
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

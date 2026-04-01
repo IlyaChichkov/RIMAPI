@@ -1,0 +1,26 @@
+info:
+  name: Spawn
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/item/spawn"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "def_name": "BilliardsTable",
+            "stuff_def_name": "WoodLog",
+            "quality": "Legendary",
+            "amount": 1,
+            "x": 120,
+            "z": 106
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

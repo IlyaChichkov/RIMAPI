@@ -1,0 +1,29 @@
+title: '### :material-account-plus: Pawn Spawn Controller'
+desc: "**Pawn Spawn Controller** используется для создания и появления новых пешек в игровом мире."
+/api/v1/pawn/spawn:
+  desc: Создать новую пешку.
+  curl: ''
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn_kind": "Mercenary_Gunner",
+        "faction": "OutlanderCivil",
+        "position": {"x": 11, "y": 0, "z": 11},
+        "biological_age": 25
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success":true,
+        "data": {
+            "pawn_id":39473,
+            "name":"Nitro"
+        },
+        "errors":[],"warnings":[],
+        "timestamp":"2025-12-31T12:32:16.5760065Z"
+    }
+    ```
+  method: POST

@@ -1,0 +1,23 @@
+info:
+  name: Job Haul
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawn/job"
+  body:
+    type: json
+    data: |-
+      {
+        "pawn_id": 215,
+        "job_def": "Haul",
+        "target_thing_id": 36795
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

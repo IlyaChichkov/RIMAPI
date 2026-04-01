@@ -61,5 +61,13 @@ namespace RIMAPI.Controllers
             var result = _devToolsService.SetStuffColor(body);
             await context.SendJsonResponse(result);
         }
+
+        [Get("/api/v1/dev/endpoints")]
+        [EndpointMetadata("Get list of all registered endpoints")]
+        public async Task GetEndpoints(HttpListenerContext context)
+        {
+            var result = _devToolsService.GetEndpoints();
+            await context.SendJsonResponse(result);
+        }
     }
 }

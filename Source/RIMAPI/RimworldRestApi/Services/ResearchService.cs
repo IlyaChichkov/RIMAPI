@@ -53,5 +53,22 @@ namespace RIMAPI.Services
             var result = ResearchHelper.GetResearchTree();
             return ApiResult<ResearchTreeDto>.Ok(result);
         }
+
+        public ApiResult<ResearchProjectDto> SetResearchTarget(string projectDefName, bool force)
+        {
+            var result = ResearchHelper.SetResearchTarget(projectDefName, force);
+            if (result == null)
+            {
+                return ApiResult<ResearchProjectDto>
+                    .Fail($"Research project not found: {projectDefName}");
+            }
+            return ApiResult<ResearchProjectDto>.Ok(result);
+        }
+
+        public ApiResult StopCurrentProject()
+        {
+            ResearchHelper.StopCurrentProject();
+            return ApiResult.Ok();
+        }
     }
 }

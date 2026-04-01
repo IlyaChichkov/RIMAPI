@@ -31,5 +31,9 @@ namespace RIMAPI.Services
         ApiResult SpawnDropPod(SpawnDropPodRequestDto request);
         ApiResult<FogGridDto> GetFogGrid(int mapId);
         ApiResult<OreDataDto> GetMapOre(int mapId);
+        ApiResult<GrowingZoneDto> CreateGrowingZone(CreateGrowingZoneRequestDto request);
+        ApiResult<StockpileResponseDto> CreateStockpile(CreateStockpileRequestDto request);
+        ApiResult DeleteStockpile(int zoneId);
+        ApiResult<StockpileResponseDto> UpdateStockpile(UpdateStockpileRequestDto request);
     }
 }

@@ -152,6 +152,18 @@ namespace RIMAPI.Helpers
             };
         }
 
+        public static bool SetBuildingPower(Building building, bool powerOn)
+        {
+            // Most power-consuming buildings use CompFlickable for on/off toggle
+            var flickable = building.TryGetComp<CompFlickable>();
+            if (flickable != null)
+            {
+                flickable.SwitchIsOn = powerOn;
+                return true;
+            }
+            return false;
+        }
+
         public static Building FindBuildingByID(int buildingId)
         {
             foreach (Map map in Find.Maps)

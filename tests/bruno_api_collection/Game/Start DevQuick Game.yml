@@ -1,0 +1,15 @@
+info:
+  name: Start DevQuick Game
+  type: http
+  seq: 18
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/game/start/devquick"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

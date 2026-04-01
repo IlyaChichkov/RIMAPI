@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using RIMAPI.Core;
@@ -132,10 +133,25 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/def/all")]
-        [EndpointMetadata("Get in-game date and time in global map tile")]
+        [EndpointMetadata("Get all game definitions with optional filtering")]
         public async Task GetAllDefs(HttpListenerContext context)
         {
             var body = await context.Request.ReadBodyAsync<AllDefsRequestDto>();
+
+            // Support filters via query string if body is empty (e.g., ?include=things_defs,biome_defs)
+            if (body == null || body.Filters == null || body.Filters.Count == 0)
+            {
+                var filterParam = context.Request.QueryString["include"] ?? context.Request.QueryString["filter"];
+                if (!string.IsNullOrEmpty(filterParam))
+                {
+                    body = new AllDefsRequestDto
+                    {
+                        Filters = filterParam.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                            .Select(s => s.Trim())
+                                            .ToList()
+                    };
+                }
+            }
 
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -166,16 +182,32 @@ namespace RIMAPI.Controllers
         [Post("/api/v1/game/save")]
         public async Task GameSave(HttpListenerContext context)
         {
-            var saveName = RequestParser.GetStringParameter(context, "name");
-            var result = _gameStateService.GameSave(saveName);
+            var body = await context.Request.ReadBodyAsync<GameSaveRequestDto>();
+            var result = _gameStateService.GameSave(body);
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/game/load")]
         public async Task GameLoad(HttpListenerContext context)
         {
-            var loadName = RequestParser.GetStringParameter(context, "name");
-            var result = _gameStateService.GameLoad(loadName);
+            var body = await context.Request.ReadBodyAsync<GameLoadRequestDto>();
+            var result = _gameStateService.GameLoad(body);
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/game/main-menu")]
+        [EndpointMetadata("Return to the main menu from an active game")]
+        public async Task GoToMainMenu(HttpListenerContext context)
+        {
+            var result = _gameStateService.GoToMainMenu();
+            await context.SendJsonResponse(result);
+        }
+
+        [Post("/api/v1/game/quit")]
+        [EndpointMetadata("Completely close and exit the RimWorld application")]
+        public async Task QuitGame(HttpListenerContext context)
+        {
+            var result = _gameStateService.QuitGame();
             await context.SendJsonResponse(result);
         }
 

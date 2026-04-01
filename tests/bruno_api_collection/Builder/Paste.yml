@@ -1,0 +1,21 @@
+info:
+  name: Paste
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/builder/paste"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "at": { "x": 150, "z": 150 }
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -212,7 +212,8 @@ namespace RIMAPI.Models
 
     public class ColonistsWorkPrioritiesRequestDto
     {
-        public List<WorkPriorityRequestDto> Priorities { get; set; }
+        [JsonProperty("priorities")]
+        public List<WorkPriorityRequestDto> Priorities { get; set; } = new List<WorkPriorityRequestDto>();
     }
 
     public class TimeAssignmentDto
@@ -237,5 +238,25 @@ namespace RIMAPI.Models
         public string AllowedQualityMax { get; set; }
         public bool AllowedHitPointsConfigurable { get; set; }
         public bool AllowedQualitiesConfigurable { get; set; }
+    }
+
+    public class PawnJobRequestDto
+    {
+        public int PawnId { get; set; }
+        public string JobDef { get; set; }
+        public int? TargetThingId { get; set; }
+        public PositionDto TargetPosition { get; set; }
+    }
+
+    public class MedicalTendRequestDto
+    {
+        public int PatientPawnId { get; set; }
+        public int? DoctorPawnId { get; set; }
+    }
+
+    public class MedicalBedRestRequestDto
+    {
+        public int PatientPawnId { get; set; }
+        public int? BedBuildingId { get; set; }
     }
 }

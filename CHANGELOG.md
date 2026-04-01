@@ -1,4 +1,35 @@
 # Changelog
+## [Unreleased]
+
+## v1.9.0
+
+### Added
+- **New Endpoints (Game Lifecycle):** Added `POST /api/v1/game/main-menu` and `POST /api/v1/game/quit` to control the game session, including cross-thread safety. *(by @Ilya)*
+- **New Endpoints (Bills & Production):** Added a new `BillController` providing full CRUD operations for managing work table bills, querying available recipes, and fetching active work tables. *(by @Yuri)*
+- **New Endpoints (Pawn & Medical):** Added `POST /api/v1/pawn/job`, `POST /api/v1/pawn/medical/tend`, and `POST /api/v1/pawn/medical/bed-rest` for advanced pawn control and job assignment. *(by @jkbennitt)*
+- **New Endpoints (Map & Buildings):** Added `POST /api/v1/map/building/power` to toggle power on flickable buildings, and `POST /api/v1/map/zone/growing` to designate plant zones. *(by @jkbennitt)*
+- **New Endpoints (Stockpiles):** Added full CRUD operations and advanced filtering for Stockpile zone management. *(by @Yuri)*
+- **New Endpoint (Research):** Added `POST /api/v1/research/target` to set the active research project programmatically. *(by @jkbennitt)*
+- **New Endpoint (Discovery):** Added `GET /api/v1/dev/endpoints` to programmatically list all registered API routes and their metadata. *(by @Ilya)*
+- **API Enhancements:** Added `JobDefs` to the `/def/all` endpoint and introduced global query filtering for endpoint result data. *(by @Ilya)*
+- **Developer Tooling (Bruno):** Introduced a comprehensive Bruno API testing collection, complete with generator scripts, environments, and CRUD test suites. *(by @Yuri)*
+- **Expanded API Conventions:** Vastly expanded `api_conventions.md` to document response envelopes, HTTP status logic, `snake_case` rules, coordinate systems, and thread-safety models. *(by @jkbennitt, @Ilya)*
+- **Documentation Automation:** Created a Python `bump_version.py` script and Jinja macros to automatically sync versions and calculate endpoint counts across the project's markdown and YAML files. Add Russian translation to API endpoints. *(by @Ilya)*
+- **Documentation Translation:** Add Russian translation to API endpoints. *(by @Ilya)*
+
+### Changed
+- **Thread-Safe Save/Load:** Refactored `GameSave` and `GameLoad` endpoints to safely queue operations on the main Unity thread. Added support for Permadeath filename constraints and a bypass for mod-mismatch dialogs. *(by @Ilya)*
+- **Growing Zone Coordinates:** The growing zone creation endpoint now accepts Rect coordinates (`PointA`/`PointB`) instead of individual cell lists to match standard designation patterns. *(by @jkbennitt)*
+- **Dynamic Versioning:** `RIMAPI_Settings.cs` now pulls the mod version dynamically from `About.xml` via `LoadedModManager`, eliminating hardcoded version strings in C#. *(by @Ilya)*
+- **Metadata:** Added Harmony to the mod dependencies list and updated the documentation URL in `About.xml`. *(by @Ilya)*
+- **Codebase Formatting:** Refactored project files to default to 4-space tabs for consistency. *(by @Ilya)*
+
+### Fixed
+- **Bulk Work Priorities NRE:** Fixed a `NullReferenceException` and 500 Internal Server Error when processing unmapped JSON keys or empty payloads in the colonist priorities endpoint. *(by @Ilya)*
+- **Growing Zone 500 Error:** Fixed a crash that occurred when attempting to create a growing zone where all designated cells were already occupied by existing zones. *(by @jkbennitt)*
+- **Pawn Edit Routing & Logic:** Fixed a 404 routing error for `/api/v1/pawn/edit/basic` in compiled release builds, and resolved a bug where partial name updates were ignored. *(by @Ilya)*
+- **Empty POST Body Crashes:** Fixed core routing logic so missing payloads or `Content-Length` headers safely initialize an empty DTO instead of throwing a generic `NullReferenceException`. *(by @Ilya)*
+
 ## v1.8.2
 
 ### Documentation Infrastructure (Refactor)

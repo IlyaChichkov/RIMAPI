@@ -1,0 +1,19 @@
+info:
+  name: List Bills
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/buildings/bills?building_id=25345"
+  params:
+    - name: building_id
+      value: "25345"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

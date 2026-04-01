@@ -1,0 +1,205 @@
+title: '### :material-bug: Инструменты разработчика'
+desc: |-
+  Этот контроллер предоставляет доступ к внутренним **отладочным действиям** и инструментам разработки RimWorld. Он обеспечивает функциональность «режима бога», обычно зарезервированную для консоли разработчика игры.
+
+  !!! danger "Использовать с осторожностью"
+
+      Действия, выполняемые здесь, обходят стандартные правила игрового процесса. Неправильное использование может привести к:
+
+      - Повреждению файлов сохранений.
+      - Вылетам игры.
+      - Нарушению поведения ИИ.
+
+/api/v1/dev/materials-atlas:
+  desc: |-
+    Получает данные атласа материалов уровня разработки, который содержит
+    внутреннее сопоставление определений материалов с их графическими
+    текстурами, шейдерами и свойствами рендеринга.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/dev/materials-atlas
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "materials": [
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_RockFlecked_Atlas",
+            "Custom/CutoutComplex_CompactedMachinery_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_Rock_Atlas",
+            "Custom/Cutout_AncientFence_Atlas",
+            "Custom/CutoutComplex_Fleshmass_Atlas",
+            "Custom/Transparent_PowerConduit_Blueprint_Atlas",
+            "Custom/Transparent_Sandbags_Blueprint_Atlas",
+            "Custom/Transparent_Barricade_Blueprint_Atlas",
+            "Custom/Transparent_Wall_Blueprint_Atlas",
+            "Custom/Transparent_Fence_Atlas_Smooth",
+            "Custom/Cutout_Wall_Atlas_Smooth",
+            "Custom/Cutout_Wall_Atlas_Bricks",
+            "Custom/Cutout_Wall_Atlas_Smooth",
+            "Custom/Cutout_Wall_Atlas_Bricks",
+            "Custom/Cutout_Wall_Atlas_Bricks"
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:15:20.9851409Z"
+    }
+    ```
+  method: GET
+/api/v1/dev/console:
+  desc: |-
+    Конечная точка для разработки и отладки, позволяющая взаимодействовать с
+    внутренней системой логирования игры. Это обеспечивает программное управление
+    консолью разработчика, позволяя отправлять сообщения в лог и очищать консоль.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/dev/console'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+    "action": "message",
+    "message": "hello_world"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/dev/stuff/color:
+  desc: |-
+    Конечная точка инструмента разработки, которая изменяет визуальные свойства цвета
+    конкретного материала типа «stuff» в игре. «Stuff»
+    в RimWorld относится к базовым материалам, из которых изготавливаются предметы и
+    строения (например, дерево, сталь, ткань, пласталь).
+    Эта конечная точка позволяет в реальном времени настраивать
+    отображаемый цвет материала, что в основном используется для визуальной настройки,
+    отладки или тестирования при разработке модов.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/dev/stuff/color \
+    --header 'content-type: application/json' \
+    --data '{
+        "name": "WoodLog",
+        "hex": "aa00ff"
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "name": "WoodLog",
+        "hex": "aa00ff"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+/api/v1/dev/materials-atlas/clear:
+  desc: |-
+    Очищает кэш атласа материалов в оперативной памяти, заставляя игру перезагружать
+    текстуры материалов, шейдеры и свойства рендеринга с диска по запросу.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/dev/materials-atlas/clear
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-08T19:13:29.997162Z"
+    }
+    ```
+  method: POST
+
+/api/v1/dev/endpoints:
+  desc: Получить полный список всех зарегистрированных конечных точек API, включая их HTTP-методы, пути, описания, категории и теги. Это очень полезно для программного обнаружения маршрутов и создания автоматизированных клиентов API.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/dev/endpoints'
+    ```
+  request: ""
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "endpoints": [
+                {
+                    "method": "POST",
+                    "path": "/api/v1/camera/change/zoom",
+                    "description": "Change game camera zoom",
+                    "category": "CameraController",
+                    "tags": [],
+                    "is_deprecated": false
+                },
+                {
+                    "method": "POST",
+                    "path": "/api/v1/camera/change/position",
+                    "description": "Change game camera position",
+                    "category": "CameraController",
+                    "tags": [],
+                    "is_deprecated": false
+                },
+                {
+                    "method": "POST",
+                    "path": "/api/v1/stream/start",
+                    "description": "Start game camera stream",
+                    "category": "CameraController",
+                    "tags": [],
+                    "is_deprecated": false
+                }
+            ]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-28T16:45:00.0000000Z"
+    }
+    ```
+  method: GET
+  csharp_method: GetEndpoints

@@ -42,3 +42,9 @@ lib/
 # =========================
 1.5/
 1.6/
+
+# =========================
+# Bruno Environments
+# =========================
+tests/bruno_api_collection/environments/*
+!tests/bruno_api_collection/environments/RimAPI.yml

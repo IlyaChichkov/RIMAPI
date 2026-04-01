@@ -38,11 +38,13 @@ nav:
   - Quick Start: quick_start.md
   - API Reference: api.md
   - Developers:
-    - Add new extension: developer_guide/creating_extensions.md
+    - API Convension: developer_guide/api_conventions.md
+    - Create extension: developer_guide/creating_extensions.md
   - Contributors:
     - Architecture: contributors_guide/architecture.md
-    - Add new endpoint: contributors_guide/creating_endpoints.md
+    - Create endpoint: contributors_guide/creating_endpoints.md
     - Contribute: contributors_guide/contribute.md
+    - Release Flow: contributors_guide/release_flow.md
 
 plugins:
   - search:

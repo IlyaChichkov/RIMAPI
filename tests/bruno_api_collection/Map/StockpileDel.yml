@@ -1,0 +1,22 @@
+info:
+  name: StockpileDel
+  type: http
+  seq: 27
+
+http:
+  method: DELETE
+  url: "{{baseURL}}/api/v1/map/zone/stockpile/delete?zone_id=3"
+  params:
+    - name: zone_id
+      value: "3"
+      type: query
+  body:
+    type: json
+    data: ""
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

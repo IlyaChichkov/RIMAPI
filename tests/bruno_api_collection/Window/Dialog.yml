@@ -1,0 +1,38 @@
+info:
+  name: Dialog
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/ui/dialog"
+  auth: inherit
+
+body:
+  json: |-
+    {
+            "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+            "options": [
+                {
+                    "label": "Offer Safety (Triggers Raid)",
+                    "action_id": "accept_refugee",
+                    "resolve_tree": true
+                },
+                {
+                    "label": "Turn them away",
+                    "action_id": "reject_refugee",
+                    "resolve_tree": true
+                },
+                {
+                    "label": "Capture them (Prisoner)",
+                    "action_id": "capture_refugee",
+                    "resolve_tree": true
+                }
+            ]
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
