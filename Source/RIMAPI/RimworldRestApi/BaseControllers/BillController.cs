@@ -25,7 +25,7 @@ namespace RIMAPI.Controllers
             await ResponseBuilder.SendApiResult(context.Response, result);
         }
 
-        [Post("/api/v1/buildings/bills")]
+        [Post("/api/v1/buildings/bills/add")]
         [EndpointMetadata("Create a new bill on a work table")]
         public async Task CreateBill(HttpListenerContext context)
         {
@@ -35,7 +35,7 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
-        [Delete("/api/v1/buildings/bills")]
+        [Delete("/api/v1/buildings/bills/remove")]
         [EndpointMetadata("Clear all bills from a work table")]
         public async Task ClearBills(HttpListenerContext context)
         {
@@ -54,7 +54,7 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
-        [Put("/api/v1/buildings/bill")]
+        [Put("/api/v1/buildings/bill/update")]
         [EndpointMetadata("Update a bill on a work table")]
         public async Task UpdateBill(HttpListenerContext context)
         {
@@ -65,7 +65,7 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
-        [Delete("/api/v1/buildings/bill")]
+        [Delete("/api/v1/buildings/bill/remove")]
         [EndpointMetadata("Delete a bill from a work table")]
         public async Task DeleteBill(HttpListenerContext context)
         {
@@ -104,7 +104,7 @@ namespace RIMAPI.Controllers
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var onlyResearched = RequestParser.GetBooleanParameter(context, "only_researched", false);
             var result = _billService.GetAvailableRecipes(buildingId, onlyResearched);
-            await ResponseBuilder.SendApiResult(context.Response,result);
+            await ResponseBuilder.SendApiResult(context.Response, result);
         }
 
         [Get("/api/v1/map/work-tables")]
