@@ -83,7 +83,7 @@
   method: GET
   csharp_method: GetBills
 
-"/api/v1/buildings/bills ":
+"/api/v1/buildings/bills/add":
   desc: Create a new bill and add it to the work table's queue.
   curl: |-
     **Example:**
@@ -120,7 +120,7 @@
   method: POST
   csharp_method: CreateBill
 
-"/api/v1/buildings/bills  ":
+"/api/v1/buildings/bills/remove":
   desc: Completely clear and delete all bills from a specific work table.
   curl: |-
     **Example:**
@@ -166,7 +166,7 @@
   method: GET
   csharp_method: GetBill
 
-"/api/v1/buildings/bill ":
+"/api/v1/buildings/bill/update":
   desc: Update the configuration properties (like target count or allowed materials) of an existing bill.
   curl: |-
     **Example:**
@@ -202,7 +202,7 @@
   method: PUT
   csharp_method: UpdateBill
 
-"/api/v1/buildings/bill  ":
+"/api/v1/buildings/bill/remove":
   desc: Delete a single bill from the work table.
   curl: |-
     **Example:**
