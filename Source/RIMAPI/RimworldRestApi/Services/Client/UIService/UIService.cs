@@ -4,10 +4,12 @@ using System.Reflection;
 using RimWorld;
 using Verse;
 using RIMAPI.Core;
+using RIMAPI.Models.UI;
 using RIMAPI.Services.Interfaces;
 using RIMAPI.Helpers;
 using System.Linq;
 using RIMAPI.Models;
+using RimWorld.Planet;
 
 namespace RIMAPI.Services
 {
@@ -17,6 +19,84 @@ namespace RIMAPI.Services
             "activeAlerts",
             BindingFlags.Instance | BindingFlags.NonPublic
         );
+
+        public ApiResult<List<AlertDto>> GetActiveAlerts()
+        {
+            if (Current.ProgramState != ProgramState.Playing)
+            {
+                return ApiResult<List<AlertDto>>.Fail("Cannot fetch alerts: Game is not currently playing.");
+            }
+
+            if (Find.Alerts == null)
+            {
+                return ApiResult<List<AlertDto>>.Fail("Alerts system is currently unavailable.");
+            }
+
+            if (ActiveAlertsField == null)
+            {
+                return ApiResult<List<AlertDto>>.Fail("Reflection failed: Could not find the activeAlerts field.");
+            }
+
+            var alertDtos = new List<AlertDto>();
+
+            try
+            {
+                var activeAlerts = (List<Alert>)ActiveAlertsField.GetValue(Find.Alerts);
+
+                if (activeAlerts != null)
+                {
+                    foreach (Alert alert in activeAlerts)
+                    {
+                        try
+                        {
+                            var alertDto = new AlertDto
+                            {
+                                Label = alert.GetLabel(),
+                                Explanation = alert.GetExplanation(),
+                                Priority = alert.Priority.ToString(),
+                                Targets = new List<int>(),
+                                Cells = new List<string>()
+                            };
+
+                            AlertReport report = alert.GetReport();
+                            if (report.AllCulprits != null)
+                            {
+                                foreach (GlobalTargetInfo target in report.AllCulprits)
+                                {
+                                    if (!target.IsValid) continue;
+
+                                    if (target.HasThing)
+                                    {
+                                        alertDto.Targets.Add(target.Thing.thingIDNumber);
+                                    }
+                                    else if (target.HasWorldObject)
+                                    {
+                                        alertDto.Targets.Add(target.WorldObject.ID);
+                                    }
+                                    else if (target.Cell.IsValid)
+                                    {
+                                        alertDto.Cells.Add($"Cell_{target.Cell.x}_{target.Cell.z}");
+                                    }
+                                }
+                            }
+
+                            alertDtos.Add(alertDto);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Warning($"[RIMAPI] Failed to parse alert of type {alert.GetType().Name}: {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"[RIMAPI] Critical reflection error while reading alerts: {ex}");
+                return ApiResult<List<AlertDto>>.Fail("Internal server error reading memory.");
+            }
+
+            return ApiResult<List<AlertDto>>.Ok(alertDtos);
+        }
 
         public ApiResult OpenTab(string tabName)
         {

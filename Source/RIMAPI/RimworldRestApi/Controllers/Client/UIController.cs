@@ -18,6 +18,15 @@ namespace RIMAPI.BaseControllers
             _windowService = windowService;
         }
 
+        [Get("/api/v1/ui/alerts")]
+        [EndpointMetadata("Retrieve a list of all currently active right-hand screen alerts (e.g., 'Need Defenses', 'Major Break Risk').")]
+        public async Task GetActiveAlerts(HttpListenerContext context)
+        {
+            var result = await GameThreadUtility.InvokeAsync(() => _uiService.GetActiveAlerts());
+
+            await context.SendJsonResponse(result);
+        }
+
         [Post("/api/v1/ui/message")]
         public async Task ShowMessage(HttpListenerContext context)
         {
