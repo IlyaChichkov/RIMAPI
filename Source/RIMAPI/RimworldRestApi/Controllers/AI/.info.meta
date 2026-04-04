@@ -1,0 +1,7 @@
+Domain: AI
+
+Description: 
+Handles artificial intelligence systems, group behaviors, and automated decision-making processes.
+
+Controllers:
+- LordController: Manages 'Lords' (group AI) which dictate the behavior of raids, caravans, parties, and other coordinated entity gatherings.

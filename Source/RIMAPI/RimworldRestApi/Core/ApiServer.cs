@@ -113,7 +113,8 @@ namespace RIMAPI.Core
                 services.AddSingleton<ExtensionRegistry>(extensionRegistry);
 
                 // Create instances first to avoid any DI issues
-                var gameStateService = new GameStateService(cachingService);
+                var gameDataService = new GameDataService(cachingService);
+                var gameStateService = new GameStateService();
                 var sseService = new SseService(gameStateService);
                 var eventRegistry = new EventRegistry(sseService);
 

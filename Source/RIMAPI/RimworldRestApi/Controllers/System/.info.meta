@@ -1,0 +1,9 @@
+Domain: System
+
+Description: 
+Interfaces with core game engine states, infrastructure, and debugging tools.
+
+Controllers:
+- DevToolsController: Provides access to debug actions, god mode, and cheat tools.
+- GameController: Manages high-level state like saving/loading, time speed, and pausing/unpausing.
+- ThingsController: Handles generic spawning, destroying, and management of items, buildings, and world objects (Things).

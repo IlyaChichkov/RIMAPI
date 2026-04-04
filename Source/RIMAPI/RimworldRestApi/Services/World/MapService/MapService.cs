@@ -540,7 +540,7 @@ namespace RIMAPI.Services
                 }
 
                 var result = MapHelper.CreateStockpile(request);
-                
+
                 if (result.Success)
                 {
                     return ApiResult<StockpileResponseDto>.Ok(result);
@@ -560,5 +560,74 @@ namespace RIMAPI.Services
         public ApiResult DeleteStockpile(int zoneId) => MapHelper.DeleteStockpile(zoneId);
 
         public ApiResult<StockpileResponseDto> UpdateStockpile(UpdateStockpileRequestDto request) => MapHelper.UpdateStockpile(request);
+
+
+        public static int GetMapTileId(Map map)
+        {
+#if RIMWORLD_1_5
+            return map.Tile;
+#elif RIMWORLD_1_6
+            return map.Tile.tileId;
+#endif
+            throw new Exception("Failed to get GetMapTileId for this rimworld version.");
+        }
+
+        public ApiResult<MapTimeDto> GetCurrentMapDatetime()
+        {
+            try
+            {
+                var map = Find.CurrentMap;
+                if (map == null)
+                    return ApiResult<MapTimeDto>.Fail("No current map found");
+
+                var time = GetDatetimeAt(GetMapTileId(Find.CurrentMap));
+                return ApiResult<MapTimeDto>.Ok(time);
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error getting current map datetime: {ex}");
+                return ApiResult<MapTimeDto>.Fail($"Failed to get datetime: {ex.Message}");
+            }
+        }
+
+        public ApiResult<MapTimeDto> GetWorldTileDatetime(int tileID)
+        {
+            try
+            {
+                var time = GetDatetimeAt(tileID);
+
+                return ApiResult<MapTimeDto>.Ok(time);
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error getting world tile datetime for tile {tileID}: {ex}");
+                return ApiResult<MapTimeDto>.Fail($"Failed to get datetime: {ex.Message}");
+            }
+        }
+
+        public MapTimeDto GetDatetimeAt(int tileID)
+        {
+            MapTimeDto mapTimeDto = new MapTimeDto();
+            try
+            {
+                if (Current.ProgramState != ProgramState.Playing || Find.WorldGrid == null)
+                {
+                    return mapTimeDto;
+                }
+
+                var vector = Find.WorldGrid.LongLatOf(tileID);
+                mapTimeDto.Datetime = GenDate.DateFullStringWithHourAt(
+                    Find.TickManager.TicksAbs,
+                    vector
+                );
+
+                return mapTimeDto;
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"Error - {ex.Message}");
+                return mapTimeDto;
+            }
+        }
     }
 }

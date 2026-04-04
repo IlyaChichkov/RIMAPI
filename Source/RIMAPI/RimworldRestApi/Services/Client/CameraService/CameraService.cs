@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using RIMAPI.CameraStreamer;
 using RIMAPI.Core;
@@ -28,6 +30,46 @@ namespace RIMAPI.Services
                 return ApiResult.Fail(ex.Message);
             }
             return ApiResult.Ok();
+        }
+
+        private static void SetScreenshotMode(bool state)
+        {
+            if (Find.UIRoot == null || Find.UIRoot.screenshotMode == null) return;
+            var handler = Find.UIRoot.screenshotMode;
+
+#if RIMWORLD_1_6
+            handler.Active = state;
+#else
+            // In 1.5, we must use Reflection to write to the private 'active' backing field
+            FieldInfo field = typeof(ScreenshotModeHandler).GetField("active", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field != null)
+            {
+                field.SetValue(handler, state);
+            }
+            else
+            {
+                // Fallback for auto-properties
+                PropertyInfo prop = typeof(ScreenshotModeHandler).GetProperty("Active", BindingFlags.Public | BindingFlags.Instance);
+                if (prop != null && prop.CanWrite)
+                {
+                    prop.SetValue(handler, state, null);
+                }
+            }
+#endif
+        }
+
+        private static void TakeNativeScreenshotDirect(string fileName)
+        {
+            string folderPath = GenFilePaths.ScreenshotFolderPath;
+
+            DirectoryInfo dir = new DirectoryInfo(folderPath);
+            if (!dir.Exists)
+            {
+                dir.Create();
+            }
+
+            string fullPath = Path.Combine(folderPath, fileName + ".png");
+            ScreenCapture.CaptureScreenshot(fullPath);
         }
 
         public ApiResult<string> TakeNativeScreenshot(NativeScreenshotRequestDto request)
@@ -62,20 +104,20 @@ namespace RIMAPI.Services
             if (request.HideUI && Find.UIRoot != null)
             {
                 originalUIState = Find.UIRoot.screenshotMode.Active;
-                Find.UIRoot.screenshotMode.Active = true;
+                SetScreenshotMode(true);
             }
 
-            // 3. Trigger the native screenshot tool
+            // Trigger the native screenshot tool
             string fileName = string.IsNullOrEmpty(request.FileName) ? $"RIMAPI_{DateTime.Now.Ticks}" : request.FileName;
-            ScreenshotTaker.TakeNonSteamShot(fileName);
+            TakeNativeScreenshotDirect(fileName);
 
-            // 4. WAIT for the frame to finish rendering so the screenshot actually captures!
+            // WAIT for the frame to finish rendering so the screenshot actually captures!
             yield return new WaitForEndOfFrame();
 
             // 5. Restore UI
             if (request.HideUI && Find.UIRoot != null)
             {
-                Find.UIRoot.screenshotMode.Active = originalUIState;
+                SetScreenshotMode(originalUIState);
             }
         }
 
@@ -301,17 +343,16 @@ namespace RIMAPI.Services
             if (request.HideUI && Find.UIRoot != null)
             {
                 originalUIState = Find.UIRoot.screenshotMode.Active;
-                Find.UIRoot.screenshotMode.Active = true;
+                SetScreenshotMode(true);
             }
 
-            // 2. THE MAGIC SAUCE: Yield to let Unity render a brand new frame WITHOUT the UI!
+            // Yield to let Unity render a brand new frame WITHOUT the UI!
             // We must do this outside the try-catch to satisfy C# compiler rules (CS1626).
             yield return new WaitForEndOfFrame();
 
-            // 3. Now enter the try-catch for the risky GPU memory and encoding operations
             try
             {
-                // 1. Read the raw screen buffer directly! 
+                // Read the raw screen buffer directly! 
                 // Because we waited for the end of the frame, the IMGUI (RimWorld UI) is guaranteed to be here.
                 RenderTexture.active = null; // Ensure we are reading from the screen, not an RT
                 Texture2D screenTex = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
@@ -321,7 +362,7 @@ namespace RIMAPI.Services
                 Texture2D finalTexture = screenTex;
                 RenderTexture resizedRT = null;
 
-                // 2. Handle Resizing (If the API client requested a smaller/larger width than the game window)
+                // Handle Resizing (If the API client requested a smaller/larger width than the game window)
                 bool needsResize = (targetWidth != Screen.width || targetHeight != Screen.height);
                 if (needsResize)
                 {
@@ -338,7 +379,6 @@ namespace RIMAPI.Services
                     RenderTexture.active = null;
                 }
 
-                // 3. Encode to Image Format
                 byte[] imageBytes;
                 string actualFormat;
 
@@ -374,7 +414,7 @@ namespace RIMAPI.Services
                     }
                 };
 
-                // 4. Cleanup memory to prevent massive memory leaks
+                // Cleanup memory to prevent massive memory leaks
                 UnityEngine.Object.Destroy(screenTex);
                 if (needsResize)
                 {
@@ -382,7 +422,6 @@ namespace RIMAPI.Services
                     RenderTexture.ReleaseTemporary(resizedRT);
                 }
 
-                // Complete the Task!
                 tcs.TrySetResult(ApiResult<CameraScreenshotResponseDto>.Ok(dto));
             }
             catch (Exception ex)
@@ -392,10 +431,9 @@ namespace RIMAPI.Services
             }
             finally
             {
-                // 4. ALWAYS Restore the UI state, even if encoding failed
                 if (request.HideUI && Find.UIRoot != null)
                 {
-                    Find.UIRoot.screenshotMode.Active = originalUIState;
+                    SetScreenshotMode(originalUIState);
                 }
             }
         }

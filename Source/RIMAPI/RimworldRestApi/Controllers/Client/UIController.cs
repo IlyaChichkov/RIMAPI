@@ -1,18 +1,20 @@
 using System.Threading.Tasks;
 using System.Net;
 using RIMAPI.Core;
-using RIMAPI.Http;
-using RIMAPI.Models;
+using RIMAPI.Services.Interfaces;
 using RIMAPI.Services;
+using RIMAPI.Models;
 
-namespace RIMAPI.Controllers
+namespace RIMAPI.BaseControllers
 {
-    public class WindowController
+    public class UIController
     {
+        private readonly IUIService _uiService;
         private readonly IWindowService _windowService;
 
-        public WindowController(IWindowService windowService)
+        public UIController(IUIService uiService, IWindowService windowService)
         {
+            _uiService = uiService;
             _windowService = windowService;
         }
 
