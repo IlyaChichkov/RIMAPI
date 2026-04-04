@@ -1,7 +1,9 @@
 
+using System.Threading.Tasks;
 using RIMAPI.CameraStreamer;
 using RIMAPI.Core;
 using RIMAPI.Models;
+using RIMAPI.Models.Camera;
 
 namespace RIMAPI.Services
 {
@@ -9,6 +11,9 @@ namespace RIMAPI.Services
     {
         ApiResult ChangeZoom(int zoom);
         ApiResult MoveToPosition(int x, int y);
+        Task<ApiResult<CameraScreenshotResponseDto>> MakeScreenshotAsync(CameraScreenshotRequestDto request);
+        ApiResult<CameraScreenshotResponseDto> MakeScreenshot(CameraScreenshotRequestDto request);
+        ApiResult<string> TakeNativeScreenshot(NativeScreenshotRequestDto request);
         ApiResult StartStream(ICameraStream stream);
         ApiResult StopStream(ICameraStream stream);
         ApiResult SetupStream(ICameraStream stream, StreamConfigDto config);
