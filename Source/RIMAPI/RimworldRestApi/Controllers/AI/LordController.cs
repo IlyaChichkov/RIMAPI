@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using System.Net;
 using RIMAPI.Core;
-using RIMAPI.Http;
 using RIMAPI.Models;
 using RIMAPI.Services;
 

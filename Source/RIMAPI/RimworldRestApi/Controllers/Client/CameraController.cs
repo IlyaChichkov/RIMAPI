@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using RIMAPI.CameraStreamer;
@@ -8,7 +6,6 @@ using RIMAPI.Http;
 using RIMAPI.Models;
 using RIMAPI.Models.Camera;
 using RIMAPI.Services;
-using Verse;
 
 namespace RimworldRestApi.Controllers
 {
