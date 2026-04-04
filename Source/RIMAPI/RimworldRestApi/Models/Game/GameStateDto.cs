@@ -1,5 +1,3 @@
-using System;
-
 namespace RIMAPI.Models
 {
     public class GameStateDto

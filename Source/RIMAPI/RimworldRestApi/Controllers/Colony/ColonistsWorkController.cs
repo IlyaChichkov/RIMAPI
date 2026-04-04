@@ -1,8 +1,4 @@
-using System;
-using System.Net;
-using System.Threading.Tasks;
 using RIMAPI.Core;
-using RIMAPI.Http;
 using RIMAPI.Services;
 
 namespace RIMAPI.Controllers

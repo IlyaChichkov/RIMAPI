@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RIMAPI.Models
 {
     public class PawnDto
