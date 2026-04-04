@@ -7,6 +7,7 @@ using RIMAPI.Core;
 using RIMAPI.Http;
 using RIMAPI.Models;
 using RIMAPI.Services;
+using RIMAPI.Services.Interfaces;
 using RimWorld;
 
 namespace RIMAPI.Controllers
@@ -14,18 +15,30 @@ namespace RIMAPI.Controllers
     public class GameController
     {
         private readonly IGameStateService _gameStateService;
+        private readonly IGameDataService _gameDataService;
         private readonly RIMAPI_Settings _settings;
         private readonly ICachingService _cachingService;
+        private readonly IModService _modService;
+        private readonly IUIService _uiService;
+        private readonly ISelectionService _selectionService;
 
         public GameController(
             IGameStateService gameStateService,
+            IGameDataService gameDataService,
             RIMAPI_Settings settings,
-            ICachingService cachingService
+            ICachingService cachingService,
+            IModService modService,
+            IUIService uiService,
+            ISelectionService selectionService
         )
         {
             _gameStateService = gameStateService;
+            _gameDataService = gameDataService;
             _settings = settings;
             _cachingService = cachingService;
+            _modService = modService;
+            _uiService = uiService;
+            _selectionService = selectionService;
         }
 
         [Get("/api/v1/version")]
@@ -60,7 +73,7 @@ namespace RIMAPI.Controllers
         public async Task ConfigureMods(HttpListenerContext context)
         {
             var body = await context.Request.ReadBodyAsync<ConfigureModsRequestDto>();
-            var result = _gameStateService.ConfigureMods(body);
+            var result = _modService.ConfigureMods(body);
             await context.SendJsonResponse(result);
         }
 
@@ -72,7 +85,7 @@ namespace RIMAPI.Controllers
             await _cachingService.CacheAwareResponseAsync(
                 context,
                 "/api/v1/mods/info",
-                dataFactory: () => Task.FromResult(_gameStateService.GetModsInfo()),
+                dataFactory: () => Task.FromResult(_modService.GetModsInfo()),
                 expiration: TimeSpan.FromMinutes(1),
                 priority: CachePriority.Normal,
                 expirationType: CacheExpirationType.Absolute
@@ -84,7 +97,7 @@ namespace RIMAPI.Controllers
         public async Task SelectArea(HttpListenerContext context)
         {
             var body = await context.Request.ReadBodyAsync<SelectAreaRequestDto>();
-            var result = _gameStateService.SelectArea(body);
+            var result = _selectionService.SelectArea(body);
             await context.SendJsonResponse(result);
         }
 
@@ -94,7 +107,7 @@ namespace RIMAPI.Controllers
         {
             var objType = RequestParser.GetStringParameter(context, "type");
             var id = RequestParser.GetIntParameter(context, "id");
-            var result = _gameStateService.Select(objType, id);
+            var result = _selectionService.Select(objType, id);
             await context.SendJsonResponse(result);
         }
 
@@ -102,7 +115,7 @@ namespace RIMAPI.Controllers
         [EndpointMetadata("Clear game selection")]
         public async Task DeselectAll(HttpListenerContext context)
         {
-            var result = _gameStateService.DeselectAll();
+            var result = _selectionService.DeselectAll();
             await context.SendJsonResponse(result);
         }
 
@@ -111,24 +124,7 @@ namespace RIMAPI.Controllers
         public async Task OpenTab(HttpListenerContext context)
         {
             var tabName = RequestParser.GetStringParameter(context, "name");
-            var result = _gameStateService.OpenTab(tabName);
-            await context.SendJsonResponse(result);
-        }
-
-        [Get("/api/v1/datetime")]
-        [EndpointMetadata("Get in-game date and time")]
-        public async Task GetCurrentMapDatetime(HttpListenerContext context)
-        {
-            var result = _gameStateService.GetCurrentMapDatetime();
-            await context.SendJsonResponse(result);
-        }
-
-        [Get("/api/v1/datetime/tile")]
-        [EndpointMetadata("Get in-game date and time in global map tile")]
-        public async Task GetWorldTileDatetime(HttpListenerContext context)
-        {
-            var tileId = RequestParser.GetIntParameter(context, "tile_id");
-            var result = _gameStateService.GetWorldTileDatetime(tileId);
+            var result = _uiService.OpenTab(tabName);
             await context.SendJsonResponse(result);
         }
 
@@ -156,7 +152,7 @@ namespace RIMAPI.Controllers
             await _cachingService.CacheAwareResponseAsync(
                 context,
                 "/api/v1/def/all",
-                dataFactory: () => Task.FromResult(_gameStateService.GetAllDefs(body)),
+                dataFactory: () => Task.FromResult(_gameDataService.GetAllDefs(body)),
                 expiration: TimeSpan.FromMinutes(5),
                 priority: CachePriority.Normal,
                 expirationType: CacheExpirationType.Absolute
@@ -167,7 +163,7 @@ namespace RIMAPI.Controllers
         public async Task PostLetter(HttpListenerContext context)
         {
             var body = await context.Request.ReadBodyAsync<SendLetterRequestDto>();
-            var result = _gameStateService.SendLetterSimple(body);
+            var result = _uiService.SendLetterSimple(body);
             await context.SendJsonResponse(result);
         }
 

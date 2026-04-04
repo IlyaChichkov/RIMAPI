@@ -35,5 +35,8 @@ namespace RIMAPI.Services
         ApiResult<StockpileResponseDto> CreateStockpile(CreateStockpileRequestDto request);
         ApiResult DeleteStockpile(int zoneId);
         ApiResult<StockpileResponseDto> UpdateStockpile(UpdateStockpileRequestDto request);
+
+        ApiResult<MapTimeDto> GetCurrentMapDatetime();
+        ApiResult<MapTimeDto> GetWorldTileDatetime(int tileID);
     }
 }

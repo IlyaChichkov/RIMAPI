@@ -68,7 +68,6 @@ namespace RIMAPI.Core
             }
         }
 
-        // --- UPDATED: Method signature changed from void to async Task ---
         public async Task HandleSSEConnection(HttpListenerContext context)
         {
             if (_disposed)

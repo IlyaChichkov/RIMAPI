@@ -287,5 +287,23 @@ namespace RIMAPI.Controllers
             var result = _mapService.UpdateStockpile(body);
             await context.SendJsonResponse(result);
         }
+
+        [Get("/api/v1/datetime")]
+        [EndpointMetadata("Get in-game date and time")]
+        public async Task GetCurrentMapDatetime(HttpListenerContext context)
+        {
+            var result = _mapService.GetCurrentMapDatetime();
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/datetime/tile")]
+        [EndpointMetadata("Get in-game date and time in global map tile")]
+        public async Task GetWorldTileDatetime(HttpListenerContext context)
+        {
+            var tileId = RequestParser.GetIntParameter(context, "tile_id");
+            var result = _mapService.GetWorldTileDatetime(tileId);
+            await context.SendJsonResponse(result);
+        }
+
     }
 }
