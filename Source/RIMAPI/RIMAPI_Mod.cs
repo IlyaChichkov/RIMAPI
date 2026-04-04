@@ -29,6 +29,10 @@ namespace RIMAPI
         /// </summary>
         public RIMAPI_Mod(ModContentPack content) : base(content)
         {
+            GameObject dispatcherObject = new GameObject("RIMAPI_ThreadDispatcher");
+            Object.DontDestroyOnLoad(dispatcherObject);
+            dispatcherObject.AddComponent<GameThreadDispatcher>();
+
             Settings = GetSettings<RIMAPI_Settings>();
             InitializeHarmony();
         }
