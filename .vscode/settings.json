@@ -1,5 +1,6 @@
 {
-  "dotnet.defaultSolution": "RimApi.sln",
+  "dotnet.defaultSolution": "Source/RIMAPI/RimApi.sln",
+  "dotnet.preferCSharpExtension": true,
   "files.exclude": {
     "**/bin": true,
     "**/obj": true,
@@ -9,5 +10,13 @@
     "**/bin": true,
     "**/obj": true
   },
-  "dotnet.preferCSharpExtension": true
+  
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+
+  // --- RIMWORLD ENVIRONMENT VARIABLES ---
+  "rimworld.paths.v15": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64.exe",
+  "rimworld.paths.v16": "E:\\Games\\RimWorld\\RimWorldWin64.exe",
+  "rimworld.mod.deployPath": "E:\\Program Files\\Steam\\steamapps\\common\\RimWorld\\Mods\\3593423732"
 }

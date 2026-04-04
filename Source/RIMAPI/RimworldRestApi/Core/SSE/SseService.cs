@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks; // Required for Task
 using Newtonsoft.Json;
@@ -68,7 +67,6 @@ namespace RIMAPI.Core
             }
         }
 
-        // --- UPDATED: Method signature changed from void to async Task ---
         public async Task HandleSSEConnection(HttpListenerContext context)
         {
             if (_disposed)

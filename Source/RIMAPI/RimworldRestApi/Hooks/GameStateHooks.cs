@@ -1,6 +1,5 @@
 using System;
 using HarmonyLib;
-using RimWorld;
 using Verse;
 
 namespace RimworldRestApi.Hooks

@@ -1,5 +1,3 @@
-using RIMAPI.Models;
-
 namespace RIMAPI.Models
 {
     public class ThingsAtCellRequestDto
