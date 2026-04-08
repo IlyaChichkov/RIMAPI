@@ -1,0 +1,19 @@
+info:
+  name: Pawn Relations
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/pawns/relations?pawn_id=776"
+  params:
+    - name: pawn_id
+      value: "776"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

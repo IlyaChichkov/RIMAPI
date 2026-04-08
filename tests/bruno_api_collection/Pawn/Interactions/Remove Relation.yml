@@ -1,0 +1,25 @@
+info:
+  name: Remove Relation
+  type: http
+  seq: 9
+
+http:
+  method: DELETE
+  url: "{{baseURL}}/api/v1/pawns/relations/remove?pawn1_id=779&pawn2_id=780&relation_def_name=Lover"
+  params:
+    - name: pawn1_id
+      value: "779"
+      type: query
+    - name: pawn2_id
+      value: "780"
+      type: query
+    - name: relation_def_name
+      value: "Lover"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
