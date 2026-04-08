@@ -1,0 +1,7 @@
+info:
+  name: Client
+  type: folder
+  seq: 31
+
+request:
+  auth: inherit
