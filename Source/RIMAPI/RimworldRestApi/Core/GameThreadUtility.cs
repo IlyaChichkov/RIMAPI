@@ -35,6 +35,11 @@ namespace RIMAPI.Core
         {
             _executionQueue.Enqueue(action);
         }
+
+        internal static async Task<ApiResult<bool>> InvokeAsync(Func<ApiResult<bool>> value)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     // 2. The utility wrapper that gives us beautiful async/await syntax in our Controllers
