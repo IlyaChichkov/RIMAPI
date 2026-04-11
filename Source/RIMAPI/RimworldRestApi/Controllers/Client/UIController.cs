@@ -22,7 +22,7 @@ namespace RIMAPI.BaseControllers
         [EndpointMetadata("Retrieve a list of all currently active right-hand screen alerts (e.g., 'Need Defenses', 'Major Break Risk').")]
         public async Task GetActiveAlerts(HttpListenerContext context)
         {
-            var result = await GameThreadUtility.InvokeAsync(() => _uiService.GetActiveAlerts());
+            var result = _uiService.GetActiveAlerts();
 
             await context.SendJsonResponse(result);
         }

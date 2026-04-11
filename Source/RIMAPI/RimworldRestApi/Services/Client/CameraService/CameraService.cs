@@ -307,18 +307,14 @@ namespace RIMAPI.Services
         {
             var tcs = new TaskCompletionSource<ApiResult<CameraScreenshotResponseDto>>();
 
-            // Ensure the coroutine is launched from the main Unity thread
-            GameThreadUtility.InvokeAsync(() =>
+            if (Find.CurrentMap == null || Find.CameraDriver == null)
             {
-                if (Find.CurrentMap == null || Find.CameraDriver == null)
-                {
-                    tcs.TrySetResult(ApiResult<CameraScreenshotResponseDto>.Fail("Cannot take a screenshot. No map is currently loaded."));
-                    return;
-                }
+                tcs.TrySetResult(ApiResult<CameraScreenshotResponseDto>.Fail("Cannot take a screenshot. No map is currently loaded."));
+                return tcs.Task;
+            }
 
-                // Start the Coroutine, passing the request and the TaskCompletionSource
-                Find.CameraDriver.StartCoroutine(CaptureScreenshotCoroutine(request, tcs));
-            });
+            // Start the Coroutine, passing the request and the TaskCompletionSource
+            Find.CameraDriver.StartCoroutine(CaptureScreenshotCoroutine(request, tcs));
 
             // The HTTP Controller will await this task, pausing until TrySetResult is called below!
             return tcs.Task;
