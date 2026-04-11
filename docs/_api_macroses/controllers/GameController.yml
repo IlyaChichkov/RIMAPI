@@ -129,12 +129,17 @@ desc: This controller handles the general game functions.
     ```
   method: GET
 /api/v1/mods/info:
-  desc: Manually triggers a complete flush of the API's internal caching system.
+  desc: Returns information about installed mods. Can be filtered by package_id to get detailed info for a single mod.
   curl: |-
-    **Example:**
+    **Example (All mods):**
     ```bash
-    curl --request POST \
+    curl --request GET \
     --url http://localhost:8765/api/v1/mods/info
+    ```
+    **Example (Single mod):**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/mods/info?package_id=RedEyeDev.RIMAPI
     ```
   request: ''
   response: |-
@@ -144,20 +149,44 @@ desc: This controller handles the general game functions.
         "success": true,
         "data": [
             {
-            "name": "Core",
-            "package_id": "ludeon.rimworld",
-            "load_order": 0
-            },
-            {
-            "name": "Royalty",
-            "package_id": "ludeon.rimworld.royalty",
-            "load_order": 1
-            },
-            {
-            "name": "Ideology",
-            "package_id": "ludeon.rimworld.ideology",
-            "load_order": 2
-            },
+            "name": "RIMAPI",
+            "package_id": "RedEyeDev.RIMAPI",
+            "load_order": 3,
+            "author": "RedEyeDev",
+            "description": "RIMAPI is a mod...",
+            "url": "https://...",
+            "version": "1.9.0",
+            "supported_versions": ["1.5", "1.6"],
+            "root_dir": "..."
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "..."
+    }
+    ```
+  method: GET
+/api/v1/mods/preview:
+  desc: Returns the mod's preview image as a base64 encoded string.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/mods/preview?package_id=RedEyeDev.RIMAPI
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": "iVBORw0KGgoAAAANSUhEUgAA...",
+        "errors": [],
+        "warnings": [],
+        "timestamp": "..."
+    }
+    ```
+  method: GET
             {
             "name": "Biotech",
             "package_id": "ludeon.rimworld.biotech",

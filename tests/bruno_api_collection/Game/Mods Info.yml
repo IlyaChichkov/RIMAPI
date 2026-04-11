@@ -8,8 +8,5 @@ http:
   url: "{{baseURL}}/api/v1/mods/info"
   auth: inherit
 
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
+query:
+  ~package_id: RedEyeDev.RIMAPI
