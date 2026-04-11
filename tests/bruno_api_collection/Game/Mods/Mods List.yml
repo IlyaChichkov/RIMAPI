@@ -1,11 +1,11 @@
 info:
-  name: Select Pawn
+  name: Mods List
   type: http
-  seq: 6
+  seq: 2
 
 http:
-  method: POST
-  url: "{{baseURL}}/api/v1/select?type=pawn&id=443"
+  method: GET
+  url: "{{baseURL}}/api/v1/mods/list"
   auth: inherit
 
 settings:

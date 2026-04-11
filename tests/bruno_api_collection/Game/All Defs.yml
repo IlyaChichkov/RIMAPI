@@ -1,7 +1,7 @@
 info:
   name: " All Defs"
   type: http
-  seq: 11
+  seq: 9
 
 http:
   method: GET

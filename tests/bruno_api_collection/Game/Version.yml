@@ -1,7 +1,7 @@
 info:
   name: Version
   type: http
-  seq: 5
+  seq: 4
 
 http:
   method: GET

@@ -1,7 +1,7 @@
 info:
   name: Tile
   type: http
-  seq: 13
+  seq: 11
 
 http:
   method: GET
