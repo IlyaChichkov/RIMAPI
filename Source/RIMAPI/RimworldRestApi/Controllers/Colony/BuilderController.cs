@@ -38,5 +38,13 @@ namespace RIMAPI.Controllers
             var result = _builderService.PlaceBlueprints(body);
             await context.SendJsonResponse(result);
         }
+
+        [Post("/api/v1/builder/check-zone")]
+        public async Task CheckZone(HttpListenerContext context)
+        {
+            var body = await context.Request.ReadBodyAsync<CheckZoneRequestDto>();
+            var result = _builderService.CheckZone(body);
+            await context.SendJsonResponse(result);
+        }
     }
 }
