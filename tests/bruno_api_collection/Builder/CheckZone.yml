@@ -1,0 +1,23 @@
+info:
+  name: CheckZone
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/builder/check-zone"
+  body:
+    type: json
+    data: |-
+      {
+        "mapId": "uuid",
+        "pointA": { "x": 10, "z": 20 },
+        "pointB": { "x": 50, "z": 60 }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
