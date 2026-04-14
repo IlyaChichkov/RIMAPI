@@ -1,0 +1,245 @@
+title: '### :material-account-group: Социальное взаимодействие'
+desc: |-
+  Контроллер **Pawn Social Controller** управляет межличностными отношениями, взаимодействиями и мнениями между пешками.
+  Он позволяет просматривать логи общения, управлять родственными связями и принудительно вызывать социальные взаимодействия.
+
+/api/v1/game/defs/interactions:
+  desc: Возвращает список всех доступных в игре типов социальных взаимодействий (например, Chitchat, Insult, KindWords).
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/game/defs/interactions
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "def_name": "Chitchat",
+                "label": "болтовня",
+                "description": "Обычный разговор."
+            },
+            {
+                "def_name": "Insult",
+                "label": "оскорбление",
+                "description": "Прямое оскорбление."
+            }
+        ]
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/interactions:
+  desc: Получает готовность конкретной пешки к взаимодействию в реальном времени, включая текущий статус перезарядки.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawns/interactions?pawn_id=779'
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "can_interact": true,
+            "last_interaction_ticks": 45000,
+            "cooldown_ticks": 0,
+            "cooldown_days": 0.0
+        }
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/interactions/log:
+  desc: Возвращает историю последних взаимодействий для конкретной пешки. Поддерживает необязательный параметр `limit` (по умолчанию 50).
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawns/interactions/log?pawn_id=779&limit=5'
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "pawn_id": 779,
+            "interactions": [
+                {
+                    "initiator_id": 779,
+                    "initiator_name": "Lumi",
+                    "recipient_id": 780,
+                    "recipient_name": "Blake",
+                    "interaction_def_name": "Chitchat",
+                    "interaction_label": "болтовня",
+                    "text": "Люми и Блейк поговорили о метеорологии.",
+                    "ticks": 152000,
+                    "time_ago": "2 часа назад"
+                }
+            ],
+            "count": 1
+        }
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/relations:
+  desc: Возвращает все установленные семейные и романтические отношения для этой пешки (например, родитель, ребенок, супруг, любовник).
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawns/relations?pawn_id=779'
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "pawn_id": 779,
+            "relations": [
+                {
+                    "other_pawn_id": 780,
+                    "other_pawn_name": "Blake",
+                    "relation_def_name": "Spouse",
+                    "relation_label": "муж"
+                }
+            ]
+        }
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/opinions:
+  desc: Возвращает список числовых мнений этой пешки обо всех остальных поселенцах, включая разбивку мыслей и воспоминаний, влияющих на оценку.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawns/opinions?pawn_id=779'
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "target_pawn_id": 780,
+                "target_pawn_name": "Blake",
+                "opinion": 45,
+                "breakdown": [
+                    {
+                        "thought_def_name": "Pretty",
+                        "label": "красивый(ая)",
+                        "score": 20.0
+                    }
+                ]
+            }
+        ]
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/interactions/force:
+  desc: Принудительно вызывает немедленное социальное взаимодействие между двумя пешками.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawns/interactions/force \
+    --header 'content-type: application/json' \
+    --data '{
+        "initiator_id": 779,
+        "recipient_id": 780,
+        "interaction_def_name": "Chitchat"
+    }'
+    ```
+  request: |-
+    **Запрос:**
+    ```json
+    {
+        "initiator_id": 779,
+        "recipient_id": 780,
+        "interaction_def_name": "Chitchat"
+    }
+    ```
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-04-14T12:00:00.000Z"
+    }
+    ```
+  method: POST
+
+/api/v1/pawns/relations/add:
+  desc: Мгновенно создает постоянную социальную связь (отношение) между двумя пешками.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawns/relations/add \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn1_id": 779,
+        "pawn2_id": 780,
+        "relation_def_name": "Lover"
+    }'
+    ```
+  request: |-
+    **Запрос:**
+    ```json
+    {
+        "pawn1_id": 779,
+        "pawn2_id": 780,
+        "relation_def_name": "Lover"
+    }
+    ```
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-04-14T12:00:00.000Z"
+    }
+    ```
+  method: POST
+
+/api/v1/pawns/relations/remove:
+  desc: Разрывает определенную социальную связь между двумя пешками.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request DELETE \
+    --url 'http://localhost:8765/api/v1/pawns/relations/remove?pawn1_id=779&pawn2_id=780&relation_def_name=Lover'
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-04-14T12:00:00.000Z"
+    }
+    ```
+  method: DELETE

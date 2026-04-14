@@ -6,6 +6,7 @@ This section covers reading, spawning, editing, and controlling pawns, as well a
 {{ render_controllers([
     'PawnController',
     'PawnInfoController',
+    'PawnSocialController',
     'PawnEditController',
     'PawnJobController',
     'PawnSpawnController',
