@@ -1,0 +1,15 @@
+info:
+  name: All Concepts
+  type: http
+  seq: 29
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/client/learning/all"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
