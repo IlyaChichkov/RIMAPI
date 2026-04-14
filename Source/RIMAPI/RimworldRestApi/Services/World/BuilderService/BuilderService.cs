@@ -233,5 +233,121 @@ namespace RIMAPI.Services
                 return ApiResult.Fail(ex.Message);
             }
         }
+
+        public ApiResult<CheckZoneResultDto> CheckZone(CheckZoneRequestDto request)
+        {
+            try
+            {
+                var map = MapHelper.GetMapByID(request.MapId);
+                if (map == null) return ApiResult<CheckZoneResultDto>.Fail($"Map {request.MapId} not found.");
+
+                if (request.PointA == null || request.PointB == null)
+                    return ApiResult<CheckZoneResultDto>.Fail("PointA and PointB are required.");
+
+                int minX = Mathf.Min(request.PointA.X, request.PointB.X);
+                int minZ = Mathf.Min(request.PointA.Z, request.PointB.Z);
+                int maxX = Mathf.Max(request.PointA.X, request.PointB.X);
+                int maxZ = Mathf.Max(request.PointA.Z, request.PointB.Z);
+
+                var issues = new CheckZoneIssuesDto();
+                HashSet<Thing> processedThings = new HashSet<Thing>();
+
+                CellRect rect = new CellRect(minX, minZ, (maxX - minX) + 1, (maxZ - minZ) + 1);
+
+                foreach (IntVec3 cell in rect)
+                {
+                    if (!cell.InBounds(map)) continue;
+
+                    // 1. Check Terrain (affordances)
+                    TerrainDef terrain = map.terrainGrid.TerrainAt(cell);
+                    if (terrain != null)
+                    {
+                        bool hasHeavyAffordance = terrain.affordances != null && 
+                            terrain.affordances.Contains(TerrainAffordanceDefOf.Heavy);
+                        if (!hasHeavyAffordance)
+                        {
+                            issues.Terrain.Add(new CheckZoneIssueDto
+                            {
+                                X = cell.x,
+                                Z = cell.z,
+                                DefName = terrain.defName,
+                                Label = terrain.label
+                            });
+                        }
+                    }
+
+                    // 2. Check Things (Ores and Buildings)
+                    List<Thing> things = cell.GetThingList(map);
+                    foreach (var thing in things)
+                    {
+                        if (processedThings.Contains(thing)) continue;
+
+                        // Check for mineable ores
+                        if (thing.def.mineable)
+                        {
+                            processedThings.Add(thing);
+                            issues.Ores.Add(new CheckZoneIssueDto
+                            {
+                                X = thing.Position.x,
+                                Z = thing.Position.z,
+                                DefName = thing.def.defName,
+                                Label = thing.def.label
+                            });
+                        }
+                        // Check for buildings
+                        else if (thing.def.category == ThingCategory.Building)
+                        {
+                            processedThings.Add(thing);
+                            issues.Buildings.Add(new CheckZoneIssueDto
+                            {
+                                X = thing.Position.x,
+                                Z = thing.Position.z,
+                                DefName = thing.def.defName,
+                                Label = thing.def.label
+                            });
+                        }
+                    }
+                }
+
+                // 3. Check Zones (Growing and Stockpile)
+                foreach (Zone zone in map.zoneManager.AllZones)
+                {
+                    if (zone is Zone_Growing || zone is Zone_Stockpile)
+                    {
+                        foreach (IntVec3 cell in zone.cells)
+                        {
+                            if (cell.x >= minX && cell.x <= maxX && cell.z >= minZ && cell.z <= maxZ)
+                            {
+                                issues.Zones.Add(new CheckZoneIssueDto
+                                {
+                                    X = cell.x,
+                                    Z = cell.z,
+                                    DefName = zone.GetType().Name,
+                                    Label = zone.label,
+                                    ZoneType = zone is Zone_Growing ? "Growing" : "Stockpile"
+                                });
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                bool canBuild = issues.Terrain.Count == 0 && 
+                                issues.Ores.Count == 0 && 
+                                issues.Buildings.Count == 0 && 
+                                issues.Zones.Count == 0;
+
+                return ApiResult<CheckZoneResultDto>.Ok(new CheckZoneResultDto
+                {
+                    CanBuild = canBuild,
+                    Issues = issues
+                });
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"CheckZone Error: {ex}");
+                return ApiResult<CheckZoneResultDto>.Fail(ex.Message);
+            }
+        }
     }
 }
