@@ -2,7 +2,7 @@
 
 ![Status](https://img.shields.io/badge/Status-In_Progress-blue.svg)
 ![RimWorld Version](https://img.shields.io/badge/RimWorld-v1.5+-blue.svg)
-![API Version](https://img.shields.io/badge/API-v0.1.0-green.svg)
+![API Version](https://img.shields.io/badge/API-v1-green.svg)
 ![Build](https://github.com/IlyaChichkov/RIMAPI/actions/workflows/release_build.yml/badge.svg)
 ![Release](https://img.shields.io/github/v/release/IlyaChichkov/RIMAPI)
 
