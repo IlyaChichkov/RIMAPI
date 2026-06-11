@@ -41,6 +41,16 @@ namespace RimworldRestApi.Controllers
             await context.SendJsonResponse(result);
         }
 
+        [Post("/api/v1/camera/follow/pawn")]
+        [EndpointMetadata("Jump/follow the camera to a pawn by id (cinematic capture).")]
+        public async Task JumpToPawn(HttpListenerContext context)
+        {
+            var pawnId = RequestParser.GetIntParameter(context, "pawn_id");
+
+            var result = _cameraService.JumpToPawn(pawnId);
+            await context.SendJsonResponse(result);
+        }
+
         [Post("/api/v1/camera/screenshot")]
         [EndpointMetadata("Capture a screenshot of the game view. Supports resizing and format changes.")]
         public async Task MakeScreenshot(HttpListenerContext context)

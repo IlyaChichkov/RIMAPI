@@ -134,6 +134,38 @@ namespace RIMAPI.Services
             }
             return ApiResult.Ok();
         }
+
+        public ApiResult JumpToPawn(int pawnId)
+        {
+            try
+            {
+                var thing = ThingIDFinder(pawnId);
+                if (thing == null)
+                    return ApiResult.Fail($"Pawn not found: {pawnId}");
+
+                // Same primitive the position endpoint uses — jump to the
+                // pawn's current cell on the active map.
+                Find.CameraDriver.JumpToCurrentMapLoc(thing.Position);
+            }
+            catch (Exception ex)
+            {
+                return ApiResult.Fail(ex.Message);
+            }
+            return ApiResult.Ok();
+        }
+
+        private static Verse.Thing ThingIDFinder(int thingId)
+        {
+            foreach (var map in Find.Maps)
+            {
+                foreach (var pawn in map.mapPawns.AllPawnsSpawned)
+                {
+                    if (pawn.thingIDNumber == thingId)
+                        return pawn;
+                }
+            }
+            return null;
+        }
         private static CameraScreenshotResponseDto CaptureScreenshotAsDto(CameraScreenshotRequestDto request)
         {
             request = request ?? new CameraScreenshotRequestDto();

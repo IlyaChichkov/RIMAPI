@@ -11,6 +11,7 @@ namespace RIMAPI.Services
     {
         ApiResult ChangeZoom(int zoom);
         ApiResult MoveToPosition(int x, int y);
+        ApiResult JumpToPawn(int pawnId);
         Task<ApiResult<CameraScreenshotResponseDto>> MakeScreenshotAsync(CameraScreenshotRequestDto request);
         ApiResult<CameraScreenshotResponseDto> MakeScreenshot(CameraScreenshotRequestDto request);
         ApiResult<string> TakeNativeScreenshot(NativeScreenshotRequestDto request);
