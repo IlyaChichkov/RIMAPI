@@ -1,0 +1,22 @@
+info:
+  name: Window Close
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/ui/window/close"
+  auth: inherit
+  body:
+    mode: json
+    json: |-
+      {
+        "window_types": ["Dialog_NamePlayerSettlement"],
+        "force_pause_only": false
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
