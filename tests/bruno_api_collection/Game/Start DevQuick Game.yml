@@ -1,7 +1,7 @@
 info:
   name: Start DevQuick Game
   type: http
-  seq: 18
+  seq: 16
 
 http:
   method: POST

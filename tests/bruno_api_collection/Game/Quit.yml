@@ -1,7 +1,7 @@
 info:
   name: Quit
   type: http
-  seq: 21
+  seq: 20
 
 http:
   method: POST
