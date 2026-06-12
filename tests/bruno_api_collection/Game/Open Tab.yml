@@ -1,7 +1,7 @@
 info:
   name: Open Tab
   type: http
-  seq: 10
+  seq: 8
 
 http:
   method: POST
