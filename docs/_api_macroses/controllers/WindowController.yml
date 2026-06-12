@@ -30,6 +30,80 @@ desc: The **Window Controller** manages in-game windows and dialogs.
     }
     ```
   method: POST
+/api/v1/ui/windows:
+  desc: |-
+    Returns a list of all currently open in-game windows,
+    along with whether each one force-pauses the game.
+    Useful for detecting blocking dialogs during unattended runs.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/ui/windows
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "window_type": "Dialog_NamePlayerSettlement",
+                "force_pause": true
+            },
+            {
+                "window_type": "MainTabWindow_Inspect",
+                "force_pause": false
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/ui/window/close:
+  desc: |-
+    Closes open in-game windows by type name. When `window_types` is omitted or empty
+    and `force_pause_only` is `true` (the default), every window that force-pauses the
+    game is closed — the typical use case for dismissing colony-name or debug-log popups
+    during unattended runs. Type matching is case-insensitive substring: `"Log"` matches
+    `EditWindow_Log`.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/window/close \
+    --header 'content-type: application/json' \
+    --data '{
+        "window_types": ["Dialog_NamePlayerSettlement"],
+        "force_pause_only": false
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "window_types": ["Dialog_NamePlayerSettlement"],
+        "force_pause_only": false
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "closed_count": 1,
+            "closed_windows": ["Dialog_NamePlayerSettlement"]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
 /api/v1/ui/dialog:
   desc: Displays a dialog window with a specified message and title.
   curl: |-
