@@ -128,36 +128,96 @@ desc: Этот контроллер обрабатывает общие игро
     }
     ```
   method: GET
-/api/v1/mods/info:
-  desc: Возвращает информацию об установленных модах.
+/api/v1/mods/get:
+  desc: Возвращает информацию об одном конкретном моде по его package_id или uid.
   curl: |-
-    **Example:**
+    **Пример:**
     ```bash
-    curl --request POST \
-    --url http://localhost:8765/api/v1/mods/info
+    curl --request GET \
+    --url http://localhost:8765/api/v1/mods/get?uid=RedEyeDev.RIMAPI
     ```
   request: ''
   response: |-
-    **Response:**
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "name": "RIMAPI",
+            "package_id": "RedEyeDev.RIMAPI",
+            "load_order": 3,
+            "author": "RedEyeDev",
+            "description": "...",
+            "url": "...",
+            "version": "1.9.0",
+            "supported_versions": ["1.5", "1.6"],
+            "root_dir": "..."
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "..."
+    }
+    ```
+  method: GET
+/api/v1/mods/info:
+  desc: Возвращает информацию об установленных модах. Можно отфильтровать по package_id, чтобы получить подробную информацию об одном моде.
+  curl: |-
+    **Пример (Все моды):**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/mods/info
+    ```
+    **Пример (Один мод):**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/mods/info?package_id=RedEyeDev.RIMAPI
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
     ```json
     {
         "success": true,
         "data": [
             {
-            "name": "Core",
-            "package_id": "ludeon.rimworld",
-            "load_order": 0
-            },
-            {
-            "name": "Royalty",
-            "package_id": "ludeon.rimworld.royalty",
-            "load_order": 1
-            },
-            {
-            "name": "Ideology",
-            "package_id": "ludeon.rimworld.ideology",
-            "load_order": 2
-            },
+            "name": "RIMAPI",
+            "package_id": "RedEyeDev.RIMAPI",
+            "load_order": 3,
+            "author": "RedEyeDev",
+            "description": "RIMAPI is a mod...",
+            "url": "https://...",
+            "version": "1.9.0",
+            "supported_versions": ["1.5", "1.6"],
+            "root_dir": "..."
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "..."
+    }
+    ```
+  method: GET
+/api/v1/mods/preview:
+  desc: Возвращает превью-изображение мода в виде строки, закодированной в base64.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/mods/preview?package_id=RedEyeDev.RIMAPI
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": "iVBORw0KGgoAAAANSUhEUgAA...",
+        "errors": [],
+        "warnings": [],
+        "timestamp": "..."
+    }
+    ```
+  method: GET
             {
             "name": "Biotech",
             "package_id": "ludeon.rimworld.biotech",
