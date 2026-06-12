@@ -1,6 +1,29 @@
 # Changelog
 ## [Unreleased]
 
+### Added
+- **New Endpoints (Pawn Social):** Added `PawnSocialController` with a full suite of social endpoints: `GET /api/v1/game/defs/interactions`, `GET /api/v1/pawns/interactions`, `GET /api/v1/pawns/interactions/log`, `GET /api/v1/pawns/opinions`, `GET /api/v1/pawns/relations`, `POST /api/v1/pawns/interactions/force`, `POST /api/v1/pawns/relations/add`, and `DELETE /api/v1/pawns/relations/remove`. *(by @Ilya)*
+- **New Endpoints (Learning / Tutorial):** Added `LearningController` exposing the in-game learning helper: `GET /api/v1/client/learning/defs`, `GET /api/v1/client/learning/all`, `GET /api/v1/client/learning/active`, `GET /api/v1/client/learning/concept`, and `POST /api/v1/client/learning/mark-learned`. *(by @Ilya)*
+- **New Endpoints (Camera):** Added `POST /api/v1/camera/screenshot` for async base64-encoded screenshot capture with dynamic resizing, `POST /api/v1/camera/screenshot/native` to save a high-quality screenshot directly to disk, and `POST /api/v1/camera/follow/pawn` to jump the camera to a pawn by ID. *(by @Ilya, @jkbennitt)*
+- **New Endpoints (UI):** Added `GET /api/v1/ui/alerts` to retrieve all active right-hand screen alerts, `GET /api/v1/ui/windows` to list open windows and their force-pause state, and `POST /api/v1/ui/window/close` to programmatically dismiss windows by type name. *(by @Ilya, @jkbennitt)*
+- **New Endpoints (Mod Management):** Added `GET /api/v1/mods/list`, `GET /api/v1/mods/info`, and `GET /api/v1/mods/preview` to query active mod metadata and retrieve mod preview images as base64. *(by @Ilya)*
+- **New Endpoint (Things):** Added `POST /api/v1/things/set-forbidden` to set the forbidden status on one or more things by ID or position. *(by @jkbennitt)*
+- **New Endpoint (Builder):** Added `POST /api/v1/builder/check-zone` to validate whether a zone can be placed at a given set of coordinates before committing to creation. *(by @Yuri)*
+- **New SSE Event:** Added `dialog_option_selected` event via `WindowsHook`, published whenever a player selects an option in a `Dialog_NodeTree` dialog, including the option label and dialog context. *(by @jkbennitt)*
+- **Core — GameThreadDispatcher:** Added a reusable `GameThreadDispatcher` utility for safely marshalling coroutine-based work onto the main Unity thread from async HTTP handlers, replacing scattered ad-hoc threading boilerplate. *(by @Ilya)*
+- **Settings Window:** Added git commit hash display to the mod settings window for easier build identification. *(by @Ilya)*
+
+### Changed
+- **DDD Architecture Refactor:** Controllers are now organized into domain-scoped folders (`Client/`, `Colony/`, `Pawns/`, `System/`, `World/`, `AI/`) aligning the file structure with the domain map in CLAUDE.md. *(by @Ilya)*
+- **Removed Threading Boilerplate:** Deleted redundant `GameThreadUtility` class; all callers migrated to the new `GameThreadDispatcher`. *(by @Ilya)*
+- **Documentation:** Restructured API reference into domain-based pages (`game.md`, `pawns.md`, `map.md`, `things.md`, `ui.md`, `system.md`) and added a compact LLM-oriented reference (`llms-compact.md`). *(by @Ilya)*
+- **Developer Tooling (Bruno):** Expanded the Bruno API collection with request configs for all new endpoints (social interactions, learning, camera, alerts, mod management, set-forbidden, check-zone). *(by @Ilya, @Yuri)*
+- **Developer Tooling (IDE):** Added `.editorconfig` and VS Code workspace settings (`settings.json`, `tasks.json`, `launch.json`) to enforce code standards across the project. *(by @Ilya)*
+
+### Fixed
+- **Growing Zone Clarity:** Growing zone creation now returns a specific error message explaining why it failed (cells already occupied by another zone vs. out-of-bounds) instead of a silent null result. Also accepts plant labels (e.g. `"rice"`) in addition to defNames (e.g. `"Plant_Rice"`). *(by @jkbennitt)*
+- **Camera Follow Map Scope:** Fixed `POST /api/v1/camera/follow/pawn` to restrict its pawn search to the current map only, preventing erroneous matches against pawns on the world map or other maps. *(by @Ilya)*
+
 ## v1.9.0
 
 ### Added
