@@ -48,6 +48,31 @@ desc: |-
     }
     ```
   method: POST
+/api/v1/camera/follow/pawn:
+  desc: |-
+    Jumps the camera to the position of a pawn identified by their numeric ID.
+    Useful for cinematic capture or tracking a specific colonist, animal, or enemy.
+  method: POST
+  tags:
+  - UI
+  - Camera
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/camera/follow/pawn?pawn_id=526'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+    "success": true,
+    "errors": [],
+    "warnings": [],
+    "timestamp": "2025-12-09T19:16:06.4839322Z"
+    }
+    ```
 /api/v1/stream/start:
   desc: |-
     Starts a live video stream of the game's current camera view.
