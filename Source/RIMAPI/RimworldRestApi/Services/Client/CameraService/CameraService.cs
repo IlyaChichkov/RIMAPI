@@ -139,13 +139,15 @@ namespace RIMAPI.Services
         {
             try
             {
-                var thing = ThingIDFinder(pawnId);
-                if (thing == null)
-                    return ApiResult.Fail($"Pawn not found: {pawnId}");
+                var map = Find.CurrentMap;
+                if (map == null)
+                    return ApiResult.Fail("No map is currently active.");
 
-                // Same primitive the position endpoint uses — jump to the
-                // pawn's current cell on the active map.
-                Find.CameraDriver.JumpToCurrentMapLoc(thing.Position);
+                var pawn = FindSpawnedPawn(map, pawnId);
+                if (pawn == null)
+                    return ApiResult.Fail($"Pawn {pawnId} not found on the current map.");
+
+                Find.CameraDriver.JumpToCurrentMapLoc(pawn.Position);
             }
             catch (Exception ex)
             {
@@ -154,15 +156,12 @@ namespace RIMAPI.Services
             return ApiResult.Ok();
         }
 
-        private static Verse.Thing ThingIDFinder(int thingId)
+        private static Pawn FindSpawnedPawn(Map map, int pawnId)
         {
-            foreach (var map in Find.Maps)
+            foreach (var pawn in map.mapPawns.AllPawnsSpawned)
             {
-                foreach (var pawn in map.mapPawns.AllPawnsSpawned)
-                {
-                    if (pawn.thingIDNumber == thingId)
-                        return pawn;
-                }
+                if (pawn.thingIDNumber == pawnId)
+                    return pawn;
             }
             return null;
         }
