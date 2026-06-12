@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Reflection;
+using HarmonyLib;
 using RIMAPI.Core;
 using UnityEngine;
 using Verse;
@@ -15,6 +16,18 @@ namespace RIMAPI
         /// Global access to the loaded mod settings.
         /// </summary>
         public static RIMAPI_Settings Settings;
+
+        private static readonly string _gitHash = ReadGitHash();
+
+        private static string ReadGitHash()
+        {
+            var attr = typeof(RIMAPI_Mod).Assembly
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            if (attr == null) return string.Empty;
+            var full = attr.InformationalVersion;
+            var plus = full.IndexOf('+');
+            return plus >= 0 ? full.Substring(plus + 1) : string.Empty;
+        }
 
         /// <summary>
         /// Global reference to the Server-Sent Events (SSE) service.
@@ -66,7 +79,7 @@ namespace RIMAPI
 
             // --- Version Information ---
             list.Label("RIMAPI.Version".Translate());
-            list.Label(Settings.version.ToString());
+            list.Label(_gitHash.Length > 0 ? $"{Settings.version} ({_gitHash})" : Settings.version);
 
             list.Label("RIMAPI.APIVersion".Translate());
             list.Label(Settings.apiVersion.ToString());

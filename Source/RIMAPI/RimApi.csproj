@@ -26,6 +26,18 @@
     <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
 
+  <!-- Embed git hash into AssemblyInformationalVersion as "1.9.0+<hash>" -->
+  <Target Name="SetSourceRevisionId" BeforeTargets="AddSourceRevisionToInformationalVersion">
+    <Exec Command="git rev-parse --short HEAD" ConsoleToMSBuild="true" IgnoreExitCode="true"
+          WorkingDirectory="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_GitRevisionRaw" />
+    </Exec>
+    <PropertyGroup>
+      <SourceRevisionId Condition="'$(_GitRevisionRaw.Trim())' != ''">$(_GitRevisionRaw.Trim())</SourceRevisionId>
+      <SourceRevisionId Condition="'$(_GitRevisionRaw.Trim())' == ''">unknown</SourceRevisionId>
+    </PropertyGroup>
+  </Target>
+
   <ItemGroup>
     <!-- RimWorld 1.5 dependencies -->
     <PackageReference
