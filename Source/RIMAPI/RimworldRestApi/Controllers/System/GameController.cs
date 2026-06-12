@@ -77,19 +77,45 @@ namespace RIMAPI.Controllers
             await context.SendJsonResponse(result);
         }
 
-        [Get("/api/v1/mods/info")]
-        [EndpointMetadata("Get list of active mods")]
+        [Get("/api/v1/mods/list")]
+        [EndpointMetadata("Get list of active mods or single mod info if package_id/uid is provided")]
         [ResponseExample(typeof(ApiResponse<List<ModInfoDto>>))]
         public async Task GetModsInfo(HttpListenerContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
-                "/api/v1/mods/info",
+                "/api/v1/mods/list",
                 dataFactory: () => Task.FromResult(_modService.GetModsInfo()),
                 expiration: TimeSpan.FromMinutes(1),
                 priority: CachePriority.Normal,
                 expirationType: CacheExpirationType.Absolute
             );
+        }
+
+        [Get("/api/v1/mods/info")]
+        [EndpointMetadata("Get single mod info by package_id or uid")]
+        [ResponseExample(typeof(ApiResponse<ModInfoDto>))]
+        public async Task GetModInfo(HttpListenerContext context)
+        {
+            string packageId = RequestParser.HasParameter(context, "package_id")
+                ? RequestParser.GetStringParameter(context, "package_id")
+                : RequestParser.GetStringParameter(context, "uid");
+
+            var result = _modService.GetModInfo(packageId);
+            await context.SendJsonResponse(result);
+        }
+
+        [Get("/api/v1/mods/preview")]
+        [EndpointMetadata("Get mod preview image as base64")]
+        [ResponseExample(typeof(ApiResponse<string>))]
+        public async Task GetModPreview(HttpListenerContext context)
+        {
+            string packageId = RequestParser.HasParameter(context, "package_id")
+                ? RequestParser.GetStringParameter(context, "package_id")
+                : RequestParser.GetStringParameter(context, "uid");
+
+            var result = _modService.GetModPreview(packageId);
+            await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/game/select-area")]
