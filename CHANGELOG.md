@@ -1,6 +1,8 @@
 # Changelog
 ## [Unreleased]
 
+## v1.10.0
+
 ### Added
 - **New Endpoints (Pawn Social):** Added `PawnSocialController` with a full suite of social endpoints: `GET /api/v1/game/defs/interactions`, `GET /api/v1/pawns/interactions`, `GET /api/v1/pawns/interactions/log`, `GET /api/v1/pawns/opinions`, `GET /api/v1/pawns/relations`, `POST /api/v1/pawns/interactions/force`, `POST /api/v1/pawns/relations/add`, and `DELETE /api/v1/pawns/relations/remove`. *(by @Ilya)*
 - **New Endpoints (Learning / Tutorial):** Added `LearningController` exposing the in-game learning helper: `GET /api/v1/client/learning/defs`, `GET /api/v1/client/learning/all`, `GET /api/v1/client/learning/active`, `GET /api/v1/client/learning/concept`, and `POST /api/v1/client/learning/mark-learned`. *(by @Ilya)*
