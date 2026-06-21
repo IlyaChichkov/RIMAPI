@@ -30,8 +30,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libcairo2-dev pkg-config python3-dev
-          # Added pyyaml to ensure the scripts have it available
-          pip install cairosvg pycairo mkdocs mkdocs-material mkdocs-mermaid2-plugin mkdocs-minify-plugin mkdocs-macros-plugin mkdocs-llmstxt mkdocs-static-i18n pyyaml
+          pip install cairosvg pycairo mkdocs mkdocs-material mkdocs-mermaid2-plugin mkdocs-minify-plugin mkdocs-macros-plugin mkdocs-llmstxt mkdocs-static-i18n pyyaml "ruamel.yaml"
 
       - name: Format, Fix, and Validate API Docs
         run: |
