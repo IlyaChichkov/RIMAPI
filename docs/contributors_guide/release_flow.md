@@ -38,7 +38,7 @@ RimAPI uses a Python script to enforce a "Single Source of Truth" for versioning
 From the root directory of the repository, run the bump script with your new version number:
 
 ```bash
-python bump_version.py 1.8.3
+python scripts/bump_version.py 1.8.3
 ```
 
 What this script does automatically:
