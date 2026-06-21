@@ -218,28 +218,6 @@ desc: Этот контроллер обрабатывает общие игро
     }
     ```
   method: GET
-            {
-            "name": "Biotech",
-            "package_id": "ludeon.rimworld.biotech",
-            "load_order": 3
-            },
-            {
-            "name": "Anomaly",
-            "package_id": "ludeon.rimworld.anomaly",
-            "load_order": 4
-            },
-            {
-            "name": "RIMAPI",
-            "package_id": "redeyedev.rimapi",
-            "load_order": 5
-            }
-        ],
-        "errors": [],
-        "warnings": [],
-        "timestamp": "2025-12-10T18:53:40.5041431Z"
-    }
-    ```
-  method: GET
 /api/v1/mods/configure:
   desc: Настраивает список активных модов и порядок их загрузки. Передайте массив ID пакетов в том порядке, в котором вы хотите их загрузить. Core (`ludeon.rimworld`) будет автоматически добавлен в начало, если он отсутствует. Установите `restart_game` в значение `true`, чтобы немедленно перезагрузить RimWorld и применить изменения.
   curl: |-
