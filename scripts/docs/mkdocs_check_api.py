@@ -4,7 +4,10 @@ import sys
 import yaml
 
 # Configuration paths
-CS_DIR = os.path.join("Source", "RIMAPI", "RimworldRestApi", "BaseControllers")
+CS_DIRS = [
+    os.path.join("Source", "RIMAPI", "RimworldRestApi", "BaseControllers"),
+    os.path.join("Source", "RIMAPI", "RimworldRestApi", "Controllers"),
+]
 YAML_DIR = os.path.join("docs", "_api_macroses", "controllers")
 
 # Regex to find C# route attributes like [Post("/api/v1/builder/copy")]
@@ -15,25 +18,27 @@ ROUTE_REGEX = re.compile(
 
 
 def get_csharp_routes():
-    """Scans all C# files and returns a dictionary of controllers and their routes."""
+    """Scans all C# files recursively and returns a dictionary of controllers and their routes."""
     csharp_data = {}
-    if not os.path.exists(CS_DIR):
-        print(f"❌ Error: C# directory not found at {CS_DIR}")
-        return csharp_data
+    for cs_dir in CS_DIRS:
+        if not os.path.exists(cs_dir):
+            print(f"❌ Error: C# directory not found at {cs_dir}")
+            continue
 
-    for filename in os.listdir(CS_DIR):
-        if filename.endswith(".cs"):
-            controller_name = filename[:-3]  # Remove .cs
-            csharp_data[controller_name] = {}
+        for dirpath, _, filenames in os.walk(cs_dir):
+            for filename in filenames:
+                if not filename.endswith(".cs"):
+                    continue
+                controller_name = filename[:-3]  # Remove .cs
+                filepath = os.path.join(dirpath, filename)
+                with open(filepath, "r", encoding="utf-8") as f:
+                    content = f.read()
 
-            filepath = os.path.join(CS_DIR, filename)
-            with open(filepath, "r", encoding="utf-8") as f:
-                content = f.read()
-
-            matches = ROUTE_REGEX.findall(content)
-            for method, path in matches:
-                # Normalize method to uppercase (POST, GET)
-                csharp_data[controller_name][path] = method.upper()
+                matches = ROUTE_REGEX.findall(content)
+                if matches:
+                    routes = csharp_data.setdefault(controller_name, {})
+                    for method, path in matches:
+                        routes[path] = method.upper()
 
     return csharp_data
 

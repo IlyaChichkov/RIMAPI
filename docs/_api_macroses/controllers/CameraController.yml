@@ -73,7 +73,81 @@ desc: |-
     "timestamp": "2025-12-09T19:16:06.4839322Z"
     }
     ```
-/api/v1/stream/start:
+/api/v1/camera/screenshot:
+  desc: |-
+    Captures the current game view as a base64-encoded JPEG. Supports optional
+    width/height resizing — omit both to return the native resolution.
+  method: POST
+  tags:
+  - UI
+  - Camera
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/camera/screenshot \
+    --header 'content-type: application/json' \
+    --data '{"width": 1280, "height": 720}'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "width": 1280,
+        "height": 720
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "image": "/9j/4AAQSkZJRgAB...",
+            "width": 1280,
+            "height": 720
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-09T19:16:06.4839322Z"
+    }
+    ```
+/api/v1/camera/screenshot/native:
+  desc: |-
+    Moves the camera to the specified position and saves a full-quality screenshot
+    directly to the host machine's hard drive using Unity's built-in capture.
+  method: POST
+  tags:
+  - UI
+  - Camera
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/camera/screenshot/native \
+    --header 'content-type: application/json' \
+    --data '{"x": 100, "z": 100, "path": "C:/screenshots/colony.png"}'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "x": 100,
+        "z": 100,
+        "path": "C:/screenshots/colony.png"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-09T19:16:06.4839322Z"
+    }
+    ```
+/api/v1/camera/stream/start:
   desc: |-
     Starts a live video stream of the game's current camera view.
     This endpoint initiates a real-time broadcast of the rendered gameplay,
@@ -82,7 +156,7 @@ desc: |-
     **Example:**
     ```bash
     curl --request POST \
-    --url 'http://localhost:8765/api/v1/stream/start'
+    --url 'http://localhost:8765/api/v1/camera/stream/start'
     ```
   request: ''
   response: |-
@@ -96,13 +170,13 @@ desc: |-
     }
     ```
   method: POST
-/api/v1/stream/stop:
+/api/v1/camera/stream/stop:
   desc: Gracefully stops the active live video stream of the game's camera view.
   curl: |-
     **Example:**
     ```bash
     curl --request POST \
-    --url 'http://localhost:8765/api/v1/stream/stop'
+    --url 'http://localhost:8765/api/v1/camera/stream/stop'
     ```
   request: ''
   response: |-
@@ -116,15 +190,13 @@ desc: |-
     }
     ```
   method: POST
-/api/v1/stream/setup:
-  desc: |-
-    Configures the parameters and settings for the live video stream of
-    the game's camera view before starting it.
+/api/v1/camera/stream/setup:
+  desc: Configures the parameters and settings for the live video stream before starting it.
   curl: |-
     **Example:**
     ```bash
     curl --request POST \
-    --url 'http://localhost:8765/api/v1/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30'
+    --url 'http://localhost:8765/api/v1/camera/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30'
     ```
   request: |-
     **Request:**
@@ -149,34 +221,34 @@ desc: |-
     }
     ```
   method: POST
-/api/v1/stream/status:
-  desc: Gracefully stops the active live video stream of the game's camera view.
+/api/v1/camera/stream/status:
+  desc: Returns the current status and configuration of the live camera stream.
   curl: |-
     **Example:**
     ```bash
-    curl --request POST \
-    --url 'http://localhost:8765/api/v1/stream/status'
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/camera/stream/status'
     ```
   request: ''
   response: |-
     **Response:**
     ```json
     {
-    "success": true,
-    "data": {
-        "is_streaming": false,
-        "config": {
-        "port": 5007,
-        "address": "127.0.0.1",
-        "frame_width": 1280,
-        "frame_height": 720,
-        "target_fps": 15,
-        "jpeg_quality": 50
-        }
-    },
-    "errors": [],
-    "warnings": [],
-    "timestamp": "2025-12-09T19:31:56.8297247Z"
+        "success": true,
+        "data": {
+            "is_streaming": false,
+            "config": {
+                "port": 5007,
+                "address": "127.0.0.1",
+                "frame_width": 1280,
+                "frame_height": 720,
+                "target_fps": 15,
+                "jpeg_quality": 50
+            }
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-09T19:31:56.8297247Z"
     }
     ```
   method: GET
