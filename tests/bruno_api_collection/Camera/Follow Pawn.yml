@@ -1,0 +1,19 @@
+info:
+  name: Follow Pawn
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/camera/follow/pawn?pawn_id=526"
+  params:
+    - name: pawn_id
+      value: "526"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

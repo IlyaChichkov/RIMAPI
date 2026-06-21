@@ -1,7 +1,7 @@
 info:
   name: Letter
   type: http
-  seq: 15
+  seq: 13
 
 http:
   method: POST

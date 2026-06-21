@@ -28,4 +28,28 @@ namespace RIMAPI.Models
         public string ActionId { get; set; }
         public bool ResolveTree { get; set; } = true; // Close window after click
     }
+
+    // Close one or more open windows by type name.
+    // WindowTypes is matched case-insensitively against each open window's
+    // runtime type name (e.g. "Dialog_NamePlayerSettlement", "EditWindow_Log");
+    // a substring is enough so "Log" closes EditWindow_Log. When omitted/empty,
+    // ForcePauseOnly (default true) closes every window that force-pauses the
+    // game — the unattended-benchmark nuisance case.
+    public class WindowCloseRequestDto
+    {
+        public List<string> WindowTypes { get; set; }
+        public bool ForcePauseOnly { get; set; } = true;
+    }
+
+    public class WindowCloseResultDto
+    {
+        public int ClosedCount { get; set; }
+        public List<string> ClosedWindows { get; set; } = new List<string>();
+    }
+
+    public class OpenWindowDto
+    {
+        public string WindowType { get; set; }
+        public bool ForcePause { get; set; }
+    }
 }

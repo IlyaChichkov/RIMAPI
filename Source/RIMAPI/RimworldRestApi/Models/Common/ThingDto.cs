@@ -60,6 +60,13 @@ namespace RIMAPI.Models
         }
     }
 
+    public class SetForbiddenRequestDto
+    {
+        public List<int> ThingIds { get; set; }
+        public int MapId { get; set; }
+        public bool Forbidden { get; set; }
+    }
+
     public class ThingSourcesDto
     {
         public string DefName { get; set; }

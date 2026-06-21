@@ -1,0 +1,22 @@
+info:
+  name: Mark Concept
+  type: http
+  seq: 27
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/client/learning/mark-learned"
+  body:
+    type: json
+    data: |-
+      {
+        "def_name": "Mining",
+        "is_completed": false
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

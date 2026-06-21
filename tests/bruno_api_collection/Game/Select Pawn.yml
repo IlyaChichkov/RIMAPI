@@ -1,7 +1,7 @@
 info:
   name: Select Pawn
   type: http
-  seq: 8
+  seq: 6
 
 http:
   method: POST

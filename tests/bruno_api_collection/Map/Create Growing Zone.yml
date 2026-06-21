@@ -10,13 +10,10 @@ http:
     type: json
     data: |-
       {
-        "MapId": 0,
-        "PlantDef": "PlantCorn",
-        "Cells": [
-          {"X": 10, "Z": 20},
-          {"X": 11, "Z": 20},
-          {"X": 12, "Z": 20}
-        ]
+        "map_id": 0,
+        "plant_def": "Plant_Corn",
+        "point_a": {"x": 50, "y": 0, "z": 50},
+        "point_b": {"x": 54, "y": 0, "z": 54}
       }
   auth: inherit
 

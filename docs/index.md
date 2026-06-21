@@ -8,6 +8,7 @@ description: RIMAPI is a powerful mod that adds a REST API server to RimWorld.
 ![RIMAPI Logo](https://raw.githubusercontent.com/IlyaChichkov/RIMAPI/8cdebce963f69c2aeeb50676ab4b994309a1835b/About/preview.png)
 
 [Getting Started](quick_start.md){ .md-button .md-button--primary }
+[Capabilities Matrix](capabilities/capabilities.md){ .md-button }
 [Contribute](contributors_guide/contribute.md){ .md-button }
 
 ## Overview
@@ -24,5 +25,6 @@ RIMAPI is a powerful mod that adds a REST API server to RimWorld, allowing you t
 
 ### Next Steps
 
-- [API Documentation](https://ilyachichkov.github.io/RIMAPI/api.html)
-- [LLM Format](https://ilyachichkov.github.io/RIMAPI/llms-full.txt)
+- [API Reference Overview](api/index.md)
+- [API Conventions](developer_guide/api_conventions.md)
+- [LLM Format (llms.txt)](llms-full.txt)

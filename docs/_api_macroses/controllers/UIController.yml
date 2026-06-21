@@ -1,0 +1,193 @@
+title: '### :material-window-maximize: UI Controller'
+desc: The **UI Controller** manages in-game windows, dialogs, and on-screen alerts.
+/api/v1/ui/alerts:
+  desc: |-
+    Retrieves a list of all currently active right-hand screen alerts
+    (e.g. 'Need Defenses', 'Major Break Risk'). Useful for monitoring colony
+    status from an external tool without polling individual pawn/building endpoints.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/ui/alerts
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "label": "Major Break Risk",
+                "explanation": "Colonist Emilia has a mood of 22%."
+            },
+            {
+                "label": "Need Defenses",
+                "explanation": "Your colony has no turrets or traps."
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/ui/message:
+  desc: Displays a short message on the screen, similar to in-game notifications.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/message \
+    --header 'content-type: application/json' \
+    --data '{
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates."
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates."
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/ui/dialog:
+  desc: Displays a dialog window with a specified message and title.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/dialog \
+    --header 'content-type: application/json' \
+    --data '{
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+        "options": [
+            {
+                "label": "Offer Safety (Triggers Raid)",
+                "action_id": "accept_refugee",
+                "resolve_tree": true
+            },
+            {
+                "label": "Turn them away",
+                "action_id": "reject_refugee",
+                "resolve_tree": true
+            }
+        ]
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+        "options": [
+            {
+                "label": "Offer Safety (Triggers Raid)",
+                "action_id": "accept_refugee",
+                "resolve_tree": true
+            },
+            {
+                "label": "Turn them away",
+                "action_id": "reject_refugee",
+                "resolve_tree": true
+            }
+        ]
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/ui/windows:
+  desc: |-
+    Returns a list of all currently open in-game windows,
+    along with whether each one force-pauses the game.
+    Useful for detecting blocking dialogs during unattended runs.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/ui/windows
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "window_type": "Dialog_NamePlayerSettlement",
+                "force_pause": true
+            },
+            {
+                "window_type": "MainTabWindow_Inspect",
+                "force_pause": false
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/ui/window/close:
+  desc: |-
+    Closes open in-game windows by type name. When `window_types` is omitted or empty
+    and `force_pause_only` is `true` (the default), every window that force-pauses the
+    game is closed — the typical use case for dismissing colony-name or debug-log popups
+    during unattended runs. Type matching is case-insensitive substring: `"Log"` matches
+    `EditWindow_Log`.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/window/close \
+    --header 'content-type: application/json' \
+    --data '{
+        "window_types": ["Dialog_NamePlayerSettlement"],
+        "force_pause_only": false
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "window_types": ["Dialog_NamePlayerSettlement"],
+        "force_pause_only": false
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "closed_count": 1,
+            "closed_windows": ["Dialog_NamePlayerSettlement"]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST

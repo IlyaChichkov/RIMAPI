@@ -1,0 +1,13 @@
+Domain: Colony
+
+Description: 
+Manages abstract game mechanics, colony-wide systems, and base management tasks.
+
+Controllers:
+- BillController: Manages crafting recipes and production rules on workbenches.
+- BuilderController: Handles blueprint placement and construction logic.
+- ColonistsWorkController: Manages the work tab, priorities, and allowed areas.
+- GameEventsController: Triggers or monitors incidents, raids, drop pods, and quests (Storyteller interactions).
+- OrderController: Issues player designations (e.g., mine, chop wood, harvest, haul).
+- ResearchController: Manages the research tree, current projects, and technological unlocks.
+- TradeController: Handles orbital trade ships, caravans, and economic exchanges.

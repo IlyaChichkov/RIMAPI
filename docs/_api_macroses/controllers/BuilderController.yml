@@ -93,6 +93,49 @@ desc: |-
     }
     ```
   method: POST
+/api/v1/builder/check-zone:
+  desc: |-
+    Validates whether a zone can be created at the given set of cells without
+    committing to the creation. Returns which cells are free, which are already
+    occupied by another zone, and which are out of map bounds.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/builder/check-zone \
+    --header 'content-type: application/json' \
+    --data '{
+        "map_id": 0,
+        "point_a": {"x": 50, "y": 0, "z": 50},
+        "point_b": {"x": 55, "y": 0, "z": 55}
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "map_id": 0,
+        "point_a": {"x": 50, "y": 0, "z": 50},
+        "point_b": {"x": 55, "y": 0, "z": 55}
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "free_cells": 30,
+            "occupied_cells": 6,
+            "out_of_bounds_cells": 0,
+            "can_create": true
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-31T12:18:40.2019606Z"
+    }
+    ```
+  method: POST
 /api/v1/builder/blueprint:
   desc: |-
     Places blueprints for a copied area, allowing colonists to construct

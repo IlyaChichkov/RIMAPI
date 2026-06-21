@@ -1,0 +1,11 @@
+Domain: Pawns
+
+Description: 
+Handles all interactions, mechanics, and data related to individual entities (colonists, animals, enemies).
+
+Controllers:
+- PawnController: Core mechanics including health, needs, thoughts, and inventory management.
+- PawnEditController: Modifies pawn traits, skills, appearance, and backstories.
+- PawnInfoController: Retrieves detailed readouts, statistics, and records for specific pawns.
+- PawnJobController: Monitors and interrupts the current actions/jobs a pawn is performing.
+- PawnSpawnController: Handles generating and safely placing new pawns into the world.

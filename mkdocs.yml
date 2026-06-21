@@ -36,7 +36,17 @@ extra_css:
 nav:
   - Home: index.md
   - Quick Start: quick_start.md
-  - API Reference: api.md
+  - API Reference: 
+      - Overview: api/index.md
+      - Map & Environment: api/map.md
+      - Pawns & AI: api/pawns.md
+      - Items & Economy: api/things.md
+      - Game State & Mechanics: api/game.md
+      - UI & Camera: api/ui.md
+      - System & Dev Tools: api/system.md
+      - Complete List: api/all.md
+  - Capabilities:
+    - Overview: capabilities/capabilities.md
   - Developers:
     - API Convension: developer_guide/api_conventions.md
     - Create extension: developer_guide/creating_extensions.md
@@ -91,12 +101,12 @@ plugins:
       full_output: llms-full.txt
       sections:
         API documentation:
-        - index.md
-        - api.md
+          - index.md
+          - api/llms-compact.md
         Developers documentation:
-        - developer_guide/*.md
+          - developer_guide/*.md
         Contributors documentation:
-        - contributors_guide/*.md
+          - contributors_guide/*.md
 
 markdown_extensions:
   - pymdownx.details

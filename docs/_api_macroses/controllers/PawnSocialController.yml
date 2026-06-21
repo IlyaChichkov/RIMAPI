@@ -1,0 +1,245 @@
+title: '### :material-account-group: Pawn Social Controller'
+desc: |-
+  The **Pawn Social Controller** manages interpersonal relationships, interactions, and opinions between pawns.
+  It allows for inspecting social logs, managing familial bonds, and forcing social interactions.
+
+/api/v1/game/defs/interactions:
+  desc: Retrieves a list of all valid InteractionDef names in the game (e.g., Chitchat, Insult, KindWords).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/game/defs/interactions
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "def_name": "Chitchat",
+                "label": "chitchat",
+                "description": "Casual conversation."
+            },
+            {
+                "def_name": "Insult",
+                "label": "insult",
+                "description": "A direct insult."
+            }
+        ]
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/interactions:
+  desc: Gets the real-time interaction readiness of a specific pawn, including the current cooldown status.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawns/interactions?pawn_id=779'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "can_interact": true,
+            "last_interaction_ticks": 45000,
+            "cooldown_ticks": 0,
+            "cooldown_days": 0.0
+        }
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/interactions/log:
+  desc: Retrieves the recent interaction history for a specific pawn. Supports an optional `limit` parameter (defaults to 50).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawns/interactions/log?pawn_id=779&limit=5'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "pawn_id": 779,
+            "interactions": [
+                {
+                    "initiator_id": 779,
+                    "initiator_name": "Lumi",
+                    "recipient_id": 780,
+                    "recipient_name": "Blake",
+                    "interaction_def_name": "Chitchat",
+                    "interaction_label": "chitchat",
+                    "text": "Lumi and Blake talked about meteorology.",
+                    "ticks": 152000,
+                    "time_ago": "2 hours ago"
+                }
+            ],
+            "count": 1
+        }
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/relations:
+  desc: Retrieves all established familial and romantic relationships for this pawn (e.g., Parent, Child, Spouse, Lover).
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawns/relations?pawn_id=779'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "pawn_id": 779,
+            "relations": [
+                {
+                    "other_pawn_id": 780,
+                    "other_pawn_name": "Blake",
+                    "relation_def_name": "Spouse",
+                    "relation_label": "husband"
+                }
+            ]
+        }
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/opinions:
+  desc: Retrieves a list of this pawn's numerical opinion toward every other colonist, including a breakdown of thoughts and memories contributing to the score.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/pawns/opinions?pawn_id=779'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "target_pawn_id": 780,
+                "target_pawn_name": "Blake",
+                "opinion": 45,
+                "breakdown": [
+                    {
+                        "thought_def_name": "Pretty",
+                        "label": "pretty",
+                        "score": 20.0
+                    }
+                ]
+            }
+        ]
+    }
+    ```
+  method: GET
+
+/api/v1/pawns/interactions/force:
+  desc: Forces a specific social interaction to occur immediately between two pawns.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawns/interactions/force \
+    --header 'content-type: application/json' \
+    --data '{
+        "initiator_id": 779,
+        "recipient_id": 780,
+        "interaction_def_name": "Chitchat"
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "initiator_id": 779,
+        "recipient_id": 780,
+        "interaction_def_name": "Chitchat"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-04-14T12:00:00.000Z"
+    }
+    ```
+  method: POST
+
+/api/v1/pawns/relations/add:
+  desc: Instantly creates a permanent social bond (relation) between two pawns.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/pawns/relations/add \
+    --header 'content-type: application/json' \
+    --data '{
+        "pawn1_id": 779,
+        "pawn2_id": 780,
+        "relation_def_name": "Lover"
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "pawn1_id": 779,
+        "pawn2_id": 780,
+        "relation_def_name": "Lover"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-04-14T12:00:00.000Z"
+    }
+    ```
+  method: POST
+
+/api/v1/pawns/relations/remove:
+  desc: Severs a specific social bond between two pawns.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request DELETE \
+    --url 'http://localhost:8765/api/v1/pawns/relations/remove?pawn1_id=779&pawn2_id=780&relation_def_name=Lover'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-04-14T12:00:00.000Z"
+    }
+    ```
+  method: DELETE

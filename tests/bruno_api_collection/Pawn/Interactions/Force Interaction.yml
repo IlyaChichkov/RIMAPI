@@ -1,0 +1,23 @@
+info:
+  name: Force Interaction
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawns/interactions/force"
+  body:
+    mode: json
+    json: |-
+      {
+        "initiator_id": 779,
+        "recipient_id": 780,
+        "interaction_def_name": "Chitchat"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

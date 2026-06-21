@@ -1,0 +1,23 @@
+info:
+  name: Add Relation
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/pawns/relations/add"
+  body:
+    mode: json
+    json: |-
+      {
+        "pawn1_id": 779,
+        "pawn2_id": 780,
+        "relation_def_name": "Lover"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

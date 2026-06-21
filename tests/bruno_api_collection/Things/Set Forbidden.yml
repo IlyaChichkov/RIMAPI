@@ -1,0 +1,23 @@
+info:
+  name: Set Forbidden
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseURL}}/api/v1/things/set-forbidden"
+  body:
+    type: json
+    data: |-
+      {
+        "thing_ids": [12345, 12346],
+        "map_id": 0,
+        "forbidden": false
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

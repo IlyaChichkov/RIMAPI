@@ -1,7 +1,7 @@
 info:
   name: Menu
   type: http
-  seq: 20
+  seq: 18
 
 http:
   method: POST

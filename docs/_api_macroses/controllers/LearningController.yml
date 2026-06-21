@@ -1,0 +1,127 @@
+title: '### :material-school: Learning Controller'
+desc: The **Learning Controller** exposes RimWorld's in-game tutorial/learning helper system, allowing external tools to query and manage concept progress.
+/api/v1/client/learning/defs:
+  desc: Returns a list of all `ConceptDef` names registered in the game, including mod-added concepts.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/client/learning/defs
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            "BuildingFire",
+            "Drafting",
+            "Forbidding"
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/client/learning/all:
+  desc: Returns all learning concepts along with whether each has been learned by the player.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/client/learning/all
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {"def_name": "BuildingFire", "learned": true},
+            {"def_name": "Drafting", "learned": false}
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/client/learning/active:
+  desc: Returns only the concepts currently active (displayed) in the learning helper UI.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/client/learning/active
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {"def_name": "Drafting", "learned": false}
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/client/learning/concept:
+  desc: Returns details for a single concept looked up by `def_name`.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/client/learning/concept?def_name=Drafting'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "def_name": "Drafting",
+            "label": "Drafting colonists",
+            "learned": false
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/client/learning/mark-learned:
+  desc: Marks a concept as learned, dismissing it from the in-game learning helper UI.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/client/learning/mark-learned \
+    --header 'content-type: application/json' \
+    --data '{"def_name": "Drafting"}'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "def_name": "Drafting"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST

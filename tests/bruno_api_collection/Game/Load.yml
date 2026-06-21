@@ -1,7 +1,7 @@
 info:
   name: Load
   type: http
-  seq: 17
+  seq: 15
 
 http:
   method: POST

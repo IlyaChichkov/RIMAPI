@@ -1,0 +1,9 @@
+Domain: World
+
+Description: 
+Handles the physical environments, grid systems, cell and planet-level map interactions.
+
+Controllers:
+- FactionController: Manages relationships, alliances, hostility, and faction-level data.
+- GlobalMapController: Interacts with the planet map (WorldLayer), world tiles, and traveling caravans.
+- MapController: Manages the local play area, weather, temperature, terrain grids, and cell data.

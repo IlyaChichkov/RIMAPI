@@ -21,7 +21,7 @@ desc: |-
         You can fetch a complete, up-to-date list of all available job definitions in your current 
         game (including those added by mods) by making a `GET` request to the `/api/v1/def/all` 
         endpoint and inspecting the `job_defs` array.
-    
+
     !!! note "Current Job Limitations"
 
         Under the hood, RimWorld jobs can require up to three targets (`targetA`, `targetB`, `targetC`).

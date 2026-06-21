@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RIMAPI.Models;
@@ -171,27 +172,78 @@ namespace RIMAPI.Helpers
             return zoneDto;
         }
 
-        public static GrowingZoneDto CreateGrowingZone(
-            Map map, string plantDefName, List<IntVec3> cells)
+        /// <summary>
+        /// Resolve a plant ThingDef from either its defName ("Plant_Rice") or a
+        /// looser alias (label "rice", or the bare crop name "Rice"). The agents
+        /// that drive this API only reliably know the defName, but accepting the
+        /// label as a fallback makes the endpoint forgiving and matches operator
+        /// expectations.
+        /// </summary>
+        public static ThingDef ResolvePlantDef(string name)
         {
-            var plantDef = DefDatabase<ThingDef>.GetNamedSilentFail(plantDefName);
-            if (plantDef == null || plantDef.plant == null)
+            if (string.IsNullOrWhiteSpace(name))
                 return null;
+
+            var def = DefDatabase<ThingDef>.GetNamedSilentFail(name);
+            if (def != null && def.plant != null)
+                return def;
+
+            return DefDatabase<ThingDef>.AllDefsListForReading.FirstOrDefault(d =>
+                d.plant != null &&
+                (string.Equals(d.label, name, StringComparison.OrdinalIgnoreCase) ||
+                 string.Equals(d.defName, "Plant_" + name, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>
+        /// Create a growing zone. On failure, <paramref name="error"/> carries a
+        /// SPECIFIC reason — historically this returned a bare null that the
+        /// caller blamed on the plant def, even when the real cause was that
+        /// every requested cell already belonged to another zone (the common
+        /// case when an agent re-issues a growing zone over an existing one).
+        /// </summary>
+        public static GrowingZoneDto CreateGrowingZone(
+            Map map, string plantDefName, List<IntVec3> cells, out string error)
+        {
+            error = null;
+
+            var plantDef = ResolvePlantDef(plantDefName);
+            if (plantDef == null || plantDef.plant == null)
+            {
+                error = $"Invalid plant definition: {plantDefName}";
+                return null;
+            }
 
             var zone = new Zone_Growing(map.zoneManager);
             map.zoneManager.RegisterZone(zone);
+
+            int requested = cells.Count;
+            int skippedOutOfBounds = 0;
+            int skippedOccupied = 0;
             foreach (var cell in cells)
             {
-                if (cell.InBounds(map) && map.zoneManager.ZoneAt(cell) == null)
+                if (!cell.InBounds(map))
                 {
-                    zone.AddCell(cell);
+                    skippedOutOfBounds++;
+                    continue;
                 }
+                if (map.zoneManager.ZoneAt(cell) != null)
+                {
+                    skippedOccupied++;
+                    continue;
+                }
+                zone.AddCell(cell);
             }
 
-            // No valid cells added — remove the empty zone and report failure
+            // No valid cells added — remove the empty zone and report WHY.
             if (zone.CellCount == 0)
             {
                 zone.Delete();
+                error =
+                    $"No free cells in the requested {requested}-cell rectangle " +
+                    $"({skippedOccupied} already belong to another zone, " +
+                    $"{skippedOutOfBounds} out of bounds). " +
+                    $"The area likely overlaps an existing zone — a zone for " +
+                    $"'{plantDef.defName}' may already exist here.";
                 return null;
             }
 

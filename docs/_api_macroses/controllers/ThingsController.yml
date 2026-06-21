@@ -321,3 +321,47 @@ desc: |-
         "timestamp": "2025-12-10T19:53:16.733319Z"
     }
     ```
+/api/v1/things/set-forbidden:
+  desc: Toggle the forbidden status on one or more things by ID. Useful for unforbidding starting items in a new colony or managing item access for colonists.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/things/set-forbidden \
+    --header 'content-type: application/json' \
+    --data '{
+        "thing_ids": [12345, 12346, 12347],
+        "map_id": 0,
+        "forbidden": false
+    }'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "thing_ids": [12345, 12346, 12347],
+        "map_id": 0,
+        "forbidden": false
+    }
+    ```
+  response: |-
+    **Response (all updated):**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2026-03-31T03:45:51.148Z"
+    }
+    ```
+
+    **Response (partial — some things not found):**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": ["Thing 99999 not found"],
+        "timestamp": "2026-03-31T03:45:51.148Z"
+    }
+    ```
+  method: POST

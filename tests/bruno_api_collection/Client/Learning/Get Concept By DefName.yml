@@ -1,0 +1,19 @@
+info:
+  name: Get Concept By DefName
+  type: http
+  seq: 30
+
+http:
+  method: GET
+  url: "{{baseURL}}/api/v1/client/learning/concept?def_name=Capturing"
+  params:
+    - name: def_name
+      value: Capturing
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

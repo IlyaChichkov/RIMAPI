@@ -4,8 +4,8 @@ using System;
 using RIMAPI.Models;
 using RimWorld;
 using UnityEngine;
-using RimWorld.Planet;
 using Verse;
+using RimWorld.Planet;
 
 namespace RIMAPI.Helpers
 {

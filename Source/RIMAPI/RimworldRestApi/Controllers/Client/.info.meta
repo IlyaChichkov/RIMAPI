@@ -1,0 +1,13 @@
+Domain: Client
+
+Description: 
+Handles all interactions with the local player's visual perspective, user interface, and engine rendering.
+
+Controllers:
+- CameraController: Manipulates the viewport, zoom levels, and captures screenshots.
+- ImagesController: Extracts game textures, materials, and renders visual assets.
+- OverlayController: Manages drawing custom graphics, labels, and lines on top of the game world.
+- UIController: Reads game alerts, messages, active windows, and menus.
+
+Dependencies:
+Requires execution on the main Unity thread (GameThreadUtility) for all rendering and IMGUI-layer calls.

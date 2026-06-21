@@ -6,7 +6,7 @@
     <RootNamespace>RIMAPI</RootNamespace>
     <AssemblyName>RIMAPI</AssemblyName>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Version>1.9.0</Version>
+    <Version>1.10.0</Version>
   </PropertyGroup>
 
   <!-- Conditional properties for RimWorld 1.5 -->
@@ -25,6 +25,18 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
+
+  <!-- Embed git hash into AssemblyInformationalVersion as "1.9.0+<hash>" -->
+  <Target Name="SetSourceRevisionId" BeforeTargets="AddSourceRevisionToInformationalVersion">
+    <Exec Command="git rev-parse --short HEAD" ConsoleToMSBuild="true" IgnoreExitCode="true"
+          WorkingDirectory="$(MSBuildProjectDirectory)">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_GitRevisionRaw" />
+    </Exec>
+    <PropertyGroup>
+      <SourceRevisionId Condition="'$(_GitRevisionRaw.Trim())' != ''">$(_GitRevisionRaw.Trim())</SourceRevisionId>
+      <SourceRevisionId Condition="'$(_GitRevisionRaw.Trim())' == ''">unknown</SourceRevisionId>
+    </PropertyGroup>
+  </Target>
 
   <ItemGroup>
     <!-- RimWorld 1.5 dependencies -->

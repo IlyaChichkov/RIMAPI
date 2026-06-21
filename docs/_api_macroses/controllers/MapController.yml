@@ -1173,3 +1173,49 @@ desc: |-
     ```
   method: POST
   csharp_method: CreateGrowingZone
+/api/v1/datetime:
+  desc: Retrieves the current in-game date and time according to the RimWorld world calendar.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/datetime
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "datetime": "12th of Aprimay, 5500, 17h"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:05:35.3244951Z"
+    }
+    ```
+  method: GET
+/api/v1/datetime/tile:
+  desc: Retrieves the in-game date and time adjusted for a specific world tile's season offset.
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/datetime/tile?tile=42'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "datetime": "12th of Aprimay, 5500, 17h"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:05:35.3244951Z"
+    }
+    ```
+  method: GET

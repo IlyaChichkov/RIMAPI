@@ -1,0 +1,18 @@
+root = true
+
+[*.cs]
+# Core formatting rules
+indent_style = space
+indent_size = 4
+
+# --- LINTING RULES ---
+
+# IDE0005: Remove unnecessary using directives
+# Options: suggestion (dots), warning (yellow squiggly), error (red squiggly/build fails)
+dotnet_diagnostic.IDE0005.severity = warning
+
+# IDE0001: Simplify names (e.g., use 'string' instead of 'System.String')
+dotnet_diagnostic.IDE0001.severity = warning
+
+# CS8019: Unnecessary using directive (Compiler specific rule)
+dotnet_diagnostic.CS8019.severity = warning
