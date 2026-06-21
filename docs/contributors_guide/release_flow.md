@@ -74,3 +74,37 @@ git tag -a v1.8.3 -m "Release v1.8.3"
 git push origin main
 git push origin v1.8.3
 ```
+
+## 6. Sync develop after the squash merge
+
+After the PR is squash-merged on GitHub, master contains a single new commit that represents the entire release. Because a squash merge creates no git link between master and develop, the branches are graph-diverged. Run the following to re-link them:
+
+```bash
+# Make sure you have the latest master locally
+git fetch origin
+
+# Switch to develop
+git checkout develop
+
+# Merge the squash commit back into develop.
+# --no-ff forces a merge commit even if a fast-forward is possible,
+# which keeps develop's own commit line visible in the graph.
+git merge origin/master --no-ff -m "chore: sync develop with squash merge vX.Y.Z"
+
+# Push develop
+git push origin develop
+```
+
+The resulting graph will look like:
+
+```
+*   chore: sync develop with squash merge vX.Y.Z  ← develop HEAD
+|\
+| * Release vX.Y.Z (#N)                            ← master (tagged)
+* | Release vX.Y.Z                                 ← develop's last commit
+* | ...                                            ← all develop commits preserved
+|/
+* (previous release)
+```
+
+This keeps master's line clean (only tagged squash commits) while preserving the full develop commit history as a separate, visible branch.
