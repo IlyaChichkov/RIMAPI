@@ -1,48 +1,42 @@
 import os
-import yaml
+from ruamel.yaml import YAML
 
 
-# Teach PyYAML to use the '|' block style for any string with newlines
-def str_presenter(dumper, data):
-    if len(data.splitlines()) > 1 or "\n" in data:
-        # Removes trailing whitespaces that can confuse the dumper
-        cleaned_data = "\n".join([line.rstrip() for line in data.splitlines()])
-        return dumper.represent_scalar("tag:yaml.org,2002:str", cleaned_data, style="|")
-    return dumper.represent_scalar("tag:yaml.org,2002:str", data)
+def make_yaml():
+    y = YAML()
+    y.preserve_quotes = True
+    # Keep block style for multi-line strings instead of collapsing to flow style
+    y.default_flow_style = False
+    y.width = float("inf")  # Prevents random line wrapping
+    # YAML keys must be unique; when a file has duplicate route keys (e.g. GET
+    # and POST on the same path), don't crash — keep the last occurrence, which
+    # matches pyyaml's silent behaviour and what the checker already relies on.
+    y.allow_duplicate_keys = True
+    return y
 
 
-yaml.add_representer(str, str_presenter)
-yaml.representer.SafeRepresenter.add_representer(str, str_presenter)
-
-
-# Reformat the files
 def format_all_yaml(directory):
+    y = make_yaml()
     for filename in os.listdir(directory):
         if filename.endswith(".yml"):
             filepath = os.path.join(directory, filename)
 
-            # Read the messy data
             with open(filepath, "r", encoding="utf-8") as f:
                 try:
-                    data = yaml.safe_load(f)
-                except yaml.YAMLError as exc:
+                    data = y.load(f)
+                except Exception as exc:
                     print(f"Failed to read {filename}: {exc}")
                     continue
 
-            # Write it back cleanly
-            with open(filepath, "w", encoding="utf-8") as f:
-                yaml.dump(
-                    data,
-                    f,
-                    allow_unicode=True,
-                    sort_keys=False,
-                    default_flow_style=False,
-                    width=float("inf"),  # Prevents random line wrapping
-                )
+            if data is None:
+                continue
+
+            with open(filepath, "w", encoding="utf-8", newline="\n") as f:
+                y.dump(data, f)
+
             print(f"Cleaned up {filename}")
 
 
-# Run the formatter on the controllers directory
 controllers_dir = os.path.join("docs", "_api_macroses", "controllers")
 if os.path.exists(controllers_dir):
     format_all_yaml(controllers_dir)
