@@ -1158,3 +1158,49 @@ desc: |-
     ```
   method: POST
   csharp_method: CreateGrowingZone
+/api/v1/datetime:
+  desc: Возвращает текущую игровую дату и время в соответствии с мировым календарем RimWorld.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/datetime
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "datetime": "12th of Aprimay, 5500, 17h"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:05:35.3244951Z"
+    }
+    ```
+  method: GET
+/api/v1/datetime/tile:
+  desc: Возвращает игровую дату и время с учётом сезонного смещения конкретного тайла мира.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/datetime/tile?tile=42'
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "datetime": "12th of Aprimay, 5500, 17h"
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:05:35.3244951Z"
+    }
+    ```
+  method: GET

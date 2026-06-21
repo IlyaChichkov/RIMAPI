@@ -1,0 +1,192 @@
+title: '### :material-window-maximize: Окна и интерфейс'
+desc: Контроллер **UI Controller** управляет внутриигровыми окнами, диалогами и оповещениями на экране.
+/api/v1/ui/alerts:
+  desc: |-
+    Возвращает список всех активных оповещений в правой части экрана
+    (например, «Нужна защита», «Высокий риск срыва»). Позволяет отслеживать
+    состояние колонии из внешнего инструмента без опроса отдельных эндпоинтов.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/ui/alerts
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "label": "Высокий риск срыва",
+                "explanation": "Настроение поселенца Эмилии: 22%."
+            },
+            {
+                "label": "Нужна защита",
+                "explanation": "В вашей колонии нет турелей или ловушек."
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/ui/message:
+  desc: Выводит короткое сообщение на экран, аналогично внутриигровым уведомлениям.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/message \
+    --header 'content-type: application/json' \
+    --data '{
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates."
+    }'
+    ```
+  request: |-
+    **Запрос:**
+    ```json
+    {
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates."
+    }
+    ```
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/ui/dialog:
+  desc: Выводит диалоговое окно с указанным сообщением и заголовком.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/dialog \
+    --header 'content-type: application/json' \
+    --data '{
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+        "options": [
+            {
+                "label": "Offer Safety (Triggers Raid)",
+                "action_id": "accept_refugee",
+                "resolve_tree": true
+            },
+            {
+                "label": "Turn them away",
+                "action_id": "reject_refugee",
+                "resolve_tree": true
+            }
+        ]
+    }'
+    ```
+  request: |-
+    **Запрос:**
+    ```json
+    {
+        "text": "You find a wounded refugee asking for help. They are being chased by pirates.",
+        "options": [
+            {
+                "label": "Offer Safety (Triggers Raid)",
+                "action_id": "accept_refugee",
+                "resolve_tree": true
+            },
+            {
+                "label": "Turn them away",
+                "action_id": "reject_refugee",
+                "resolve_tree": true
+            }
+        ]
+    }
+    ```
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST
+/api/v1/ui/windows:
+  desc: |-
+    Возвращает список всех открытых в данный момент внутриигровых окон
+    и информацию о том, принудительно ли каждое из них ставит игру на паузу.
+    Полезно для обнаружения блокирующих диалогов при автоматизированных запусках.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request GET \
+    --url http://localhost:8765/api/v1/ui/windows
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": [
+            {
+                "window_type": "Dialog_NamePlayerSettlement",
+                "force_pause": true
+            },
+            {
+                "window_type": "MainTabWindow_Inspect",
+                "force_pause": false
+            }
+        ],
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: GET
+/api/v1/ui/window/close:
+  desc: |-
+    Закрывает открытые внутриигровые окна по имени типа. Если `window_types` не указан
+    и `force_pause_only` равно `true` (по умолчанию), закрываются все окна, которые
+    принудительно ставят игру на паузу — стандартный сценарий для автоматического
+    закрытия всплывающих окон при автоматизированных запусках.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/ui/window/close \
+    --header 'content-type: application/json' \
+    --data '{
+        "window_types": ["Dialog_NamePlayerSettlement"],
+        "force_pause_only": false
+    }'
+    ```
+  request: |-
+    **Запрос:**
+    ```json
+    {
+        "window_types": ["Dialog_NamePlayerSettlement"],
+        "force_pause_only": false
+    }
+    ```
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "closed_count": 1,
+            "closed_windows": ["Dialog_NamePlayerSettlement"]
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST

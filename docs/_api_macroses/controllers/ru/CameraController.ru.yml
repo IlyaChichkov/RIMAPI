@@ -48,7 +48,100 @@ desc: |-
     }
     ```
   method: POST
-/api/v1/stream/start:
+/api/v1/camera/follow/pawn:
+  desc: Перемещает камеру к пешке по её числовому ID. Удобно для слежения за конкретным поселенцем, животным или врагом.
+  method: POST
+  tags:
+  - UI
+  - Camera
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/camera/follow/pawn?pawn_id=526'
+    ```
+  request: ''
+  response: |-
+    **Response:**
+    ```json
+    {
+    "success": true,
+    "errors": [],
+    "warnings": [],
+    "timestamp": "2025-12-09T19:16:06.4839322Z"
+    }
+    ```
+/api/v1/camera/screenshot:
+  desc: Делает скриншот текущего вида игры в формате base64-JPEG. Поддерживает изменение размера — опустите width/height для нативного разрешения.
+  method: POST
+  tags:
+  - UI
+  - Camera
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/camera/screenshot \
+    --header 'content-type: application/json' \
+    --data '{"width": 1280, "height": 720}'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "width": 1280,
+        "height": 720
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "data": {
+            "image": "/9j/4AAQSkZJRgAB...",
+            "width": 1280,
+            "height": 720
+        },
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-09T19:16:06.4839322Z"
+    }
+    ```
+/api/v1/camera/screenshot/native:
+  desc: Перемещает камеру в указанную позицию и сохраняет высококачественный скриншот напрямую на диск хост-машины.
+  method: POST
+  tags:
+  - UI
+  - Camera
+  curl: |-
+    **Example:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/camera/screenshot/native \
+    --header 'content-type: application/json' \
+    --data '{"x": 100, "z": 100, "path": "C:/screenshots/colony.png"}'
+    ```
+  request: |-
+    **Request:**
+    ```json
+    {
+        "x": 100,
+        "z": 100,
+        "path": "C:/screenshots/colony.png"
+    }
+    ```
+  response: |-
+    **Response:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-09T19:16:06.4839322Z"
+    }
+    ```
+/api/v1/camera/stream/start:
   desc: |-
     Запускает прямую видеотрансляцию текущего вида камеры игры.
     Эта конечная точка инициирует трансляцию игрового процесса в реальном времени,
@@ -57,7 +150,7 @@ desc: |-
     **Example:**
     ```bash
     curl --request POST \
-    --url 'http://localhost:8765/api/v1/stream/start'
+    --url 'http://localhost:8765/api/v1/camera/stream/start'
     ```
   request: ''
   response: |-
@@ -71,13 +164,13 @@ desc: |-
     }
     ```
   method: POST
-/api/v1/stream/stop:
+/api/v1/camera/stream/stop:
   desc: Корректно останавливает активную прямую видеотрансляцию вида камеры игры.
   curl: |-
     **Example:**
     ```bash
     curl --request POST \
-    --url 'http://localhost:8765/api/v1/stream/stop'
+    --url 'http://localhost:8765/api/v1/camera/stream/stop'
     ```
   request: ''
   response: |-
@@ -91,15 +184,13 @@ desc: |-
     }
     ```
   method: POST
-/api/v1/stream/setup:
-  desc: |-
-    Настраивает параметры и установки для прямой видеотрансляции
-    вида камеры игры перед ее запуском.
+/api/v1/camera/stream/setup:
+  desc: Настраивает параметры прямой видеотрансляции вида камеры игры перед её запуском.
   curl: |-
     **Example:**
     ```bash
     curl --request POST \
-    --url 'http://localhost:8765/api/v1/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30'
+    --url 'http://localhost:8765/api/v1/camera/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30'
     ```
   request: |-
     **Request:**
@@ -124,13 +215,13 @@ desc: |-
     }
     ```
   method: POST
-/api/v1/stream/status:
-  desc: Получить статус текущей прямой видеотрансляции вида камеры игры.
+/api/v1/camera/stream/status:
+  desc: Возвращает текущий статус и конфигурацию прямой видеотрансляции камеры.
   curl: |-
     **Example:**
     ```bash
-    curl --request POST \
-    --url 'http://localhost:8765/api/v1/stream/status'
+    curl --request GET \
+    --url 'http://localhost:8765/api/v1/camera/stream/status'
     ```
   request: ''
   response: |-
