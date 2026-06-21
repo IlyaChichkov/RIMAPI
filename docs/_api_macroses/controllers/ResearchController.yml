@@ -284,8 +284,7 @@ desc: |-
   csharp_method: SetResearchTarget
 
 /api/v1/research/stop:
-  desc: Stop the colony's currently active research project. This unassigns the research focus 
-        and returns the state of the project that was halted. Returns an error if no research is currently active.
+  desc: Stop the colony's currently active research project. This unassigns the research focus and returns the state of the project that was halted. Returns an error if no research is currently active.
   curl: |-
     **Example:**
     ```bash
