@@ -321,3 +321,32 @@ desc: |-
         "timestamp": "2025-12-10T19:53:16.733319Z"
     }
     ```
+/api/v1/things/set-forbidden:
+  desc: Устанавливает статус "запрещено" для одного или нескольких объектов по их ID или позиции.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request POST \
+    --url http://localhost:8765/api/v1/things/set-forbidden \
+    --header 'content-type: application/json' \
+    --data '{"thing_ids": [4895, 4896], "forbidden": true}'
+    ```
+  request: |-
+    **Запрос:**
+    ```json
+    {
+        "thing_ids": [4895, 4896],
+        "forbidden": true
+    }
+    ```
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-10T19:53:16.733319Z"
+    }
+    ```
+  method: POST

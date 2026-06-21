@@ -128,13 +128,13 @@ desc: Этот контроллер обрабатывает общие игро
     }
     ```
   method: GET
-/api/v1/mods/get:
-  desc: Возвращает информацию об одном конкретном моде по его package_id или uid.
+/api/v1/mods/list:
+  desc: Возвращает список всех активных модов с их метаданными.
   curl: |-
     **Пример:**
     ```bash
     curl --request GET \
-    --url http://localhost:8765/api/v1/mods/get?uid=RedEyeDev.RIMAPI
+    --url http://localhost:8765/api/v1/mods/list
     ```
   request: ''
   response: |-
@@ -142,20 +142,21 @@ desc: Этот контроллер обрабатывает общие игро
     ```json
     {
         "success": true,
-        "data": {
-            "name": "RIMAPI",
-            "package_id": "RedEyeDev.RIMAPI",
-            "load_order": 3,
-            "author": "RedEyeDev",
-            "description": "...",
-            "url": "...",
-            "version": "1.9.0",
-            "supported_versions": ["1.5", "1.6"],
-            "root_dir": "..."
-        },
+        "data": [
+            {
+                "name": "Core",
+                "package_id": "ludeon.rimworld",
+                "load_order": 0
+            },
+            {
+                "name": "RIMAPI",
+                "package_id": "redeyedev.rimapi",
+                "load_order": 1
+            }
+        ],
         "errors": [],
         "warnings": [],
-        "timestamp": "..."
+        "timestamp": "2025-12-10T18:53:40.5041431Z"
     }
     ```
   method: GET
@@ -602,52 +603,6 @@ desc: Этот контроллер обрабатывает общие игро
     }
     ```
   method: GET
-/api/v1/datetime:
-  desc: Возвращает текущую игровую дату и время в соответствии с мировым календарем RimWorld.
-  curl: |-
-    **Example:**
-    ```bash
-    curl --request POST \
-    --url http://localhost:8765/api/v1/datetime
-    ```
-  request: ''
-  response: |-
-    **Response:**
-    ```json
-    {
-        "success": true,
-        "data": {
-            "datetime": "12th of Aprimay, 5500, 17h"
-        },
-        "errors": [],
-        "warnings": [],
-        "timestamp": "2025-12-10T19:05:35.3244951Z"
-    }
-    ```
-  method: GET
-/api/v1/datetime/tile:
-  desc: Возвращает текущую игровую дату и время в соответствии с мировым календарем RimWorld.
-  curl: |-
-    **Example:**
-    ```bash
-    curl --request POST \
-    --url http://localhost:8765/api/v1/datetime
-    ```
-  request: ''
-  response: |-
-    **Response:**
-    ```json
-    {
-        "success": true,
-        "data": {
-            "datetime": "12th of Aprimay, 5500, 17h"
-        },
-        "errors": [],
-        "warnings": [],
-        "timestamp": "2025-12-10T19:05:35.3244951Z"
-    }
-    ```
-  method: GET
 /api/v1/game/select-area:
   desc: |-
     Имитирует действие выделения рамкой в игровом мире (UI).
@@ -899,3 +854,43 @@ desc: Этот контроллер обрабатывает общие игро
     }
     ```
   method: GET
+/api/v1/game/main-menu:
+  desc: Завершает текущую игровую сессию и возвращает игрока в главное меню. Операция выполняется безопасно в основном потоке Unity.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/game/main-menu'
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:39:28.6476222Z"
+    }
+    ```
+  method: POST
+/api/v1/game/quit:
+  desc: Полностью завершает работу приложения RimWorld и выходит на рабочий стол.
+  curl: |-
+    **Пример:**
+    ```bash
+    curl --request POST \
+    --url 'http://localhost:8765/api/v1/game/quit'
+    ```
+  request: ''
+  response: |-
+    **Ответ:**
+    ```json
+    {
+        "success": true,
+        "errors": [],
+        "warnings": [],
+        "timestamp": "2025-12-11T19:39:28.6476222Z"
+    }
+    ```
+  method: POST
