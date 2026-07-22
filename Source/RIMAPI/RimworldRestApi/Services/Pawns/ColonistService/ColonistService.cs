@@ -385,10 +385,11 @@ namespace RIMAPI.Services
                     FreshAir = data.Detailes.FreshAir,
                     ColonistWorkInfo = data.Detailes.WorkInfo,
                     PoliciesInfo = data.Detailes.PoliciesInfo,
-                    ColonistMedicalInfo = data.Detailes.MedicalInfo,
-                    SocialInfo = data.Detailes.SocialInfo,
-                });
-            }
+                     ColonistMedicalInfo = data.Detailes.MedicalInfo,
+                     SocialInfo = data.Detailes.SocialInfo,
+                     MoodDetails = data.Detailes.MoodDetails,
+                 });
+             }
             return ApiResult<List<ApiV1PawnDetailedDto>>.Ok(result);
         }
 
@@ -412,9 +413,10 @@ namespace RIMAPI.Services
                     FreshAir = data.Detailes.FreshAir,
                     ColonistWorkInfo = data.Detailes.WorkInfo,
                     PoliciesInfo = data.Detailes.PoliciesInfo,
-                    ColonistMedicalInfo = data.Detailes.MedicalInfo,
-                    SocialInfo = data.Detailes.SocialInfo,
-                };
+                     ColonistMedicalInfo = data.Detailes.MedicalInfo,
+                     SocialInfo = data.Detailes.SocialInfo,
+                     MoodDetails = data.Detailes.MoodDetails,
+                 };
 
                 if (result == null)
                 {

@@ -10,10 +10,13 @@ desc: |-
   *   **Work:** Current job, priorities, and schedules.
 /api/v2/colonists/detailed:
   desc: |-
-    Retrieves a comprehensive list of all colonists with detailed statistics, including needs (sleep, joy, beauty), work priorities, and medical status.
+    Retrieves a comprehensive list of all colonists with detailed statistics, including needs (sleep, joy, beauty), work priorities, medical status, and mood thought factors.
 
     !!! info "Cache Policy"
         This endpoint is cached server-side for **1800 game ticks** (~30 seconds) to reduce performance impact on the game loop.
+
+    !!! info "Mood Details"
+        The `mood_details` field provides a breakdown of mood thought factors. `current_level` is the smoothed mood (0..1), `target_level` is the instantaneous mood, and `total_thought_offset` is the sum of all thought effects in mood points. Each factor's `mood_offset` is measured in mood points (e.g. `-3` or `+18`). Factors are sorted from most negative to most positive. The `kind` field is `"memory"` for lasting thoughts or `"situational"` for temporary ones.
   curl: |-
     **Example:**
     ```bash
@@ -66,6 +69,34 @@ desc: |-
                     },
                     "social_info": {
                         "marital_status": "Single"
+                    },
+                    "mood_details": {
+                        "available": true,
+                        "current_level": 0.43,
+                        "target_level": 0.31,
+                        "total_thought_offset": -19.0,
+                        "factors": [
+                            {
+                                "def_name": "AteWithoutTable",
+                                "label": "Ate without table",
+                                "description": "I had to eat without a table.",
+                                "mood_offset": -3.0,
+                                "stack_count": 1,
+                                "stage_index": 0,
+                                "kind": "memory",
+                                "stacked_effect_multiplier": 1.0
+                            },
+                            {
+                                "def_name": "LowExpectations",
+                                "label": "Low expectations",
+                                "description": "My expectations are low.",
+                                "mood_offset": 18.0,
+                                "stack_count": 1,
+                                "stage_index": 0,
+                                "kind": "situational",
+                                "stacked_effect_multiplier": 1.0
+                            }
+                        ]
                     }
                 }
             }
@@ -74,8 +105,8 @@ desc: |-
     }
     ```
   method: GET
-/api/v2/colonist/detailed:
-  desc: Retrieves detailed statistics for a single colonist identified by their ID. Unlike the bulk endpoint, this request fetches real-time data without caching.
+  /api/v2/colonist/detailed:
+  desc: Retrieves detailed statistics for a single colonist identified by their ID, including needs, work info, medical status, and mood thought factors. Unlike the bulk endpoint, this request fetches real-time data without caching.
   curl: |-
     **Example:**
     ```bash
@@ -127,6 +158,34 @@ desc: |-
                 },
                 "social_info": {
                     "marital_status": "Single"
+                },
+                "mood_details": {
+                    "available": true,
+                    "current_level": 0.43,
+                    "target_level": 0.31,
+                    "total_thought_offset": -19.0,
+                    "factors": [
+                        {
+                            "def_name": "AteWithoutTable",
+                            "label": "Ate without table",
+                            "description": "I had to eat without a table.",
+                            "mood_offset": -3.0,
+                            "stack_count": 1,
+                            "stage_index": 0,
+                            "kind": "memory",
+                            "stacked_effect_multiplier": 1.0
+                        },
+                        {
+                            "def_name": "LowExpectations",
+                            "label": "Low expectations",
+                            "description": "My expectations are low.",
+                            "mood_offset": 18.0,
+                            "stack_count": 1,
+                            "stage_index": 0,
+                            "kind": "situational",
+                            "stacked_effect_multiplier": 1.0
+                        }
+                    ]
                 }
             }
         },
@@ -134,7 +193,7 @@ desc: |-
     }
     ```
   method: GET
-/api/v1/colonists:
+  /api/v1/colonists:
   desc: |-
     Retrieves a list of all colonists in the player's faction, including
     their skills, traits, health, mood, and current activities.
@@ -235,7 +294,7 @@ desc: |-
     ```
   method: GET
 /api/v1/colonists/detailed:
-  desc: Retrieves a detailed list of all colonists in the player's faction, including their skills, traits, health, mood, and current activities.
+  desc: Retrieves a detailed list of all colonists in the player's faction, including their skills, traits, health, mood, mood thought factors, and current activities.
   curl: |-
     **Example:**
     ```bash
@@ -283,6 +342,34 @@ desc: |-
                 },
                 "social_info": {
                     "marital_status": "Single"
+                },
+                "mood_details": {
+                    "available": true,
+                    "current_level": 0.43,
+                    "target_level": 0.31,
+                    "total_thought_offset": -19.0,
+                    "factors": [
+                        {
+                            "def_name": "AteWithoutTable",
+                            "label": "Ate without table",
+                            "description": "I had to eat without a table.",
+                            "mood_offset": -3.0,
+                            "stack_count": 1,
+                            "stage_index": 0,
+                            "kind": "memory",
+                            "stacked_effect_multiplier": 1.0
+                        },
+                        {
+                            "def_name": "LowExpectations",
+                            "label": "Low expectations",
+                            "description": "My expectations are low.",
+                            "mood_offset": 18.0,
+                            "stack_count": 1,
+                            "stage_index": 0,
+                            "kind": "situational",
+                            "stacked_effect_multiplier": 1.0
+                        }
+                    ]
                 }
             }
         ],
@@ -290,8 +377,8 @@ desc: |-
     }
     ```
   method: GET
-/api/v1/colonist/detailed:
-  desc: Retrieves detailed info about a single colonist in the player's faction by ID.
+  /api/v1/colonist/detailed:
+  desc: Retrieves detailed info about a single colonist in the player's faction by ID, including mood thought factors.
   curl: |-
     **Example:**
     ```bash
@@ -338,13 +425,41 @@ desc: |-
             },
             "social_info": {
                 "marital_status": "Single"
+            },
+            "mood_details": {
+                "available": true,
+                "current_level": 0.43,
+                "target_level": 0.31,
+                "total_thought_offset": -19.0,
+                "factors": [
+                    {
+                        "def_name": "AteWithoutTable",
+                        "label": "Ate without table",
+                        "description": "I had to eat without a table.",
+                        "mood_offset": -3.0,
+                        "stack_count": 1,
+                        "stage_index": 0,
+                        "kind": "memory",
+                        "stacked_effect_multiplier": 1.0
+                    },
+                    {
+                        "def_name": "LowExpectations",
+                        "label": "Low expectations",
+                        "description": "My expectations are low.",
+                        "mood_offset": 18.0,
+                        "stack_count": 1,
+                        "stage_index": 0,
+                        "kind": "situational",
+                        "stacked_effect_multiplier": 1.0
+                    }
+                ]
             }
         },
         "timestamp": "2025-12-11T19:46:05.7088803Z"
     }
     ```
   method: GET
-/api/v1/colonist/opinion-about:
+  /api/v1/colonist/opinion-about:
   desc: |-
     Retrieves the opinion of one colonist about another specified colonist.
     This endpoint provides insight into interpersonal relationships within

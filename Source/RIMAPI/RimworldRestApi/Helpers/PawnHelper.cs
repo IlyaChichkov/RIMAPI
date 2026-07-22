@@ -169,14 +169,95 @@ namespace RIMAPI.Helpers
                         ),
                         IsSelfTendAllowed = pawn.playerSettings?.selfTend ?? false,
                     },
-                    SocialInfo = CreatePawnSocialInfoDto(pawn),
-                };
+                     SocialInfo = CreatePawnSocialInfoDto(pawn),
+                     MoodDetails = GetMoodDetails(pawn),
+                 };
             }
             catch (Exception ex)
             {
                 Core.LogApi.Error($"Error converting pawn to DTO - {ex.Message}");
                 return null;
             }
+        }
+
+        public static MoodDetailsDto GetMoodDetails(Pawn pawn)
+        {
+            var dto = new MoodDetailsDto { Available = false };
+
+            try
+            {
+                if (pawn == null)
+                    return dto;
+
+                var needs = pawn.needs;
+                if (needs == null)
+                    return dto;
+
+                var mood = needs.mood;
+                if (mood == null)
+                    return dto;
+
+                var thoughtHandler = mood.thoughts;
+                if (thoughtHandler == null)
+                    return dto;
+
+                dto.Available = true;
+                dto.CurrentLevel = mood.CurLevelPercentage;
+                dto.TargetLevel = mood.CurInstantLevel;
+                dto.TotalThoughtOffset = thoughtHandler.TotalMoodOffset();
+
+                var groups = new List<Thought>();
+                thoughtHandler.GetDistinctMoodThoughtGroups(groups);
+
+                foreach (Thought group in groups)
+                {
+                    if (group == null || group.def == null)
+                        continue;
+
+                    float moodOffset = thoughtHandler.MoodOffsetOfGroup(group);
+
+                    int stackCount = 1;
+                    string kind = "situational";
+
+                    if (group is Thought_Memory memoryGroup)
+                    {
+                        kind = "memory";
+                        stackCount = thoughtHandler.memories.NumMemoriesInGroup(memoryGroup);
+                    }
+
+                    float stackedEffectMultiplier = group.def.stackedEffectMultiplier;
+
+                    string label = group.LabelCap;
+                    string description = group.Description;
+
+                    int stageIndex = group.CurStageIndex;
+
+                    dto.Factors.Add(new MoodFactorDto
+                    {
+                        DefName = group.def.defName,
+                        Label = label,
+                        Description = description,
+                        MoodOffset = moodOffset,
+                        StackCount = stackCount,
+                        StageIndex = stageIndex,
+                        Kind = kind,
+                        StackedEffectMultiplier = stackedEffectMultiplier,
+                    });
+                }
+
+                dto.Factors = dto.Factors
+                    .OrderBy(f => f.MoodOffset)
+                    .ThenBy(f => f.DefName)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Core.LogApi.Error($"Error getting mood details for pawn {pawn?.thingIDNumber} - {ex.Message}");
+                dto.Available = false;
+                dto.Factors = new List<MoodFactorDto>();
+            }
+
+            return dto;
         }
 
         public static SocialInfoDto CreatePawnSocialInfoDto(Pawn pawn)
