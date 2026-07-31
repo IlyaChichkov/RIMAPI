@@ -51,10 +51,10 @@ namespace RIMAPI.Helpers
             };
         }
 
-        public static bool AssignJob(Pawn pawn, JobDef jobDef, LocalTargetInfo target)
+        public static bool AssignJob(Pawn pawn, JobDef jobDef, LocalTargetInfo target, bool requestQueueing = false)
         {
             Job job = JobMaker.MakeJob(jobDef, target);
-            return pawn.jobs.TryTakeOrderedJob(job);
+            return pawn.jobs.TryTakeOrderedJob(job, requestQueueing: requestQueueing);
         }
 
         public static bool AssignTendJob(Pawn doctor, Pawn patient)

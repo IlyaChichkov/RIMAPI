@@ -246,6 +246,7 @@ namespace RIMAPI.Models
         public string JobDef { get; set; }
         public int? TargetThingId { get; set; }
         public PositionDto TargetPosition { get; set; }
+        public bool Queue { get; set; } = false;
     }
 
     public class MedicalTendRequestDto

@@ -51,7 +51,7 @@ namespace RIMAPI.Services
                         request.TargetPosition.X, 0, request.TargetPosition.Z);
                 }
 
-                bool success = PawnHelper.AssignJob(pawn, jobDef, target);
+                bool success = PawnHelper.AssignJob(pawn, jobDef, target, request.Queue);
                 if (!success)
                 {
                     return ApiResult.Fail($"Pawn {request.PawnId} could not accept job {request.JobDef}");
