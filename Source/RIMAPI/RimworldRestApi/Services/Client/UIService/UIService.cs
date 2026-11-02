@@ -156,6 +156,11 @@ namespace RIMAPI.Services
         {
             try
             {
+                if (body == null)
+                {
+                    return ApiResult.ValidationFail("request body is required");
+                }
+
                 List<string> warnings = new List<string>();
                 const int MAX_LABEL_SIZE = 48;
                 const int MAX_MESSAGE_SIZE = 500;
@@ -164,7 +169,7 @@ namespace RIMAPI.Services
 
                 if (string.IsNullOrEmpty(message))
                 {
-                    return ApiResult.Fail("Message is empty after sanitization");
+                    return ApiResult.ValidationFail("message is empty after sanitization");
                 }
 
                 if (message.Length > MAX_MESSAGE_SIZE)
@@ -175,7 +180,7 @@ namespace RIMAPI.Services
 
                 if (label.Length > MAX_LABEL_SIZE)
                 {
-                    message = message.Substring(0, MAX_LABEL_SIZE) + "...";
+                    label = label.Substring(0, MAX_LABEL_SIZE) + "...";
                     warnings.Add($"Label has been truncated to {MAX_LABEL_SIZE} characters");
                 }
 
@@ -187,7 +192,8 @@ namespace RIMAPI.Services
                 List<ThingDef> hyperlinkThingDefs = null;
                 string debugInfo = null;
 
-                if (!string.IsNullOrEmpty(body.MapId))
+                // A look target needs both the map and the thing on it
+                if (!string.IsNullOrEmpty(body.MapId) && !string.IsNullOrEmpty(body.LookTargetThingId))
                 {
                     target = MapHelper.GetThingOnMapById(
                         int.Parse(body.MapId),
