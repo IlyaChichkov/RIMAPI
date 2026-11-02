@@ -5,7 +5,18 @@ info:
 
 http:
   method: POST
-  url: "{{baseURL}}/api/v1/stream/setup?ip=127.0.0.1&port=5007&frame_width=1920&frame_height=1080&fps=15&quality=30"
+  url: "{{baseURL}}/api/v1/camera/stream/setup"
+  body:
+    type: json
+    data: |-
+      {
+        "address": "127.0.0.1",
+        "port": 5007,
+        "frame_width": 1280,
+        "frame_height": 720,
+        "target_fps": 15,
+        "jpeg_quality": 50
+      }
   auth: inherit
 
 settings:

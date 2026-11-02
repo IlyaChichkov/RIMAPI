@@ -5,7 +5,11 @@ info:
 
 http:
   method: POST
-  url: "{{baseURL}}/api/v1/stream/stop"
+  url: "{{baseURL}}/api/v1/camera/stream/stop"
+  body:
+    type: json
+    data: |-
+      {}
   auth: inherit
 
 settings:
