@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Verse;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -102,13 +103,13 @@ namespace RIMAPI.Core
         };
 
         // Legacy methods for backward compatibility
-        public static async Task Success(HttpListenerResponse response, object data)
+        public static async Task Success(RimApiResponse response, object data)
         {
             await WriteResponse(response, HttpStatusCode.OK, data);
         }
 
         public static async Task Error(
-            HttpListenerResponse response,
+            RimApiResponse response,
             HttpStatusCode statusCode,
             string message
         )
@@ -119,7 +120,7 @@ namespace RIMAPI.Core
 
         // New methods with ApiResult
         public static async Task SendApiResult<T>(
-            HttpListenerResponse response,
+            RimApiResponse response,
             ApiResult<T> result
         )
         {
@@ -127,25 +128,25 @@ namespace RIMAPI.Core
             await WriteResponse(response, statusCode, result);
         }
 
-        public static async Task SendApiResult(HttpListenerResponse response, ApiResult result)
+        public static async Task SendApiResult(RimApiResponse response, ApiResult result)
         {
             var statusCode = DetermineStatusCode(result);
             await WriteResponse(response, statusCode, result);
         }
 
         // Convenience methods for common scenarios
-        public static async Task SendSuccess<T>(HttpListenerResponse response, T data)
+        public static async Task SendSuccess<T>(RimApiResponse response, T data)
         {
             await SendApiResult(response, ApiResult<T>.Ok(data));
         }
 
-        public static async Task SendSuccess(HttpListenerResponse response)
+        public static async Task SendSuccess(RimApiResponse response)
         {
             await SendApiResult(response, ApiResult.Ok());
         }
 
         public static async Task SendError(
-            HttpListenerResponse response,
+            RimApiResponse response,
             HttpStatusCode statusCode,
             string errorMessage
         )
@@ -155,7 +156,7 @@ namespace RIMAPI.Core
         }
 
         public static async Task SendValidationError(
-            HttpListenerResponse response,
+            RimApiResponse response,
             IEnumerable<string> errors
         )
         {
@@ -164,7 +165,7 @@ namespace RIMAPI.Core
         }
 
         public static async Task SendPartialSuccess<T>(
-            HttpListenerResponse response,
+            RimApiResponse response,
             T data,
             IEnumerable<string> warnings
         )
@@ -216,7 +217,7 @@ namespace RIMAPI.Core
         }
 
         private static async Task WriteResponse(
-            HttpListenerResponse response,
+            RimApiResponse response,
             HttpStatusCode statusCode,
             object data
         )
@@ -238,11 +239,9 @@ namespace RIMAPI.Core
 
                 // Convert the JSON string to bytes
                 var buffer = Encoding.UTF8.GetBytes(json);
-                response.ContentLength64 = buffer.Length;
 
-                // Write the JSON data to the response output stream
-                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                response.Close();
+                // Write the JSON data and finish the response
+                await response.SendAsync(buffer);
 
                 // Log success for debugging purposes
                 LogApi.Info($"Response sent - Status: {statusCode}, Length: {buffer.Length} bytes");
@@ -263,7 +262,7 @@ namespace RIMAPI.Core
 
         // Helper method for sending raw JSON (for SSE or special cases)
         public static async Task SendRawJson(
-            HttpListenerResponse response,
+            RimApiResponse response,
             string json,
             HttpStatusCode statusCode = HttpStatusCode.OK
         )
@@ -274,10 +273,7 @@ namespace RIMAPI.Core
                 response.ContentType = "application/json; charset=utf-8";
 
                 var buffer = Encoding.UTF8.GetBytes(json);
-                response.ContentLength64 = buffer.Length;
-
-                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                response.Close();
+                await response.SendAsync(buffer);
             }
             catch (Exception ex)
             {
@@ -292,7 +288,7 @@ namespace RIMAPI.Core
 
         // Helper method for sending plain text
         public static async Task SendPlainText(
-            HttpListenerResponse response,
+            RimApiResponse response,
             string text,
             HttpStatusCode statusCode = HttpStatusCode.OK
         )
@@ -303,10 +299,7 @@ namespace RIMAPI.Core
                 response.ContentType = "text/plain; charset=utf-8";
 
                 var buffer = Encoding.UTF8.GetBytes(text);
-                response.ContentLength64 = buffer.Length;
-
-                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                response.Close();
+                await response.SendAsync(buffer);
             }
             catch (Exception ex)
             {
@@ -324,7 +317,7 @@ namespace RIMAPI.Core
     public static class ResponseBuilderExtensions
     {
         public static async Task SendJsonResponse<T>(
-            this HttpListenerContext context,
+            this RimApiContext context,
             ApiResult<T> result
         )
         {
@@ -345,25 +338,25 @@ namespace RIMAPI.Core
         }
 
         public static async Task SendJsonResponse(
-            this HttpListenerContext context,
+            this RimApiContext context,
             ApiResult result
         )
         {
             await ResponseBuilder.SendApiResult(context.Response, result);
         }
 
-        public static async Task SendSuccess<T>(this HttpListenerContext context, T data)
+        public static async Task SendSuccess<T>(this RimApiContext context, T data)
         {
             await ResponseBuilder.SendSuccess(context.Response, data);
         }
 
-        public static async Task SendSuccess(this HttpListenerContext context)
+        public static async Task SendSuccess(this RimApiContext context)
         {
             await ResponseBuilder.SendSuccess(context.Response);
         }
 
         public static async Task SendError(
-            this HttpListenerContext context,
+            this RimApiContext context,
             HttpStatusCode statusCode,
             string errorMessage
         )
@@ -372,7 +365,7 @@ namespace RIMAPI.Core
         }
 
         public static async Task SendValidationError(
-            this HttpListenerContext context,
+            this RimApiContext context,
             IEnumerable<string> errors
         )
         {
@@ -380,7 +373,7 @@ namespace RIMAPI.Core
         }
 
         public static async Task SendPartialSuccess<T>(
-            this HttpListenerContext context,
+            this RimApiContext context,
             T data,
             IEnumerable<string> warnings
         )

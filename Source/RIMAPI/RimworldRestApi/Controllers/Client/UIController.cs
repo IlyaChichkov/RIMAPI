@@ -4,6 +4,7 @@ using RIMAPI.Core;
 using RIMAPI.Services.Interfaces;
 using RIMAPI.Services;
 using RIMAPI.Models;
+using RIMAPI.Http;
 
 namespace RIMAPI.BaseControllers
 {
@@ -20,7 +21,7 @@ namespace RIMAPI.BaseControllers
 
         [Get("/api/v1/ui/alerts")]
         [EndpointMetadata("Retrieve a list of all currently active right-hand screen alerts (e.g., 'Need Defenses', 'Major Break Risk').")]
-        public async Task GetActiveAlerts(HttpListenerContext context)
+        public async Task GetActiveAlerts(RimApiContext context)
         {
             var result = _uiService.GetActiveAlerts();
 
@@ -28,7 +29,7 @@ namespace RIMAPI.BaseControllers
         }
 
         [Post("/api/v1/ui/message")]
-        public async Task ShowMessage(HttpListenerContext context)
+        public async Task ShowMessage(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<WindowMessageRequestDto>();
             var result = _windowService.ShowMessage(body);
@@ -36,7 +37,7 @@ namespace RIMAPI.BaseControllers
         }
 
         [Post("/api/v1/ui/dialog")]
-        public async Task ShowDialog(HttpListenerContext context)
+        public async Task ShowDialog(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<WindowDialogRequestDto>();
             var result = _windowService.ShowDialog(body);
@@ -45,7 +46,7 @@ namespace RIMAPI.BaseControllers
 
         [Get("/api/v1/ui/windows")]
         [EndpointMetadata("List currently open windows and whether each force-pauses the game.")]
-        public async Task ListWindows(HttpListenerContext context)
+        public async Task ListWindows(RimApiContext context)
         {
             var result = _windowService.ListWindows();
             await context.SendJsonResponse(result);
@@ -53,7 +54,7 @@ namespace RIMAPI.BaseControllers
 
         [Post("/api/v1/ui/window/close")]
         [EndpointMetadata("Close open windows by type name, or (default) every force-pause window — used to auto-dismiss the colony-name and debug-log popups during unattended runs.")]
-        public async Task CloseWindows(HttpListenerContext context)
+        public async Task CloseWindows(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<WindowCloseRequestDto>();
             var result = _windowService.CloseWindows(body);

@@ -3,6 +3,7 @@ using System.Net;
 using RIMAPI.Core;
 using RIMAPI.Models;
 using RIMAPI.Services;
+using RIMAPI.Http;
 
 namespace RIMAPI.Controllers
 {
@@ -16,7 +17,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/order/designate/area")]
-        public async Task DesignateArea(HttpListenerContext context)
+        public async Task DesignateArea(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<DesignateRequestDto>();
             var result = _orderService.DesignateArea(body);

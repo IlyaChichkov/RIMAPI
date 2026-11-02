@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using RIMAPI.Models;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -138,7 +139,7 @@ namespace RIMAPI.Core
 
             foreach (var param in method.GetParameters())
             {
-                if (param.ParameterType == typeof(HttpListenerContext))
+                if (param.ParameterType == typeof(RimApiContext))
                     continue;
 
                 var paramDesc = param.GetCustomAttribute<ParameterDescriptionAttribute>();

@@ -18,7 +18,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/dev/console")]
         [EndpointMetadata("Send message to the debug console")]
-        public async Task PostConsoleAction(HttpListenerContext context)
+        public async Task PostConsoleAction(RimApiContext context)
         {
             DebugConsoleRequest body;
             if (context.Request.HasEntityBody)
@@ -40,14 +40,14 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/dev/materials-atlas")]
         [ResponseExample(typeof(MaterialsAtlasList))]
-        public async Task GetMaterialsAtlasList(HttpListenerContext context)
+        public async Task GetMaterialsAtlasList(RimApiContext context)
         {
             var result = _devToolsService.GetMaterialsAtlasList();
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/dev/materials-atlas/clear")]
-        public async Task PostMaterialsAtlasPoolClear(HttpListenerContext context)
+        public async Task PostMaterialsAtlasPoolClear(RimApiContext context)
         {
             var result = _devToolsService.MaterialsAtlasPoolClear();
             await context.SendJsonResponse(result);
@@ -55,7 +55,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/dev/stuff/color")]
         [EndpointMetadata("Change stuff color")]
-        public async Task PostStuffColor(HttpListenerContext context)
+        public async Task PostStuffColor(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<StuffColorRequest>();
             var result = _devToolsService.SetStuffColor(body);
@@ -64,7 +64,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/dev/endpoints")]
         [EndpointMetadata("Get list of all registered endpoints")]
-        public async Task GetEndpoints(HttpListenerContext context)
+        public async Task GetEndpoints(RimApiContext context)
         {
             var result = _devToolsService.GetEndpoints();
             await context.SendJsonResponse(result);

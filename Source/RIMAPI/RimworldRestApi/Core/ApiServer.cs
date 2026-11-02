@@ -7,16 +7,17 @@ using RIMAPI.CameraStreamer;
 using RIMAPI.Controllers;
 using RIMAPI.Services;
 using Verse;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
     public class ApiServer : IDisposable
     {
-        private readonly HttpListener _listener;
+        private readonly IRimApiHttpTransport _transport;
         private readonly Router _router;
         private readonly SseService _sseService;
         public SseService SseService => _sseService;
-        private readonly Queue<HttpListenerContext> _requestQueue;
+        private readonly Queue<RimApiContext> _requestQueue;
         private readonly object _queueLock = new object();
         private bool _isRunning;
         private bool _disposed = false;
@@ -62,14 +63,10 @@ namespace RIMAPI.Core
                 LogApi.Info($"EventRegistry resolved: {_eventRegistry != null}");
 
                 LogApi.Info("Initializing HTTP components...");
-                _listener = new HttpListener();
-
-                string hostBinding = ServerIP == "0.0.0.0" ? "+" : ServerIP;
-                string listenerPrefix = $"http://{hostBinding}:{Port}/";
-                _listener.Prefixes.Add(listenerPrefix);
+                _transport = new HttpListenerTransport(ServerIP, Port);
 
                 _router = new Router();
-                _requestQueue = new Queue<HttpListenerContext>();
+                _requestQueue = new Queue<RimApiContext>();
 
                 LogApi.Info("Initializing route registry...");
                 _routeRegistry = new AutoRouteRegistry(_serviceProvider, _router);
@@ -301,11 +298,9 @@ namespace RIMAPI.Core
 
             try
             {
-                _listener.Start();
+                // Requests arrive on a background thread and are processed on the main thread
+                _transport.Start(EnqueueRequest);
                 _isRunning = true;
-
-                // Start background listener
-                _ = ListenForRequestsAsync();
 
                 LogApi.Info($"API Server listening on {BaseUrl}");
 
@@ -323,41 +318,24 @@ namespace RIMAPI.Core
             }
         }
 
-        private async Task ListenForRequestsAsync()
+        private void EnqueueRequest(RimApiContext context)
         {
-            while (_isRunning)
+            lock (_queueLock)
             {
-                try
-                {
-                    var context = await _listener.GetContextAsync();
-                    lock (_queueLock)
-                    {
-                        _requestQueue.Enqueue(context);
-                    }
-                }
-                catch (HttpListenerException)
-                {
-                    // Expected when stopping
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    if (_isRunning)
-                        LogApi.Error($"Error accepting request - {ex.Message}");
-                }
+                _requestQueue.Enqueue(context);
             }
         }
 
         public void ProcessQueuedRequests()
         {
-            List<HttpListenerContext> requestsToProcess;
+            List<RimApiContext> requestsToProcess;
 
             lock (_queueLock)
             {
                 if (_requestQueue.Count == 0)
                     return;
 
-                requestsToProcess = new List<HttpListenerContext>(_requestQueue);
+                requestsToProcess = new List<RimApiContext>(_requestQueue);
                 _requestQueue.Clear();
             }
 
@@ -381,7 +359,7 @@ namespace RIMAPI.Core
             }
         }
 
-        private async Task ProcessRequestAsync(HttpListenerContext context)
+        private async Task ProcessRequestAsync(RimApiContext context)
         {
             try
             {
@@ -478,12 +456,7 @@ namespace RIMAPI.Core
             {
                 LogApi.Info("Disposing API server...");
 
-                if (_listener?.IsListening == true)
-                {
-                    _listener.Stop();
-                }
-
-                _listener?.Close();
+                _transport?.Dispose();
                 _sseService?.Dispose();
 
                 lock (_queueLock)

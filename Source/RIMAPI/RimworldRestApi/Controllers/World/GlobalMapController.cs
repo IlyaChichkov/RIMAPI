@@ -22,7 +22,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/world/caravans")]
-        public async Task GetCaravans(HttpListenerContext context)
+        public async Task GetCaravans(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -34,7 +34,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/world/caravan/path")]
-        public async Task GetCaravanPath(HttpListenerContext context)
+        public async Task GetCaravanPath(RimApiContext context)
         {
             var id = RequestParser.GetIntParameter(context, "id");
             await _cachingService.CacheAwareResponseAsync(
@@ -47,7 +47,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/world/settlements")]
-        public async Task GetSettlements(HttpListenerContext context)
+        public async Task GetSettlements(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -59,7 +59,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/world/player/settlements")]
-        public async Task GetPlayerSettlements(HttpListenerContext context)
+        public async Task GetPlayerSettlements(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -72,7 +72,7 @@ namespace RIMAPI.Controllers
 
 
         [Get("/api/v1/world/sites")]
-        public async Task GetSites(HttpListenerContext context)
+        public async Task GetSites(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -84,7 +84,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/world/tile")]
-        public async Task GetTile(HttpListenerContext context)
+        public async Task GetTile(RimApiContext context)
         {
             var tileId = RequestParser.GetIntParameter(context, "id");
             await _cachingService.CacheAwareResponseAsync(
@@ -97,7 +97,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/world/tile/coordinates")]
-        public async Task GetTileCoordinates(HttpListenerContext context)
+        public async Task GetTileCoordinates(RimApiContext context)
         {
             var tileId = RequestParser.GetIntParameter(context, "id");
             await _cachingService.CacheAwareResponseAsync(
@@ -110,7 +110,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/world/tile/details")]
-        public async Task GetTileDetails(HttpListenerContext context)
+        public async Task GetTileDetails(RimApiContext context)
         {
             var tileId = RequestParser.GetIntParameter(context, "id");
             await _cachingService.CacheAwareResponseAsync(
@@ -125,7 +125,7 @@ namespace RIMAPI.Controllers
 
 
         [Get("/api/v1/world/grid")]
-        public async Task GetWorldGrid(HttpListenerContext context)
+        public async Task GetWorldGrid(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -137,7 +137,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/world/grid/area")]
-        public async Task GetWorldGridArea(HttpListenerContext context)
+        public async Task GetWorldGridArea(RimApiContext context)
         {
             if (!int.TryParse(context.Request.QueryString["tile_id"], out var tileId) ||
                 !float.TryParse(context.Request.QueryString["radius"], out var radius))

@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Net;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
     public static class CorsUtil
     {
         public static void WriteCors(
-            HttpListenerRequest req,
-            HttpListenerResponse res,
+            RimApiRequest req,
+            RimApiResponse res,
             ISet<string> allowedOrigins = null
         )
         {
@@ -33,7 +34,7 @@ namespace RIMAPI.Core
         }
 
         public static void WritePreflight(
-            HttpListenerContext ctx,
+            RimApiContext ctx,
             IEnumerable<string> methods = null,
             IEnumerable<string> extraHeaders = null
         )

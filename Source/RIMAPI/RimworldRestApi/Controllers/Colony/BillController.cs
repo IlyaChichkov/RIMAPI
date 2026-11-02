@@ -18,7 +18,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/buildings/bills")]
         [EndpointMetadata("List all bills on a work table")]
-        public async Task GetBills(HttpListenerContext context)
+        public async Task GetBills(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var result = _billService.GetBills(buildingId);
@@ -27,7 +27,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/buildings/bills/add")]
         [EndpointMetadata("Create a new bill on a work table")]
-        public async Task CreateBill(HttpListenerContext context)
+        public async Task CreateBill(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var body = await context.Request.ReadBodyAsync<CreateBillRequest>();
@@ -37,7 +37,7 @@ namespace RIMAPI.Controllers
 
         [Delete("/api/v1/buildings/bills/remove")]
         [EndpointMetadata("Clear all bills from a work table")]
-        public async Task ClearBills(HttpListenerContext context)
+        public async Task ClearBills(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var result = _billService.ClearBills(buildingId);
@@ -46,7 +46,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/buildings/bill")]
         [EndpointMetadata("Get a specific bill on a work table")]
-        public async Task GetBill(HttpListenerContext context)
+        public async Task GetBill(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var billId = RequestParser.GetIntParameter(context, "bill_id");
@@ -56,7 +56,7 @@ namespace RIMAPI.Controllers
 
         [Put("/api/v1/buildings/bill/update")]
         [EndpointMetadata("Update a bill on a work table")]
-        public async Task UpdateBill(HttpListenerContext context)
+        public async Task UpdateBill(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var billId = RequestParser.GetIntParameter(context, "bill_id");
@@ -67,7 +67,7 @@ namespace RIMAPI.Controllers
 
         [Delete("/api/v1/buildings/bill/remove")]
         [EndpointMetadata("Delete a bill from a work table")]
-        public async Task DeleteBill(HttpListenerContext context)
+        public async Task DeleteBill(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var billId = RequestParser.GetIntParameter(context, "bill_id");
@@ -77,7 +77,7 @@ namespace RIMAPI.Controllers
 
         [Put("/api/v1/buildings/bill/reorder")]
         [EndpointMetadata("Reorder a bill on a work table")]
-        public async Task ReorderBill(HttpListenerContext context)
+        public async Task ReorderBill(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var billId = RequestParser.GetIntParameter(context, "bill_id");
@@ -88,7 +88,7 @@ namespace RIMAPI.Controllers
 
         [Put("/api/v1/buildings/bill/suspend")]
         [EndpointMetadata("Suspend or resume a bill on a work table")]
-        public async Task SuspendBill(HttpListenerContext context)
+        public async Task SuspendBill(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var billId = RequestParser.GetIntParameter(context, "bill_id");
@@ -99,7 +99,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/buildings/recipes")]
         [EndpointMetadata("Get available recipes for a work table")]
-        public async Task GetAvailableRecipes(HttpListenerContext context)
+        public async Task GetAvailableRecipes(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "building_id");
             var onlyResearched = RequestParser.GetBooleanParameter(context, "only_researched", false);
@@ -109,7 +109,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/map/work-tables")]
         [EndpointMetadata("Get all work tables on a map")]
-        public async Task GetWorkTables(HttpListenerContext context)
+        public async Task GetWorkTables(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _billService.GetWorkTables(mapId);

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -29,27 +30,27 @@ namespace RIMAPI.Core
             _docExportService = docExportService;
         }
 
-        public void Get(string path, Func<HttpListenerContext, Task> handler)
+        public void Get(string path, Func<RimApiContext, Task> handler)
         {
             AddRoute("GET", path, handler);
         }
 
-        public void Post(string path, Func<HttpListenerContext, Task> handler)
+        public void Post(string path, Func<RimApiContext, Task> handler)
         {
             AddRoute("POST", path, handler);
         }
 
-        public void Put(string path, Func<HttpListenerContext, Task> handler)
+        public void Put(string path, Func<RimApiContext, Task> handler)
         {
             AddRoute("PUT", path, handler);
         }
 
-        public void Delete(string path, Func<HttpListenerContext, Task> handler)
+        public void Delete(string path, Func<RimApiContext, Task> handler)
         {
             AddRoute("DELETE", path, handler);
         }
 
-        public void AddRoute(string method, string path, Func<HttpListenerContext, Task> handler)
+        public void AddRoute(string method, string path, Func<RimApiContext, Task> handler)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -64,7 +65,7 @@ namespace RIMAPI.Core
             var fullPath = $"/api/v1/{_extensionNamespace}/{normalizedPath}";
 
             // Add logging wrapper for error handling
-            async Task WrappedHandler(HttpListenerContext context)
+            async Task WrappedHandler(RimApiContext context)
             {
                 try
                 {
@@ -133,7 +134,7 @@ namespace RIMAPI.Core
                     .Where(m =>
                         m.ReturnType == typeof(Task)
                         && m.GetParameters().Length == 1
-                        && m.GetParameters()[0].ParameterType == typeof(HttpListenerContext)
+                        && m.GetParameters()[0].ParameterType == typeof(RimApiContext)
                     )
                     .ToList();
 
@@ -216,7 +217,7 @@ namespace RIMAPI.Core
             var fullPath = $"/api/v1/{_extensionNamespace}/{normalizedPath}";
 
             // Create handler that resolves controller from DI
-            Func<HttpListenerContext, Task> handler = async context =>
+            Func<RimApiContext, Task> handler = async context =>
             {
                 try
                 {

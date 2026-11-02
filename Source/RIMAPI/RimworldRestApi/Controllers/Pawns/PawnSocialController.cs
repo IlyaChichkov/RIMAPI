@@ -18,7 +18,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/game/defs/interactions")]
         [EndpointMetadata("Retrieves a list of all valid InteractionDef names in the game.")]
-        public async Task GetInteractionDefs(HttpListenerContext context)
+        public async Task GetInteractionDefs(RimApiContext context)
         {
             var result = _socialService.GetInteractionDefs();
             await context.SendJsonResponse(result);
@@ -26,7 +26,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/pawns/interactions")]
         [EndpointMetadata("Gets the real-time interaction readiness of a specific pawn.")]
-        public async Task GetPawnInteractionStatus(HttpListenerContext context)
+        public async Task GetPawnInteractionStatus(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "pawn_id");
             var result = _socialService.GetPawnInteractionStatus(pawnId);
@@ -35,7 +35,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/pawns/interactions/log")]
         [EndpointMetadata("Retrieves the recent interaction history for a specific pawn.")]
-        public async Task GetPawnInteractionLog(HttpListenerContext context)
+        public async Task GetPawnInteractionLog(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "pawn_id");
             var limit = RequestParser.HasParameter(context, "limit") ? RequestParser.GetIntParameter(context, "limit") : 50;
@@ -45,7 +45,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/pawns/relations")]
         [EndpointMetadata("Retrieves all established familial and romantic relationships for this pawn.")]
-        public async Task GetPawnRelations(HttpListenerContext context)
+        public async Task GetPawnRelations(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "pawn_id");
             var result = _socialService.GetPawnRelations(pawnId);
@@ -54,7 +54,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/pawns/opinions")]
         [EndpointMetadata("Retrieves a list of this pawn's numerical opinion toward every other colonist on the map.")]
-        public async Task GetPawnOpinions(HttpListenerContext context)
+        public async Task GetPawnOpinions(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "pawn_id");
             var result = _socialService.GetPawnOpinions(pawnId);
@@ -63,7 +63,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/pawns/interactions/force")]
         [EndpointMetadata("Forces a specific social interaction to occur immediately between two pawns.")]
-        public async Task ForceInteraction(HttpListenerContext context)
+        public async Task ForceInteraction(RimApiContext context)
         {
             var request = await context.Request.ReadBodyAsync<ForceInteractionRequestDto>();
             var result = _socialService.ForceInteraction(request);
@@ -72,7 +72,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/pawns/relations/add")]
         [EndpointMetadata("Instantly creates a permanent social bond between two pawns.")]
-        public async Task AddRelation(HttpListenerContext context)
+        public async Task AddRelation(RimApiContext context)
         {
             var request = await context.Request.ReadBodyAsync<AddRelationRequestDto>();
             var result = _socialService.AddRelation(request);
@@ -81,7 +81,7 @@ namespace RIMAPI.Controllers
 
         [Delete("/api/v1/pawns/relations/remove")]
         [EndpointMetadata("Severs a specific social bond between two pawns.")]
-        public async Task RemoveRelation(HttpListenerContext context)
+        public async Task RemoveRelation(RimApiContext context)
         {
             var pawn1Id = RequestParser.GetIntParameter(context, "pawn1_id");
             var pawn2Id = RequestParser.GetIntParameter(context, "pawn2_id");
