@@ -1,3 +1,4 @@
+#if !RIMWORLD_1_7
 using System;
 using System.Collections.Specialized;
 using System.IO;
@@ -197,3 +198,4 @@ namespace RIMAPI.Http
         }
     }
 }
+#endif

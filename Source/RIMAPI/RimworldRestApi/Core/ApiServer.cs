@@ -63,7 +63,11 @@ namespace RIMAPI.Core
                 LogApi.Info($"EventRegistry resolved: {_eventRegistry != null}");
 
                 LogApi.Info("Initializing HTTP components...");
+#if RIMWORLD_1_7
+                _transport = new WatsonTransport(ServerIP, Port);
+#else
                 _transport = new HttpListenerTransport(ServerIP, Port);
+#endif
 
                 _router = new Router();
                 _requestQueue = new Queue<RimApiContext>();

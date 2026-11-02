@@ -28,6 +28,8 @@
     <OutputPath>..\..\1.7\Assemblies\</OutputPath>
     <DefineConstants>$(DefineConstants);RIMWORLD_1_7</DefineConstants>
     <GenerateDependencyFile>false</GenerateDependencyFile>
+    <!-- Ship Watson and its dependencies next to RIMAPI.dll -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <!-- Default output path for Debug -->
@@ -71,6 +73,12 @@
     <PackageReference
       Include="Lib.Harmony.Ref"
       Version="3.0.0-rc.4"
+      Condition="'$(Configuration)' == 'Release-1.7'"
+    />
+    <!-- HTTP server for 1.7: HttpListener is HTTP.sys-backed on .NET 10/Windows and needs a URL ACL -->
+    <PackageReference
+      Include="Watson"
+      Version="7.3.2"
       Condition="'$(Configuration)' == 'Release-1.7'"
     />
 
