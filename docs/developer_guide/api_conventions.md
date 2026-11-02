@@ -49,12 +49,12 @@ Status codes are derived from error message content:
 | 400 | Error message contains "validation" |
 | 401 | Error message contains "unauthorized" |
 | 404 | Error message contains "not found" |
-| 411 | POST request without `Content-Length` header (see below) |
+| 411 | POST request without `Content-Length` header on RimWorld 1.5/1.6 (see below) |
 | 500 | All other errors |
 
 ## Content-Length Header Requirement
 
-All `POST` endpoints require a `Content-Length` header. The underlying .NET `HttpListener` rejects POST requests that omit this header with an HTTP 411 "Length Required" response.
+Always send a `Content-Length` header with `POST` requests. On RimWorld 1.5/1.6 the underlying .NET `HttpListener` rejects POST requests that omit this header with an HTTP 411 "Length Required" response. On RimWorld 1.7 RIMAPI runs on the Watson web server, which also accepts chunked request bodies.
 
 Even if the request body is empty or the endpoint only uses query parameters, you must send a body (an empty JSON object `{}` is sufficient).
 

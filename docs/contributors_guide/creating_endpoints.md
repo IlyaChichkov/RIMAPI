@@ -120,7 +120,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/example")]
         [EndpointMetadata("An example endpoint to demonstrate functionality.")]
-        public async Task GetExample(HttpListenerContext context)
+        public async Task GetExample(RimApiContext context)
         {
             var result = _exampleService.GetExampleMessage();
             await context.SendJsonResponse(result);
@@ -185,7 +185,7 @@ Use `RequestParser` to safely extract parameters from the URL.
 
 ```csharp
 [Get("/api/v1/colonist")]
-public async Task GetColonist(HttpListenerContext context)
+public async Task GetColonist(RimApiContext context)
 {
     var pawnId = RequestParser.GetIntParameter(context, "id");
     var result = _colonistService.GetColonist(pawnId);
@@ -199,7 +199,7 @@ For `[Post]` endpoints, you can read the request body and deserialize it into a 
 
 ```csharp
 [Post("/api/v1/colonist/work-priority")]
-public async Task SetColonistWorkPriority(HttpListenerContext context)
+public async Task SetColonistWorkPriority(RimApiContext context)
 {
     var body = await context.Request.ReadBodyAsync<WorkPriorityRequestDto>();
     var result = _colonistService.SetColonistWorkPriority(body);
@@ -213,7 +213,7 @@ For data that doesn't change frequently, use the `ICachingService` to improve pe
 
 ```csharp
 [Get("/api/v1/colonists")]
-public async Task GetColonists(HttpListenerContext context)
+public async Task GetColonists(RimApiContext context)
 {
     await _cachingService.CacheAwareResponseAsync(
         context,
