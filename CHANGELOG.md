@@ -1,7 +1,7 @@
 # Changelog
 ## [Unreleased]
 
-## v1.10.1 - 2026-11-02
+## v1.11.0 - 2026-11-02
 
 ### Added
 - **Colonist Mood Details:** Detailed colonist responses (`GET /api/v1/colonists/detailed`, `/api/v1/colonist/detailed` and their `v2` variants) include a `mood_details` field with current and target mood levels and a per-thought breakdown: `def_name`, localized label and description, game-calculated `mood_offset`, `stack_count`, `stage_index`, `kind` (memory/situational) and `stacked_effect_multiplier`. *(by @Yuri)*
