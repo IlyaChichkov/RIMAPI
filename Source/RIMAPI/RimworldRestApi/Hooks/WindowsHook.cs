@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using HarmonyLib;
 using RIMAPI.Core;
 using Verse;
@@ -9,7 +8,28 @@ namespace RimworldRestApi.Hooks
     [HarmonyPatch(typeof(DiaOption), "Activate")]
     public static class DialogOptionPatch
     {
-        static void Postfix(DiaOption __instance)
+        /// <summary>
+        /// Capture the dialog text before Activate moves to the next node or closes the dialog.
+        /// </summary>
+        static void Prefix(DiaOption __instance, out string __state)
+        {
+            __state = null;
+            try
+            {
+                if (__instance?.dialog is Dialog_NodeTree nodeTree)
+                {
+                    // Access private 'curNode'
+                    DiaNode currentNode = Traverse.Create(nodeTree).Field("curNode").GetValue<DiaNode>();
+                    __state = currentNode?.text;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogApi.Error($"[RimworldRestApi] Error in DialogOptionPatch.Prefix: {ex}");
+            }
+        }
+
+        static void Postfix(DiaOption __instance, string __state)
         {
             try
             {
@@ -18,30 +38,13 @@ namespace RimworldRestApi.Hooks
 
                 string selectedOptionLabel = Traverse.Create(__instance).Field("text").GetValue<string>();
 
-                string dialogContext = "Unknown";
-
-                Window activeWindow = null;
-                if (Find.WindowStack.Windows.Count > 0)
+                // The option's own dialog; the window stack may already be closed or topped by
+                // an always-on-top ImmediateWindow such as the learning helper
+                Window ownerWindow = __instance.dialog;
+                string windowType = ownerWindow?.GetType().Name ?? "Unknown";
+                if (windowType.Contains("Debug") || windowType.Contains("OptionListLister"))
                 {
-                    activeWindow = Find.WindowStack.Windows.Last();
-                }
-
-                if (activeWindow is Dialog_NodeTree nodeTree)
-                {
-                    // Access private 'curNode'
-                    DiaNode currentNode = Traverse.Create(nodeTree).Field("curNode").GetValue<DiaNode>();
-                    if (currentNode != null)
-                    {
-                        dialogContext = currentNode.text;
-                    }
-                }
-                else
-                {
-                    string windowType = activeWindow?.GetType().Name ?? "null";
-                    if (windowType.Contains("Debug") || windowType.Contains("OptionListLister"))
-                    {
-                        return;
-                    }
+                    return;
                 }
 
                 EventPublisherAccess.Publish(
@@ -56,10 +59,10 @@ namespace RimworldRestApi.Hooks
                         },
                         dialog = new
                         {
-                            text = dialogContext,
-                            window_type = activeWindow?.GetType().Name ?? "Unknown"
+                            text = __state ?? "Unknown",
+                            window_type = windowType
                         },
-                        ticks = Find.TickManager.TicksGame
+                        ticks = Current.Game?.tickManager?.TicksGame ?? 0
                     }
                 );
 
