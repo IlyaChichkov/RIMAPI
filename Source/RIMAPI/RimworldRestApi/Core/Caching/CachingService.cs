@@ -14,6 +14,11 @@ namespace RIMAPI.Core
 {
     public class CachingService : ICachingService, IDisposable
     {
+        /// <summary>
+        /// Current game tick, or 0 at the main menu (Find.TickManager throws when no game is loaded).
+        /// </summary>
+        private static int CurrentGameTick => Current.Game?.tickManager?.TicksGame ?? 0;
+
         private class CacheEntry
         {
             public object Value { get; set; }
@@ -138,7 +143,7 @@ namespace RIMAPI.Core
             LogApi.Info("[CachingService] Initialized");
             if (Current.ProgramState == ProgramState.Playing)
             {
-                _lastCleanupTick = Find.TickManager.TicksGame;
+                _lastCleanupTick = CurrentGameTick;
             }
             else
             {
@@ -196,7 +201,7 @@ namespace RIMAPI.Core
         // Main Cache Methods
         public void Update()
         {
-            var currentTick = Find.TickManager?.TicksGame ?? 0;
+            var currentTick = CurrentGameTick;
 
             // Cleanup every 10 seconds (600 ticks at 60 TPS)
             if (currentTick - _lastCleanupTick >= 600)
@@ -212,7 +217,7 @@ namespace RIMAPI.Core
             {
                 var expiredKeys = new List<string>();
                 var now = DateTime.UtcNow;
-                var currentTick = Find.TickManager?.TicksGame ?? 0;
+                var currentTick = CurrentGameTick;
 
                 foreach (var kvp in _cache)
                 {
@@ -347,7 +352,7 @@ namespace RIMAPI.Core
                     LastAccessed = now,
                     Priority = priority,
                     ExpirationType = CacheExpirationType.Absolute,
-                    GameTickAdded = Find.TickManager?.TicksGame ?? 0,
+                    GameTickAdded = CurrentGameTick,
                 };
 
                 if (expiration.HasValue)
@@ -381,7 +386,7 @@ namespace RIMAPI.Core
                     LastAccessed = now,
                     Priority = priority,
                     ExpirationType = expirationType,
-                    GameTickAdded = Find.TickManager?.TicksGame ?? 0,
+                    GameTickAdded = CurrentGameTick,
                 };
 
                 switch (expirationType)
@@ -551,7 +556,7 @@ namespace RIMAPI.Core
                 if (includeDetails)
                 {
                     var now = DateTime.UtcNow;
-                    var currentTick = Find.TickManager?.TicksGame ?? 0;
+                    var currentTick = CurrentGameTick;
 
                     foreach (var kvp in _cache)
                     {
@@ -657,7 +662,7 @@ namespace RIMAPI.Core
         private bool IsExpired(CacheEntry entry)
         {
             var now = DateTime.UtcNow;
-            var currentTick = Find.TickManager?.TicksGame ?? 0;
+            var currentTick = CurrentGameTick;
             return IsExpired(entry, now, currentTick);
         }
 
