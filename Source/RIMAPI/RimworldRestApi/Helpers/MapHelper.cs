@@ -762,8 +762,10 @@ namespace RIMAPI.Helpers
                 }
 
                 // Set priority BEFORE registering
-                int priorityValue = request.Priority ?? 0; // Default to High (0)
-                priorityValue = Mathf.Clamp(priorityValue, -1, 2);
+                // Raw StoragePriority value (0 Unstored .. 5 Critical), same as stockpile update;
+                // default to Normal like a stockpile placed in game
+                int priorityValue = request.Priority ?? (int)StoragePriority.Normal;
+                priorityValue = Mathf.Clamp(priorityValue, 0, 5);
                 stockpile.settings.Priority = (StoragePriority)priorityValue;
 
                 // Configure storage settings (filtration)
