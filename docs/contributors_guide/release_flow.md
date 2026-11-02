@@ -52,11 +52,13 @@ What this script does automatically:
 
 ## 4. Build the Mod (Multi-Version Support)
 
-!!! warning "Important: Build for 1.5 and 1.6"
+!!! warning "Important: Build for 1.5, 1.6 and 1.7"
 
-    RIMAPI currently supports both RimWorld 1.5 and 1.6. You MUST compile the binaries for both engine versions before packaging the final release folder or uploading to Steam Workshop.
+    RIMAPI currently supports RimWorld 1.5, 1.6 and 1.7. You MUST compile the binaries for all three engine versions before packaging the final release folder or uploading to Steam Workshop.
 
-Ensure your build pipeline or IDE targets both versions so that the respective 1.5/Assemblies and 1.6/Assemblies folders are correctly populated.
+Ensure your build pipeline or IDE targets all versions so that the respective 1.5/Assemblies, 1.6/Assemblies and 1.7/Assemblies folders are correctly populated.
+
+RimWorld 1.7 runs on the Waylith engine (.NET 10), so `Release-1.7` targets `net10.0` and needs the .NET 10 SDK; `Release-1.5` and `Release-1.6` still target `net472`.
 
 ## 5. Commit and Tag
 
