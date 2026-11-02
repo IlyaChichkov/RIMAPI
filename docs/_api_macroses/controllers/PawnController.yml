@@ -105,7 +105,7 @@ desc: |-
     }
     ```
   method: GET
-  /api/v2/colonist/detailed:
+/api/v2/colonist/detailed:
   desc: Retrieves detailed statistics for a single colonist identified by their ID, including needs, work info, medical status, and mood thought factors. Unlike the bulk endpoint, this request fetches real-time data without caching.
   curl: |-
     **Example:**
@@ -193,7 +193,7 @@ desc: |-
     }
     ```
   method: GET
-  /api/v1/colonists:
+/api/v1/colonists:
   desc: |-
     Retrieves a list of all colonists in the player's faction, including
     their skills, traits, health, mood, and current activities.
@@ -377,7 +377,7 @@ desc: |-
     }
     ```
   method: GET
-  /api/v1/colonist/detailed:
+/api/v1/colonist/detailed:
   desc: Retrieves detailed info about a single colonist in the player's faction by ID, including mood thought factors.
   curl: |-
     **Example:**
@@ -459,7 +459,7 @@ desc: |-
     }
     ```
   method: GET
-  /api/v1/colonist/opinion-about:
+/api/v1/colonist/opinion-about:
   desc: |-
     Retrieves the opinion of one colonist about another specified colonist.
     This endpoint provides insight into interpersonal relationships within
