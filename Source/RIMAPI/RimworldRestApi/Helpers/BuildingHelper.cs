@@ -137,7 +137,7 @@ namespace RIMAPI.Helpers
                 DamageAmount = verbProps.defaultProjectile?.projectile?.GetDamageAmount(1f) ?? 0,
                 ArmorPenetration =
                     verbProps.defaultProjectile?.projectile?.GetArmorPenetration(1f) ?? 0f,
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                 DamageAmount =
                     verbProps.defaultProjectile?.projectile?.GetDamageAmount(1f, null) ?? 0,
                 ArmorPenetration =

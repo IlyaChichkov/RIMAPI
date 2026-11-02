@@ -13,7 +13,7 @@ namespace RIMAPI.Helpers
         {
 #if RIMWORLD_1_5
             return PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_Colonists.ToList();
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
             return PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_Colonists.ToList();
 #endif
         }

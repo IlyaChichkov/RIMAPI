@@ -191,7 +191,7 @@ namespace RIMAPI.Helpers
         {
 #if RIMWORLD_1_5
             return map.Tile;
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
             return map.Tile.tileId;
 #endif
             throw new Exception("Failed to get GetMapTileId for this rimworld version.");
@@ -411,7 +411,7 @@ namespace RIMAPI.Helpers
                     })
                     .ToList(),
             };
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
             var allRooms = map.regionGrid.AllRooms;
             mapRooms = new MapRoomsDto
             {

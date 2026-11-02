@@ -37,7 +37,7 @@ namespace RIMAPI.Services
             if (Find.UIRoot == null || Find.UIRoot.screenshotMode == null) return;
             var handler = Find.UIRoot.screenshotMode;
 
-#if RIMWORLD_1_6
+#if RIMWORLD_1_6 || RIMWORLD_1_7
             handler.Active = state;
 #else
             // In 1.5, we must use Reflection to write to the private 'active' backing field
