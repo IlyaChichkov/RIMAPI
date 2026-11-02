@@ -70,8 +70,11 @@ namespace RIMAPI.Services
 
                 if (request.RestoreBodyParts)
                 {
-                    // Advanced: Restore missing parts
-                    pawn.health.RestorePart(null); // Null restores whole body
+                    // RestorePart(null) only logs an error; restore each missing branch instead
+                    foreach (var missing in pawn.health.hediffSet.GetMissingPartsCommonAncestors().ToList())
+                    {
+                        pawn.health.RestorePart(missing.Part);
+                    }
                 }
 
                 if (request.RemoveAllDiseases && pawn.health?.hediffSet != null)

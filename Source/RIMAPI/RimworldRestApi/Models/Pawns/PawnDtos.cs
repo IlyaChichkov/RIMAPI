@@ -27,6 +27,7 @@ namespace RIMAPI.Models
         public PoliciesInfoDto PoliciesInfo { get; set; }
         public MedicalInfoDto MedicalInfo { get; set; }
         public SocialInfoDto SocialInfo { get; set; }
+        public MoodDetailsDto MoodDetails { get; set; }
     }
 
     public class ApiV1PawnDetailedDto
@@ -45,6 +46,7 @@ namespace RIMAPI.Models
         public PoliciesInfoDto PoliciesInfo { get; set; }
         public MedicalInfoDto ColonistMedicalInfo { get; set; }
         public SocialInfoDto SocialInfo { get; set; }
+        public MoodDetailsDto MoodDetails { get; set; }
     }
 
 

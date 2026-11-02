@@ -6,14 +6,23 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/api/v1/builder/copy"
-  auth: inherit
-
-body:
-  json: |-
-    {
-            "from": { "x": 100, "z": 100 },
-            "to": { "x": 110, "z": 110 }
+  body:
+    type: json
+    data: |-
+      {
+        "map_id": 0,
+        "point_a": {
+          "x": 100,
+          "y": 0,
+          "z": 100
+        },
+        "point_b": {
+          "x": 110,
+          "y": 0,
+          "z": 110
         }
+      }
+  auth: inherit
 
 settings:
   encodeUrl: true

@@ -10,6 +10,11 @@ public class OrderService : IOrderService
 {
     public ApiResult DesignateArea(DesignateRequestDto request)
     {
+        if (request?.PointA == null || request.PointB == null || string.IsNullOrEmpty(request.Type))
+        {
+            return ApiResult.ValidationFail("map_id, type, point_a and point_b are required");
+        }
+
         var map = MapHelper.GetMapByID(request.MapId);
         if (map == null) return ApiResult.Fail($"Map with id: {request.MapId} not found");
 

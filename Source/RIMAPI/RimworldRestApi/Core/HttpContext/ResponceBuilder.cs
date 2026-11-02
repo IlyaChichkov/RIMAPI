@@ -56,6 +56,10 @@ namespace RIMAPI.Core
         public static ApiResult<T> Fail(string error) =>
             new ApiResult<T> { Success = false, Errors = { error } };
 
+        /// <summary>Fail with a message that maps to HTTP 400 (it contains "validation").</summary>
+        public static ApiResult<T> ValidationFail(string reason) =>
+            Fail($"Request validation failed: {reason}");
+
         public static ApiResult<T> Partial(T data, IEnumerable<string> warnings) =>
             new ApiResult<T>
             {
@@ -76,6 +80,10 @@ namespace RIMAPI.Core
 
         public static ApiResult Fail(string error) =>
             new ApiResult { Success = false, Errors = { error } };
+
+        /// <summary>Fail with a message that maps to HTTP 400 (it contains "validation").</summary>
+        public static ApiResult ValidationFail(string reason) =>
+            Fail($"Request validation failed: {reason}");
 
         public static ApiResult Unimplemented() =>
             new ApiResult { Success = false, Errors = { "Not implemented" } };

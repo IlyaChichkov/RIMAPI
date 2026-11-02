@@ -75,7 +75,16 @@ namespace RIMAPI.Services
         {
             try
             {
-                var modifiedStuff = DefDatabase<ThingDef>.GetNamed(stuffColor.Name);
+                if (string.IsNullOrEmpty(stuffColor?.Name) || string.IsNullOrEmpty(stuffColor.Hex))
+                {
+                    return ApiResult.ValidationFail("name and hex are required");
+                }
+
+                var modifiedStuff = DefDatabase<ThingDef>.GetNamed(stuffColor.Name, false);
+                if (modifiedStuff?.stuffProps == null)
+                {
+                    return ApiResult.Fail($"Stuff def not found: {stuffColor.Name}");
+                }
                 modifiedStuff.stuffProps.color = GameTypesHelper.HexToColor(stuffColor.Hex);
 
                 List<Thing> affectedThings = new List<Thing>();

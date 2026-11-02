@@ -16,6 +16,11 @@ namespace RIMAPI.Services
         {
             try
             {
+                if (request?.PointA == null || request.PointB == null)
+                {
+                    return ApiResult<BlueprintDto>.ValidationFail("map_id, point_a and point_b are required");
+                }
+
                 var map = MapHelper.GetMapByID(request.MapId);
                 if (map == null) return ApiResult<BlueprintDto>.Fail($"Map {request.MapId} not found.");
 

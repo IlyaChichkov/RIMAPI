@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseURL}}/api/v1/stream/status"
+  url: "{{baseURL}}/api/v1/camera/stream/status"
   auth: inherit
 
 settings:

@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseURL}}/api/v1/mods/preview?package_id=RedEyeDev.RIMAPI
+  url: "{{baseURL}}/api/v1/mods/preview?package_id=RedEyeDev.RIMAPI"
   body: none
   auth: inherit
 

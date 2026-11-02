@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseURL}}/api/v1/incident/chance"
+  url: "{{baseURL}}/api/v1/incident/chance?incident_def_name=RaidEnemy"
   auth: inherit
 
 settings:

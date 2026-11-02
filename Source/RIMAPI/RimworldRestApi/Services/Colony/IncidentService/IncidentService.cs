@@ -92,7 +92,12 @@ namespace RIMAPI.Services
         {
             try
             {
-                IncidentDef incidentDef = DefDatabase<IncidentDef>.GetNamed(request.IncidentDefName);
+                if (string.IsNullOrEmpty(request?.IncidentDefName))
+                {
+                    return ApiResult<IncidentChanceDto>.ValidationFail("incident_def_name is required");
+                }
+
+                IncidentDef incidentDef = DefDatabase<IncidentDef>.GetNamed(request.IncidentDefName, false);
                 if (incidentDef == null)
                 {
                     return ApiResult<IncidentChanceDto>.Fail($"Incident '{request.IncidentDefName}' not found in database.");
