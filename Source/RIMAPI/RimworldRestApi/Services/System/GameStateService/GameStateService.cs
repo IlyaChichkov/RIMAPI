@@ -51,15 +51,19 @@ namespace RIMAPI.Services
         {
             try
             {
-                if (body == null) return ApiResult.Fail("Request body is missing.");
+                if (body == null) return ApiResult.ValidationFail("request body is required");
                 if (Current.Game == null) return ApiResult.Fail("No active game is currently running.");
                 if (GameDataSaveLoader.SavingIsTemporarilyDisabled) return ApiResult.Fail("Saving is temporarily disabled.");
 
-                string saveName = Current.Game.Info.permadeathMode
+                bool permadeath = Current.Game.Info.permadeathMode;
+                if (!permadeath && string.IsNullOrWhiteSpace(body.FileName))
+                    return ApiResult.ValidationFail("file_name is required");
+
+                string saveName = permadeath
                     ? Current.Game.Info.permadeathModeUniqueName
                     : GenFile.SanitizedFileName(body.FileName);
 
-                if (string.IsNullOrWhiteSpace(saveName)) return ApiResult.Fail("File name is required.");
+                if (string.IsNullOrWhiteSpace(saveName)) return ApiResult.ValidationFail("file_name is required");
 
                 LongEventHandler.ExecuteWhenFinished(() =>
                 {
@@ -79,7 +83,8 @@ namespace RIMAPI.Services
         {
             try
             {
-                if (body == null) return ApiResult.Fail("Request body is missing.");
+                if (body == null || string.IsNullOrWhiteSpace(body.FileName))
+                    return ApiResult.ValidationFail("file_name is required");
                 string filePath = GenFilePaths.FilePathForSavedGame(body.FileName);
                 if (!System.IO.File.Exists(filePath)) return ApiResult.Fail($"Save file not found: {body.FileName}.rws");
 

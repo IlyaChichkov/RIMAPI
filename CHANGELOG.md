@@ -2,7 +2,7 @@
 ## [Unreleased]
 
 ### Changed
-- **Validation Errors Return 400:** Several endpoints now answer `400` with `Request validation failed: …` for a missing or invalid body instead of a `500` `NullReferenceException`: `POST /api/v1/colonist/time-assignment`, `/order/designate/area`, `/map/repair/positions`, `/builder/copy`, `/item/change/image`, `/dev/stuff/color`, `/game/select-area` and `/game/send/letter`. Added `ApiResult.ValidationFail(reason)` for this. *(by @Ilya)*
+- **Validation Errors Return 400:** Several endpoints now answer `400` with `Request validation failed: …` for a missing or invalid body instead of a `500` `NullReferenceException`: `POST /api/v1/colonist/time-assignment`, `/order/designate/area`, `/map/repair/positions`, `/builder/copy`, `/item/change/image`, `/dev/stuff/color`, `/game/select-area`, `/game/send/letter`, `/game/save` and `/game/load`. Added `ApiResult.ValidationFail(reason)` for this. *(by @Ilya)*
 - **Stockpile Default Priority:** `POST /api/v1/map/zone/stockpile` without `priority` now creates a `Normal` stockpile instead of an `Unstored` one. `priority` is the raw `StoragePriority` value (0–5), as in `/map/zone/stockpile/update`. *(by @Ilya)*
 - **Select Area:** `POST /api/v1/game/select-area` now actually selects every selectable thing inside the rectangle, as documented. *(by @Ilya)*
 - **Incident Chance Query Parameter:** `GET /api/v1/incident/chance` accepts `?incident_def_name=`, since most clients do not send GET bodies. It returns 400 when the name is missing and 404 for an unknown incident. *(by @Ilya)*
