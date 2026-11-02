@@ -728,6 +728,24 @@ namespace RIMAPI.Helpers
                     };
                 }
 
+                // Like the vanilla zone designator: skip cells that already have a zone, are fogged
+                // or hold things zones cannot overlap (rock, walls, ...)
+                List<IntVec3> validCells = rect.Cells
+                    .Where(cell =>
+                        map.zoneManager.ZoneAt(cell) == null
+                        && !cell.Fogged(map)
+                        && cell.GetThingList(map).All(thing => thing.def.CanOverlapZones))
+                    .ToList();
+
+                if (validCells.Count == 0)
+                {
+                    return new StockpileResponseDto
+                    {
+                        Success = false,
+                        Message = "No valid cells: every cell already has a zone, is fogged or is blocked (rock, walls, ...)."
+                    };
+                }
+
                 // Create new stockpile zone
                 Zone_Stockpile stockpile = new Zone_Stockpile(StorageSettingsPreset.DefaultStockpile, map.zoneManager);
 
@@ -845,12 +863,13 @@ namespace RIMAPI.Helpers
                 map.zoneManager.RegisterZone(stockpile);
 
                 // NOW add all cells to the registered zone
-                foreach (IntVec3 cell in rect)
+                foreach (IntVec3 cell in validCells)
                 {
                     stockpile.AddCell(cell);
                 }
 
-                int cellCount = rect.Area;
+                int cellCount = validCells.Count;
+                int skippedCount = rect.Area - cellCount;
                 LogApi.Info($"Created stockpile '{stockpile.label}' with {cellCount} cells at priority {stockpile.settings.Priority}");
 
                 return new StockpileResponseDto
@@ -860,7 +879,9 @@ namespace RIMAPI.Helpers
                     Name = stockpile.label,
                     CellsCount = cellCount,
                     Priority = (int)stockpile.settings.Priority,
-                    Message = $"Stockpile '{stockpile.label}' created successfully with {cellCount} cells."
+                    Message = skippedCount > 0
+                        ? $"Stockpile '{stockpile.label}' created successfully with {cellCount} cells ({skippedCount} blocked cells skipped)."
+                        : $"Stockpile '{stockpile.label}' created successfully with {cellCount} cells."
                 };
             }
             catch (Exception ex)
