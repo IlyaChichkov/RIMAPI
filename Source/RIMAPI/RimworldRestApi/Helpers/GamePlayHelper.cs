@@ -21,7 +21,7 @@ namespace RIMAPI.Helpers
             Current.ProgramState = ProgramState.Entry;
 #if RIMWORLD_1_5
             // Game.ClearCaches(); not implimented in v1.5
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
             Game.ClearCaches();
 #endif
             Current.Game = new Game();
@@ -34,7 +34,7 @@ namespace RIMAPI.Helpers
 #if RIMWORLD_1_5
             // LandmarkDensity not implimented in v1.5
             Current.Game.World = WorldGenerator.GenerateWorld(Mathf.Clamp(request.PlanetCoverage, 0, 1), seed, (OverallRainfall)request.OverallRainfall, (OverallTemperature)request.OverallTemperature, (OverallPopulation)request.OverallPopulation);
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
             Current.Game.World = WorldGenerator.GenerateWorld(Mathf.Clamp(request.PlanetCoverage, 0, 1), seed, (OverallRainfall)request.OverallRainfall, (OverallTemperature)request.OverallTemperature, (OverallPopulation)request.OverallPopulation, (LandmarkDensity)request.LandmarkDensity);
 #endif
             if (!string.IsNullOrEmpty(request.StartingTile) && request.StartingTile != "auto")
@@ -48,7 +48,7 @@ namespace RIMAPI.Helpers
                     }
 #if RIMWORLD_1_5
                     initData.startingTile = tileId;
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                     initData.startingTile = Find.WorldGrid[tileId].tile;
 #endif
                 }
@@ -151,7 +151,7 @@ namespace RIMAPI.Helpers
             {
                 state.CurrentView = "Unknown";
             }
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
             if (WorldRendererUtility.WorldRendered)
             {
                 state.CurrentView = "World";

@@ -24,7 +24,7 @@ namespace RIMAPI.Helpers
                 Id = tileId,
 #if RIMWORLD_1_5
                 Biome = tile.biome.defName,
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                 Biome = tile.PrimaryBiome.defName,
 #endif
                 Elevation = tile.elevation,
@@ -65,7 +65,7 @@ namespace RIMAPI.Helpers
 
 #if RIMWORLD_1_5
             forageablePlantCount = tile.biome.forageability;
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
             forageablePlantCount = tile.PrimaryBiome.forageability;
 #endif
 

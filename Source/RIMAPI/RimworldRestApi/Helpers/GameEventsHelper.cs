@@ -27,7 +27,7 @@ namespace RIMAPI.Helpers
 #if RIMWORLD_1_5
                         ExpiryHours =
                             GameTypesHelper.TicksToDays(quest.ticksUntilAcceptanceExpiry) * 24,
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                         ExpiryHours = GameTypesHelper.TicksToDays(quest.TicksUntilExpiry) * 24,
 #endif
                         Reward = GetQuestRewardString(quest),
@@ -47,7 +47,7 @@ namespace RIMAPI.Helpers
 #if RIMWORLD_1_5
                         ExpiryHours =
                             GameTypesHelper.TicksToDays(quest.ticksUntilAcceptanceExpiry) * 24,
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                         ExpiryHours = GameTypesHelper.TicksToDays(quest.TicksUntilExpiry) * 24,
 #endif
                         Reward = GetQuestRewardString(quest),
