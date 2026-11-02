@@ -330,6 +330,11 @@ namespace RIMAPI.Services
         {
             try
             {
+                if (request?.Positions == null)
+                {
+                    return ApiResult.ValidationFail("map_id and positions are required");
+                }
+
                 var map = MapHelper.GetMapByID(request.MapId);
                 if (map == null) return ApiResult.Fail($"Map {request.MapId} not found.");
 
