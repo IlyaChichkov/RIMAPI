@@ -19,7 +19,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/resources/summary")]
-        public async Task GetResourcesSummary(HttpListenerContext context)
+        public async Task GetResourcesSummary(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _resourcesService.GetResourcesSummary(mapId);
@@ -27,7 +27,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/resources/stored")]
-        public async Task GetResourcesStored(HttpListenerContext context)
+        public async Task GetResourcesStored(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var categoryDef = RequestParser.GetStringParameter(context, "category", false);
@@ -45,7 +45,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/resources/storages/summary")]
-        public async Task GetStoragesSummary(HttpListenerContext context)
+        public async Task GetStoragesSummary(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _resourcesService.GetStoragesSummary(mapId);
@@ -53,7 +53,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/item/spawn")]
-        public async Task SpawnItem(HttpListenerContext context)
+        public async Task SpawnItem(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<SpawnItemRequestDto>();
             var result = _resourcesService.SpawnItem(body);
@@ -61,7 +61,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/item/recipes")]
-        public async Task GetItemRecipe(HttpListenerContext context)
+        public async Task GetItemRecipe(RimApiContext context)
         {
             var itemDef = RequestParser.GetStringParameter(context, "def_name");
             var result = _thingsService.GetItemRecipes(itemDef);
@@ -69,7 +69,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/item/sources")]
-        public async Task GetItemSource(HttpListenerContext context)
+        public async Task GetItemSource(RimApiContext context)
         {
             var itemDef = RequestParser.GetStringParameter(context, "def_name");
             var result = _thingsService.GetItemSources(itemDef);
@@ -78,7 +78,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/things/set-forbidden")]
         [EndpointMetadata("Set forbidden status on one or more things")]
-        public async Task SetForbidden(HttpListenerContext context)
+        public async Task SetForbidden(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<SetForbiddenRequestDto>();
             var result = _thingsService.SetForbidden(body);

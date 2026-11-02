@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using RIMAPI.Models;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -45,7 +46,7 @@ namespace RIMAPI.Core
 
         // Cache-aware response generation
         Task CacheAwareResponseAsync<T>(
-            HttpListenerContext context,
+            RimApiContext context,
             string cacheKey,
             Func<Task<ApiResult<T>>> dataFactory,
             TimeSpan? expiration = null,

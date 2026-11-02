@@ -16,28 +16,28 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/research/progress")]
-        public async Task GetResearchProgress(HttpListenerContext context)
+        public async Task GetResearchProgress(RimApiContext context)
         {
             var result = _researchService.GetResearchProgress();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/research/finished")]
-        public async Task GetResearchFinished(HttpListenerContext context)
+        public async Task GetResearchFinished(RimApiContext context)
         {
             var result = _researchService.GetResearchFinished();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/research/tree")]
-        public async Task GetResearchTree(HttpListenerContext context)
+        public async Task GetResearchTree(RimApiContext context)
         {
             var result = _researchService.GetResearchTree();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/research/project")]
-        public async Task GetResearchProjectByName(HttpListenerContext context)
+        public async Task GetResearchProjectByName(RimApiContext context)
         {
             var name = RequestParser.GetStringParameter(context, "name");
             var result = _researchService.GetResearchProjectByName(name);
@@ -45,7 +45,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/research/summary")]
-        public async Task GetResearchSummary(HttpListenerContext context)
+        public async Task GetResearchSummary(RimApiContext context)
         {
             var result = _researchService.GetResearchSummary();
             await context.SendJsonResponse(result);
@@ -53,7 +53,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/research/target")]
         [EndpointMetadata("Set the current research project by defName")]
-        public async Task SetResearchTarget(HttpListenerContext context)
+        public async Task SetResearchTarget(RimApiContext context)
         {
             var name = RequestParser.GetStringParameter(context, "name");
             var force = RequestParser.GetBooleanParameter(context, "force");
@@ -63,7 +63,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/research/stop")]
         [EndpointMetadata("Stop the currently active research project")]
-        public async Task StopCurrentProject(HttpListenerContext context)
+        public async Task StopCurrentProject(RimApiContext context)
         {
             var result = _researchService.StopCurrentProject();
             await context.SendJsonResponse(result);

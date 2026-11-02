@@ -5,6 +5,7 @@ using System.Threading.Tasks; // Required for Task
 using Newtonsoft.Json;
 using RIMAPI.Services;
 using Verse;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -67,7 +68,7 @@ namespace RIMAPI.Core
             }
         }
 
-        public async Task HandleSSEConnection(HttpListenerContext context)
+        public async Task HandleSSEConnection(RimApiContext context)
         {
             if (_disposed)
             {
@@ -84,8 +85,7 @@ namespace RIMAPI.Core
                 // 1. Set Headers
                 response.StatusCode = 200;
                 response.ContentType = "text/event-stream";
-                response.Headers.Add("Cache-Control", "no-cache");
-                response.Headers.Add("Connection", "keep-alive");
+                response.Headers.Set("Cache-Control", "no-cache");
                 response.SendChunked = true;
 
                 // 2. Register Client
@@ -111,13 +111,13 @@ namespace RIMAPI.Core
                     SendEventToClient(client, "error", new { message = "Failed to get initial game state", errors = gameStateResult.Errors });
 
                 // 4. CRITICAL: Wait here until the client disconnects.
-                // This keeps the HttpListenerContext alive.
+                // This keeps the HTTP context alive.
                 await client.WaitForDisconnect();
             }
             catch (Exception ex)
             {
                 // Only log real errors, not normal disconnections
-                if (!(ex is HttpListenerException))
+                if (!(ex is HttpListenerException || ex is System.IO.IOException))
                     LogApi.Error($"[SSE] Connection error - {ex.Message}");
             }
             finally
@@ -209,20 +209,13 @@ namespace RIMAPI.Core
                 string message = $"event: {eventType}\ndata: {json}\n\n";
                 var buffer = System.Text.Encoding.UTF8.GetBytes(message);
 
-                lock (client.SendLock)
-                {
-                    if (!client.IsConnected) return;
-                    client.Response.OutputStream.Write(buffer, 0, buffer.Length);
-                    client.Response.OutputStream.Flush();
-
-                    TotalEventsSent++;
-                }
-                client.UpdateLastActivity();
+                // Writes are queued per client and run off the main thread; a failed write
+                // signals disconnect, which wakes up HandleSSEConnection and triggers RemoveClient.
+                client.EnqueueWrite(buffer);
+                TotalEventsSent++;
             }
             catch
             {
-                // If write fails, signal disconnect. 
-                // This wakes up HandleSSEConnection, which triggers RemoveClient in finally block.
                 client.SignalDisconnect();
             }
         }
@@ -275,15 +268,16 @@ namespace RIMAPI.Core
         // --- UPDATED SseClient with Async Support ---
         private class SseClient
         {
-            public HttpListenerResponse Response { get; }
+            public RimApiResponse Response { get; }
             public bool IsConnected { get; private set; }
             public DateTime LastActivity { get; private set; }
-            public object SendLock { get; } = new object();
+            private readonly object _sendLock = new object();
+            private Task _sendTail = Task.CompletedTask;
 
             // This allows HandleSSEConnection to "await" the disconnection
             private readonly TaskCompletionSource<bool> _disconnectTcs = new TaskCompletionSource<bool>();
 
-            public SseClient(HttpListenerResponse response)
+            public SseClient(RimApiResponse response)
             {
                 Response = response;
                 IsConnected = true;
@@ -304,6 +298,35 @@ namespace RIMAPI.Core
             public void UpdateLastActivity()
             {
                 LastActivity = DateTime.UtcNow;
+            }
+
+            /// <summary>
+            /// Queue a chunk after the previous ones so events keep their order without blocking the caller.
+            /// </summary>
+            public void EnqueueWrite(byte[] buffer)
+            {
+                lock (_sendLock)
+                {
+                    _sendTail = _sendTail
+                        .ContinueWith(_ => WriteAsync(buffer), TaskScheduler.Default)
+                        .Unwrap();
+                }
+            }
+
+            private async Task WriteAsync(byte[] buffer)
+            {
+                if (!IsConnected)
+                    return;
+
+                try
+                {
+                    await Response.WriteChunkAsync(buffer).ConfigureAwait(false);
+                    UpdateLastActivity();
+                }
+                catch
+                {
+                    SignalDisconnect();
+                }
             }
         }
     }

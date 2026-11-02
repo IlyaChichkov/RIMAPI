@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Verse;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -22,13 +23,13 @@ namespace RIMAPI.Core
         }
 
         [Get("/api/v1/core/docs/export")]
-        public async Task ExportCoreDocumentation(HttpListenerContext context)
+        public async Task ExportCoreDocumentation(RimApiContext context)
         {
             await ExportDocumentation(context, true);
         }
 
         [Get("/api/v1/docs")]
-        public async Task GetDocumentation(HttpListenerContext context)
+        public async Task GetDocumentation(RimApiContext context)
         {
             var format = context.Request.QueryString["format"] ?? "html";
 
@@ -64,7 +65,7 @@ namespace RIMAPI.Core
         }
 
         private async Task SendRawResponse(
-            HttpListenerResponse response,
+            RimApiResponse response,
             string content,
             string contentType
         )
@@ -72,14 +73,12 @@ namespace RIMAPI.Core
             try
             {
                 response.StatusCode = 200;
-                response.ContentType = contentType;
-                response.ContentEncoding = Encoding.UTF8;
+                response.ContentType = contentType.Contains("charset=")
+                    ? contentType
+                    : contentType + "; charset=utf-8";
 
                 var buffer = Encoding.UTF8.GetBytes(content);
-                response.ContentLength64 = buffer.Length;
-
-                await response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                response.OutputStream.Close();
+                await response.SendAsync(buffer);
             }
             catch (Exception ex)
             {
@@ -134,7 +133,7 @@ namespace RIMAPI.Core
 
         // Additional endpoint for specific extension documentation
         [Get("/api/v1/docs/extensions/{extensionId}")]
-        public async Task GetExtensionDocumentation(HttpListenerContext context, string extensionId)
+        public async Task GetExtensionDocumentation(RimApiContext context, string extensionId)
         {
             try
             {
@@ -168,7 +167,7 @@ namespace RIMAPI.Core
 
         // Health check endpoint for documentation service
         [Get("/api/v1/docs/health")]
-        public async Task GetHealth(HttpListenerContext context)
+        public async Task GetHealth(RimApiContext context)
         {
             try
             {
@@ -195,7 +194,7 @@ namespace RIMAPI.Core
         }
 
         [Get("/api/v1/docs/export")]
-        public async Task ExportDocumentation(HttpListenerContext context, bool saveFile = false)
+        public async Task ExportDocumentation(RimApiContext context, bool saveFile = false)
         {
             try
             {

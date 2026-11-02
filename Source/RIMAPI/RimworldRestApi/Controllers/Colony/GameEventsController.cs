@@ -17,7 +17,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/quests")]
-        public async Task GetQuestsData(HttpListenerContext context)
+        public async Task GetQuestsData(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _incidentService.GetQuestsData(mapId);
@@ -26,7 +26,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/incidents")]
         [EndpointMetadata("Get map incidents")]
-        public async Task GetIncidentsData(HttpListenerContext context)
+        public async Task GetIncidentsData(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _incidentService.GetIncidentsData(mapId);
@@ -35,7 +35,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/lords")]
         [EndpointMetadata("Get lords on map (AI raid managing objects)")]
-        public async Task GetLordsData(HttpListenerContext context)
+        public async Task GetLordsData(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _incidentService.GetLordsData(mapId);
@@ -44,7 +44,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/incident/trigger")]
         [EndpointMetadata("Trigger game incident")]
-        public async Task TriggerIncident(HttpListenerContext context)
+        public async Task TriggerIncident(RimApiContext context)
         {
             var requestData = await context.Request.ReadBodyAsync<TriggerIncidentRequestDto>();
             var result = _incidentService.TriggerIncident(requestData);
@@ -52,14 +52,14 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/incidents/top")]
-        public async Task GetIncidentsTopChance(HttpListenerContext context)
+        public async Task GetIncidentsTopChance(RimApiContext context)
         {
             var result = _incidentService.GetTopIncidents();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/incident/chance")]
-        public async Task GetIncidentChance(HttpListenerContext context)
+        public async Task GetIncidentChance(RimApiContext context)
         {
             // GET bodies are not sent by most clients, so also accept ?incident_def_name=
             var requestData = await context.Request.ReadBodyAsync<IncidentChanceRequestDto>()

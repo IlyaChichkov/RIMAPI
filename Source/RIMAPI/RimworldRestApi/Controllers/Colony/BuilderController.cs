@@ -3,6 +3,7 @@ using System.Net;
 using RIMAPI.Core;
 using RIMAPI.Models;
 using RIMAPI.Services;
+using RIMAPI.Http;
 
 namespace RIMAPI.Controllers
 {
@@ -16,7 +17,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/builder/copy")]
-        public async Task CopyArea(HttpListenerContext context)
+        public async Task CopyArea(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<CopyAreaRequestDto>();
             var result = _builderService.CopyArea(body);
@@ -24,7 +25,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/builder/paste")]
-        public async Task PasteArea(HttpListenerContext context)
+        public async Task PasteArea(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PasteAreaRequestDto>();
             var result = _builderService.PasteArea(body);
@@ -32,7 +33,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/builder/blueprint")]
-        public async Task PlaceBlueprints(HttpListenerContext context)
+        public async Task PlaceBlueprints(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PasteAreaRequestDto>();
             var result = _builderService.PlaceBlueprints(body);
@@ -40,7 +41,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/builder/check-zone")]
-        public async Task CheckZone(HttpListenerContext context)
+        public async Task CheckZone(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<CheckZoneRequestDto>();
             var result = _builderService.CheckZone(body);

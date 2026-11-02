@@ -5,7 +5,7 @@ using System.Net;
 namespace RIMAPI.Http
 {
     /// <summary>
-    /// Parses and validates HTTP request parameters from HttpListenerContext.
+    /// Parses and validates HTTP request parameters from RimApiContext.
     /// Provides static methods for request parameter extraction.
     /// </summary>
     public static class RequestParser
@@ -16,7 +16,7 @@ namespace RIMAPI.Http
         /// <param name="context">The HTTP listener context.</param>
         /// <returns>The parsed map ID.</returns>
         /// <exception cref="ArgumentNullException">Thrown when context is null.</exception>
-        public static int GetMapId(HttpListenerContext context)
+        public static int GetMapId(RimApiContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -33,7 +33,7 @@ namespace RIMAPI.Http
         /// <exception cref="ArgumentNullException">Thrown when context or parameterName is null.</exception>
         /// <exception cref="ParameterNotFoundException">Thrown when the parameter is missing.</exception>
         /// <exception cref="ParameterFormatException">Thrown when the parameter has invalid format.</exception>
-        public static int GetIntParameter(HttpListenerContext context, string parameterName)
+        public static int GetIntParameter(RimApiContext context, string parameterName)
         {
             ValidateContextAndParameterName(context, parameterName);
 
@@ -57,7 +57,7 @@ namespace RIMAPI.Http
         /// <exception cref="ArgumentNullException">Thrown when context or parameterName is null.</exception>
         /// <exception cref="ParameterNotFoundException">Thrown when the parameter is required but missing.</exception>
         public static string GetStringParameter(
-            HttpListenerContext context,
+            RimApiContext context,
             string parameterName,
             bool required = true
         )
@@ -82,7 +82,7 @@ namespace RIMAPI.Http
         /// <exception cref="ArgumentNullException">Thrown when context or parameterName is null.</exception>
         /// <exception cref="ParameterFormatException">Thrown when the parameter has invalid format.</exception>
         public static bool GetBooleanParameter(
-            HttpListenerContext context,
+            RimApiContext context,
             string parameterName,
             bool defaultValue = false
         )
@@ -122,7 +122,7 @@ namespace RIMAPI.Http
         /// <exception cref="ArgumentNullException">Thrown when context or parameterName is null.</exception>
         /// <exception cref="ParameterNotFoundException">Thrown when the parameter is missing.</exception>
         /// <exception cref="ParameterFormatException">Thrown when the parameter has invalid format.</exception>
-        public static long GetInt64Parameter(HttpListenerContext context, string parameterName)
+        public static long GetInt64Parameter(RimApiContext context, string parameterName)
         {
             ValidateContextAndParameterName(context, parameterName);
 
@@ -145,7 +145,7 @@ namespace RIMAPI.Http
         /// <exception cref="ArgumentNullException">Thrown when context or parameterName is null.</exception>
         /// <exception cref="ParameterNotFoundException">Thrown when the parameter is missing.</exception>
         /// <exception cref="ParameterFormatException">Thrown when the parameter has invalid format.</exception>
-        public static float GetFloatParameter(HttpListenerContext context, string parameterName)
+        public static float GetFloatParameter(RimApiContext context, string parameterName)
         {
             ValidateContextAndParameterName(context, parameterName);
 
@@ -168,7 +168,7 @@ namespace RIMAPI.Http
         /// <exception cref="ArgumentNullException">Thrown when context or parameterName is null.</exception>
         /// <exception cref="ParameterNotFoundException">Thrown when the parameter is missing.</exception>
         /// <exception cref="ParameterFormatException">Thrown when the parameter has invalid format.</exception>
-        public static double GetDoubleParameter(HttpListenerContext context, string parameterName)
+        public static double GetDoubleParameter(RimApiContext context, string parameterName)
         {
             ValidateContextAndParameterName(context, parameterName);
 
@@ -188,7 +188,7 @@ namespace RIMAPI.Http
         /// <param name="context">The HTTP listener context.</param>
         /// <param name="parameterName">The name of the parameter to check.</param>
         /// <returns>True if the parameter exists and is not empty.</returns>
-        public static bool HasParameter(HttpListenerContext context, string parameterName)
+        public static bool HasParameter(RimApiContext context, string parameterName)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
@@ -206,7 +206,7 @@ namespace RIMAPI.Http
         /// <param name="context">The HTTP listener context.</param>
         /// <returns>Dictionary of query parameters.</returns>
         public static System.Collections.Specialized.NameValueCollection GetAllParameters(
-            HttpListenerContext context
+            RimApiContext context
         )
         {
             if (context == null)
@@ -216,7 +216,7 @@ namespace RIMAPI.Http
         }
 
         private static void ValidateContextAndParameterName(
-            HttpListenerContext context,
+            RimApiContext context,
             string parameterName
         )
         {
@@ -228,7 +228,7 @@ namespace RIMAPI.Http
         }
 
         private static string GetQueryStringValue(
-            HttpListenerContext context,
+            RimApiContext context,
             string parameterName,
             bool throwIfMissing = true
         )

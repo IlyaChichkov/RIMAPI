@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -14,7 +15,7 @@ namespace RIMAPI.Core
 
         // Store route parameters per request
         private readonly Dictionary<
-            HttpListenerContext,
+            RimApiContext,
             Dictionary<string, string>
         > _routeParameters;
 
@@ -22,10 +23,10 @@ namespace RIMAPI.Core
         {
             _routes = new List<Route>();
             _allowedOrigins = null;
-            _routeParameters = new Dictionary<HttpListenerContext, Dictionary<string, string>>();
+            _routeParameters = new Dictionary<RimApiContext, Dictionary<string, string>>();
         }
 
-        public void AddRoute(string method, string path, Func<HttpListenerContext, Task> handler)
+        public void AddRoute(string method, string path, Func<RimApiContext, Task> handler)
         {
             _routes.Add(new Route(method, path, handler));
             LogApi.Message($"Add route: {path}", LoggingLevels.DEBUG);
@@ -42,7 +43,7 @@ namespace RIMAPI.Core
             return _routes.Select(r => (r.Method, r.PathPattern));
         }
 
-        public async Task RouteRequest(HttpListenerContext context)
+        public async Task RouteRequest(RimApiContext context)
         {
             var request = context.Request;
             var response = context.Response;
@@ -115,6 +116,7 @@ namespace RIMAPI.Core
 
             // Common exceptions when client kills connection
             if (ex is HttpListenerException || ex is ObjectDisposedException) return true;
+            if (ex is System.Net.Sockets.SocketException || ex is OperationCanceledException) return true;
 
             // IO Exceptions often happen during stream writing
             if (ex is System.IO.IOException) return true;
@@ -123,7 +125,7 @@ namespace RIMAPI.Core
             return IsClientDisconnect(ex.InnerException);
         }
 
-        private async Task ExecuteRouteHandler(RouteMatch routeMatch, HttpListenerContext context)
+        private async Task ExecuteRouteHandler(RouteMatch routeMatch, RimApiContext context)
         {
             var route = routeMatch.Route;
             LogApi.Info($"Route matched: {route.Method} {route.PathPattern}");
@@ -188,7 +190,7 @@ namespace RIMAPI.Core
         }
 
         private async Task HandleNoRouteFound(
-            HttpListenerContext context,
+            RimApiContext context,
             string method,
             string path
         )
@@ -227,7 +229,7 @@ namespace RIMAPI.Core
         }
 
         // Get route parameters from context
-        public Dictionary<string, string> GetRouteParameters(HttpListenerContext context)
+        public Dictionary<string, string> GetRouteParameters(RimApiContext context)
         {
             lock (_routeParameters)
             {
@@ -238,7 +240,7 @@ namespace RIMAPI.Core
         }
 
         // Get specific route parameter
-        public string GetRouteParameter(HttpListenerContext context, string paramName)
+        public string GetRouteParameter(RimApiContext context, string paramName)
         {
             var parameters = GetRouteParameters(context);
             return parameters.TryGetValue(paramName, out var value) ? value : null;
@@ -249,9 +251,9 @@ namespace RIMAPI.Core
             public string Method { get; }
             public Regex Pattern { get; }
             public string PathPattern { get; }
-            public Func<HttpListenerContext, Task> Handler { get; }
+            public Func<RimApiContext, Task> Handler { get; }
 
-            public Route(string method, string path, Func<HttpListenerContext, Task> handler)
+            public Route(string method, string path, Func<RimApiContext, Task> handler)
             {
                 Method = method;
                 PathPattern = path;
@@ -289,7 +291,7 @@ namespace RIMAPI.Core
     public static class RouterExtensions
     {
         public static Dictionary<string, string> GetRouteParams(
-            this HttpListenerContext context,
+            this RimApiContext context,
             Router router
         )
         {
@@ -297,7 +299,7 @@ namespace RIMAPI.Core
         }
 
         public static string GetRouteParam(
-            this HttpListenerContext context,
+            this RimApiContext context,
             Router router,
             string paramName
         )
@@ -306,7 +308,7 @@ namespace RIMAPI.Core
         }
 
         public static string GetRouteParam(
-            this HttpListenerContext context,
+            this RimApiContext context,
             Router router,
             string paramName,
             string defaultValue
@@ -316,7 +318,7 @@ namespace RIMAPI.Core
         }
 
         public static int GetRouteParamInt(
-            this HttpListenerContext context,
+            this RimApiContext context,
             Router router,
             string paramName,
             int defaultValue = 0
@@ -327,7 +329,7 @@ namespace RIMAPI.Core
         }
 
         public static bool GetRouteParamBool(
-            this HttpListenerContext context,
+            this RimApiContext context,
             Router router,
             string paramName,
             bool defaultValue = false

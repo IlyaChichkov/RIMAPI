@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using RIMAPI.Core;
 using RIMAPI.Models;
 using RIMAPI.Services;
+using RIMAPI.Http;
 
 namespace RIMAPI.Controllers
 {
@@ -16,7 +17,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/spawn")]
-        public async Task EditPawn(HttpListenerContext context)
+        public async Task EditPawn(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnSpawnRequestDto>();
             var result = _pawnSpawnService.SpawnPawn(body);

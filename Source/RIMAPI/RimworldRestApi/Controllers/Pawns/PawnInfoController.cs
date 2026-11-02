@@ -16,7 +16,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/pawns/details")]
-        public async Task GetPawnDetails(HttpListenerContext context)
+        public async Task GetPawnDetails(RimApiContext context)
         {
             int pawnId = RequestParser.GetIntParameter(context, "id");
             var result = _pawnInfoService.GetPawnDetails(pawnId);
@@ -24,7 +24,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/pawns/inventory")]
-        public async Task GetPawnInventory(HttpListenerContext context)
+        public async Task GetPawnInventory(RimApiContext context)
         {
             int pawnId = RequestParser.GetIntParameter(context, "id");
             var result = _pawnInfoService.GetPawnInventory(pawnId);

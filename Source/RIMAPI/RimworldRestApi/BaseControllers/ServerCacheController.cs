@@ -15,21 +15,21 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/cache/enable")]
-        public async Task EnableCache(HttpListenerContext context)
+        public async Task EnableCache(RimApiContext context)
         {
             var result = _cachingService.SetEnabled(true);
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/cache/disable")]
-        public async Task DisableCache(HttpListenerContext context)
+        public async Task DisableCache(RimApiContext context)
         {
             var result = _cachingService.SetEnabled(false);
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/cache/status")]
-        public async Task GetCacheStatus(HttpListenerContext context)
+        public async Task GetCacheStatus(RimApiContext context)
         {
             var isDetailed = RequestParser.GetBooleanParameter(context, "detailed", false);
             var stats = _cachingService.GetStatistics(isDetailed);
@@ -39,7 +39,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/cache/clear")]
-        public async Task ClearCache(HttpListenerContext context)
+        public async Task ClearCache(RimApiContext context)
         {
             var result = _cachingService.Clear();
             await context.SendJsonResponse(result);

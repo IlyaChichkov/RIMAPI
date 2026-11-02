@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using RIMAPI.Core;
 using RIMAPI.Models;
 using RIMAPI.Services;
+using RIMAPI.Http;
 
 namespace RIMAPI.Controllers
 {
@@ -17,7 +18,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/pawn/job")]
         [EndpointMetadata("Assign a job to a pawn by JobDef name, with optional target")]
-        public async Task AssignJob(HttpListenerContext context)
+        public async Task AssignJob(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnJobRequestDto>();
             var result = _pawnJobService.AssignJob(body);
@@ -26,7 +27,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/pawn/medical/tend")]
         [EndpointMetadata("Assign a doctor to tend a patient")]
-        public async Task AssignTendJob(HttpListenerContext context)
+        public async Task AssignTendJob(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<MedicalTendRequestDto>();
             var result = _pawnJobService.AssignTendJob(body);
@@ -35,7 +36,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/pawn/medical/bed-rest")]
         [EndpointMetadata("Assign a pawn to bed rest, optionally specifying a bed")]
-        public async Task AssignBedRest(HttpListenerContext context)
+        public async Task AssignBedRest(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<MedicalBedRestRequestDto>();
             var result = _pawnJobService.AssignBedRest(body);
