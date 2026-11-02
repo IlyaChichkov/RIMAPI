@@ -1,6 +1,16 @@
 # Changelog
 ## [Unreleased]
 
+### Added
+- **RimWorld 1.7 Support:** Added the `Release-1.7` build configuration (`net10.0`, `Krafs.Rimworld.Ref` 1.7, Harmony 3) with output to `1.7/Assemblies/`, declared `1.7` in `supportedVersions`, and added 1.7 to the release workflow. 1.7 reuses the 1.6 code paths. *(by @Ilya)*
+
+### Fixed
+- **Equip Weapon Job:** `POST /api/v1/jobs/make/equip` failed for weapons on RimWorld 1.7 with "Failed to determine equip job", because 1.7's `ApparelUtility.HasPartsToWear` now dereferences `def.apparel` unconditionally. Apparel is now worn and other equipment equipped. *(by @Ilya)*
+- **Harmony 3 Compatibility:** Switched to `Harmony.PatchAll(Assembly)` since the parameterless overload is obsolete in Harmony 3. *(by @Ilya)*
+
+### Known Issues
+- **RimWorld 1.7 on Windows:** the API server fails to start with "Access denied" when `serverIP` is `localhost`. On .NET 10 `HttpListener` uses HTTP.sys, which requires a URL reservation (`netsh http add urlacl url=http://+:8765/ user=Everyone`) and `serverIP` = `0.0.0.0`. A proper fix is being worked on.
+
 ## v1.11.0 - 2026-11-02
 
 ### Added
