@@ -1,6 +1,23 @@
 # Changelog
 ## [Unreleased]
 
+### Changed
+- **Validation Errors Return 400:** Several endpoints now answer `400` with `Request validation failed: …` for a missing or invalid body instead of a `500` `NullReferenceException`: `POST /api/v1/colonist/time-assignment`, `/order/designate/area`, `/map/repair/positions`, `/builder/copy`, `/item/change/image`, `/dev/stuff/color`, `/game/select-area` and `/game/send/letter`. Added `ApiResult.ValidationFail(reason)` for this. *(by @Ilya)*
+- **Stockpile Default Priority:** `POST /api/v1/map/zone/stockpile` without `priority` now creates a `Normal` stockpile instead of an `Unstored` one. `priority` is the raw `StoragePriority` value (0–5), as in `/map/zone/stockpile/update`. *(by @Ilya)*
+- **Select Area:** `POST /api/v1/game/select-area` now actually selects every selectable thing inside the rectangle, as documented. *(by @Ilya)*
+- **Incident Chance Query Parameter:** `GET /api/v1/incident/chance` accepts `?incident_def_name=`, since most clients do not send GET bodies. It returns 400 when the name is missing and 404 for an unknown incident. *(by @Ilya)*
+
+### Fixed
+- **Missing Input Crashes:** `colonist/time-assignment` also validates `hour` (0–23) and pawns without a timetable; `item/change/image` no longer rethrows after building its error result; an unknown stuff def in `dev/stuff/color` returns 404. *(by @Ilya)*
+- **Letters:** `POST /api/v1/game/send/letter` no longer fails with `Value cannot be null (Parameter 's')` when `map_id` is given without `look_target_thing_id`, and a long label now truncates the label instead of the message. *(by @Ilya)*
+- **Select Area Logging:** `game/select-area` passed a `CellRect` to `Selector.Select`, which only logged "neither a Thing, Zone, or Plan". *(by @Ilya)*
+- **Restore Body Parts:** `POST /api/v1/pawn/edit/health` with `restore_body_parts` called `RestorePart(null)`, which only logged "Tried to restore null body part."; missing parts are now restored. *(by @Ilya)*
+- **Stockpile Blocked Cells:** `POST /api/v1/map/zone/stockpile` skips cells with rock, walls and other zone-incompatible things, existing zones and fog, like the vanilla designator, and reports skipped cells in the message. *(by @Ilya)*
+- **Stockpile Priority:** Stockpiles created without a priority stored nothing, because the default `0` is `StoragePriority.Unstored`; values were also clamped to -1..2. *(by @Ilya)*
+- **Dialog Option Event:** The SSE `dialog_option_selected` event reported `text: "Unknown"` and `window_type: "ImmediateWindow"`. The text is now read before the option activates and the window comes from `DiaOption.dialog`. *(by @Ilya)*
+- **Cache at the Main Menu:** Cached endpoints such as `GET /api/v1/version` answered "Cache error" at the main menu because `Find.TickManager` throws without a loaded game. *(by @Ilya)*
+- **Bruno Collection:** Fixed the unterminated URL in `Game/Mod Preview.yml`, pointed camera stream requests to `/api/v1/camera/stream/*`, added missing request bodies and query parameters, and corrected the builder copy/paste/blueprint bodies. *(by @Ilya)*
+
 ## v1.10.0
 
 ### Added
