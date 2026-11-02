@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        version: [1.5, 1.6]
+        version: ['1.5', '1.6', '1.7']
     
     steps:
     - name: Checkout code
@@ -20,7 +20,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: |
+          6.0.x
+          10.0.x
         
     - name: Build for RimWorld ${{ matrix.version }}
       run: |
@@ -68,6 +70,7 @@ jobs:
         # Create version folders WITH Assemblies subdirectories
         New-Item -ItemType Directory -Force -Path "temp_release/1.5/Assemblies"
         New-Item -ItemType Directory -Force -Path "temp_release/1.6/Assemblies"
+        New-Item -ItemType Directory -Force -Path "temp_release/1.7/Assemblies"
         
         # Copy 1.5 assemblies
         if (Test-Path "downloaded-assemblies/assemblies-1.5") {
@@ -81,6 +84,13 @@ jobs:
             Copy-Item "downloaded-assemblies/assemblies-1.6/*" -Destination "temp_release/1.6/Assemblies/" -Recurse -Force
         } else {
             Write-Warning "No 1.6 assemblies found"
+        }
+
+        # Copy 1.7 assemblies
+        if (Test-Path "downloaded-assemblies/assemblies-1.7") {
+            Copy-Item "downloaded-assemblies/assemblies-1.7/*" -Destination "temp_release/1.7/Assemblies/" -Recurse -Force
+        } else {
+            Write-Warning "No 1.7 assemblies found"
         }
         
         # Debug: Show the structure
