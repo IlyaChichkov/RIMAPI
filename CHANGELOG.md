@@ -3,6 +3,10 @@
 
 ## v1.10.1 - 2026-11-02
 
+### Added
+- **Colonist Mood Details:** Detailed colonist responses (`GET /api/v1/colonists/detailed`, `/api/v1/colonist/detailed` and their `v2` variants) include a `mood_details` field with current and target mood levels and a per-thought breakdown: `def_name`, localized label and description, game-calculated `mood_offset`, `stack_count`, `stage_index`, `kind` (memory/situational) and `stacked_effect_multiplier`. *(by @Yuri)*
+- **Queued Pawn Jobs:** `POST /api/v1/pawn/job` accepts an optional `queue` flag that adds the job to the end of the pawn's queue instead of interrupting the current job. *(by @Yuri)*
+
 ### Changed
 - **Validation Errors Return 400:** Several endpoints now answer `400` with `Request validation failed: …` for a missing or invalid body instead of a `500` `NullReferenceException`: `POST /api/v1/colonist/time-assignment`, `/order/designate/area`, `/map/repair/positions`, `/builder/copy`, `/item/change/image`, `/dev/stuff/color`, `/game/select-area`, `/game/send/letter`, `/game/save` and `/game/load`. Added `ApiResult.ValidationFail(reason)` for this. *(by @Ilya)*
 - **Stockpile Default Priority:** `POST /api/v1/map/zone/stockpile` without `priority` now creates a `Normal` stockpile instead of an `Unstored` one. `priority` is the raw `StoragePriority` value (0–5), as in `/map/zone/stockpile/update`. *(by @Ilya)*
