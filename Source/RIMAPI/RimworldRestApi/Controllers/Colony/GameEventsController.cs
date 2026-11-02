@@ -61,7 +61,12 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/incident/chance")]
         public async Task GetIncidentChance(HttpListenerContext context)
         {
-            var requestData = await context.Request.ReadBodyAsync<IncidentChanceRequestDto>();
+            // GET bodies are not sent by most clients, so also accept ?incident_def_name=
+            var requestData = await context.Request.ReadBodyAsync<IncidentChanceRequestDto>()
+                ?? new IncidentChanceRequestDto
+                {
+                    IncidentDefName = RequestParser.GetStringParameter(context, "incident_def_name", false),
+                };
             var result = _incidentService.GetIncidentChance(requestData);
             await context.SendJsonResponse(result);
         }

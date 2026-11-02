@@ -346,7 +346,21 @@ namespace RIMAPI.Services
         {
             try
             {
+                if (body == null || string.IsNullOrEmpty(body.Assignment))
+                {
+                    return ApiResult.ValidationFail("pawn_id, hour and assignment are required");
+                }
+                if (body.Hour < 0 || body.Hour > 23)
+                {
+                    return ApiResult.ValidationFail($"hour must be between 0 and 23, got {body.Hour}");
+                }
+
                 Pawn pawn = PawnHelper.FindPawnById(body.PawnId);
+                if (pawn?.timetable == null)
+                {
+                    return ApiResult.Fail($"Pawn with timetable not found: {body.PawnId}");
+                }
+
                 TimeAssignmentDef assignmentDef = DefDatabase<TimeAssignmentDef>
                     .AllDefs.Where(p => p.defName.ToLower() == body.Assignment.ToLower())
                     .FirstOrDefault();

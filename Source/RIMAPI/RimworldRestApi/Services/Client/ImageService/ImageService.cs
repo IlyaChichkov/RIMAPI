@@ -25,6 +25,11 @@ namespace RIMAPI.Services
 
         public ApiResult SetItemImageByName(ImageUploadRequest imageUpload)
         {
+            if (string.IsNullOrEmpty(imageUpload?.Name) || string.IsNullOrEmpty(imageUpload.Image))
+            {
+                return ApiResult.ValidationFail("name and image are required");
+            }
+
             string imageBase64 = imageUpload.Image;
             const string dataPrefix = "base64,";
             var idx = imageBase64.IndexOf(dataPrefix, StringComparison.OrdinalIgnoreCase);
@@ -39,15 +44,24 @@ namespace RIMAPI.Services
             }
             catch (Exception ex)
             {
-                ApiResult.Fail($"Failed to process image: {ex.Message}");
-                throw;
+                LogApi.Error($"Failed to process image for {imageUpload.Name}: {ex}");
+                return ApiResult.Fail($"Failed to process image: {ex.Message}");
             }
             return ApiResult.Ok();
         }
 
         public ApiResult SetStuffColor(StuffColorRequest stuffColor)
         {
-            var modifiedStuff = DefDatabase<ThingDef>.GetNamed(stuffColor.Name);
+            if (string.IsNullOrEmpty(stuffColor?.Name) || string.IsNullOrEmpty(stuffColor.Hex))
+            {
+                return ApiResult.ValidationFail("name and hex are required");
+            }
+
+            var modifiedStuff = DefDatabase<ThingDef>.GetNamed(stuffColor.Name, false);
+            if (modifiedStuff?.stuffProps == null)
+            {
+                return ApiResult.Fail($"Stuff def not found: {stuffColor.Name}");
+            }
             modifiedStuff.stuffProps.color = GameTypesHelper.HexToColor(stuffColor.Hex);
 
             List<Thing> affectedThings = new List<Thing>();
