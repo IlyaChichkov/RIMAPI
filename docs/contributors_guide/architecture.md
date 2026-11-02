@@ -15,7 +15,7 @@ RIMAPI is built around several key principles that guide its design:
 
 ```mermaid
     graph TB
-        A[HTTP Client] --> B[HttpListener]
+        A[HTTP Client] --> B[HTTP Transport<br/>HttpListener 1.5/1.6, Watson 1.7]
         B --> C[Request Queue]
         C --> D[ApiServer]
         D --> E[Router]
@@ -75,7 +75,7 @@ Manages Server-Sent Events for real-time game updates.
 ```mermaid
     sequenceDiagram
         participant C as HTTP Client
-        participant L as HttpListener
+        participant L as HTTP Transport
         participant Q as Request Queue
         participant AS as ApiServer
         participant R as Router

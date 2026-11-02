@@ -47,7 +47,7 @@ My_test_mod/
 
 ```
 HTTP Client
-  → HttpListener (background thread)
+  → HTTP transport (background thread): HttpListener on 1.5/1.6, Watson on 1.7
   → Request Queue  (producer-consumer, thread-safe)
   → ApiServer.ProcessTick()  (main Unity thread, ≤10 req/tick)
   → Router  (attribute-based pattern matching)
@@ -57,6 +57,8 @@ HTTP Client
 ```
 
 All game-state mutations happen on the main thread automatically. Response latency depends on game frame rate and queue depth.
+
+Controllers, routers and extensions only see the server-agnostic `RimApiContext` / `RimApiRequest` / `RimApiResponse` (`Core/HttpContext/RimApiContext.cs`). `HttpListenerTransport` (1.5/1.6) and `WatsonTransport` (1.7) adapt the real server. On RimWorld 1.7 `System.Net.HttpListener` is backed by HTTP.sys on Windows and needs a URL reservation, so 1.7 uses Watson, which runs on its own `TcpListener`.
 
 ### Dependency Injection
 
@@ -83,7 +85,7 @@ Controllers only parse the request and return a response. All logic goes in serv
 ```csharp
 // Good
 [Get("/api/v1/colonists")]
-public async Task GetColonists(HttpListenerContext context)
+public async Task GetColonists(RimApiContext context)
 {
     var colonists = _colonistService.GetAll();
     await context.WriteJsonAsync(ApiResult<List<ColonistDto>>.Ok(colonists));
@@ -148,7 +150,7 @@ All keys use `snake_case`. Examples:
 
 ### POST Requests
 
-All POST requests must include a `Content-Length` header (required by .NET's `HttpListener`). Send `{}` if the body is empty.
+POST requests should include a `Content-Length` header: on 1.5/1.6 `HttpListener` rejects them with 411 otherwise (1.7 accepts chunked bodies too). Send `{}` if the body is empty.
 
 ### IDs
 

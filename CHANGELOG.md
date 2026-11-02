@@ -8,8 +8,10 @@
 - **Equip Weapon Job:** `POST /api/v1/jobs/make/equip` failed for weapons on RimWorld 1.7 with "Failed to determine equip job", because 1.7's `ApparelUtility.HasPartsToWear` now dereferences `def.apparel` unconditionally. Apparel is now worn and other equipment equipped. *(by @Ilya)*
 - **Harmony 3 Compatibility:** Switched to `Harmony.PatchAll(Assembly)` since the parameterless overload is obsolete in Harmony 3. *(by @Ilya)*
 
-### Known Issues
-- **RimWorld 1.7 on Windows:** the API server fails to start with "Access denied" when `serverIP` is `localhost`. On .NET 10 `HttpListener` uses HTTP.sys, which requires a URL reservation (`netsh http add urlacl url=http://+:8765/ user=Everyone`) and `serverIP` = `0.0.0.0`. A proper fix is being worked on.
+### Changed
+- **HTTP Server on RimWorld 1.7:** RIMAPI now runs on the [Watson](https://github.com/dotnet/WatsonWebserver) web server on 1.7. On .NET 10 `HttpListener` is backed by HTTP.sys on Windows and failed to start with "Access denied" without a URL reservation; Watson uses its own `TcpListener` transport and needs no extra setup. 1.5/1.6 keep `HttpListener`. *(by @Ilya)*
+- **Server-Agnostic HTTP Context (breaking for extensions):** Controllers, routers and `IExtensionRouter` handlers now receive `RIMAPI.Http.RimApiContext` instead of `System.Net.HttpListenerContext`. Member names (`Request.QueryString`, `Request.Headers`, `Response.StatusCode`, …) are unchanged, but extension mods must be rebuilt against the new type. Request bodies are read with `Request.ReadBodyBytesAsync()` (or the existing `ReadBodyAsync<T>()` helper). *(by @Ilya)*
+- **SSE Writes:** Server-sent events are now written asynchronously per client, so a slow client no longer blocks the game's main thread. *(by @Ilya)*
 
 ## v1.11.0 - 2026-11-02
 

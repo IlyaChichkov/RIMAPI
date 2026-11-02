@@ -73,6 +73,8 @@ Thanks to @braasdas and his RatLab project for code reference.
 
 Contributors: @braasdas, @M4x28, @inqus637, @jkbennitt
 
+Third-party libraries: [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json), [Harmony](https://github.com/pardeike/Harmony) and, on RimWorld 1.7, [Watson Webserver](https://github.com/dotnet/WatsonWebserver) with its helper libraries IpMatcher, RegexMatcher, UrlMatcher, Timestamps and Caching (all MIT).
+
 ## 📌 Links
 
 - [RimWorld Dashboard [#Web]](https://github.com/IlyaChichkov/rimapi-dashboard)
