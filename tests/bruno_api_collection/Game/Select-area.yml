@@ -6,6 +6,21 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/api/v1/game/select-area"
+  body:
+    type: json
+    data: |-
+      {
+        "position_a": {
+          "x": 100,
+          "y": 0,
+          "z": 100
+        },
+        "position_b": {
+          "x": 110,
+          "y": 0,
+          "z": 110
+        }
+      }
   auth: inherit
 
 settings:

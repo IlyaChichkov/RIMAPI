@@ -6,6 +6,19 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/api/v1/map/repair/positions"
+  body:
+    type: json
+    data: |-
+      {
+        "map_id": 0,
+        "positions": [
+          {
+            "x": 120,
+            "y": 0,
+            "z": 130
+          }
+        ]
+      }
   auth: inherit
 
 settings:

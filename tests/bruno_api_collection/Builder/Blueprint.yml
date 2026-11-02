@@ -6,13 +6,33 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/api/v1/builder/blueprint"
-  auth: inherit
-
-body:
-  json: |-
-    {
-            "at": { "x": 150, "z": 150 }
+  body:
+    type: json
+    data: |-
+      {
+        "map_id": 0,
+        "position": {
+          "x": 150,
+          "y": 0,
+          "z": 150
+        },
+        "clear_obstacles": false,
+        "blueprint": {
+          "width": 3,
+          "height": 1,
+          "floors": [],
+          "buildings": [
+            {
+              "def_name": "TableButcher",
+              "stuff_def_name": "WoodLog",
+              "rel_x": 1,
+              "rel_z": 0,
+              "rotation": 0
+            }
+          ]
         }
+      }
+  auth: inherit
 
 settings:
   encodeUrl: true

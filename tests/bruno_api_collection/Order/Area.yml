@@ -6,6 +6,23 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/api/v1/order/designate/area"
+  body:
+    type: json
+    data: |-
+      {
+        "map_id": 0,
+        "type": "Harvest",
+        "point_a": {
+          "x": 100,
+          "y": 0,
+          "z": 100
+        },
+        "point_b": {
+          "x": 120,
+          "y": 0,
+          "z": 120
+        }
+      }
   auth: inherit
 
 settings:

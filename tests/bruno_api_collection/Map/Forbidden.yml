@@ -5,7 +5,11 @@ info:
 
 http:
   method: POST
-  url: "{{baseURL}}/api/v1/map/destroy/forbidden"
+  url: "{{baseURL}}/api/v1/map/destroy/forbidden?map_id=0"
+  body:
+    type: json
+    data: |-
+      {}
   auth: inherit
 
 settings:

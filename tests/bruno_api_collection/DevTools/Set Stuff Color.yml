@@ -6,6 +6,13 @@ info:
 http:
   method: POST
   url: "{{baseURL}}/api/v1/dev/stuff/color"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "WoodLog",
+        "hex": "#8B5A2B"
+      }
   auth: inherit
 
 settings:
