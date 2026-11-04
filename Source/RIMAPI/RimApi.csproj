@@ -67,7 +67,7 @@
     <!-- RimWorld 1.7 dependencies (Harmony 3 ships with the Harmony mod for 1.7) -->
     <PackageReference
       Include="Krafs.Rimworld.Ref"
-      Version="1.7.4995-unstable"
+      Version="1.7.4998-unstable"
       Condition="'$(Configuration)' == 'Release-1.7'"
     />
     <PackageReference
