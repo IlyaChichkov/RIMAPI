@@ -230,7 +230,8 @@ namespace RimworldRestApi.Hooks
                         map = new
                         {
                             id = map.uniqueID,
-                            tile = map.Tile,
+                            // PlanetTile (1.6+) exposes the world graph; serialize only its ID.
+                            tile = RIMAPI.Helpers.MapHelper.GetMapTileId(map),
                             longitude = longLat.x,
                             latitude = longLat.y,
                         },
