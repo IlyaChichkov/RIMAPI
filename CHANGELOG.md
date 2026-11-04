@@ -4,14 +4,18 @@
 ### Added
 - **RimWorld 1.7 Support:** Added the `Release-1.7` build configuration (`net10.0`, `Krafs.Rimworld.Ref` 1.7, Harmony 3) with output to `1.7/Assemblies/`, declared `1.7` in `supportedVersions`, and added 1.7 to the release workflow. 1.7 reuses the 1.6 code paths. *(by @Ilya)*
 
-### Fixed
-- **Equip Weapon Job:** `POST /api/v1/jobs/make/equip` failed for weapons on RimWorld 1.7 with "Failed to determine equip job", because 1.7's `ApparelUtility.HasPartsToWear` now dereferences `def.apparel` unconditionally. Apparel is now worn and other equipment equipped. *(by @Ilya)*
-- **Harmony 3 Compatibility:** Switched to `Harmony.PatchAll(Assembly)` since the parameterless overload is obsolete in Harmony 3. *(by @Ilya)*
-
 ### Changed
 - **HTTP Server on RimWorld 1.7:** RIMAPI now runs on the [Watson](https://github.com/dotnet/WatsonWebserver) web server on 1.7. On .NET 10 `HttpListener` is backed by HTTP.sys on Windows and failed to start with "Access denied" without a URL reservation; Watson uses its own `TcpListener` transport and needs no extra setup. 1.5/1.6 keep `HttpListener`. *(by @Ilya)*
-- **Server-Agnostic HTTP Context (breaking for extensions):** Controllers, routers and `IExtensionRouter` handlers now receive `RIMAPI.Http.RimApiContext` instead of `System.Net.HttpListenerContext`. Member names (`Request.QueryString`, `Request.Headers`, `Response.StatusCode`, …) are unchanged, but extension mods must be rebuilt against the new type. Request bodies are read with `Request.ReadBodyBytesAsync()` (or the existing `ReadBodyAsync<T>()` helper). *(by @Ilya)*
 - **SSE Writes:** Server-sent events are now written asynchronously per client, so a slow client no longer blocks the game's main thread. *(by @Ilya)*
+- **POST Request Length on 1.7:** POST requests without `Content-Length` are accepted by the transport on RimWorld 1.7; endpoints still validate their required bodies. Chunked request bodies are supported. RimWorld 1.5/1.6 still return `411 Length Required` for POST requests without `Content-Length`. *(by @Ilya)*
+
+### Breaking
+- **Extension HTTP Context:** On **all supported RimWorld versions**, controllers, routers and `IExtensionRouter` handlers now receive `RIMAPI.Http.RimApiContext` instead of `System.Net.HttpListenerContext`. Extension mods must be rebuilt against RIMAPI 1.12.0: add `using RIMAPI.Http;`, replace handler parameter types with `RimApiContext`, and replace `Request.InputStream` reads with `await Request.ReadBodyBytesAsync()` (or `Request.ReadBodyAsync<T>()` for JSON). Use `Response.SendAsync(byte[])` for a complete raw response instead of `Response.OutputStream`; RIMAPI's response helpers remain available. See the [extension migration guide](docs/developer_guide/creating_extensions.md#migrating-to-rimapi-1120). HTTP API clients keep using the same endpoints. *(by @Ilya)*
+
+### Fixed
+- **Date Change SSE Payload:** The `date_changed` event sends an integer map tile ID instead of serializing RimWorld 1.6/1.7's `PlanetTile` world graph, avoiding recursive serialization while an SSE client is connected. *(by @Ilya)*
+- **Equip Weapon Job:** `POST /api/v1/jobs/make/equip` failed for weapons on RimWorld 1.7 with "Failed to determine equip job", because 1.7's `ApparelUtility.HasPartsToWear` now dereferences `def.apparel` unconditionally. Apparel is now worn and other equipment equipped. *(by @Ilya)*
+- **Harmony 3 Compatibility:** Switched to `Harmony.PatchAll(Assembly)` since the parameterless overload is obsolete in Harmony 3. *(by @Ilya)*
 
 ## v1.11.0 - 2026-11-02
 

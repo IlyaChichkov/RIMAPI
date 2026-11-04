@@ -2,6 +2,18 @@
 
 This guide covers how to create RIMAPI extensions to add custom functionality, endpoints, and events to the API. Extensions allow other mods to seamlessly integrate with RIMAPI without modifying the core system.
 
+## Migrating to RIMAPI 1.12.0
+
+!!! warning "Breaking change for extension mods on RimWorld 1.5, 1.6 and 1.7"
+    Rebuild extensions against RIMAPI 1.12.0. `IExtensionRouter` callbacks and controller methods now accept `RIMAPI.Http.RimApiContext` instead of `System.Net.HttpListenerContext`. This also changes request and response helper signatures.
+
+1. Add `using RIMAPI.Http;` and change handler parameters to `RimApiContext`.
+2. Replace `Request.InputStream` reads with `await context.Request.ReadBodyBytesAsync()`. Decode bytes with `context.Request.ContentEncoding` if needed, or use `await context.Request.ReadBodyAsync<MyDto>()` for JSON.
+3. Keep using `Request.QueryString`, `Request.Headers`, `Response.StatusCode` and RIMAPI's response helpers. For raw responses, set `Response.ContentType` and call `await context.Response.SendAsync(bytes)`; this sends and completes the response. For streaming, set `Response.SendChunked = true`, await `WriteChunkAsync(bytes)` for each chunk, and call `Close()` when finished.
+4. Build against the matching RIMAPI assembly: `1.5/Assemblies` or `1.6/Assemblies` for .NET Framework 4.7.2, `1.7/Assemblies` for .NET 10. The context API is shared across all three builds.
+
+Do not cast the context to a transport-specific type. RimWorld 1.5/1.6 use HttpListener, while 1.7 uses Watson. HTTP clients continue to use the existing URLs and JSON formats.
+
 ## Extension Architecture Overview
 
 Extensions are discovered automatically by RIMAPI and integrated into the API lifecycle:
@@ -45,7 +57,33 @@ All extensions must implement `IRimApiExtension`:
 
 ### Minimal Extension Example
 
-TBE
+```csharp
+using System.Threading.Tasks;
+using RIMAPI.Core;
+using RIMAPI.Http;
+
+public sealed class ExampleExtension : IRimApiExtension
+{
+    public string ExtensionId => "example";
+    public string ExtensionName => "Example API";
+    public string Version => "1.0.0";
+
+    public void RegisterServices(IServiceCollection services) { }
+    public void RegisterEvents(IEventRegistry events) { }
+
+    public void RegisterEndpoints(IExtensionRouter router)
+    {
+        router.Get("/ping", Ping);
+    }
+
+    private static async Task Ping(RimApiContext context)
+    {
+        await ResponseBuilder.SendSuccess(context.Response, new { message = "pong" });
+    }
+}
+```
+
+This endpoint is available at `GET /api/v1/example/ping`.
 
 ## Extension Discovery
 
@@ -188,14 +226,50 @@ Extensions can hook into RimWorld events and publish them as SSE events:
 
 ## Endpoint Registration
 
-TBE
+Use `router.Get`, `router.Post`, `router.Put`, `router.Delete` or `router.AddRoute`. Every callback has the signature `Task Handler(RimApiContext context)`.
+
+```csharp
+using System.Threading.Tasks;
+using RIMAPI.Core;
+using RIMAPI.Http;
+
+public sealed class EchoRequest
+{
+    public string Message { get; set; }
+}
+
+public static class EchoEndpoint
+{
+    public static void Register(IExtensionRouter router)
+    {
+        router.Post("/echo", Echo);
+    }
+
+    private static async Task Echo(RimApiContext context)
+    {
+        var body = await context.Request.ReadBodyAsync<EchoRequest>();
+        if (string.IsNullOrWhiteSpace(body?.Message))
+        {
+            await context.SendJsonResponse(ApiResult.ValidationFail("message is required"));
+            return;
+        }
+
+        await ResponseBuilder.SendSuccess(context.Response, new { message = body.Message });
+    }
+}
+```
 
 ### Controller-Based Endpoints
 
 For complex APIs, use controller classes with auto-routing:
 
 ```csharp
-    // Controller will be automatically discovered and routed
+    using System.Net;
+    using System.Threading.Tasks;
+    using RIMAPI.Core;
+    using RIMAPI.Http;
+
+    // Register with router.RegisterController<ItemsController>().
     public class ItemsController
     {
         private readonly IItemsService _itemsService;
@@ -206,13 +280,18 @@ For complex APIs, use controller classes with auto-routing:
         }
 
         [Get("/item")]
-        public ApiResult<ItemDto> GetByItemId(string id)
+        public async Task GetByItemId(RimApiContext context)
         {
+            var id = context.Request.QueryString["id"];
             var item = _itemsService.GetItem(id);
             if (item == null)
-                return ApiResult.NotFound($"Item {id} not found");
+            {
+                await ResponseBuilder.SendError(context.Response, HttpStatusCode.NotFound,
+                    $"Item {id} not found");
+                return;
+            }
                 
-            return ApiResult.Success(item);
+            await ResponseBuilder.SendSuccess(context.Response, item);
         }
     }
 ```
@@ -224,15 +303,15 @@ All extension endpoints are automatically namespaced to prevent conflicts:
 ???+ warning
     Your extension registers: `/items`
 
-    Becomes available at: `/api/extensions/your-extension-id/items`
+    Becomes available at: `/api/v1/your-extension-id/items`
 
     Example URLs:
 
-    **GET** `/api/extensions/my-crafting-mod/items`
+    **GET** `/api/v1/my-crafting-mod/items`
 
-    **POST** `/api/extensions/my-crafting-mod/items`
+    **POST** `/api/v1/my-crafting-mod/items`
 
-    **GET** `/api/extensions/my-crafting-mod/items/123`
+    **GET** `/api/v1/my-crafting-mod/items?id=123`
 
 ## Complete Example: Crafting Extension
 
@@ -263,10 +342,9 @@ All extension endpoints are automatically namespaced to prevent conflicts:
         public void RegisterEndpoints(IExtensionRouter router)
         {
             // Manual endpoint registration
-            router.MapGet("/recipes", () => GetRecipes());
-            router.MapPost("/recipes/{defName}/craft", (string defName) => StartCrafting(defName));
+            router.RegisterController<CraftingController>();
             
-            // Controller-based endpoints will be auto-discovered
+            // Register the controller and its service dependencies in RegisterServices.
         }
     }
 ```
