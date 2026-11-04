@@ -1,6 +1,8 @@
 # Changelog
 ## [Unreleased]
 
+## v1.12.0 - 2026-11-04
+
 ### Added
 - **RimWorld 1.7 Support:** Added the `Release-1.7` build configuration (`net10.0`, `Krafs.Rimworld.Ref` 1.7, Harmony 3) with output to `1.7/Assemblies/`, declared `1.7` in `supportedVersions`, and added 1.7 to the release workflow. 1.7 reuses the 1.6 code paths. *(by @Ilya)*
 
