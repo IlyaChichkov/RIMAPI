@@ -4,7 +4,7 @@ Welcome to RIMAPI! This guide will help you install the mod, configure it, and m
 
 ## 1. Prerequisites
 
-- RimWorld version 1.5 or later.
+- RimWorld **1.5, 1.6 or 1.7**.
 - The **[Harmony](https://steamcommunity.com/workshop/filedetails/?id=2009463077)** mod must be installed and enabled.
 - A basic understanding of what a REST API is.
 
@@ -27,13 +27,25 @@ You can install the mod from the Steam Workshop or manually.
 
 ## 3. Configuration
 
-After installing, you can configure the API server's port.
+After installing, you can configure the API server's address and port.
 
 1.  In RimWorld's main menu, go to `Options` > `Mod Settings`.
 2.  Select `RIMAPI` from the list of mods.
-3.  Here you can change the **Server Port** (default is `8765`).
+3.  Here you can change the **Server IP** (default is `localhost`) and **Server Port** (default is `8765`).
 
-The API server starts automatically once you load into a colony.
+The API server starts automatically at the main menu. Endpoints that access colony data require a loaded game.
+
+### RimWorld 1.7 on Windows
+
+RimWorld 1.7 uses Watson and starts on the default `localhost` address without administrator privileges or a URL reservation.
+
+To allow access from another computer, set **Server IP** to `0.0.0.0`. Windows may ask once to allow **RimWorld.exe** through the firewall; allow access on the network you use for the API. Enable RimWorld's **Run in background** setting when testing remote access. While a firewall dialog has focus, the game can stop updating if this setting is disabled, and API requests will wait until it resumes.
+
+The Windows workaround documented for RIMAPI 1.11.0 is no longer needed on 1.7. If you created the following URL reservation solely for RIMAPI, you can remove it from an administrator terminal:
+
+```bat
+netsh http delete urlacl url=http://+:8765/
+```
 
 ## 4. Making Your First API Call
 
@@ -128,7 +140,7 @@ This will return a list of your colonists with their basic information, such as 
 ## 6. Troubleshooting
 
 -   **Connection Refused**:
-    -   Ensure RimWorld is running and you have loaded into a colony. The API server does not run on the main menu.
+    -   Ensure RimWorld is running and RIMAPI is enabled. Test `/api/v1/version` at the main menu; load a colony before requesting colony data.
     -   Check that the port in your API call matches the port configured in the mod settings (default is `8765`).
     -   Make sure a firewall is not blocking the connection.
 

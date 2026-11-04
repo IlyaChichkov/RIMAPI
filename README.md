@@ -1,7 +1,7 @@
 ![alt text](../media/media/banner_title.jpg)
 
 ![Status](https://img.shields.io/badge/Status-In_Progress-blue.svg)
-![RimWorld Version](https://img.shields.io/badge/RimWorld-v1.5+-blue.svg)
+![RimWorld Version](https://img.shields.io/badge/RimWorld-1.5%20%7C%201.6%20%7C%201.7-blue.svg)
 ![API Version](https://img.shields.io/badge/API-v1-green.svg)
 ![Build](https://github.com/IlyaChichkov/RIMAPI/actions/workflows/release_build.yml/badge.svg)
 ![Release](https://img.shields.io/github/v/release/IlyaChichkov/RIMAPI)
@@ -9,6 +9,8 @@
 # RimAPI
 
 RimAPI is a RimWorld mod that embeds a high-performance REST API server directly into the game, allowing external applications to read and interact with your colony in real-time.
+
+Supported RimWorld versions: **1.5, 1.6 and 1.7**. RimWorld 1.7 uses Watson on .NET 10; 1.5/1.6 use HttpListener on Unity Mono.
 
 RimAPI exposes over **120+ comprehensive endpoints**. The API starts listening on `http://localhost:8765/` by default as soon as the game reaches the main menu.
 
