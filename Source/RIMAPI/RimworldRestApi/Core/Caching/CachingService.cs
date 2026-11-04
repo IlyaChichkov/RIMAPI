@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RIMAPI.Models;
 using Verse;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -438,7 +439,7 @@ namespace RIMAPI.Core
         }
 
         public async Task CacheAwareResponseAsync<T>(
-            HttpListenerContext context,
+            RimApiContext context,
             string cacheKey,
             Func<Task<ApiResult<T>>> dataFactory,
             TimeSpan? expiration = null,

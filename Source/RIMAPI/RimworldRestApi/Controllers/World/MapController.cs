@@ -23,14 +23,14 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/maps")]
         [EndpointMetadata("Get all generated maps list the in game session")]
-        public async Task GetGameState(HttpListenerContext context)
+        public async Task GetGameState(RimApiContext context)
         {
             var result = _mapService.GetMaps();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/map/things")]
-        public async Task GetMapThings(HttpListenerContext context)
+        public async Task GetMapThings(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapThings(mapId);
@@ -38,7 +38,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/things-at")]
-        public async Task GetThingsAtCell(HttpListenerContext context)
+        public async Task GetThingsAtCell(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<ThingsAtCellRequestDto>();
             var result = _mapService.GetThingsAtCell(body);
@@ -46,7 +46,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/things/radius")]
-        public async Task GetMapThingsInRadius(HttpListenerContext context)
+        public async Task GetMapThingsInRadius(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var x = RequestParser.GetIntParameter(context, "x");
@@ -59,7 +59,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/map/plants")]
         [EndpointMetadata("Get all plants (trees, bushes, crops) on the map")]
-        public async Task GetMapPlants(HttpListenerContext context)
+        public async Task GetMapPlants(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapPlants(mapId);
@@ -68,7 +68,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/map/weather")]
         [EndpointMetadata("Get weather on the map")]
-        public async Task GetMapWeather(HttpListenerContext context)
+        public async Task GetMapWeather(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetWeather(mapId);
@@ -76,7 +76,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/power/info")]
-        public async Task GetMapPowerInfo(HttpListenerContext context)
+        public async Task GetMapPowerInfo(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapPowerInfo(mapId);
@@ -84,7 +84,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/ore")]
-        public async Task GetMapOre(HttpListenerContext context)
+        public async Task GetMapOre(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapOre(mapId);
@@ -93,7 +93,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/map/animals")]
         [EndpointMetadata("Get animals on the map")]
-        public async Task GetMapAnimals(HttpListenerContext context)
+        public async Task GetMapAnimals(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapAnimals(mapId);
@@ -101,7 +101,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/creatures/summary")]
-        public async Task GetMapCreaturesSummary(HttpListenerContext context)
+        public async Task GetMapCreaturesSummary(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapCreaturesSummary(mapId);
@@ -109,7 +109,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/farm/summary")]
-        public async Task GetMapFarmSummary(HttpListenerContext context)
+        public async Task GetMapFarmSummary(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GenerateFarmSummary(mapId);
@@ -117,7 +117,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/zone/growing")]
-        public async Task GetMapGrowingZoneById(HttpListenerContext context)
+        public async Task GetMapGrowingZoneById(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var zoneId = RequestParser.GetMapId(context);
@@ -127,7 +127,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/map/zone/growing")]
         [EndpointMetadata("Create a new growing zone with the specified plant and cells")]
-        public async Task CreateGrowingZone(HttpListenerContext context)
+        public async Task CreateGrowingZone(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<CreateGrowingZoneRequestDto>();
             var result = _mapService.CreateGrowingZone(body);
@@ -136,7 +136,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/map/zones")]
         [EndpointMetadata("Get zones on the map")]
-        public async Task GetMapZones(HttpListenerContext context)
+        public async Task GetMapZones(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapZones(mapId);
@@ -144,7 +144,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/rooms")]
-        public async Task GetMapRooms(HttpListenerContext context)
+        public async Task GetMapRooms(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapRooms(mapId);
@@ -152,7 +152,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/terrain")]
-        public async Task GetMapTerrain(HttpListenerContext context)
+        public async Task GetMapTerrain(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapTerrain(mapId);
@@ -160,7 +160,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/fog-grid")]
-        public async Task GetMapFogGrid(HttpListenerContext context)
+        public async Task GetMapFogGrid(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetFogGrid(mapId);
@@ -168,7 +168,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/buildings")]
-        public async Task GetMapBuildings(HttpListenerContext context)
+        public async Task GetMapBuildings(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.GetMapBuildings(mapId);
@@ -177,7 +177,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/map/building/info")]
         [EndpointMetadata("Get building info")]
-        public async Task GetBuildingInfo(HttpListenerContext context)
+        public async Task GetBuildingInfo(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _buildingService.GetBuildingInfo(mapId);
@@ -186,7 +186,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/map/building/power")]
         [EndpointMetadata("Toggle power on/off for a flickable building")]
-        public async Task SetBuildingPower(HttpListenerContext context)
+        public async Task SetBuildingPower(RimApiContext context)
         {
             var buildingId = RequestParser.GetIntParameter(context, "buildingId");
             var powerOn = RequestParser.GetBooleanParameter(context, "powerOn");
@@ -196,7 +196,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/map/weather/change")]
         [EndpointMetadata("Set weather on the map")]
-        public async Task SetWeather(HttpListenerContext context)
+        public async Task SetWeather(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var defName = RequestParser.GetStringParameter(context, "name");
@@ -205,7 +205,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/map/destroy/corpses")]
-        public async Task DestroyCorpses(HttpListenerContext context)
+        public async Task DestroyCorpses(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.DestroyCorpses(mapId);
@@ -213,7 +213,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/map/destroy/forbidden")]
-        public async Task DestroyForbiddenItems(HttpListenerContext context)
+        public async Task DestroyForbiddenItems(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var result = _mapService.DestroyForbiddenItems(mapId);
@@ -221,7 +221,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/map/destroy/rect")]
-        public async Task DestroyThingsInRect(HttpListenerContext context)
+        public async Task DestroyThingsInRect(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<DestroyRectRequestDto>();
             var result = _mapService.DestroyThingsInRect(body);
@@ -229,7 +229,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/map/repair/positions")]
-        public async Task RepairAtPositions(HttpListenerContext context)
+        public async Task RepairAtPositions(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<RepairPositionsRequestDto>();
             var result = _mapService.RepairThingsAtPositions(body);
@@ -237,7 +237,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/map/repair/rect")]
-        public async Task RepairInRect(HttpListenerContext context)
+        public async Task RepairInRect(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<RepairRectRequestDto>();
             var result = _mapService.RepairThingsInRect(body);
@@ -245,7 +245,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/map/droppod")]
-        public async Task SpawnDropPod(HttpListenerContext context)
+        public async Task SpawnDropPod(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<SpawnDropPodRequestDto>();
             var result = _mapService.SpawnDropPod(body);
@@ -253,7 +253,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/map/pawns")]
-        public async Task GetPawnsOnMap(HttpListenerContext context)
+        public async Task GetPawnsOnMap(RimApiContext context)
         {
             int mapId = RequestParser.GetMapId(context);
             var result = _pawnInfoService.GetPawnsOnMap(mapId);
@@ -262,7 +262,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/map/zone/stockpile")]
         [EndpointMetadata("Create a new stockpile zone on the map")]
-        public async Task CreateStockpile(HttpListenerContext context)
+        public async Task CreateStockpile(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<CreateStockpileRequestDto>();
             var result = _mapService.CreateStockpile(body);
@@ -271,7 +271,7 @@ namespace RIMAPI.Controllers
 
         [Delete("/api/v1/map/zone/stockpile/delete")]
         [EndpointMetadata("Delete a stockpile zone by zone ID")]
-        public async Task DeleteStockpile(HttpListenerContext context)
+        public async Task DeleteStockpile(RimApiContext context)
         {
             var zoneId = RequestParser.GetIntParameter(context, "zone_id");
             var result = _mapService.DeleteStockpile(zoneId);
@@ -280,7 +280,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/map/zone/stockpile/update")]
         [EndpointMetadata("Update stockpile zone parameters by zone ID")]
-        public async Task UpdateStockpile(HttpListenerContext context)
+        public async Task UpdateStockpile(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<UpdateStockpileRequestDto>();
             var result = _mapService.UpdateStockpile(body);
@@ -289,7 +289,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/datetime")]
         [EndpointMetadata("Get in-game date and time")]
-        public async Task GetCurrentMapDatetime(HttpListenerContext context)
+        public async Task GetCurrentMapDatetime(RimApiContext context)
         {
             var result = _mapService.GetCurrentMapDatetime();
             await context.SendJsonResponse(result);
@@ -297,7 +297,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/datetime/tile")]
         [EndpointMetadata("Get in-game date and time in global map tile")]
-        public async Task GetWorldTileDatetime(HttpListenerContext context)
+        public async Task GetWorldTileDatetime(RimApiContext context)
         {
             var tileId = RequestParser.GetIntParameter(context, "tile_id");
             var result = _mapService.GetWorldTileDatetime(tileId);

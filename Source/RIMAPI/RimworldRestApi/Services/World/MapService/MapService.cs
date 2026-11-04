@@ -412,7 +412,7 @@ namespace RIMAPI.Services
                     {
 #if RIMWORLD_1_5
                     ActiveDropPodInfo podInfo = new ActiveDropPodInfo();
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                     ActiveTransporterInfo podInfo = new ActiveTransporterInfo();
 #else
                         ActiveTransporterInfo podInfo = new ActiveTransporterInfo();
@@ -572,7 +572,7 @@ namespace RIMAPI.Services
         {
 #if RIMWORLD_1_5
             return map.Tile;
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
             return map.Tile.tileId;
 #endif
             throw new Exception("Failed to get GetMapTileId for this rimworld version.");

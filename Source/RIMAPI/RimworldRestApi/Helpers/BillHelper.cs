@@ -47,7 +47,7 @@ namespace RIMAPI.Helpers
                     PawnRestrictionId = bill.PawnRestriction?.thingIDNumber,
 #if RIMWORLD_1_5
                     PlayerCustomName = "Not supported",
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                     PlayerCustomName = bill.RenamableLabel,
 #endif
                     SlotGroupId = null,

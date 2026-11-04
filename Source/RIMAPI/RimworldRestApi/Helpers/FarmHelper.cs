@@ -147,7 +147,7 @@ namespace RIMAPI.Helpers
                         forSowing: true
                     )
                     && zone.Cells.Any(c => c.GetPlant(map) == null),
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                 IsSowing = zone.allowSow,
 #endif
                 SoilType = GetSoilType(zone.Cells.FirstOrDefault(), map),

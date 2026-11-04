@@ -43,7 +43,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/version")]
         [EndpointMetadata("Get versions of: game, mod, API")]
-        public async Task GetVersion(HttpListenerContext context)
+        public async Task GetVersion(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -63,14 +63,14 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/game/state")]
-        public async Task GetGameState(HttpListenerContext context)
+        public async Task GetGameState(RimApiContext context)
         {
             var result = _gameStateService.GetGameState();
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/mods/configure")]
-        public async Task ConfigureMods(HttpListenerContext context)
+        public async Task ConfigureMods(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<ConfigureModsRequestDto>();
             var result = _modService.ConfigureMods(body);
@@ -80,7 +80,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/mods/list")]
         [EndpointMetadata("Get list of active mods or single mod info if package_id/uid is provided")]
         [ResponseExample(typeof(ApiResponse<List<ModInfoDto>>))]
-        public async Task GetModsInfo(HttpListenerContext context)
+        public async Task GetModsInfo(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -95,7 +95,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/mods/info")]
         [EndpointMetadata("Get single mod info by package_id or uid")]
         [ResponseExample(typeof(ApiResponse<ModInfoDto>))]
-        public async Task GetModInfo(HttpListenerContext context)
+        public async Task GetModInfo(RimApiContext context)
         {
             string packageId = RequestParser.HasParameter(context, "package_id")
                 ? RequestParser.GetStringParameter(context, "package_id")
@@ -108,7 +108,7 @@ namespace RIMAPI.Controllers
         [Get("/api/v1/mods/preview")]
         [EndpointMetadata("Get mod preview image as base64")]
         [ResponseExample(typeof(ApiResponse<string>))]
-        public async Task GetModPreview(HttpListenerContext context)
+        public async Task GetModPreview(RimApiContext context)
         {
             string packageId = RequestParser.HasParameter(context, "package_id")
                 ? RequestParser.GetStringParameter(context, "package_id")
@@ -120,7 +120,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/game/select-area")]
         [EndpointMetadata("Select an area on the map")]
-        public async Task SelectArea(HttpListenerContext context)
+        public async Task SelectArea(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<SelectAreaRequestDto>();
             var result = _selectionService.SelectArea(body);
@@ -129,7 +129,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/select")]
         [EndpointMetadata("Select game object")]
-        public async Task Select(HttpListenerContext context)
+        public async Task Select(RimApiContext context)
         {
             var objType = RequestParser.GetStringParameter(context, "type");
             var id = RequestParser.GetIntParameter(context, "id");
@@ -139,7 +139,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/deselect")]
         [EndpointMetadata("Clear game selection")]
-        public async Task DeselectAll(HttpListenerContext context)
+        public async Task DeselectAll(RimApiContext context)
         {
             var result = _selectionService.DeselectAll();
             await context.SendJsonResponse(result);
@@ -147,7 +147,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/open-tab")]
         [EndpointMetadata("Open interface tab")]
-        public async Task OpenTab(HttpListenerContext context)
+        public async Task OpenTab(RimApiContext context)
         {
             var tabName = RequestParser.GetStringParameter(context, "name");
             var result = _uiService.OpenTab(tabName);
@@ -156,7 +156,7 @@ namespace RIMAPI.Controllers
 
         [Get("/api/v1/def/all")]
         [EndpointMetadata("Get all game definitions with optional filtering")]
-        public async Task GetAllDefs(HttpListenerContext context)
+        public async Task GetAllDefs(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<AllDefsRequestDto>();
 
@@ -186,7 +186,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/game/send/letter")]
-        public async Task PostLetter(HttpListenerContext context)
+        public async Task PostLetter(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<SendLetterRequestDto>();
             var result = _uiService.SendLetterSimple(body);
@@ -194,7 +194,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/game/speed")]
-        public async Task SetGameSpeed(HttpListenerContext context)
+        public async Task SetGameSpeed(RimApiContext context)
         {
             var speed = RequestParser.GetIntParameter(context, "speed");
             var result = _gameStateService.SetGameSpeed(speed);
@@ -202,7 +202,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/game/save")]
-        public async Task GameSave(HttpListenerContext context)
+        public async Task GameSave(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<GameSaveRequestDto>();
             var result = _gameStateService.GameSave(body);
@@ -210,7 +210,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/game/load")]
-        public async Task GameLoad(HttpListenerContext context)
+        public async Task GameLoad(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<GameLoadRequestDto>();
             var result = _gameStateService.GameLoad(body);
@@ -219,7 +219,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/game/main-menu")]
         [EndpointMetadata("Return to the main menu from an active game")]
-        public async Task GoToMainMenu(HttpListenerContext context)
+        public async Task GoToMainMenu(RimApiContext context)
         {
             var result = _gameStateService.GoToMainMenu();
             await context.SendJsonResponse(result);
@@ -227,21 +227,21 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/game/quit")]
         [EndpointMetadata("Completely close and exit the RimWorld application")]
-        public async Task QuitGame(HttpListenerContext context)
+        public async Task QuitGame(RimApiContext context)
         {
             var result = _gameStateService.QuitGame();
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/game/start/devquick")]
-        public async Task GameDevQuickStart(HttpListenerContext context)
+        public async Task GameDevQuickStart(RimApiContext context)
         {
             var result = _gameStateService.GameDevQuickStart();
             await context.SendJsonResponse(result);
         }
 
         [Post("/api/v1/game/start")]
-        public async Task GameStart(HttpListenerContext context)
+        public async Task GameStart(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<NewGameStartRequestDto>();
             var result = _gameStateService.GameStart(body);
@@ -249,7 +249,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/game/settings")]
-        public async Task GetGameSettings(HttpListenerContext context)
+        public async Task GetGameSettings(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -262,14 +262,14 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/game/settings/toggle/run-in-background")]
-        public async Task ToggleRunInBackground(HttpListenerContext context)
+        public async Task ToggleRunInBackground(RimApiContext context)
         {
             var result = _gameStateService.ToggleRunInBackground();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/game/settings/run-in-background")]
-        public async Task GetRunInBackground(HttpListenerContext context)
+        public async Task GetRunInBackground(RimApiContext context)
         {
             var result = _gameStateService.GetRunInBackground();
             await context.SendJsonResponse(result);

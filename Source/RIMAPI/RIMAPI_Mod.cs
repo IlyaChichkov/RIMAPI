@@ -54,7 +54,7 @@ namespace RIMAPI
             try
             {
                 _harmony = new Harmony("RIMAPI.Harmony");
-                _harmony.PatchAll();
+                _harmony.PatchAll(Assembly.GetExecutingAssembly());
                 LogApi.Info("Harmony patches applied successfully");
             }
             catch (System.Exception ex)

@@ -52,7 +52,7 @@ namespace RIMAPI.Services
                 result.NextTile = caravan.pather.nextTile;
 #if RIMWORLD_1_5
                 result.DestinationTile = caravan.pather.Destination;
-#elif RIMWORLD_1_6
+#elif RIMWORLD_1_6 || RIMWORLD_1_7
                 result.DestinationTile = caravan.pather.Destination.tileId;
 #endif
 

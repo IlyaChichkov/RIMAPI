@@ -17,21 +17,21 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/factions")]
-        public async Task GetFactions(HttpListenerContext context)
+        public async Task GetFactions(RimApiContext context)
         {
             var result = _factionService.GetFactions();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/faction/player")]
-        public async Task GetPlayerFaction(HttpListenerContext context)
+        public async Task GetPlayerFaction(RimApiContext context)
         {
             var result = _factionService.GetPlayerFaction();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/faction")]
-        public async Task GetFaction(HttpListenerContext context)
+        public async Task GetFaction(RimApiContext context)
         {
             int id = RequestParser.GetIntParameter(context, "id");
             var result = _factionService.GetFaction(id);
@@ -39,7 +39,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/faction/relation-with")]
-        public async Task GetFactionRelationWith(HttpListenerContext context)
+        public async Task GetFactionRelationWith(RimApiContext context)
         {
             int id = RequestParser.GetIntParameter(context, "id");
             int otherId = RequestParser.GetIntParameter(context, "other_id");
@@ -48,7 +48,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/faction/relations")]
-        public async Task GetFactionRelations(HttpListenerContext context)
+        public async Task GetFactionRelations(RimApiContext context)
         {
             int id = RequestParser.GetIntParameter(context, "id");
             var result = _factionService.GetFactionRelations(id);
@@ -56,7 +56,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/faction/def")]
-        public async Task GetFactionDef(HttpListenerContext context)
+        public async Task GetFactionDef(RimApiContext context)
         {
             var name = RequestParser.GetStringParameter(context, "name");
             var result = _factionService.GetFactionDef(name);
@@ -64,7 +64,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/faction/change/goodwill")]
-        public async Task ChangeFactionRelationWith(HttpListenerContext context)
+        public async Task ChangeFactionRelationWith(RimApiContext context)
         {
             FactionChangeRelationRequestDto body =
                 await context.Request.ReadBodyAsync<FactionChangeRelationRequestDto>();
@@ -79,7 +79,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/faction/goodwill")]
-        public async Task SetFactionGoodwill(HttpListenerContext context)
+        public async Task SetFactionGoodwill(RimApiContext context)
         {
             FactionChangeRelationRequestDto body =
                 await context.Request.ReadBodyAsync<FactionChangeRelationRequestDto>();
@@ -94,7 +94,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/faction/icon")]
-        public async Task GetFactionIcon(HttpListenerContext context)
+        public async Task GetFactionIcon(RimApiContext context)
         {
             int id = RequestParser.GetIntParameter(context, "id");
             var result = _factionService.GetFactionIcon(id);

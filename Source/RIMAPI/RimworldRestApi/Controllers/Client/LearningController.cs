@@ -17,28 +17,28 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/client/learning/defs")]
-        public async Task GetConceptsDefs(HttpListenerContext context)
+        public async Task GetConceptsDefs(RimApiContext context)
         {
             var result = _learningService.GetLearningConceptsDefs();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/client/learning/all")]
-        public async Task GetAllConcepts(HttpListenerContext context)
+        public async Task GetAllConcepts(RimApiContext context)
         {
             var result = _learningService.GetAllConcepts();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/client/learning/active")]
-        public async Task GetActiveConcepts(HttpListenerContext context)
+        public async Task GetActiveConcepts(RimApiContext context)
         {
             var result = _learningService.GetActiveConcepts();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/client/learning/concept")]
-        public async Task GetConcept(HttpListenerContext context)
+        public async Task GetConcept(RimApiContext context)
         {
             var defName = RequestParser.GetStringParameter(context, "def_name");
             var result = _learningService.GetConceptByDef(defName);
@@ -46,7 +46,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/client/learning/mark-learned")]
-        public async Task MarkLearned(HttpListenerContext context)
+        public async Task MarkLearned(RimApiContext context)
         {
             var request = await context.Request.ReadBodyAsync<LearningConceptMarkDto>();
             var result = _learningService.MarkConceptLearned(request);

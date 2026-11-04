@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using RIMAPI.Core;
 using RIMAPI.Models;
 using RIMAPI.Services;
+using RIMAPI.Http;
 
 namespace RIMAPI.Controllers
 {
@@ -16,7 +17,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/basic")]
-        public async Task EditBasicInfo(HttpListenerContext context)
+        public async Task EditBasicInfo(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnBasicRequest>();
             var result = _pawnEditService.UpdateBasicInfo(body);
@@ -24,7 +25,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/health")]
-        public async Task EditHealth(HttpListenerContext context)
+        public async Task EditHealth(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnHealthRequest>();
             var result = _pawnEditService.UpdateHealth(body);
@@ -32,7 +33,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/needs")]
-        public async Task EditNeeds(HttpListenerContext context)
+        public async Task EditNeeds(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnNeedsRequest>();
             var result = _pawnEditService.UpdateNeeds(body);
@@ -40,7 +41,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/skills")]
-        public async Task EditSkills(HttpListenerContext context)
+        public async Task EditSkills(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnSkillsRequest>();
             var result = _pawnEditService.UpdateSkills(body);
@@ -48,7 +49,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/traits")]
-        public async Task EditTraits(HttpListenerContext context)
+        public async Task EditTraits(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnTraitsRequest>();
             var result = _pawnEditService.UpdateTraits(body);
@@ -56,7 +57,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/inventory")]
-        public async Task EditInventory(HttpListenerContext context)
+        public async Task EditInventory(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnInventoryRequest>();
             var result = _pawnEditService.UpdateInventory(body);
@@ -64,7 +65,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/apparel")]
-        public async Task EditApparel(HttpListenerContext context)
+        public async Task EditApparel(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnApparelRequest>();
             var result = _pawnEditService.UpdateApparel(body);
@@ -72,7 +73,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/status")]
-        public async Task EditStatus(HttpListenerContext context)
+        public async Task EditStatus(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnStatusRequest>();
             var result = _pawnEditService.UpdateStatus(body);
@@ -80,7 +81,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/position")]
-        public async Task EditPosition(HttpListenerContext context)
+        public async Task EditPosition(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnPositionRequest>();
             var result = _pawnEditService.UpdatePosition(body);
@@ -88,7 +89,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/pawn/edit/faction")]
-        public async Task EditFaction(HttpListenerContext context)
+        public async Task EditFaction(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<PawnFactionRequest>();
             var result = _pawnEditService.UpdateFaction(body);

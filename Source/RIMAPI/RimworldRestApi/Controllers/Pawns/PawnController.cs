@@ -19,7 +19,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonists")]
-        public async Task GetColonists(HttpListenerContext context)
+        public async Task GetColonists(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -32,7 +32,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonists/positions")]
-        public async Task GetColonistPositions(HttpListenerContext context)
+        public async Task GetColonistPositions(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -45,7 +45,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonist")]
-        public async Task GetColonist(HttpListenerContext context)
+        public async Task GetColonist(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "id");
             var result = _colonistService.GetColonist(pawnId);
@@ -53,7 +53,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonists/detailed")]
-        public async Task GetColonistsDetailedV1(HttpListenerContext context)
+        public async Task GetColonistsDetailedV1(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -66,7 +66,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonist/detailed")]
-        public async Task GetColonistDetailedV1(HttpListenerContext context)
+        public async Task GetColonistDetailedV1(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "id");
             var result = _colonistService.GetColonistDetailedV1(pawnId);
@@ -75,7 +75,7 @@ namespace RIMAPI.Controllers
 
 
         [Get("/api/v2/colonists/detailed")]
-        public async Task GetColonistsDetailed(HttpListenerContext context)
+        public async Task GetColonistsDetailed(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,
@@ -88,7 +88,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v2/colonist/detailed")]
-        public async Task GetColonistDetailed(HttpListenerContext context)
+        public async Task GetColonistDetailed(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "id");
             var result = _colonistService.GetColonistDetailed(pawnId);
@@ -96,7 +96,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonist/opinion-about")]
-        public async Task GetPawnOpinionAboutPawn(HttpListenerContext context)
+        public async Task GetPawnOpinionAboutPawn(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "id");
             var otherId = RequestParser.GetIntParameter(context, "other_id");
@@ -105,7 +105,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonist/inventory")]
-        public async Task GetColonistInventory(HttpListenerContext context)
+        public async Task GetColonistInventory(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "id");
             var result = _colonistService.GetColonistInventory(pawnId);
@@ -113,7 +113,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/colonist/body/image")]
-        public async Task GetPawnBodyImage(HttpListenerContext context)
+        public async Task GetPawnBodyImage(RimApiContext context)
         {
             var pawnId = RequestParser.GetIntParameter(context, "id");
             var result = _colonistService.GetColonistBodyParts(pawnId);
@@ -121,7 +121,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/pawn/portrait/image")]
-        public async Task GetPawnPortraitImage(HttpListenerContext context)
+        public async Task GetPawnPortraitImage(RimApiContext context)
         {
             int pawnId = RequestParser.GetIntParameter(context, "pawn_id");
             int width = RequestParser.GetIntParameter(context, "width");
@@ -134,7 +134,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/trait-def")]
-        public async Task GetTraitDef(HttpListenerContext context)
+        public async Task GetTraitDef(RimApiContext context)
         {
             string name = RequestParser.GetStringParameter(context, "name");
             var result = _colonistService.GetTraitDefDto(name);
@@ -142,7 +142,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/time-assignments")]
-        public async Task GetTimeAssignmentsList(HttpListenerContext context)
+        public async Task GetTimeAssignmentsList(RimApiContext context)
         {
             var result = _colonistService.GetTimeAssignmentsList();
             await context.SendJsonResponse(result);
@@ -150,7 +150,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/colonist/time-assignment")]
         [EndpointMetadata("Schedule pawn assignment during provided hour")]
-        public async Task SetTimeAssignment(HttpListenerContext context)
+        public async Task SetTimeAssignment(RimApiContext context)
         {
             PawnTimeAssignmentRequestDto body;
 
@@ -173,14 +173,14 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/outfits")]
-        public async Task GetOutfits(HttpListenerContext context)
+        public async Task GetOutfits(RimApiContext context)
         {
             var result = _colonistService.GetOutfits();
             await context.SendJsonResponse(result);
         }
 
         [Get("/api/v1/work-list")]
-        public async Task GetWorkList(HttpListenerContext context)
+        public async Task GetWorkList(RimApiContext context)
         {
             var result = _colonistService.GetWorkList();
             await context.SendJsonResponse(result);
@@ -188,7 +188,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/colonist/work-priority")]
         [EndpointMetadata("Set pawn work priorities")]
-        public async Task SetColonistWorkPriority(HttpListenerContext context)
+        public async Task SetColonistWorkPriority(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<WorkPriorityRequestDto>();
             var result = _colonistService.SetColonistWorkPriority(body);
@@ -197,7 +197,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/colonists/work-priority")]
         [EndpointMetadata("Set multiple work priorities to several pawns")]
-        public async Task SetColonistsWorkPriority(HttpListenerContext context)
+        public async Task SetColonistsWorkPriority(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<ColonistsWorkPrioritiesRequestDto>();
             var result = _colonistService.SetColonistsWorkPriority(body);
@@ -206,7 +206,7 @@ namespace RIMAPI.Controllers
 
         [Post("/api/v1/jobs/make/equip")]
         [EndpointMetadata("Set multiple work priorities to several pawns")]
-        public async Task MakeJobEquip(HttpListenerContext context)
+        public async Task MakeJobEquip(RimApiContext context)
         {
             var mapId = RequestParser.GetMapId(context);
             var pawnId = RequestParser.GetIntParameter(context, "pawn_id");

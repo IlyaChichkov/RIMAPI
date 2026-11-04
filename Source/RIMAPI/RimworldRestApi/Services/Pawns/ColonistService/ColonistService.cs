@@ -215,14 +215,18 @@ namespace RIMAPI.Services
                 Job job = null;
                 try
                 {
-                    if (EquipmentUtility.CanEquip(foundThing, pawn) == true)
+                    // HasPartsToWear dereferences def.apparel, so only call it for apparel
+                    // (RimWorld 1.7 removed its early return that used to hide this for weapons)
+                    if (foundThing.def.IsApparel)
+                    {
+                        if (ApparelUtility.HasPartsToWear(pawn, foundThing.def))
+                        {
+                            job = JobMaker.MakeJob(JobDefOf.Wear, foundThing);
+                        }
+                    }
+                    else if (EquipmentUtility.CanEquip(foundThing, pawn))
                     {
                         job = JobMaker.MakeJob(JobDefOf.Equip, foundThing);
-                    }
-
-                    if (ApparelUtility.HasPartsToWear(pawn, foundThing.def) == true)
-                    {
-                        job = JobMaker.MakeJob(JobDefOf.Wear, foundThing);
                     }
                 }
                 catch

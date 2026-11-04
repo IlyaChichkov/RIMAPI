@@ -3,6 +3,7 @@ using System.Net;
 using RIMAPI.Core;
 using RIMAPI.Models;
 using RIMAPI.Services;
+using RIMAPI.Http;
 
 namespace RIMAPI.Controllers
 {
@@ -16,7 +17,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/lords/create")]
-        public async Task CreateLord(HttpListenerContext context)
+        public async Task CreateLord(RimApiContext context)
         {
             // Helper to parse body safely
             LordCreateRequestDto body;

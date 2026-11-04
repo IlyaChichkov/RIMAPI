@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using RIMAPI.Http;
 
 namespace RIMAPI.Core
 {
@@ -69,7 +70,7 @@ namespace RIMAPI.Core
                     .Where(m =>
                         m.ReturnType == typeof(Task)
                         && m.GetParameters().Length == 1
-                        && m.GetParameters()[0].ParameterType == typeof(HttpListenerContext)
+                        && m.GetParameters()[0].ParameterType == typeof(RimApiContext)
                     )
                     .ToList();
 
@@ -151,7 +152,7 @@ namespace RIMAPI.Core
             }
         }
 
-        private Func<HttpListenerContext, Task> CreateRouteHandler(
+        private Func<RimApiContext, Task> CreateRouteHandler(
             Type controllerType,
             MethodInfo method
         )
@@ -238,7 +239,7 @@ namespace RIMAPI.Core
                     .Where(m =>
                         m.ReturnType == typeof(Task)
                         && m.GetParameters().Length == 1
-                        && m.GetParameters()[0].ParameterType == typeof(HttpListenerContext)
+                        && m.GetParameters()[0].ParameterType == typeof(RimApiContext)
                     );
 
                 foreach (var method in methods)

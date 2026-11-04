@@ -4,11 +4,11 @@ RIMAPI is a RimWorld mod that embeds a REST API server directly into the game, e
 
 ## Tech Stack
 
-- **Language:** C# 9.0 targeting .NET Framework 4.7.2
+- **Language:** C# targeting .NET Framework 4.7.2 (1.5/1.6) and .NET 10 (1.7)
 - **Serialization:** Newtonsoft.Json 13.0 with a custom `SnakeCaseContractResolver`
-- **Patching:** Harmony 2.3.3 for runtime method hooks
-- **RimWorld versions:** 1.5 and 1.6 (both built from the same source via conditional compilation)
-- **Build configs:** `Debug`, `Release-1.5`, `Release-1.6`
+- **Patching:** Harmony 2.3.3 (1.5/1.6) / Harmony 3 (1.7) for runtime method hooks
+- **RimWorld versions:** 1.5, 1.6 and 1.7 (all built from the same source via conditional compilation)
+- **Build configs:** `Debug`, `Release-1.5`, `Release-1.6`, `Release-1.7`
 
 ## Repository Layout
 
@@ -29,6 +29,7 @@ My_test_mod/
 │       └── Camera/               # UDP camera streaming
 ├── 1.5/Assemblies/               # Compiled DLL for RimWorld 1.5
 ├── 1.6/Assemblies/               # Compiled DLL for RimWorld 1.6
+├── 1.7/Assemblies/               # Compiled DLL for RimWorld 1.7 (net10.0)
 ├── Libraries/                    # Newtonsoft.Json.dll
 ├── docs/                         # MkDocs documentation source
 │   ├── api/                      # Endpoint reference by domain
@@ -46,7 +47,7 @@ My_test_mod/
 
 ```
 HTTP Client
-  → HttpListener (background thread)
+  → HTTP transport (background thread): HttpListener on 1.5/1.6, Watson on 1.7
   → Request Queue  (producer-consumer, thread-safe)
   → ApiServer.ProcessTick()  (main Unity thread, ≤10 req/tick)
   → Router  (attribute-based pattern matching)
@@ -56,6 +57,8 @@ HTTP Client
 ```
 
 All game-state mutations happen on the main thread automatically. Response latency depends on game frame rate and queue depth.
+
+Controllers, routers and extensions only see the server-agnostic `RimApiContext` / `RimApiRequest` / `RimApiResponse` (`Core/HttpContext/RimApiContext.cs`). `HttpListenerTransport` (1.5/1.6) and `WatsonTransport` (1.7) adapt the real server. On RimWorld 1.7 `System.Net.HttpListener` is backed by HTTP.sys on Windows and needs a URL reservation, so 1.7 uses Watson, which runs on its own `TcpListener`.
 
 ### Dependency Injection
 
@@ -82,7 +85,7 @@ Controllers only parse the request and return a response. All logic goes in serv
 ```csharp
 // Good
 [Get("/api/v1/colonists")]
-public async Task GetColonists(HttpListenerContext context)
+public async Task GetColonists(RimApiContext context)
 {
     var colonists = _colonistService.GetAll();
     await context.WriteJsonAsync(ApiResult<List<ColonistDto>>.Ok(colonists));
@@ -147,7 +150,7 @@ All keys use `snake_case`. Examples:
 
 ### POST Requests
 
-All POST requests must include a `Content-Length` header (required by .NET's `HttpListener`). Send `{}` if the body is empty.
+POST requests should include a `Content-Length` header: on 1.5/1.6 `HttpListener` rejects them with 411 otherwise (1.7 accepts chunked bodies too). Send `{}` if the body is empty.
 
 ### IDs
 
@@ -188,9 +191,9 @@ Route attributes are discovered automatically — no manual registration needed.
 
 ### Building
 
-Open `Source/RimApi.sln`. Build with `Release-1.5` for RimWorld 1.5 output to `1.5/Assemblies/`, or `Release-1.6` for `1.6/Assemblies/`. Both must be built before releasing.
+Open `Source/RimApi.sln`. Build with `Release-1.5` for RimWorld 1.5 output to `1.5/Assemblies/`, `Release-1.6` for `1.6/Assemblies/`, or `Release-1.7` for `1.7/Assemblies/` (requires the .NET 10 SDK). All three must be built before releasing.
 
-Conditional compilation: `RIMWORLD_1_5` and `RIMWORLD_1_6` symbols are set per configuration.
+Conditional compilation: `RIMWORLD_1_5`, `RIMWORLD_1_6` and `RIMWORLD_1_7` symbols are set per configuration. 1.7 shares the 1.6 code paths (`#elif RIMWORLD_1_6 || RIMWORLD_1_7`).
 
 ### Version Bump
 
@@ -232,7 +235,7 @@ Before submitting a PR:
 1. Finalize `CHANGELOG.md` — move `[Unreleased]` to the new version + date
 2. Run doc formatting/validation scripts in `scripts/docs/`
 3. Run `python scripts/bump_version.py <version>`
-4. Build for both 1.5 and 1.6
+4. Build for 1.5, 1.6 and 1.7
 5. Commit: `git commit -m "Release v1.9.1"` then `git tag -a v1.9.1 -m "Release v1.9.1"`
 6. Push commit and tag
 

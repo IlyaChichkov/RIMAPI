@@ -3,6 +3,7 @@ using System.Net;
 using RIMAPI.Core;
 using RIMAPI.Services;
 using System;
+using RIMAPI.Http;
 
 namespace RIMAPI.Controllers
 {
@@ -18,7 +19,7 @@ namespace RIMAPI.Controllers
         }
 
         [Get("/api/v1/traders/defs")]
-        public async Task GetTradersDefs(HttpListenerContext context)
+        public async Task GetTradersDefs(RimApiContext context)
         {
             await _cachingService.CacheAwareResponseAsync(
                 context,

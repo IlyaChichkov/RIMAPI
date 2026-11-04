@@ -3,6 +3,7 @@ using System.Net;
 using RIMAPI.Core;
 using RIMAPI.Models;
 using RIMAPI.Services;
+using RIMAPI.Http;
 
 namespace RIMAPI.Controllers
 {
@@ -16,7 +17,7 @@ namespace RIMAPI.Controllers
         }
 
         [Post("/api/v1/ui/announce")]
-        public async Task ShowAnnouncement(HttpListenerContext context)
+        public async Task ShowAnnouncement(RimApiContext context)
         {
             var body = await context.Request.ReadBodyAsync<OverlayRequestDto>();
             var result = _overlayService.ShowAnnouncement(body);
